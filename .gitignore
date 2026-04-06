@@ -39,3 +39,9 @@
 
 # debug information files
 *.dwo
+# Carpetas específicas de Visual Studio
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
