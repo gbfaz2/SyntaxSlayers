@@ -13,11 +13,11 @@ public:
 	//constructor que recibe puntero a tablero
 	TableroGL(Tablero* pt) :m_tablero(pt) {
 		anchoCasilla = 80.0f;
-		N = pt->getTamano;
+		N = pt->getTamano();
 		turnoActual = 1;
 		turnoDeQuien = LOCAL;
 		filaRaton = colRaton = -1;
-		controlKey = chiftKay = botonIzq = botonDer = botonMed = false;
+		controlKey = shiftKey = botonIzq = botonDer = botonMed = false;
 	}
 	virtual ~TableroGL(){}
 	//Declaramos el metodo de inicialización
@@ -51,4 +51,28 @@ public:
 	}
 
 	//pixel del raton -> (fila, col) del tablero
+	void pantalla2casilla(int mouseX, int mouseY, int& fila, int& col) {
+		col = mouseX / (int)anchoCasilla;
+		int yGL = (int)(N * anchoCasilla) - mouseY; //invertimos y de glut
+		fila = yGL / (int)anchoCasilla;
+	}
+
+	//turno actual que lo gestiona tablerogl
+	int turnoActual;
+	TipoOcupante turnoDeQuien;
+
+protected:
+	float anchoCasilla;
+	int N;
+	Tablero* m_tablero;//es un puntero al tablero
+
+	int filaRaton, colRaton; //la casilla que apuntamos con el raton
+	bool controlKey, shiftKey; //estado de teclas especiales
+	bool botonIzq, botonDer, botonMed;
+
+	//las primitivas de openGl
+	void dibujarRectangulo(float x, float y, float ancho, float alto, const Color3f& color, float alfa = 1.f);
+	void dibujarBorde(float x, float y, float ancho, float alto, const Color3f& color, float grodor = 1.f);
+	void dibujarCirculo(float cx, float cy, float radio, const Color3f& color, float alfa = 1.f, int seg = 32);
+	void dibujarMarcadorVIP(float cx, float cy, float radio);
 };
