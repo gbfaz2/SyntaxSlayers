@@ -39,7 +39,7 @@ public:
 
 	//las conversiones de coordenadas
 	//esquina inferior-izquiera de la casilla en píxeles
-	void csasilla2pixel(int fila, int col, float& px, float& py) {
+	void casilla2pixel(int fila, int col, float& px, float& py) {
 		px = (float)col * anchoCasilla;
 		py = (float)(N - 1 - fila) * anchoCasilla;
 	}
