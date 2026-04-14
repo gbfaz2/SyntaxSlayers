@@ -132,7 +132,35 @@ void TableroGL::DibujaHUD(int turno, TipoOcupante turnoDeQuien)
 {
 	Color3f colorTexto=(turnoDeQuien==LOCAL)? m_tablero->getEquipoLocal().getColorCasilla() : m_tablero->getEquipoVisitante().getColorCasilla();
 	string nombreEquipo = (turnoDeQuien == LOCAL)? m_tablero->getEquipoLocal().getNombre() : m_tablero->getEquipoVisitante().getNombre();
+
+	float tamTablero = N * anchoCasilla;
+	dibujarRectangulo(0, tamTablero, tamTablero, 40, COLOR_NEGRO, 0.85f);
+
+	ETSIDI::setFont("arial.ttf", 140);
+	ETSIDI::setJustificacion(ETSIDI::IZQUIERDA, ETSIDI::MEDIO);
+	ETSIDI::setTextColor(colorTexto.getRf(), colorTexto.getGf(), colorTexto.getBf());
+
+	string hud = "Turno" + to_string(turno) + "| Juega: " + nombreEquipo;
+	ETSIDI::printxy(hud.c_str(), 10, (int)(tamTablero + 20));
 }
+
+void TableroGL::BotonRaton(int x, int y, int boton, int pulsado, bool shiftKey, bool ctrlKey)
+{
+	if (pulsado) {
+		controlKey = ctrlKey;
+		this->shiftKey = shiftKey;
+	}
+	else controlKey = this->shiftKey = false;
+
+	if (boton == BOTON_IZQ) botonIzq = pulsado;
+	else if (boton == BOTON_DER)botonDer = pulsado;
+	else if (boton == BOTON_MED) botonMed = pulsado;
+
+	pantalla2Casilla(x, y, filaRaton, colRaton);
+
+}
+
+
 
 
 
