@@ -144,6 +144,7 @@ void TableroGL::DibujaHUD(int turno, TipoOcupante turnoDeQuien)
 	ETSIDI::printxy(hud.c_str(), 10, (int)(tamTablero + 20));
 }
 
+
 void TableroGL::BotonRaton(int x, int y, int boton, int pulsado, bool shiftKey, bool ctrlKey)
 {
 	if (pulsado) {
@@ -156,15 +157,96 @@ void TableroGL::BotonRaton(int x, int y, int boton, int pulsado, bool shiftKey, 
 	else if (boton == BOTON_DER)botonDer = pulsado;
 	else if (boton == BOTON_MED) botonMed = pulsado;
 
-	pantalla2Casilla(x, y, filaRaton, colRaton);
+	pantalla2casilla(x, y, filaRaton, colRaton);
+
+	if (!pulsado || boton != BOTON_IZQ)return;
+	if (!m_tablero->enTablero(filaRaton, colRaton))return;
+
+	cout << "Casillla:(" << filaRaton << "," << colRaton << ")" << endl;
+
+	Casilla& destino = m_tablero->getTabla()[filaRaton][colRaton];
+
+	if (!m_tablero->haySeleccion()) {
+		//primera pulsacion:seleccionar pieza propia
+		if (destino.getOcupadaPor() == turnoDeQuien)
+			m_tablero->seleccionar(filaRaton, colRaton);
+	}
+	else {
+		int filaOrig = m_tablero->getFilaSelec();
+		int colOrig = m_tablero->geggtColSelec();
+		if (filaRaton == filaOrig && colRaton == colOrig) m_tablero->limipiarSeleccion();
+		else if (destino.getOcupadaPor() == NADIE) {
+			//movemos pieza a casilla libre
+			m_tablero->getTabla()[filaOrig][colOrig].setOcupadaPor(NADIE);
+			destino.getOcupadaPor();
+			m_tablero->limipiarSeleccion();
+
+			if (m_tablero->controlCincoPuntos(turnoDeQuien))
+				cout << "VICTORIA de " << m_tablero->getEquipoLocal().getNombre() << endl;
+
+			turnoActual++;
+			m_tablero->avanzarOscilacion(turnoActual, 3);
+			turnoDeQuien = (turnoDeQuien == LOCAL) ? VISITANTE : LOCAL;
+		}else if (destino.getOcupadaPor() != turnoDeQuien) {
+			//casilla enemiga, por lo que comienza el combate y se abre el campo 
+			cout << "Combate en (" << filaRaton << "," << colRaton << ")" << endl;
+			m_tablero->limipiarSeleccion();
+		}
+		else {
+			//casilla aliada->cambiar seleccion
+			m_tablero->seleccionar(filaRaton, colRaton);
+		}
+	}
 
 }
 
+void TableroGL::KeyDown(unsigned char tecla)
+{
+	cout << "Tecla: " << tecla << endl;
+}
 
+void TableroGL::dibujarRectangulo(float x, float y, float ancho, float alto, const Color3f& color, float alfa)
+{
+	glColor4f(color.getRf(), color.getGf(), color.getBf(), alfa);
+	glBegin(GL_QUADS);
+	glVertex2f(x, y);
+	glVertex2f(x + ancho, y);
+	glVertex2f(x + ancho, y + alto);
+	glVertex2f(x, y + alto);
+	glEnd();
+}
 
+void TableroGL::dibujarBorde(float x, float y, float ancho, float alto, const Color3f& color, float grosor)
+{
+	glColor3f(color.getRf(), color.getGf(), color.getBf());
+	glLineWidth(grosor);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f(x, y);
+	glVertex2f(x + ancho, y);
+	glVertex2f(x + ancho, y + alto);
+	glVertex2f(x, y + alto);
+	glEnd();
+	glLineWidth(1.0f);
+}
 
+void TableroGL::dibujarCirculo(float cx, float cy, float radio, const Color3f& color, float alfa, int seg)
+{
+	glColor4f(color.getRf(), color.getGf(), color.getBf(), alfa);
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex2f(cx, cy);
+	for (int i = 0; i <= seg; i++) {
+		float ang = 2.0f * 3.14159265f * (float)i / (float)seg;
+		glVertex2f(cx + radio * cosf(ang), cy + radio * sinf(ang));
+	}
+	glEnd();
+}
 
-
+void TableroGL::dibujarMarcadorVIP(float cx, float cy, float radio)
+{
+	dibujarCirculo(cx, cy, radio, COLOR_ORO, 0.45f);
+	dibujarCirculo(cx, cy, radio*0.55f, COLOR_BLANCO_VIP, 0.85f);
+	dibujarCirculo(cx, cy, radio*0.18f, COLOR_ORO, 1.00f);
+}
 
 
 
