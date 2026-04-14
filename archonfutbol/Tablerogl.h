@@ -72,7 +72,7 @@ protected:
 
 	//las primitivas de openGl
 	void dibujarRectangulo(float x, float y, float ancho, float alto, const Color3f& color, float alfa = 1.f);
-	void dibujarBorde(float x, float y, float ancho, float alto, const Color3f& color, float grodor = 1.f);
+	void dibujarBorde(float x, float y, float ancho, float alto, const Color3f& color, float grosor = 1.f);
 	void dibujarCirculo(float cx, float cy, float radio, const Color3f& color, float alfa = 1.f, int seg = 32);
 	void dibujarMarcadorVIP(float cx, float cy, float radio);
 };
