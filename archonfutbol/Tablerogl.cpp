@@ -112,9 +112,29 @@ void TableroGL::DibujarCasilla(int fila, int col)
 		dibujarCirculo(cx, cy, anchoCasilla * 0.30f, colorPieza, 0.92f);
 		dibujarBorde(px + anchoCasilla * 0.20f, py + anchoCasilla * 0.20f, anchoCasilla * 0.60f, anchoCasilla * 0.60f, COLOR_BLANCO, 1.5f);
 	}
+
+	//quinto: que aparezca un borde verde grueso si esta seleccionada
+	if (casilla.isSeleccionada()) {
+		//convertimos de 0-255 a 0.0-1.0 para OpenGl
+		glColor4f(COLOR_SELECCION.getRf(), COLOR_SELECCION.getGf(), COLOR_SELECCION.getBf(), 1.0f);
+		glLineWidth(4.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex2f(px + 2, py + 2);
+		glVertex2f(px + anchoCasilla - 2, py + 2);
+		glVertex2f(px + anchoCasilla - 2, py + anchoCasilla - 2);
+		glVertex2f(px + 2, py + anchoCasilla - 2);
+		glEnd();
+		glLineWidth(1.0f);
+	}
 }
 
-//que aparezca un borde verde grueso si esta seleccionada
+void TableroGL::DibujaHUD(int turno, TipoOcupante turnoDeQuien)
+{
+	Color3f colorTexto=(turnoDeQuien==LOCAL)? m_tablero->getEquipoLocal().getColorCasilla() : m_tablero->getEquipoVisitante().getColorCasilla();
+	string nombreEquipo = (turnoDeQuien == LOCAL)? m_tablero->getEquipoLocal().getNombre() : m_tablero->getEquipoVisitante().getNombre();
+}
+
+
 
 
 
