@@ -125,7 +125,10 @@ void dibujarSelector() {
 
 		//Aviso de que se han elegido los dos equipos iguales 
 		if (idLocal == idVisitante) {
-			ETSIDI::setFont("arial.ttf")
+			ETSIDI::setFont("arial.ttf", 13);
+			ETSIDI::setTextColor(1.0f, 0.4f, 0.4f);
+			ETSIDI::printxy("Los dos equipos no pueden ser el mismo", 360, 360);
+		}else{
 			//Indica que faltan elecciones 
 			ETSIDI::setFont("arial.ttf", 13);
 			ETSIDI::setTextColor(0.6f, 0.6f, 0.6f);
@@ -136,5 +139,94 @@ void dibujarSelector() {
 			else
 				ETSIDI::printxy("Falta elegir el equipo VISITANTE [4-BARSA / 5-ATLETICO /6-MADRID]", 360, 360);
 		}
+
+		//ENTER solo estará disponible cuando ambos equipos estan elegidos y son distintos
+		bool puedeEmpezar = localElegido && visitanteElegido && idLocal != idVisitante;
+		if (puedeEmpezar) {
+			ETSIDI::setFont("arial.ttf", 18);
+			ETSIDI::setTextColor(0.20f, 0.90f, 0.30f);
+			ETSIDI::printxy("[ENTER] Empezar partida", 360, 100);
+		}
+		else {
+			ETSIDI::setFont("arial.ttf", 18);
+			ETSIDI::setTextColor(0.35f, 0.35f, 0.35f);//gris:significa que no esta disponible aun
+			ETSIDI::printxy("[ENTER] Empezar partida", 360, 100);
+		}
 	}
+
+	
+}
+
+void OnDibujar(void)
+{
+	if (fase == SELECCIONANDO)
+		dibujarSelector();
+	else
+		escena->Dibujar();
+
+	glutSwapBuffers();
+}
+
+void OnTeclado(unsigned char tecla, int x, int y)
+{
+	if (fase == SELECCIONANDO) {
+		//Teclas 1-3: eligen el equipo local
+		if (tecla == '1') { idLocal = BARSA; localElegido = true; }
+		if (tecla == '2') { idLocal = ATLETICO; localElegido = true; }
+		if (tecla == '3') { idLocal = MADRID; localElegido = true; }
+
+		//Teclas 4-6: eligen el equipo visitante
+		if (tecla == '4') { idLocal = BARSA; visitanteElegido = true; }
+		if (tecla == '5') { idLocal = ATLETICO; visitanteElegido = true; }
+		if (tecla == '6') { idLocal = MADRID; visitanteElegido = true; }
+
+		//ENTER: solo si ambos estan elegidos y son distintos
+		if (tecla == 13 && localElegido && visitanteElegido && idLocal != idVisitante) {
+			tablero = new Tablero(idLocal, idVisitante);
+			escena = new TableroGL(tablero);
+			escena->init();
+
+			//Piezas de prueba hasta que se implemente la clase Pieza
+			for (int fila = 0; fila < TAMANO_TABLERO; fila++) {
+				if (fila % 2 == 0) {
+					tablero->establecerOcupante(fila, 0, LOCAL);
+					tablero->establecerOcupante(fila, 8, VISITANTE);
+				}
+			}
+			fase = JUGANDO;
+
+		}
+	}
+	else {
+		escena->KeyDown(tecla);
+		
+		if (tecla == 27) { //ESC para volver al selector
+			delete escena;
+			delete tablero;
+			escena = nullptr;
+			tablero = nullptr;
+			localElegido = false;
+			visitanteElegido = false;
+			fase = SELECCIONANDO;
+		}
+	}
+	glutPostRedisplay();
+}
+
+void OnRaton(int boton, int estado, int x, int y)
+{
+	if (fase != JUGANDO || !escena)return;
+
+	bool pulsado = (estado == GLUT_DOWN);
+	int btn;
+	if (boton == GLUT_LEFT_BUTTON)btn = BOTON_IZQ;
+	else if (boton == GLUT_RIGHT_BUTTON)btn = BOTON_DER;
+	else btn = BOTON_MED;
+
+	int specialKey = glutGetModifiers();
+	bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
+	bool sKey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
+
+	escena->BotonRaton(x, y, btn, pulsado, sKey, ctrlKey);
+	glutPostRedisplay();
 }
