@@ -70,7 +70,7 @@ void TableroGL::DibujarCasilla(int fila, int col)
 	Color3f colorLocal = m_tablero->getEquipoLocal().getColorCasilla();
 	Color3f colorVisitante = m_tablero->getEquipoVisitante().getColorCasilla();
 
-	float px, float py;
+	float px, py;
 	casilla2pixel(fila, col, px, py);
 
 	//primero:color de fondo

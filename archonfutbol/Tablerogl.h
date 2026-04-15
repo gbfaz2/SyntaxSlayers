@@ -46,7 +46,7 @@ public:
 	}
 	//centro de la casilla en pixeles
 	void casilla2centro(int fila, int col, float& cx, float& cy) {
-		csasilla2pixel(fila, col, cx, cy);
+		casilla2pixel(fila, col, cx, cy);
 		cx += anchoCasilla / 2.0f;
 		cy += anchoCasilla / 2.0f;
 	}

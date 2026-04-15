@@ -1,4 +1,5 @@
 //aqui ya si que va la implementación de la lógica del tablero
+#define _HAS_STD_BYTE 0
 #include "Tablero.h"
 
 void Tablero::inicializarZonas() //(fila+col) par-> ZONA_LOCAL, impar-> ZONA VISITANTE
