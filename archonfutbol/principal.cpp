@@ -7,6 +7,8 @@
 //Controles de la partida:
 //  Clic izq: seleccionar pieza / moverla
 // ESC:  volver a selección
+#define _HAS_STD_BYTE 0//evita el conflicto entre el windows.h y C++17
+
 #include <iostream>
 #include "Tablerogl.h"
 #include "ETSIDI.h"
@@ -16,6 +18,9 @@ using namespace std;
 void OnDibujar(void);
 void OnTeclado(unsigned char tecla, int x, int y);
 void OnRaton(int boton, int estado, int x, int y);
+
+void dibujarSelector();
+void dibujarBotonEquipo(int cx, int cy, const char* tecla, ConfigEquipo cfg, bool seleccionado);
 
 //el estado global
 enum FaseJuego{SELECCIONANDO, JUGANDO};
@@ -29,7 +34,7 @@ TipoEquipo idVisitante;//no se inicializa hasta que el jugador elige
 
 //punteros al tablero y la escena que se crean al pulsar ENTER
 Tablero* tablero = nullptr;
-Tablero* escena = nullptr;
+TableroGL* escena = nullptr;
 
 int main(int argc, char* argv[])
 {
