@@ -103,7 +103,7 @@ void dibujarSelector() {
 	//EQUIPO LOCAL
 	ETSIDI::setFont("arial.ttf", 16);
 	ETSIDI::setTextColor(0.40f, 0.90f, 0.50f);
-	ETSIDI::printxy("EQUIPO LOCAL: [1-BARSA / 2-ATLETICO /3-MADRID]", 360, 360);
+	ETSIDI::printxy("EQUIPO LOCAL: [1-BARSA / 2-ATLETICO /3-MADRID]", 360, 620);
 
 	//el tercer argumento (seleccionado) solo es true si el jugador ya ha elegido y el equipo elegido coincide con el de ese boton
 	dibujarBotonEquipo(150, 580, "1", ConfigEquipo::crear(BARSA), localElegido && idLocal == BARSA);
@@ -126,40 +126,38 @@ void dibujarSelector() {
 
 		ETSIDI::setFont("arial.ttf", 15);
 		ETSIDI::setTextColor(1.0f, 1.0f, 0.5f);
-		ETSIDI::printxy(resumen.c_str(),360,360);
+		ETSIDI::printxy(resumen.c_str(), 360, 360);
 
 		//Aviso de que se han elegido los dos equipos iguales 
 		if (idLocal == idVisitante) {
 			ETSIDI::setFont("arial.ttf", 13);
 			ETSIDI::setTextColor(1.0f, 0.4f, 0.4f);
 			ETSIDI::printxy("Los dos equipos no pueden ser el mismo", 360, 360);
-		}else{
-			//Indica que faltan elecciones 
-			ETSIDI::setFont("arial.ttf", 13);
-			ETSIDI::setTextColor(0.6f, 0.6f, 0.6f);
-			if (!localElegido && !visitanteElegido)
-				ETSIDI::printxy("Elige ambos equipos para continuar", 360, 360);
-			else if (!localElegido)
-				ETSIDI::printxy("Falta elegir el equipo LOCAL [1-BARSA / 2-ATLETICO /3-MADRID]", 360, 360);
-			else
-				ETSIDI::printxy("Falta elegir el equipo VISITANTE [4-BARSA / 5-ATLETICO /6-MADRID]", 360, 360);
-		}
-
-		//ENTER solo estará disponible cuando ambos equipos estan elegidos y son distintos
-		bool puedeEmpezar = localElegido && visitanteElegido && idLocal != idVisitante;
-		if (puedeEmpezar) {
-			ETSIDI::setFont("arial.ttf", 18);
-			ETSIDI::setTextColor(0.20f, 0.90f, 0.30f);
-			ETSIDI::printxy("[ENTER] Empezar partida", 360, 100);
-		}
-		else {
-			ETSIDI::setFont("arial.ttf", 18);
-			ETSIDI::setTextColor(0.35f, 0.35f, 0.35f);//gris:significa que no esta disponible aun
-			ETSIDI::printxy("[ENTER] Empezar partida", 360, 100);
 		}
 	}
+	else {
+		//Indica que faltan elecciones 
+		ETSIDI::setFont("arial.ttf", 13);
+		ETSIDI::setTextColor(0.6f, 0.6f, 0.6f);
+		if (!localElegido && !visitanteElegido)
+			ETSIDI::printxy("Elige ambos equipos para continuar", 360, 360);
+		else if (!localElegido)
+			ETSIDI::printxy("Falta elegir el equipo LOCAL [1-BARSA / 2-ATLETICO /3-MADRID]", 360, 360);
+		else
+			ETSIDI::printxy("Falta elegir el equipo VISITANTE [4-BARSA / 5-ATLETICO /6-MADRID]", 360, 360);
+	}
 
-	
+	//ENTER solo estará disponible cuando ambos equipos estan elegidos y son distintos
+	bool puedeEmpezar = localElegido && visitanteElegido && idLocal != idVisitante;
+	if (puedeEmpezar) {
+		ETSIDI::setFont("arial.ttf", 18);
+		ETSIDI::setTextColor(0.20f, 0.90f, 0.30f);
+		ETSIDI::printxy("[ENTER] Empezar partida", 360, 100);
+	}else {
+		ETSIDI::setFont("arial.ttf", 18);
+		ETSIDI::setTextColor(0.35f, 0.35f, 0.35f);//gris:significa que no esta disponible aun
+		ETSIDI::printxy("[ENTER] Empezar partida", 360, 100);
+	}	
 }
 
 void OnDibujar(void)
@@ -167,7 +165,7 @@ void OnDibujar(void)
 	if (fase == SELECCIONANDO)
 		dibujarSelector();
 	else
-		escena->Dibujar();
+		escena->Dibuja();
 
 	glutSwapBuffers();
 }
@@ -199,7 +197,6 @@ void OnTeclado(unsigned char tecla, int x, int y)
 				}
 			}
 			fase = JUGANDO;
-
 		}
 	}
 	else {
@@ -220,7 +217,7 @@ void OnTeclado(unsigned char tecla, int x, int y)
 
 void OnRaton(int boton, int estado, int x, int y)
 {
-	if (fase != JUGANDO || !escena)return;
+	if (fase != JUGANDO || !escena) return;
 
 	bool pulsado = (estado == GLUT_DOWN);
 	int btn;
