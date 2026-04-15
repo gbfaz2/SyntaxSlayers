@@ -1,1 +1,1 @@
-﻿LINK : fatal error LNK1181: no se puede abrir el archivo de entrada 'glu32.lib \MANIFEST \MANIFESTUAC:level='asInvoker'.obj'
+﻿LINK : fatal error LNK1104: no se puede abrir el archivo 'opengl.lib'
