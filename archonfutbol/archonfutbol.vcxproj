@@ -87,10 +87,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)lib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ETSIDI.lib
-glut32.lib
-opengl32.lib
-glu32.lib</AdditionalDependencies>
+      <AdditionalDependencies>opengl.lib;glu32.lib;glut32.lib;ETSIDI.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
