@@ -125,7 +125,16 @@ void dibujarSelector() {
 
 		//Aviso de que se han elegido los dos equipos iguales 
 		if (idLocal == idVisitante) {
-
+			ETSIDI::setFont("arial.ttf")
+			//Indica que faltan elecciones 
+			ETSIDI::setFont("arial.ttf", 13);
+			ETSIDI::setTextColor(0.6f, 0.6f, 0.6f);
+			if (!localElegido && !visitanteElegido)
+				ETSIDI::printxy("Elige ambos equipos para continuar", 360, 360);
+			else if (!localElegido)
+				ETSIDI::printxy("Falta elegir el equipo LOCAL [1-BARSA / 2-ATLETICO /3-MADRID]", 360, 360);
+			else
+				ETSIDI::printxy("Falta elegir el equipo VISITANTE [4-BARSA / 5-ATLETICO /6-MADRID]", 360, 360);
 		}
 	}
 }
