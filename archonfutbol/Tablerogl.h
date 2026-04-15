@@ -1,5 +1,6 @@
 //son las funciones de dibujo del tablero con OpenGL
 #pragma once
+#define _HAS_STD_BYTE 0
 #include<iostream>
 #include"Tablero.h"
 using namespace std;
