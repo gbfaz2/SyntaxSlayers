@@ -40,7 +40,7 @@ protected:
 	bool seleccionada; //seleccionada con el raton
 public:
 	//constructor de casilla vacia, zona local y color local
-	Casilla():zona(ZONA_LOCAL),colorActual(COLOR_LOCAL),ocupadaPor(NADIE),seleccionada(false){}
+	Casilla() :zona(ZONA_LOCAL), colorActual(COLOR_LOCAL), ocupadaPor(NADIE), seleccionada(false) {}
 	//Getters
 	TipoZona getZona() const { return zona; }
 	ColorVisible getColorActual() const { return colorActual; }
@@ -48,7 +48,7 @@ public:
 	bool isSeleccionada() const { return seleccionada; }
 	//Setters
 	void setZona(TipoZona z) { zona = z; }
-	void setColorActual(ColorVisible c) { colorActual = c ; }
+	void setColorActual(ColorVisible c) { colorActual = c; }
 	void setOcupadaPor(TipoOcupante o) { ocupadaPor = o; }
 	void setSeleccionada(bool s) { seleccionada = s; }
 	//para las casillas dinamicas invierte el color
