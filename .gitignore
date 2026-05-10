@@ -45,3 +45,9 @@
 [Oo]bj/
 *.user
 *.suo
+
+# Excepciones: las dependencias de freeglut SÍ se suben
+!**/freeglut.dll
+!**/freeglut.lib
+!**/freeglut
+!**/freeglut.h
