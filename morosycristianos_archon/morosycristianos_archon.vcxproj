@@ -142,14 +142,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\morosycristianos_archon.cpp" />
-    <ClCompile Include="src\Tablero.cpp" />
-    <ClCompile Include="src\Tablerogl.cpp" />
+    <ClCompile Include="src\Pieza.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\casilla.h" />
-    <ClInclude Include="src\configequipo.h" />
-    <ClInclude Include="src\Tablero.h" />
-    <ClInclude Include="src\Tablerogl.h" />
+    <ClInclude Include="src\Pieza.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
