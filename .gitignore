@@ -77,3 +77,10 @@ Release/
 *.ipdb
 *.tmp
 *.cache
+
+#Sube las carpetas de lib y bin
+!**/lib/
+!**/bin/
+!*.lib
+!*.dll
+!*.h
