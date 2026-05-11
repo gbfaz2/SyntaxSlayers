@@ -54,4 +54,8 @@ public:
 
 	// Tamaño
 	float lado() const { return _lado; }
+
+	// Setters
+	// Mueve al combatiente a una nueva posicion concreta del mundo
+	void posicion(float x, float y, float z);
 };
