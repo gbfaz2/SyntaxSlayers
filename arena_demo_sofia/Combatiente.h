@@ -58,4 +58,8 @@ public:
 	// Setters
 	// Mueve al combatiente a una nueva posicion concreta del mundo
 	void posicion(float x, float y, float z);
+
+	// Resta vida al combatiente. Si la vida llega a 0, el combatiente muere, no puede bajar de 0(se marca como tal, pero no se borra del vector de combatientes)
+	void recibirDano(float cantidad);
+	bool vivo() const { return _vida > 0.0f; } // devuelve true si el combatiente sigue vivo
 };
