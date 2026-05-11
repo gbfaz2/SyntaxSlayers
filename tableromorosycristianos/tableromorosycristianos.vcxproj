@@ -100,6 +100,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>ETSIDI.lib; freeglut.lib;glut32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir).vs\tmp\$(TargetName).pdb</ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,6 +119,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>ETSIDI.lib; freeglut.lib;glut32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir).vs\tmp\$(TargetName).pdb</ProgramDatabaseFile>
+      <AdditionalLibraryDirectories>lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

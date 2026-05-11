@@ -1,3 +1,4 @@
+#include <windows.h>
 #include "ETSIDI.h"
 #include "glut.h" // O el nombre que tenga tu cabecera de glut
 
