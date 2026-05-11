@@ -45,3 +45,29 @@
 [Oo]bj/
 *.user
 *.suo
+
+# Excepciones: las dependencias de freeglut SÍ se suben
+!**/freeglut.dll
+!**/freeglut.lib
+!**/freeglut
+!**/freeglut.h
+
+# Carpetas de compilación de Visual Studio (C++ moderno)
+x64/
+Debug/
+Release/
+[Xx]64/
+[Dd]ebug/
+[Rr]elease/
+
+# Archivos temporales de compilación
+*.tlog
+*.log
+*.recipe
+*.lastbuildstate
+*.unsuccessfulbuild
+*.idb
+*.iobj
+*.ipdb
+*.tmp
+*.cache
