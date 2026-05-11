@@ -44,6 +44,7 @@ x86/
 *.out
 *.app
 
+<<<<<<< HEAD
 # === NO ignoramos las librerías de la carpeta lib/ ===
 # (queremos que ETSIDI.lib, fmod.lib y fmod.dll viajen con el repo)
 # *.lib   <-- comentado a propósito
@@ -70,3 +71,52 @@ Desktop.ini
 # === Archivos temporales / backups ===
 *.bak
 *.tmp
+=======
+# debug information files
+*.dwo
+# Carpetas específicas de Visual Studio
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+
+# Excepciones: las dependencias de las librerías SÍ se suben
+!**/freeglut.dll
+!**/freeglut.lib
+!**/freeglut
+!**/freeglut.h
+!**/ETSIDI.lib
+!**/ETSIDI.dll
+!**/ETSIDI.h
+!**/fmodL.dll
+!**/glut32.dll
+!**/glut32.lib
+!**/glut.h
+# Carpetas de compilación de Visual Studio (C++ moderno)
+x64/
+Debug/
+Release/
+[Xx]64/
+[Dd]ebug/
+[Rr]elease/
+
+# Archivos temporales de compilación
+*.tlog
+*.log
+*.recipe
+*.lastbuildstate
+*.unsuccessfulbuild
+*.idb
+*.iobj
+*.ipdb
+*.tmp
+*.cache
+
+#Sube las carpetas de lib y bin
+!**/lib/
+!**/bin/
+!*.lib
+!*.dll
+!*.h
+>>>>>>> main

@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
     <ClCompile Include="src\morosycristianos_archon.cpp" />
     <ClCompile Include="src\Tablero.cpp" />
@@ -163,6 +164,11 @@
     <ClInclude Include="lib\freeglut.h" />
     <ClInclude Include="lib\glut.h" />
 >>>>>>> Stashed changes
+=======
+    <ClInclude Include="lib\ETSIDI.h" />
+    <ClInclude Include="lib\freeglut.h" />
+    <ClInclude Include="lib\glut.h" />
+>>>>>>> main
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -175,12 +181,18 @@
     <None Include="bin\freeglut.dll" />
     <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
 >>>>>>> Stashed changes
+=======
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+  </ItemGroup>
+>>>>>>> main
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

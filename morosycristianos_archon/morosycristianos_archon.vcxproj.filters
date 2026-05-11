@@ -15,6 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
     <ClCompile Include="src\Tablero.cpp">
       <Filter>Archivos de origen</Filter>
@@ -41,6 +42,8 @@
     </ClInclude>
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> main
     <ClInclude Include="lib\ETSIDI.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
@@ -62,12 +65,18 @@
     <None Include="bin\freeglut.dll" />
     <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> main
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> main
 </Project>
