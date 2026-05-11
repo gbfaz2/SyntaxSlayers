@@ -13,6 +13,14 @@
 // jerarquia de clases de Alba, adaptaremos esta para
 // integrarse con ella
 
+// Direcciones de movimiento del combtiente en la arena
+enum class Direccion{
+	Delante,
+	Atras,
+	Izquierda,
+	Derecha
+};
+
 class Combatiente
 {
 	// Posicion en la arena
@@ -31,6 +39,13 @@ class Combatiente
 
 	// Tamaño del cubo
 	float _lado{ 1.0f };
+
+	// Velocidad de movimiento (unidades por segundo)
+	float _velocidad{ 4.0f };
+
+	// Movimiento actual pedido por el jugador (se aplica en actualizar())
+	float _dxPedido{ 0.0f };
+	float _dzPedido{ 0.0f };
 
 public:
 	// Constructor: crea un combatiente con la posicion y el color dados
@@ -61,5 +76,11 @@ public:
 
 	// Resta vida al combatiente. Si la vida llega a 0, el combatiente muere, no puede bajar de 0(se marca como tal, pero no se borra del vector de combatientes)
 	void recibirDano(float cantidad);
-	bool vivo() const { return _vida > 0.0f; } // devuelve true si el combatiente sigue vivo
+	bool vivo() const { return _vida > 0.0f; } // Devuelve true si el combatiente sigue vivo (vida > 0), false si ha muerto (vida <= 0)
+
+	// Indica al combatiente que se mueva en una direccion concreta (delante, atras, izquierda, derecha)
+	void pedirMovimiento(Direccion d);
+
+	// Avanza la simulacion un frame (aplica el movimiento, los timers,...)
+	void actualizar(float dt);
 };
