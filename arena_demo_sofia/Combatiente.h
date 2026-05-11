@@ -35,4 +35,23 @@ class Combatiente
 public:
 	// Constructor: crea un combatiente con la posicion y el color dados
 	Combatiente(float x, float y, float z, float r, float g, float b); // y valdra 0 siempre a no ser que metamos voladores
+
+	// Añado getters. Los implemento aqui porque son muy cortos (funcion inline), asi si hay que añadir otro getter, solo toco este archivo
+	// Devuelven informacion sobre el combatiente. Son const, porque no modifican el objeto
+	// Posición
+	float x() const { return _x; }
+	float y() const { return _y; }
+	float z() const { return _z; }
+
+	// Vida
+	float vida() const { return _vida; }
+	float vidaMax() const { return _vidaMax; }
+
+	// Color (devuelvo los tres por sepaoarado para que el renderer los pase a glColor3f directamente)
+	float r() const { return _r; }
+	float g() const { return _g; }
+	float b() const { return _b; }
+
+	// Tamaño
+	float lado() const { return _lado; }
 };
