@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Combatiente.h" />
+    <ClInclude Include="InputState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Combatiente.cpp" />
