@@ -47,6 +47,21 @@ class Combatiente
 	float _dxPedido{ 0.0f };
 	float _dzPedido{ 0.0f };
 
+	// Tiempo en segundos entre ataques (cooldown)
+	float _cooldownAtaque{ 0.5f }; // puede atacar 2 veces por segundo
+
+	// Tiempo acumulado desde el ultimo ataque (se resetea a 0 cada vez que ataca)
+	float _tiempoDesdeUltimoAtaque{ 0.5f };
+
+	// Tiempo que dura la animacion de ataque (en segundos)
+	float _tiempoAnimacionAtaque{ 0.0f };
+
+	// Alcance del ataque (en unidades)
+	float _alcanceAtaque{ 1.5f };
+
+	// Daño que inflige el ataque
+	float _danoAtaque{ 12.0f };
+
 public:
 	// Constructor: crea un combatiente con la posicion y el color dados
 	Combatiente(float x, float y, float z, float r, float g, float b); // y valdra 0 siempre a no ser que metamos voladores
@@ -83,4 +98,9 @@ public:
 
 	// Avanza la simulacion un frame (aplica el movimiento, los timers,...)
 	void actualizar(float dt);
+
+	float alcanceAtaque() const { return _alcanceAtaque; }
+	float danoAtaque() const { return _danoAtaque; }
+	bool atacando() const { return _tiempoAnimacionAtaque > 0.0f; } // Devuelve true si el combatiente esta en medio de la animacion de ataque, false si no
+	bool intentarAtacar(); // Intenta iniciar un ataque. Si el cooldown ha pasado, inicia la animacion de ataque y resetea el timer, devolviendo true. Si el cooldown no ha pasado, devuelve false y no hace nada
 };

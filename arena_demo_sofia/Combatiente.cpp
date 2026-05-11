@@ -49,4 +49,24 @@ void Combatiente::actualizar(float dt)
 	// Reseteamos el movimiento pedido para el siguiente frame
 	_dxPedido = 0.0f;
 	_dzPedido = 0.0f;
+
+	// Avanzar timers de ataque
+	_tiempoDesdeUltimoAtaque += dt;
+	if (_tiempoAnimacionAtaque > 0.0f) 
+	{
+		_tiempoAnimacionAtaque -= dt;
+		if (_tiempoAnimacionAtaque < 0.0f)
+			_tiempoAnimacionAtaque = 0.0f; // Aseguramos que no baje de 0
+	}
+}
+
+bool Combatiente::intentarAtacar() 
+{
+	if (_tiempoDesdeUltimoAtaque < _cooldownAtaque)
+		return false; // El cooldown no ha pasado, no se puede atacar
+
+	// Reseteamos el timer de ataque y empezamos la animacion de ataque
+	_tiempoDesdeUltimoAtaque = 0.0f;
+	_tiempoAnimacionAtaque = 0.18f; // por ejemplo, la animacion dura 0.18 segundos
+	return true;
 }
