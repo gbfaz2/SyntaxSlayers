@@ -24,6 +24,9 @@
     <ClInclude Include="src\Tablero.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
+    <ClInclude Include="src\tablerogl.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -40,6 +43,9 @@
       <Filter>Archivos de origen</Filter>
     </ClCompile>
     <ClCompile Include="src\Tablero.cpp">
+      <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablerogl.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
   </ItemGroup>
