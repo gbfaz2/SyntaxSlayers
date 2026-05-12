@@ -23,16 +23,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="lib\ETSIDI.lib" />
-    <Library Include="lib\freeglut.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\ETSIDI.dll" />
-    <None Include="bin\fmodL.dll" />
-    <None Include="bin\freeglut.dll" />
-    <None Include="lib\ETSIDI.exp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>

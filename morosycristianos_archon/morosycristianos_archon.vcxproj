@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>lib;src;bin</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lib;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
@@ -133,7 +133,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>lib;src;bin</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lib;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
@@ -147,16 +147,6 @@
   <ItemGroup>
     <ClInclude Include="src\Tablero.h" />
     <ClInclude Include="src\tablerogl.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="lib\ETSIDI.lib" />
-    <Library Include="lib\freeglut.lib" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="bin\ETSIDI.dll" />
-    <None Include="bin\fmodL.dll" />
-    <None Include="bin\freeglut.dll" />
-    <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
