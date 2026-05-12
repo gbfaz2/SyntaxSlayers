@@ -22,7 +22,19 @@ enum TipoCasilla {
 struct Casilla {
 	TipoCasilla tipo{ Casilla_dinamica };//Inicializamos aquí en la declaración 
 };
+//con la clase tablero voy a gestionar la cuadrícula lógica de 9x9. Para ello un array estático donde vamos a fijar el tamaño N=9
 class Tablero
 {
+	Casilla tablero[9][9];// la cuadrícula que es un array estático de 9*9
+
+	void iniCasillas();
+	bool esPuntoPoder(int fila, int col) const;
+public:
+	static const int N = 9;//constante no vamos a modificarlo
+	Tablero();//destructor por defecto que llama al método iniCasillas()
+
+	int getSize() const { return N; }
+	//acceso de solo lectura a una casilla, lo usará tablerogl para saber qué color pintar. usaremos (0,0) como la esquina superior izquierda 
+	const Casilla& getCasilla(int fila, int col) const { return tablero[fila][col]; }// el valor de retorno es const para que no se pueda modificar desde fuera
 };
 
