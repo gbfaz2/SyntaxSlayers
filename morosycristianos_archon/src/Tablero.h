@@ -16,7 +16,12 @@ enum TipoCasilla {
 	Casilla_poder//uno de los 5 puntos estratégicos del tablero
 };
 
-
+//estrucura de casilla
+//vamos a crear un struct ya que todos los miembros van a ser públicos y no hay invariante que proteger
+//ahora, que primero vamos a dibujar el tablero vacio solo necesitaremos el tipo de terreno que será de tipocasilla
+struct Casilla {
+	TipoCasilla tipo{ Casilla_dinamica };//Inicializamos aquí en la declaración 
+};
 class Tablero
 {
 };
