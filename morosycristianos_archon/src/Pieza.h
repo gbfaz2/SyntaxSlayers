@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+//FALTAN LAS ARMAS
 
 //clase "madre" de la que van a nacer las clases "utiles"
 // Tipos de movimiento posible
@@ -39,7 +40,7 @@ protected: //solo pueden acceder clase Y (sus hijas)
     bool           enPuntoDePoder;  //para casillas especiales con curaciones etc especiales
 
 public:
-    // Constructor con las carcaterítsicas necesarias para las piezas
+    // Constructor con las carcaterítsicas necesarias para las piezas para inicializar
     Pieza(std::string nombre, Bando bando,
         int vidaMax, int fuerza,
         int velAtaque, int recarga, int radioMov);
@@ -50,7 +51,7 @@ public:
     //MÉTODOS:
     // Métodos virtuales puros(=0): cambian para cada pieza (los implementa a su manera)
     virtual TipoMovimiento getTipoMovimiento() const = 0; //devuelve terrestre, voladora, teleport...
-    virtual bool           puedeMoverse(int filaDestino, int colDestino) const = 0;  //comprueba si una ficha puede moverse o no a donde desea, y devuelve 1 o 0
+    virtual bool puedeMoverse(int filaDestino, int colDestino) const = 0;  //comprueba si una ficha puede moverse o no a donde desea, y devuelve 1 o 0
 
     // Métodos comunes (todos se comportan igual)
     void  recibirDanio(int danio);  //resta vida cuando la pieza es atacada en combate
