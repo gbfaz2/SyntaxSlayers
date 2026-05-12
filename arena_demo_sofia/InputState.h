@@ -28,7 +28,7 @@ struct InputState{
 
 	// Limpiamos los pulsos de ataque cada frame, para que no se queden "pillados" si el jugador pulsa una vez y luego suelta la tecla
 	void consumirAtaques() {
-		p1.atacar = false;
+		p1.atacar = false;  
 		p2.atacar = false;
 	}
 };
