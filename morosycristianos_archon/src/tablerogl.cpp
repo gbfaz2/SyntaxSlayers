@@ -168,10 +168,51 @@ void Tablerogl::DibujaCuadricula()//para delimitar el tablero del fondo
 
 void Tablerogl::KeyDown(unsigned char key)
 {
+	if (key == 27 || key == 'q' || key == 'Q') {
+		cout << "[Board] cerrando." << endl;
+		exit(0);
+	}
 }
 
-void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)
+void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
 {
+	//leemos las matrices actuales de opengl
+	GLint viewport[4];
+	GLdouble modelview[16];
+	GLdouble projection[16];
+	GLfloat winX, winY, winZ;
+	GLdouble posX, posY, posZ;
+
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	//en opengl y=0 está abajo; en la ventana arriba por lo que lo invertimos
+	winX = (float)x;
+	winY = (float)viewport[3] - (float)y;
+
+	//leemos la profundidad del píxel bajo el cursor
+	glReadPixels(x, (int)winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
+
+	//proyeccion inversa: pixel->coordenadas 3D del mundo
+	gluUnProject(winX, winY, winZ,
+		modelview, projection, viewport,
+		&posX, &posY, &posZ);
+
+	//coordenadas mundo->casilla(fila, columna)
+	world2cell(posX, posY, xcasilla_sel, ycasilla_sel);
+
+	//Estado de botones y teclas modificadoras
+	if (down) { controlKey = ctrlKey; this->shiftKey = shiftKey; }
+	else { controlKey = this->shiftKey = false; }
+
+	if (button == MOUSE_LEFT_BUTTON)leftButton = down;
+	if (button == MOUSE_RIGHT_BUTTON)rightButton = down;
+	if (button == MOUSE_MIDDLE_BUTTON)midButton = down;
+
+	//Imprimimos la casilla por consola
+	if (down && xcasilla_sel >= 0 && xcasilla_sel < N && ycasilla_sel >= 0 && ycasilla_sel < N)
+		cout << "Casilla: (" << xcasilla_sel << "," << ycasilla_sel << ")" << endl;
 }
 
 
