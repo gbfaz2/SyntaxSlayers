@@ -42,6 +42,10 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw()
 	centro_x = N * ancho / 2.0f;
 	centro_y = -N * ancho / 2.0f;
 
+
+	// Debug temporal — bórralo cuando funcione
+	cout << "[Draw] center=(" << centro_x << "," << centro_y
+		<< ") dist=" << dist << " N=" << N << " width=" << ancho << endl;
 	//ponemos un color de fondo
 	glClearColor(0.18f, 0.08f, 0.04f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
