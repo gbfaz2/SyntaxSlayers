@@ -76,11 +76,6 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw()
 	glEnable(GL_LIGHTING);//lo restauramos para las piezas 3D
 }
 
-void Tablerogl::DibujaCuadricula()
-{
-
-}
-
 void Tablerogl::DibujaCasillas()
 {
 	for (int fila = 0; fila < N; fila++) {
@@ -146,6 +141,29 @@ void Tablerogl::setCasillaColor(int fila, int col, bool dark)
 		break;
 	}
 
+}
+
+void Tablerogl::DibujaCuadricula()//para delimitar el tablero del fondo
+{
+	glColor3f(0.0f, 0.0f, 0.0f);//ponemos un color negro para todas las líneas
+	float total = N * ancho;//longitud todal del tablero
+
+	for (int i = 0; i <= N; i++) {
+		//hacemos un borde exterior más grueso
+		if (i % N == 0) glLineWidth(4.0f);//primera y última línea
+		else glLineWidth(1.0f);//líneas interiores
+
+		glBegin(GL_LINES);
+		//Línea vertical: x = i*ancho, va de arriba (y=0) a abajo (y=-total)
+		glVertex3f(i * ancho, 0.0f, 0.0f);
+		glVertex3f(i * ancho, -total, 0.0f);
+
+		//Linea horizontal: y = -i*ancho, va de izq (x=0) a derecha (x=total)
+		glVertex3f(0.0f, -i * ancho, 0.0f);
+		glVertex3f(total, -i * ancho, 0.0f);
+		glEnd();
+	}
+	glLineWidth(1.0f);//restauramos el grosor por defecto
 }
 
 void Tablerogl::KeyDown(unsigned char key)
