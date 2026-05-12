@@ -118,6 +118,34 @@ void Tablerogl::DibujaCasilla(int fila, int col)
 
 void Tablerogl::setCasillaColor(int fila, int col, bool dark)
 {
+	TipoCasilla tipo = m_tablero->getCasilla(fila, col).tipo;
+	
+	//puntos de poder de momento serán siempre dorados
+	if (tipo == Casilla_poder) {
+		glColor3f(1.0f, 0.82f, 0.10f);
+		return;
+	}
+
+	//para el resto, primero elegimos el par de colores según la zona y luego cuák de los dos usar según dark de dibujarcasillas
+	switch (tipo) {
+	case Casilla_local:
+	case Casilla_rival:
+		if (!dark)
+			glColor3f(0.45f, 0.65f, 0.85f); 
+		else
+			glColor3f(0.15f, 0.30f, 0.55f);
+		break;
+	case Casilla_dinamica:
+		if (!dark)
+			glColor3f(0.75f, 0.88f, 1.00f);
+		else
+			glColor3f(0.50f, 0.72f, 0.90f);
+		break;
+	default:
+		glColor3f(1.0f, 1.0f, 1.00f);//ponemos un blanco por seguridad
+		break;
+	}
+
 }
 
 void Tablerogl::KeyDown(unsigned char key)
