@@ -120,7 +120,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib,bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ETSIDI.lib; freeglut.lib; glut32.lib</AdditionalDependencies>
+      <AdditionalDependencies>ETSIDI.lib; freeglut.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir).vs\tmp\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
@@ -140,20 +140,18 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib,bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ETSIDI.lib; freeglut.lib; glut32.lib</AdditionalDependencies>
+      <AdditionalDependencies>ETSIDI.lib; freeglut.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir).vs\tmp\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
-    <ClInclude Include="lib\glut.h" />
     <ClInclude Include="src\Tablero.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
     <Library Include="lib\freeglut.lib" />
-    <Library Include="lib\glut32.lib" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\ETSIDI.dll" />
