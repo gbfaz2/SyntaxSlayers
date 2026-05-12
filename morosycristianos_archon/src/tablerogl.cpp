@@ -78,15 +78,42 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw()
 
 void Tablerogl::DibujaCuadricula()
 {
+
 }
 
 void Tablerogl::DibujaCasillas()
 {
+	for (int fila = 0; fila < N; fila++) {
+		for (int col = 0; col < N; col++) {
+			//¿es una casilla clara u oscura?
+			bool dark = (fila + col) % 2 == 1;//es impar
+			//elegimos el color en función del tipo
+			setCasillaColor(fila,col,dark);
+
+			//Dibujamos la casilla
+			DibujaCasilla(fila, col);
+		}
+	}
 
 }
 
 void Tablerogl::DibujaCasilla(int fila, int col)
 {
+	//como la cuadrícula la vamos a dibujar z=0, las casillas las vamos a dibujar un pelín por detrás
+	float x0 = col * ancho;//borde izq
+	float x1 = x0 + ancho;//borde derecho
+	float y0 = -fila * ancho;//borde superior(y negativa porque crecce abajo)
+	float y1 = y0 - ancho;
+
+	glBegin(GL_QUADS);
+	glNormal3f(0.0f, 0.0f, 1.0f);//apunta hacia la cámara
+
+	glVertex3f(x0, y0, -0.001f);//superior izq
+	glVertex3f(x1, y0, -0.001f);//superior dcha
+	glVertex3f(x1, y1, -0.001f);//inferior dcha
+	glVertex3f(x0, y1, -0.001f);//inferior izq
+
+	glEnd();
 }
 
 void Tablerogl::setCasillaColor(int fila, int col, bool dark)
