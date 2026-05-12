@@ -8,5 +8,33 @@ enum {KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT};
 
 class Tablerogl
 {
+protected:
+	float ancho;
+	int N;
+	Tablero* m_tablero;
+
+	double centro_x, centro_y, centro_z;
+	double dist;
+
+	int xcasilla_sel, ycasilla_sel;
+	bool controlKey, shiftKey;
+	bool leftButton, rightButton, midButton;
+public:
+	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
+	virtual ~Tablerogl(){}//destructor virtual
+
+	void init(); //Luces más perspectiva desde donde lo vamos a ver
+	void Dibuja();//casillas y cuadrícula
+	void DibujaCuadricula();
+	void DibujaCasillas();//recorre 9x9 y pinta cada casilla
+	void DibujaCasilla(int fila, int col); //Dibuja un quad de relleno
+	void setCasillaColor(int fila, int col, bool dark);//Elige el color que tiene que tener la casilla correspondiente
+
+	void KeyDown(unsigned char key);
+	void MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
+
+	//conversores de coordenadas cogidas del repositorio de Pablo
+	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);
+	void world2cell(double x, double y, int& casilla_x, int& casilla_y);//dado un punto (x,y) en coordenadas opengl, devuelve la fila y columna del tablero
 };
 
