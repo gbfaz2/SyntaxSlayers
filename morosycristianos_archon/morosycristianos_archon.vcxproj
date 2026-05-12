@@ -141,10 +141,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Hechicero.cpp" />
+    <ClCompile Include="PiezaTeleporte.cpp" />
+    <ClCompile Include="PiezaTerrestre.cpp" />
+    <ClCompile Include="PiezaVoladora.cpp" />
+    <ClCompile Include="Rey.cpp" />
     <ClCompile Include="src\morosycristianos_archon.cpp" />
     <ClCompile Include="src\Pieza.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Hechicero.h" />
+    <ClInclude Include="PiezaTeleporte.h" />
+    <ClInclude Include="PiezaTerrestre.h" />
+    <ClInclude Include="PiezaVoladora.h" />
+    <ClInclude Include="Rey.h" />
     <ClInclude Include="src\Pieza.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
