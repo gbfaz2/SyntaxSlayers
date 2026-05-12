@@ -20,7 +20,7 @@ bool PiezaTerrestre::puedeMoverse(int filaDestino, int colDestino) const {
     // No puede moverse en diagonal
     // y no puede moverse más casillas que su radioMov
     if (difFila > 0 && difColumna > 0) return false;  // si intenta mover ambas fila y columna a la vez, diagonal, no permitido
-    if (difFila + difColumna > radioMov) return false; // supera su radio max, lejos
+    if (difFila > radioMov || difColumna > radioMov) return false; // supera su radio max, lejos
 
     return true; //permite moverse
 }
