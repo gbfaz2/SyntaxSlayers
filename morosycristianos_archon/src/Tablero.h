@@ -27,7 +27,7 @@ class Tablero
 {
 	Casilla tablero[9][9];// la cuadrícula que es un array estático de 9*9
 
-	void iniCasillas();
+	void iniCasillas();//asigna tipos de casilla
 	bool esPuntoPoder(int fila, int col) const;
 public:
 	static const int N = 9;//constante no vamos a modificarlo
