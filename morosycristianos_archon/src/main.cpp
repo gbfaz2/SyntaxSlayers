@@ -1,116 +1,116 @@
-// main.cpp
+
 // Autor: Ines Alcérreca Sánchez
-// Integra el menu (Ines) con el tablero (Maria)
+// Punto de entrada del juego, gestión de estados y callbacks de GLUT
 
 #include "freeglut.h"
-#include "gamestate.h"
+#include "estadojuego.h"
 #include "menu.h"
 #include "tablerogl.h"
 #include "Tablero.h"
 
-// ─── Ventana ─────────────────────────────────────────────────
-int W = 800, H = 600;
+//Tamaño de la ventana
+int anchoVentana = 800;
+int altoVentana  = 600;
 
-// ─── Estado ──────────────────────────────────────────────────
-GameState  g_state = GameState::E_INTRO;
-GameConfig g_cfg;
 
-// ─── Objetos de pantalla ─────────────────────────────────────
-IntroScreen  g_intro;
-MainMenu     g_menu;
+EstadoJuego   estadoActual = EstadoJuego::INTRO;
+ConfigPartida configuracion;
+PantallaIntro  pantallaIntro;
+MenuPrincipal  menuPrincipal;
+Tablero*    pTablero    = nullptr;
+Tablerogl*  pTablerogl  = nullptr;
 
-// Tablero de Maria (se inicializa al entrar a E_TABLERO)
-Tablero*     g_tablero  = nullptr;
-Tablerogl*   g_tablerogl = nullptr;
+// Callbacks de GLUT
+void OnDibujar();
+void OnTeclado(unsigned char tecla, int x, int y);
+void OnTeclaEspecial(int tecla, int x, int y);
+void OnRaton(int boton, int estado, int x, int y);
+void OnRatonMovido(int x, int y);
+void OnRedimensionar(int ancho, int alto);
+void OnTemporizador(int valor);
 
-// ─── Callbacks ───────────────────────────────────────────────
-void OnDraw();
-void OnKeyboard(unsigned char key, int x, int y);
-void OnSpecial(int key, int x, int y);
-void OnMouse(int button, int state, int x, int y);
-void OnMouseMove(int x, int y);
-void OnReshape(int w, int h);
-void OnTimer(int v);
-
-// ═════════════════════════════════════════════════════════════
 int main(int argc, char* argv[]) {
     glutInit(&argc, argv);
-    glutInitWindowSize(W, H);
+    glutInitWindowSize(anchoVentana, altoVentana);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutCreateWindow("Moros y Cristianos - SyntaxSlayers");
 
-    glutDisplayFunc(OnDraw);
-    glutKeyboardFunc(OnKeyboard);
-    glutSpecialFunc(OnSpecial);
-    glutMouseFunc(OnMouse);
-    glutPassiveMotionFunc(OnMouseMove);
-    glutReshapeFunc(OnReshape);
-    glutTimerFunc(16, OnTimer, 0);
+    glutDisplayFunc(OnDibujar);
+    glutKeyboardFunc(OnTeclado);
+    glutSpecialFunc(OnTeclaEspecial);
+    glutMouseFunc(OnRaton);
+    glutPassiveMotionFunc(OnRatonMovido);
+    glutReshapeFunc(OnRedimensionar);
+	glutTimerFunc(16, OnTemporizador, 0);   // Fuerza redibujo cada 16 ms
 
     glClearColor(0, 0, 0, 1);
     glutMainLoop();
     return 0;
 }
 
-void OnTimer(int v) {
+// Temporizador: fuerza redibujo cada frame
+void OnTemporizador(int valor) {
     glutPostRedisplay();
-    glutTimerFunc(16, OnTimer, 0);
+    glutTimerFunc(16, OnTemporizador, 0);
 }
 
-void OnReshape(int w, int h) {
-    W = w; H = (h == 0 ? 1 : h);
-    glViewport(0, 0, W, H);
+// Redimensionado de ventana
+void OnRedimensionar(int ancho, int alto) {
+    anchoVentana = ancho;
+    altoVentana  = (alto == 0) ? 1 : alto;
+    glViewport(0, 0, anchoVentana, altoVentana);
 }
 
-// ═════════════════════════════════════════════════════════════
-//  OnDraw
-// ═════════════════════════════════════════════════════════════
-void OnDraw() {
+// Dibujo principal: enruta según el estado actual
+void OnDibujar() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    switch (g_state) {
+    switch (estadoActual) {
 
-    case GameState::E_INTRO:
-        g_intro.draw(W, H);
-        if (g_intro.wantsTransition()) {
-            g_intro.reset();
-            g_menu.reset();
-            g_state = GameState::E_MENU;
+    // INTRO 
+    case EstadoJuego::INTRO:
+        pantallaIntro.dibujar(anchoVentana, altoVentana);
+        if (pantallaIntro.terminado()) {
+            pantallaIntro.reiniciar();
+            menuPrincipal.reiniciar();
+            estadoActual = EstadoJuego::MENU;
         }
         break;
 
-    case GameState::E_MENU:
-        g_menu.draw(W, H);
-        if (g_menu.wantsTransition()) {
-            GameState next = g_menu.nextState();
-            g_cfg = g_menu.getConfig();
-            if (next == GameState::E_GAMEOVER) exit(0);
-            if (next == GameState::E_TABLERO) {
-                // Inicializar tablero de Maria
-                if (!g_tablero) {
-                    g_tablero   = new Tablero();
-                    g_tablerogl = new Tablerogl(g_tablero);
-                    g_tablerogl->init();
+    // MENU 
+    case EstadoJuego::MENU:
+        menuPrincipal.dibujar(anchoVentana, altoVentana);
+        if (menuPrincipal.terminado()) {
+            EstadoJuego siguiente = menuPrincipal.siguienteEstado();
+            configuracion = menuPrincipal.getConfiguracion();
+
+            if (siguiente == EstadoJuego::FINAL) exit(0); 
+
+            if (siguiente == EstadoJuego::TABLERO) {
+                if (!pTablero) {
+                    pTablero   = new Tablero();
+                    pTablerogl = new Tablerogl(pTablero);
+                    pTablerogl->init();
                 }
             }
-            g_state = next;
+            estadoActual = siguiente;
         }
         break;
 
-    case GameState::E_TABLERO:
-        if (g_tablerogl) g_tablerogl->Dibuja();
+    case EstadoJuego::TABLERO:
+        if (pTablerogl) pTablerogl->Dibuja();
         break;
 
-    case GameState::E_ARENA:
-        // TODO: arena
+    case EstadoJuego::ARENA:
+        // TODO: arena de combate
         break;
 
-    case GameState::E_RANKING:
-        // TODO: ranking (Alba)
+    case EstadoJuego::RANKING:
+        // TODO: pantalla de ranking
         break;
 
-    case GameState::E_GAMEOVER:
-        // TODO: pantalla final (Ines)
+    case EstadoJuego::FINAL:
+        // TODO: pantalla de fin de partida
         break;
 
     default: break;
@@ -119,52 +119,53 @@ void OnDraw() {
     glutSwapBuffers();
 }
 
-// ═════════════════════════════════════════════════════════════
-//  Teclado
-// ═════════════════════════════════════════════════════════════
-void OnKeyboard(unsigned char key, int x, int y) {
-    switch (g_state) {
-    case GameState::E_INTRO:
-        g_intro.skip();
+// TECLADO
+void OnTeclado(unsigned char tecla, int x, int y) {
+    switch (estadoActual) {
+    case EstadoJuego::INTRO:
+        pantallaIntro.saltar();
         break;
-    case GameState::E_MENU:
-        g_menu.keyDown(key);
+    case EstadoJuego::MENU:
+        menuPrincipal.teclaPulsada(tecla);
         break;
-    case GameState::E_TABLERO:
-        if (key == 27) { g_menu.reset(); g_state = GameState::E_MENU; break; }
-        if (g_tablerogl) g_tablerogl->KeyDown(key);
+    case EstadoJuego::TABLERO:
+        if (tecla == 27) { menuPrincipal.reiniciar(); estadoActual = EstadoJuego::MENU; break; }
+        if (pTablerogl) pTablerogl->KeyDown(tecla);
         break;
     default:
-        if (key == 27) { g_menu.reset(); g_state = GameState::E_MENU; }
+        if (tecla == 27) { menuPrincipal.reiniciar(); estadoActual = EstadoJuego::MENU; }
         break;
     }
     glutPostRedisplay();
 }
 
-void OnSpecial(int key, int x, int y) {
-    if (g_state == GameState::E_MENU) g_menu.specialKey(key);
+// TECLAS ESPECIALES (Flechas, etc)
+void OnTeclaEspecial(int tecla, int x, int y) {
+    if (estadoActual == EstadoJuego::MENU)
+        menuPrincipal.teclaEspecial(tecla);
     glutPostRedisplay();
 }
 
-// ═════════════════════════════════════════════════════════════
-//  Raton
-// ═════════════════════════════════════════════════════════════
-void OnMouse(int button, int state, int x, int y) {
-    bool down = (state == GLUT_DOWN);
-    if (!down) return;
-    switch (g_state) {
-    case GameState::E_INTRO:
-        g_intro.skip();
+// RATON 
+void OnRaton(int boton, int estado, int x, int y) {
+    bool pulsado = (estado == GLUT_DOWN);
+    if (!pulsado) return;
+
+    switch (estadoActual) {
+    case EstadoJuego::INTRO:
+		pantallaIntro.saltar(); // cualquier click salta la intro
         break;
-    case GameState::E_MENU:
-        if (button == GLUT_LEFT_BUTTON) g_menu.mouseClick(x, y, W, H);
+    case EstadoJuego::MENU:
+        if (boton == GLUT_LEFT_BUTTON)
+            menuPrincipal.ratonPulsado(x, y, anchoVentana, altoVentana);
         break;
-    case GameState::E_TABLERO:
-        if (g_tablerogl) {
+    case EstadoJuego::TABLERO:
+        if (pTablerogl) {
             bool ctrl  = (glutGetModifiers() & GLUT_ACTIVE_CTRL)  != 0;
             bool shift = (glutGetModifiers() & GLUT_ACTIVE_SHIFT) != 0;
-            int  btn   = (button == GLUT_LEFT_BUTTON) ? MOUSE_LEFT_BUTTON : MOUSE_RIGHT_BUTTON;
-            g_tablerogl->MouseButton(x, y, btn, down, shift, ctrl);
+            int  btn   = (boton == GLUT_LEFT_BUTTON) ?
+                         MOUSE_LEFT_BUTTON : MOUSE_RIGHT_BUTTON;
+            pTablerogl->MouseButton(x, y, btn, pulsado, shift, ctrl);
         }
         break;
     default: break;
@@ -172,7 +173,9 @@ void OnMouse(int button, int state, int x, int y) {
     glutPostRedisplay();
 }
 
-void OnMouseMove(int x, int y) {
-    if (g_state == GameState::E_MENU) g_menu.mouseMove(x, y, W, H);
+// RATON MOVIDO (sin pulsar botones)
+void OnRatonMovido(int x, int y) {
+    if (estadoActual == EstadoJuego::MENU)
+        menuPrincipal.ratonMovido(x, y, anchoVentana, altoVentana);
     glutPostRedisplay();
 }

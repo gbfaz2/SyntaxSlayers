@@ -1,72 +1,82 @@
-// menu.h
+
 // Autor: Ines Alcérreca Sánchez
+// Pantallas E_INTRO y E_MENU 
+
 #pragma once
-#include "gamestate.h"
+#include "estadojuego.h"
 #include <string>
 
-// ─── Texto con glut bitmap fonts ────────────────────────────
-// Funcion auxiliar compartida por Intro y Menu
-void drawTexto(const std::string& texto, float x, float y,
-               float r, float g, float b, void* fuente = nullptr);
 
-void drawRect(float x, float y, float w, float h,
-              float r, float g, float b, float a = 1.0f);
+void dibujarTexto(const std::string& texto, float x, float y,
+                  float r, float g, float b, void* fuente = nullptr);
 
-void drawRectBorde(float x, float y, float w, float h,
-                   float r, float g, float b, float grosor = 2.0f);
+void dibujarTextoCentrado(const std::string& texto, float cx, float y,
+                           float r, float g, float b, void* fuente = nullptr);
 
-void entrar2D(int w, int h);
+void dibujarRectangulo(float x, float y, float ancho, float alto,
+                       float r, float g, float b, float alfa = 1.0f);
+
+void dibujarBorde(float x, float y, float ancho, float alto,
+                  float r, float g, float b, float grosor = 2.0f);
+
+void entrar2D(int ancho, int alto);
 void salir2D();
 
-// ═══════════════════════════════════════════════════════════
-//  E_INTRO
-// ═══════════════════════════════════════════════════════════
-class IntroScreen {
+
+//  PantallaIntro  (E_INTRO)
+class PantallaIntro {
 public:
-    IntroScreen();
-    void draw(int w, int h);
-    void skip();
-    bool wantsTransition() const { return m_done; }
-    void reset();
+    PantallaIntro();
+
+    void dibujar(int ancho, int alto);
+    void saltar();
+
+    bool terminado() const { return m_terminado; }
+    void reiniciar();
+
 private:
-    int  m_frame;
-    bool m_done;
-    static const int FRAMES = 250; // ~4 seg a 60fps
+    int  m_fotograma;
+    bool m_terminado;
+
+	static const int DURACION = 250; // fotogramas (aprox 4 segundos a 60 fps)
 };
 
-// ═══════════════════════════════════════════════════════════
-//  E_MENU
-// ═══════════════════════════════════════════════════════════
-class MainMenu {
-public:
-    MainMenu();
-    void draw(int w, int h);
-    void keyDown(unsigned char key);
-    void specialKey(int key);
-    void mouseMove(int x, int y, int w, int h);
-    void mouseClick(int x, int y, int w, int h);
 
-    bool       wantsTransition() const { return m_done; }
-    GameState  nextState()       const { return m_nextState; }
-    GameConfig getConfig()       const { return m_cfg; }
-    void reset();
+//  MenuPrincipal  (E_MENU)
+class MenuPrincipal {
+public:
+    MenuPrincipal();
+
+    void dibujar(int ancho, int alto);
+    void teclaPulsada(unsigned char tecla);
+    void teclaEspecial(int tecla);
+    void ratonMovido(int x, int y, int ancho, int alto);
+    void ratonPulsado(int x, int y, int ancho, int alto);
+
+    bool          terminado()    const { return m_terminado; }
+    EstadoJuego   siguienteEstado() const { return m_siguiente; }
+    ConfigPartida getConfiguracion() const { return m_cfg; }
+
+    void reiniciar();
 
 private:
-    int        m_paso;   // 0=modo, 1=bando, 2=confirmar
-    int        m_sel;
-    int        m_frame;
-    bool       m_done;
-    GameState  m_nextState;
-    GameConfig m_cfg;
+    int           m_paso;       // 0=modo, 1=bando, 2=confirmar
+    int           m_seleccion;  // opcion resaltada
+    int           m_fotograma;
+    bool          m_terminado;
+    EstadoJuego   m_siguiente;
+    ConfigPartida m_cfg;
 
-    void drawFondo(int w, int h);
-    void drawTitulo(int w, int h);
-    void drawPaso0(int w, int h);
-    void drawPaso1(int w, int h);
-    void drawPaso2(int w, int h);
-    void drawPie(int w, int h);
-    void drawOpcion(const std::string& txt, float x, float y,
-                    float bw, float bh, bool sel);
+    void dibujarFondo(int ancho, int alto);
+    void dibujarTitulo(int ancho, int alto);
+    void dibujarPaso0(int ancho, int alto);   // seleccion de modo
+    void dibujarPaso1(int ancho, int alto);   // seleccion de bando
+    void dibujarPaso2(int ancho, int alto);   // confirmacion
+    void dibujarPie(int ancho, int alto);
+
+    void dibujarOpcion(const std::string& texto, float x, float y,
+                       float ancho, float alto, bool seleccionada);
+
     void confirmar();
-    int  maxSel() const { return (m_paso == 0) ? 4 : 2; }
+    int  maxOpciones() const { return (m_paso == 0) ? 4 : 2; }
 };

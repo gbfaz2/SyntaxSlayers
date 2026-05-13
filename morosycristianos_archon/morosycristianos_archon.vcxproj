@@ -145,7 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\gamestate.h" />
+    <ClInclude Include="src\estadojuego.h" />
     <ClInclude Include="src\menu.h" />
     <ClInclude Include="src\Tablero.h" />
     <ClInclude Include="src\tablerogl.h" />

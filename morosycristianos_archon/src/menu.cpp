@@ -1,21 +1,18 @@
-// menu.cpp
+
 // Autor: Ines Alcérreca Sánchez
-// Solo usa OpenGL + freeglut, igual que el resto del proyecto
+// Implementación de las pantallas de introducción y menú principal
 
 #include "menu.h"
 #include "freeglut.h"
 #include <cmath>
 #include <string>
 
-// ─────────────────────────────────────────────────────────────
-//  Helpers globales
-// ─────────────────────────────────────────────────────────────
-
-void entrar2D(int w, int h) {
+//  Funciones auxiliares de dibujo
+void entrar2D(int ancho, int alto) {
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
     glLoadIdentity();
-    gluOrtho2D(0, w, 0, h);   // (0,0) = esquina inferior-izquierda
+    gluOrtho2D(0, ancho, 0, alto);  // (0,0) = esquina inferior izquierda
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glLoadIdentity();
@@ -32,9 +29,8 @@ void salir2D() {
     glPopMatrix();
 }
 
-// Dibuja texto con fuente bitmap de GLUT en posicion (x,y) OpenGL
-void drawTexto(const std::string& texto, float x, float y,
-               float r, float g, float b, void* fuente) {
+void dibujarTexto(const std::string& texto, float x, float y,
+                  float r, float g, float b, void* fuente) {
     if (!fuente) fuente = GLUT_BITMAP_HELVETICA_18;
     glColor3f(r, g, b);
     glRasterPos2f(x, y);
@@ -42,95 +38,99 @@ void drawTexto(const std::string& texto, float x, float y,
         glutBitmapCharacter(fuente, c);
 }
 
-// Dibuja texto centrado horizontalmente
-static void drawTextoCentrado(const std::string& texto, float cx, float y,
-                               float r, float g, float b, void* fuente = nullptr) {
+void dibujarTextoCentrado(const std::string& texto, float cx, float y,
+                           float r, float g, float b, void* fuente) {
     if (!fuente) fuente = GLUT_BITMAP_HELVETICA_18;
     int ancho = glutBitmapLength((unsigned char*)fuente,
                                  (const unsigned char*)texto.c_str());
-    drawTexto(texto, cx - ancho / 2.0f, y, r, g, b, fuente);
+    dibujarTexto(texto, cx - ancho / 2.0f, y, r, g, b, fuente);
 }
 
-void drawRect(float x, float y, float w, float h,
-              float r, float g, float b, float a) {
+void dibujarRectangulo(float x, float y, float ancho, float alto,
+                       float r, float g, float b, float alfa) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(r, g, b, a);
+    glColor4f(r, g, b, alfa);
     glBegin(GL_QUADS);
-        glVertex2f(x,     y);
-        glVertex2f(x + w, y);
-        glVertex2f(x + w, y + h);
-        glVertex2f(x,     y + h);
+        glVertex2f(x, y);
+        glVertex2f(x + ancho, y);
+        glVertex2f(x + ancho, y + alto);
+        glVertex2f(x, y + alto);
     glEnd();
     glDisable(GL_BLEND);
 }
 
-void drawRectBorde(float x, float y, float w, float h,
-                   float r, float g, float b, float grosor) {
+void dibujarBorde(float x, float y, float ancho, float alto,
+                  float r, float g, float b, float grosor) {
     glLineWidth(grosor);
     glColor3f(r, g, b);
     glBegin(GL_LINE_LOOP);
-        glVertex2f(x,     y);
-        glVertex2f(x + w, y);
-        glVertex2f(x + w, y + h);
-        glVertex2f(x,     y + h);
+        glVertex2f(x, y);
+        glVertex2f(x + ancho, y);
+        glVertex2f(x + ancho, y + alto);
+        glVertex2f(x, y + alto);
     glEnd();
     glLineWidth(1.0f);
 }
 
-// ═════════════════════════════════════════════════════════════
-//  IntroScreen
-// ═════════════════════════════════════════════════════════════
+//PANTALLA INTRO 
+PantallaIntro::PantallaIntro() { reiniciar(); }
 
-IntroScreen::IntroScreen() { reset(); }
+// Dibujo principal
+void PantallaIntro::reiniciar() {
+    m_fotograma = 0;
+    m_terminado = false;
+}
 
-void IntroScreen::reset() { m_frame = 0; m_done = false; }
+// Permite saltar la intro al pulsar cualquier tecla
+void PantallaIntro::saltar() {
+    m_terminado = true;
+}
 
-void IntroScreen::skip() { m_done = true; }
+// Dibuja el fondo negro
+void PantallaIntro::dibujar(int ancho, int alto) {
+    m_fotograma++;
+    if (m_fotograma >= DURACION) { m_terminado = true; return; }
 
-void IntroScreen::draw(int w, int h) {
-    m_frame++;
-    if (m_frame >= FRAMES) { m_done = true; return; }
+    // Calculo del alfa para fade-in y fade-out
+    float t = m_fotograma / (float)DURACION;
+    float alfa = 1.0f;
+    if (t < 0.25f)      alfa = t / 0.25f;
+    else if (t > 0.75f) alfa = (1.0f - t) / 0.25f;
 
-    // Alpha: fade-in primer cuarto, fade-out ultimo cuarto
-    float t = m_frame / (float)FRAMES;
-    float alpha = 1.0f;
-    if (t < 0.25f)       alpha = t / 0.25f;
-    else if (t > 0.75f)  alpha = (1.0f - t) / 0.25f;
-
-    entrar2D(w, h);
+    entrar2D(ancho, alto);
 
     // Fondo negro
-    drawRect(0, 0, (float)w, (float)h, 0, 0, 0, 1.0f);
+    dibujarRectangulo(0, 0, (float)ancho, (float)alto, 0, 0, 0, 1.0f);
 
-    // Titulo
-    glColor4f(0.85f * alpha, 0.70f * alpha, 0.10f * alpha, alpha);
+    // Titulo principal
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     std::string titulo = "MOROS Y CRISTIANOS";
     int tw = glutBitmapLength((unsigned char*)GLUT_BITMAP_TIMES_ROMAN_24,
                               (const unsigned char*)titulo.c_str());
-    glRasterPos2f(w / 2.0f - tw / 2.0f, h / 2.0f + 30);
+    glColor4f(0.85f * alfa, 0.70f * alfa, 0.10f * alfa, alfa);
+    glRasterPos2f(ancho / 2.0f - tw / 2.0f, alto / 2.0f + 30);
     for (char c : titulo)
         glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
 
     // Subtitulo
-    glColor4f(0.85f * alpha, 0.85f * alpha, 0.85f * alpha, alpha);
     std::string sub = "La Reconquista";
     int sw = glutBitmapLength((unsigned char*)GLUT_BITMAP_HELVETICA_18,
                               (const unsigned char*)sub.c_str());
-    glRasterPos2f(w / 2.0f - sw / 2.0f, h / 2.0f);
+    glColor4f(0.85f * alfa, 0.85f * alfa, 0.85f * alfa, alfa);
+    glRasterPos2f(ancho / 2.0f - sw / 2.0f, alto / 2.0f);
     for (char c : sub)
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
 
-    // "Pulsa cualquier tecla" (parpadea en la segunda mitad)
-    if (m_frame > FRAMES / 2) {
-        float parpadeo = (sinf(m_frame * 0.15f) + 1.0f) * 0.5f * alpha;
-        glColor4f(0.7f, 0.7f, 0.7f, parpadeo);
+    // Texto de skip (parpadea en la segunda mitad)
+    if (m_fotograma > DURACION / 2) {
+        float parpadeo = (sinf(m_fotograma * 0.1f) + 1.0f) * 0.5f * alfa; //si quiero q parpadee más rápido aumento la frecuencia del seno
         std::string skip = "Pulsa cualquier tecla para continuar";
         int pk = glutBitmapLength((unsigned char*)GLUT_BITMAP_HELVETICA_12,
                                   (const unsigned char*)skip.c_str());
-        glRasterPos2f(w / 2.0f - pk / 2.0f, h / 4.0f);
+        glColor4f(0.7f, 0.7f, 0.7f, parpadeo);
+        glRasterPos2f(ancho / 2.0f - pk / 2.0f, alto / 4.0f);
         for (char c : skip)
             glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, c);
     }
@@ -139,189 +139,222 @@ void IntroScreen::draw(int w, int h) {
     salir2D();
 }
 
-// ═════════════════════════════════════════════════════════════
-//  MainMenu
-// ═════════════════════════════════════════════════════════════
 
-MainMenu::MainMenu() { reset(); }
+//  PANTALLA MENU PRINCIPAL
 
-void MainMenu::reset() {
-    m_paso = 0; m_sel = 0; m_frame = 0;
-    m_done = false;
-    m_nextState = GameState::E_MENU;
-    m_cfg = GameConfig();
+MenuPrincipal::MenuPrincipal() { reiniciar(); }
+
+void MenuPrincipal::reiniciar() {
+	m_paso = 0; // 0=modo, 1=bando, 2=confirmar
+	m_seleccion = 0; // opcion resaltada
+	m_fotograma = 0; // para animaciones
+	m_terminado = false; // cuando el jugador confirma, se marca como terminado para que el main cambie de estado
+	m_siguiente = EstadoJuego::MENU; // el estado al que se pasará cuando termine (puede ser MENU, TABLERO, ARENA, RANKING...)
+	m_cfg = ConfigPartida(); // configuración de partida (modo, bando, batalla, turno1)
 }
 
-// ─── draw principal ──────────────────────────────────────────
-void MainMenu::draw(int w, int h) {
-    m_frame++;
-    entrar2D(w, h);
-    drawFondo(w, h);
-    drawTitulo(w, h);
+// Dibujo principal 
+void MenuPrincipal::dibujar(int ancho, int alto) {
+    m_fotograma++;
+    entrar2D(ancho, alto);
+    dibujarFondo(ancho, alto);
+    dibujarTitulo(ancho, alto);
     switch (m_paso) {
-        case 0: drawPaso0(w, h); break;
-        case 1: drawPaso1(w, h); break;
-        case 2: drawPaso2(w, h); break;
+        case 0: dibujarPaso0(ancho, alto); break;
+        case 1: dibujarPaso1(ancho, alto); break;
+        case 2: dibujarPaso2(ancho, alto); break;
     }
-    drawPie(w, h);
+    dibujarPie(ancho, alto); 
     salir2D();
 }
 
-void MainMenu::drawFondo(int w, int h) {
-    // Degradado: azul oscuro arriba -> rojo oscuro abajo
+//Fondo degradado
+void MenuPrincipal::dibujarFondo(int ancho, int alto) {
     glBegin(GL_QUADS);
-        glColor3f(0.05f, 0.05f, 0.22f); glVertex2f(0, h);
-        glColor3f(0.05f, 0.05f, 0.22f); glVertex2f(w, h);
-        glColor3f(0.18f, 0.03f, 0.03f); glVertex2f(w, 0);
+        glColor3f(0.05f, 0.05f, 0.22f); glVertex2f(0, alto);
+        glColor3f(0.05f, 0.05f, 0.22f); glVertex2f(ancho, alto);
+        glColor3f(0.18f, 0.03f, 0.03f); glVertex2f(ancho, 0);
         glColor3f(0.18f, 0.03f, 0.03f); glVertex2f(0, 0);
     glEnd();
-    // Linea dorada central
+    // Linea dorada separadora
     glLineWidth(2.0f);
     glColor3f(0.85f, 0.70f, 0.10f);
     glBegin(GL_LINES);
-        glVertex2f(w * 0.05f, h * 0.75f);
-        glVertex2f(w * 0.95f, h * 0.75f);
+        glVertex2f(ancho * 0.05f, alto * 0.70f);
+        glVertex2f(ancho * 0.95f, alto * 0.70f);
     glEnd();
     glLineWidth(1.0f);
 }
 
-void MainMenu::drawTitulo(int w, int h) {
-    float br = (sinf(m_frame * 0.04f) + 1.0f) * 0.12f;
-    drawTextoCentrado("MOROS Y CRISTIANOS", w / 2.0f, h - 70,
-                      0.85f + br, 0.70f + br * 0.5f, 0.10f,
-                      GLUT_BITMAP_TIMES_ROMAN_24);
-    drawTextoCentrado("- La Reconquista -", w / 2.0f, h - 100,
-                      0.75f, 0.75f, 0.75f,
-                      GLUT_BITMAP_HELVETICA_12);
+// Titulo con brillo animado
+void MenuPrincipal::dibujarTitulo(int ancho, int alto) {
+    float brillo = (sinf(m_fotograma * 0.04f) + 1.0f) * 0.12f;
+    dibujarTextoCentrado("MOROS Y CRISTIANOS", ancho / 2.0f, alto - 70,
+                         0.85f + brillo, 0.70f + brillo * 0.5f, 0.10f,
+                         GLUT_BITMAP_TIMES_ROMAN_24);
+    dibujarTextoCentrado("- La Reconquista -", ancho / 2.0f, alto - 100,
+                         0.75f, 0.75f, 0.75f,
+                         GLUT_BITMAP_HELVETICA_12);
 }
 
-void MainMenu::drawPaso0(int w, int h) {
-    drawTextoCentrado("Selecciona el modo de juego:", w / 2.0f, h - 135,
-                      0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
+// Paso 0: seleccion de modo 
+void MenuPrincipal::dibujarPaso0(int ancho, int alto) {
+    dibujarTextoCentrado("Selecciona el modo de juego:", ancho / 2.0f, alto - 135,
+                         0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
 
-    float bw = 280, bh = 44, gap = 14;
-    float sx = w / 2.0f - bw / 2.0f;
-    float sy = h / 2.0f + 60;
+    float aw = 280, ah = 44, separacion = 14;
+    float sx = ancho / 2.0f - aw / 2.0f;
+    float sy = alto  / 2.0f + 60;
 
-    const char* opts[] = { "  Jugador vs Jugador",
-                            "  Jugador vs IA",
-                            "  Ranking",
-                            "  Salir" };
+    const char* opciones[] = {
+        "  Jugador vs Jugador",
+        "  Jugador vs IA",
+        "  Ranking",
+        "  Salir"
+    };
     for (int i = 0; i < 4; i++)
-        drawOpcion(opts[i], sx, sy - i * (bh + gap), bw, bh, m_sel == i);
+        dibujarOpcion(opciones[i], sx, sy - i * (ah + separacion),
+                      aw, ah, m_seleccion == i);
 }
 
-void MainMenu::drawPaso1(int w, int h) {
-    std::string modotxt = (m_cfg.mode == GameMode::PVP) ?
+// Paso 1: seleccion de bando
+void MenuPrincipal::dibujarPaso1(int ancho, int alto) {
+    std::string modotxt = (m_cfg.modo == ModoJuego::JVJ) ?
                           "Modo: Jugador vs Jugador" : "Modo: Jugador vs IA";
-    drawTextoCentrado(modotxt, w / 2.0f, h - 135,
-                      0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
-    drawTextoCentrado("Elige tu bando:", w / 2.0f, h - 155,
-                      0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_12);
+    dibujarTextoCentrado(modotxt, ancho / 2.0f, alto - 135,
+                         0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
+    dibujarTextoCentrado("Elige tu bando:", ancho / 2.0f, alto - 155,
+                         0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_12);
 
-    float bw = 240, bh = 55, gap = 30;
-    float sy = h / 2.0f + 10;
-    drawOpcion("  CRISTIANO  ", w / 2.0f - bw - gap / 2.0f, sy, bw, bh, m_sel == 0);
-    drawOpcion("  MUSULMAN ",  w / 2.0f + gap / 2.0f,       sy, bw, bh, m_sel == 1);
+	float aw = 240, ah = 55, separacion = 30; // tamaño de las cajas y separación entre ellas
+	float sy = alto / 2.0f + 10; // coordenada y común a ambas opciones
+
+    dibujarOpcion("  CRISTIANO ",
+                  ancho / 2.0f - aw - separacion / 2.0f, sy,
+                  aw, ah, m_seleccion == 0);
+    dibujarOpcion("  MUSULMAN ",
+                  ancho / 2.0f + separacion / 2.0f, sy,
+                  aw, ah, m_seleccion == 1);
 }
 
-void MainMenu::drawPaso2(int w, int h) {
-    std::string modo  = (m_cfg.mode  == GameMode::PVP) ? "Jugador vs Jugador" : "Jugador vs IA";
-    std::string bando = (m_cfg.bando == Bando::CRISTIANO) ? "Cristiano" : "Musulman";
-    drawTextoCentrado("Modo:  " + modo,  w / 2.0f, h / 2.0f + 70,
-                      0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
-    drawTextoCentrado("Bando: " + bando, w / 2.0f, h / 2.0f + 40,
-                      0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+// Paso 2: confirmacion 
+void MenuPrincipal::dibujarPaso2(int ancho, int alto) {
+    std::string modo  = (m_cfg.modo  == ModoJuego::JVJ) ?
+                        "Jugador vs Jugador" : "Jugador vs IA";
+    std::string bando = (m_cfg.bando == Bando::CRISTIANO) ?
+                        "Cristiano" : "Musulman";
 
-    float bw = 180, bh = 44, gap = 30;
-    float cy = h / 2.0f - 20;
-    drawOpcion("  JUGAR",   w / 2.0f - bw - gap / 2.0f, cy, bw, bh, m_sel == 0);
-    drawOpcion("  VOLVER",  w / 2.0f + gap / 2.0f,       cy, bw, bh, m_sel == 1);
+    dibujarTextoCentrado("Modo:  " + modo,  ancho / 2.0f, alto / 2.0f + 70,
+                         0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+    dibujarTextoCentrado("Bando: " + bando, ancho / 2.0f, alto / 2.0f + 40,
+                         0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+
+    float aw = 180, ah = 44, separacion = 30;
+    float cy = alto / 2.0f - 20;
+    dibujarOpcion("  JUGAR",
+                  ancho / 2.0f - aw - separacion / 2.0f, cy,
+                  aw, ah, m_seleccion == 0);
+    dibujarOpcion("  VOLVER",
+                  ancho / 2.0f + separacion / 2.0f, cy,
+                  aw, ah, m_seleccion == 1);
 }
 
-void MainMenu::drawPie(int w, int h) {
-    drawTextoCentrado("[Flechas/Mouse] Navegar    [ENTER/Click] Seleccionar    [ESC] Volver",
-                      w / 2.0f, 12, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+// Pie de pagina 
+void MenuPrincipal::dibujarPie(int ancho, int alto) {
+    dibujarTextoCentrado(
+        "[Flechas/Raton] Navegar       [ENTER/Click] Seleccionar       [ESC] Volver",
+        ancho / 2.0f, 12, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
 }
 
-void MainMenu::drawOpcion(const std::string& txt, float x, float y,
-                           float bw, float bh, bool sel) {
-    if (sel)
-        drawRect(x, y, bw, bh, 0.85f, 0.70f, 0.10f, 0.25f);
+//  Caja de opcion
+void MenuPrincipal::dibujarOpcion(const std::string& texto,
+                                   float x, float y, float aw, float ah,
+                                   bool seleccionada) {
+    if (seleccionada)
+        dibujarRectangulo(x, y, aw, ah, 0.85f, 0.70f, 0.10f, 0.25f);
     else
-        drawRect(x, y, bw, bh, 0.08f, 0.08f, 0.08f, 0.50f);
+        dibujarRectangulo(x, y, aw, ah, 0.08f, 0.08f, 0.08f, 0.50f);
 
-    if (sel)
-        drawRectBorde(x, y, bw, bh, 0.95f, 0.80f, 0.10f, 2.0f);
+    if (seleccionada)
+        dibujarBorde(x, y, aw, ah, 0.95f, 0.80f, 0.10f, 2.0f);
     else
-        drawRectBorde(x, y, bw, bh, 0.35f, 0.35f, 0.35f, 1.0f);
+        dibujarBorde(x, y, aw, ah, 0.35f, 0.35f, 0.35f, 1.0f);
 
-    if (sel)
-        drawTexto(txt, x + 12, y + bh / 2.0f - 6, 1.0f, 1.0f, 0.55f,
-                  GLUT_BITMAP_HELVETICA_18);
+    if (seleccionada)
+        dibujarTexto(texto, x + 12, y + ah / 2.0f - 6,
+                     1.0f, 1.0f, 0.55f, GLUT_BITMAP_HELVETICA_18);
     else
-        drawTexto(txt, x + 12, y + bh / 2.0f - 6, 0.80f, 0.80f, 0.80f,
-                  GLUT_BITMAP_HELVETICA_18);
+        dibujarTexto(texto, x + 12, y + ah / 2.0f - 6,
+                     0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
 }
 
-// ─── input ───────────────────────────────────────────────────
-void MainMenu::keyDown(unsigned char key) {
-    if (key == 27) {
-        if (m_paso > 0) { m_paso--; m_sel = 0; }
-        else { m_nextState = GameState::E_INTRO; m_done = true; }
+// Input: teclado
+void MenuPrincipal::teclaPulsada(unsigned char tecla) {
+    if (tecla == 27) {  // TECLA ESC
+        if (m_paso > 0) { m_paso--; m_seleccion = 0; }
+        else { m_siguiente = EstadoJuego::INTRO; m_terminado = true; }
         return;
     }
-    if (key == 13 || key == ' ') { confirmar(); return; }
-    if (key == 'w' || key == 'W') m_sel = (m_sel - 1 + maxSel()) % maxSel();
-    if (key == 's' || key == 'S') m_sel = (m_sel + 1) % maxSel();
+    if (tecla == 13 || tecla == ' ') { confirmar(); return; }
 }
 
-void MainMenu::specialKey(int key) {
-    if (key == GLUT_KEY_UP)    m_sel = (m_sel - 1 + maxSel()) % maxSel();
-    if (key == GLUT_KEY_DOWN)  m_sel = (m_sel + 1) % maxSel();
-    if (key == GLUT_KEY_LEFT  && m_paso == 1) m_sel = 0;
-    if (key == GLUT_KEY_RIGHT && m_paso == 1) m_sel = 1;
+void MenuPrincipal::teclaEspecial(int tecla) {
+    if (tecla == GLUT_KEY_UP)
+        m_seleccion = (m_seleccion - 1 + maxOpciones()) % maxOpciones();
+    if (tecla == GLUT_KEY_DOWN)
+        m_seleccion = (m_seleccion + 1) % maxOpciones();
+    if (tecla == GLUT_KEY_LEFT  && m_paso == 1) m_seleccion = 0;
+    if (tecla == GLUT_KEY_RIGHT && m_paso == 1) m_seleccion = 1;
 }
 
-void MainMenu::mouseMove(int mx, int my, int w, int h) {
-    int gy = h - my;  // invertir Y
-    auto enCaja = [&](float x, float y, float bw, float bh) {
-        return mx >= x && mx <= x + bw && gy >= y && gy <= y + bh;
+// Input: raton 
+void MenuPrincipal::ratonMovido(int mx, int my, int ancho, int alto) {
+    int gy = alto - my;  // GLUT da y desde arriba, OpenGL desde abajo
+    auto enCaja = [&](float x, float y, float aw, float ah) {
+        return mx >= x && mx <= x + aw && gy >= y && gy <= y + ah;
     };
     if (m_paso == 0) {
-        float bw = 280, bh = 44, gap = 14;
-        float sx = w / 2.0f - bw / 2.0f, sy = h / 2.0f + 60;
+        float aw = 280, ah = 44, sep = 14;
+        float sx = ancho / 2.0f - aw / 2.0f, sy = alto / 2.0f + 60;
         for (int i = 0; i < 4; i++)
-            if (enCaja(sx, sy - i * (bh + gap), bw, bh)) m_sel = i;
+            if (enCaja(sx, sy - i * (ah + sep), aw, ah)) m_seleccion = i;
     } else if (m_paso == 1) {
-        float bw = 240, bh = 55, gap = 30, sy = h / 2.0f + 10;
-        if (enCaja(w / 2.0f - bw - gap / 2.0f, sy, bw, bh)) m_sel = 0;
-        if (enCaja(w / 2.0f + gap / 2.0f,       sy, bw, bh)) m_sel = 1;
+        float aw = 240, ah = 55, sep = 30, sy = alto / 2.0f + 10;
+        if (enCaja(ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) m_seleccion = 0;
+        if (enCaja(ancho / 2.0f + sep / 2.0f,       sy, aw, ah)) m_seleccion = 1;
     } else if (m_paso == 2) {
-        float bw = 180, bh = 44, gap = 30, cy = h / 2.0f - 20;
-        if (enCaja(w / 2.0f - bw - gap / 2.0f, cy, bw, bh)) m_sel = 0;
-        if (enCaja(w / 2.0f + gap / 2.0f,       cy, bw, bh)) m_sel = 1;
+        float aw = 180, ah = 44, sep = 30, cy = alto / 2.0f - 20;
+        if (enCaja(ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) m_seleccion = 0;
+        if (enCaja(ancho / 2.0f + sep / 2.0f,       cy, aw, ah)) m_seleccion = 1;
     }
 }
 
-void MainMenu::mouseClick(int mx, int my, int w, int h) {
-    mouseMove(mx, my, w, h);
+void MenuPrincipal::ratonPulsado(int mx, int my, int ancho, int alto) {
+    ratonMovido(mx, my, ancho, alto);
     confirmar();
 }
 
-void MainMenu::confirmar() {
+// Confirmar seleccion y avanzar al siguiente paso o estado
+void MenuPrincipal::confirmar() {
     if (m_paso == 0) {
-        switch (m_sel) {
-            case 0: m_cfg.mode = GameMode::PVP; m_paso = 1; m_sel = 0; break;
-            case 1: m_cfg.mode = GameMode::PVC; m_paso = 1; m_sel = 0; break;
-            case 2: m_nextState = GameState::E_RANKING;  m_done = true; break;
-            case 3: m_nextState = GameState::E_GAMEOVER; m_done = true; break;
+        switch (m_seleccion) {
+		case 0: m_cfg.modo = ModoJuego::JVJ;  m_paso = 1; m_seleccion = 0; break; // modo jugador vs jugador
+		case 1: m_cfg.modo = ModoJuego::JVIA; m_paso = 1; m_seleccion = 0; break; // modo jugador vs IA
+		case 2: m_siguiente = EstadoJuego::RANKING; m_terminado = true; break; // modo ranking
+        case 3: m_siguiente = EstadoJuego::FINAL;   m_terminado = true; break; // modo salir 
         }
     } else if (m_paso == 1) {
-        m_cfg.bando = (m_sel == 0) ? Bando::CRISTIANO : Bando::MUSULMAN;
-        m_paso = 2; m_sel = 0;
+        m_cfg.bando = (m_seleccion == 0) ? Bando::CRISTIANO : Bando::MUSULMAN;
+        m_paso = 2; m_seleccion = 0;
     } else if (m_paso == 2) {
-        if (m_sel == 0) { m_nextState = GameState::E_TABLERO; m_done = true; }
-        else            { m_paso = 1; m_sel = 0; }
+        if (m_seleccion == 0) {
+            // Sortear la batalla al confirmar JUGAR
+            m_cfg.batalla = sortearBatalla();
+            m_cfg.turno1  = iniciativa(m_cfg.batalla);
+            m_siguiente   = EstadoJuego::DESTINO;
+            m_terminado   = true;
+        } else {
+            m_paso = 1; m_seleccion = 0;
+        }
     }
 }
