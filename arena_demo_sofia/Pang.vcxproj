@@ -20,11 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arena.h" />
+    <ClInclude Include="ArenaRenderer.h" />
     <ClInclude Include="Combatiente.h" />
     <ClInclude Include="InputState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Arena.cpp" />
+    <ClCompile Include="ArenaRenderer.cpp" />
     <ClCompile Include="Combatiente.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
