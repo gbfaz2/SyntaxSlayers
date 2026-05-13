@@ -1,113 +1,178 @@
-//es nuestro punto de entrada. Ahora primero queremos dibujar el tablero vacío
-#include "tablerogl.h"
+// main.cpp
+// Autor: Ines Alcérreca Sánchez
+// Integra el menu (Ines) con el tablero (Maria)
+
 #include "freeglut.h"
-#include <iostream>
-using namespace std;
+#include "gamestate.h"
+#include "menu.h"
+#include "tablerogl.h"
+#include "Tablero.h"
 
-Tablero tablero; //centralizamos la lógica, que crea los 9x9 tipos de casilla
-Tablerogl scene(&tablero);//recibe puntero al tablero
+// ─── Ventana ─────────────────────────────────────────────────
+int W = 800, H = 600;
 
-//los callback, funciones que seran llamadas automaticamente por la glut
-//cuando sucedan eventos
-//NO HACE FALTA LLAMARLAS EXPLICITAMENTE
-void OnDraw(void); //esta funcion sera llamada para dibujar
-void OnTimer(int value); //esta funcion sera llamada cuando transcurra una temporizacion
-void OnKeyboardDown(unsigned char key, int x, int y); //cuando se pulse una tecla	
-void OnMouseClick(int b, int state, int x, int y);
+// ─── Estado ──────────────────────────────────────────────────
+GameState  g_state = GameState::E_INTRO;
+GameConfig g_cfg;
 
-//void OnSpecialKeyboardDown(int key, int x, int y);
+// ─── Objetos de pantalla ─────────────────────────────────────
+IntroScreen  g_intro;
+MainMenu     g_menu;
 
-int main(int argc, char* argv[])
-{
-	//Inicializar el gestor de ventanas GLUT
-	//y crear la ventana
-	glutInit(&argc, argv);
-	glutInitWindowSize(800, 600);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutCreateWindow("Moros y Cristianos");
+// Tablero de Maria (se inicializa al entrar a E_TABLERO)
+Tablero*     g_tablero  = nullptr;
+Tablerogl*   g_tablerogl = nullptr;
 
-	//habilitar luces y definir perspectiva
+// ─── Callbacks ───────────────────────────────────────────────
+void OnDraw();
+void OnKeyboard(unsigned char key, int x, int y);
+void OnSpecial(int key, int x, int y);
+void OnMouse(int button, int state, int x, int y);
+void OnMouseMove(int x, int y);
+void OnReshape(int w, int h);
+void OnTimer(int v);
 
-	//Registrar los callbacks
-	glutDisplayFunc(OnDraw);
-	glutTimerFunc(25, OnTimer, 0);//le decimos que dentro de 25ms llame 1 vez a la funcion OnTimer()
-	glutKeyboardFunc(OnKeyboardDown);
-	glutMouseFunc(OnMouseClick);
-	//glutSpecialFunc(OnSpecialKeyboardDown); //gestion de los cursores
+// ═════════════════════════════════════════════════════════════
+int main(int argc, char* argv[]) {
+    glutInit(&argc, argv);
+    glutInitWindowSize(W, H);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutCreateWindow("Moros y Cristianos - SyntaxSlayers");
 
-	scene.init();
+    glutDisplayFunc(OnDraw);
+    glutKeyboardFunc(OnKeyboard);
+    glutSpecialFunc(OnSpecial);
+    glutMouseFunc(OnMouse);
+    glutPassiveMotionFunc(OnMouseMove);
+    glutReshapeFunc(OnReshape);
+    glutTimerFunc(16, OnTimer, 0);
 
-	//pasarle el control a GLUT,que llamara a los callbacks
-	glutMainLoop();
-
-	return 0;
+    glClearColor(0, 0, 0, 1);
+    glutMainLoop();
+    return 0;
 }
 
-/*void OnSpecialKeyboardDown(int key, int x, int y)
-{
-	mundo.tecla_especial(key);
-}
-*/
-void OnDraw(void)
-{
-	//Borrado de la pantalla	
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//Para definir el punto de vista
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	scene.Dibuja();
-
-	//no borrar esta linea ni poner nada despues
-	glutSwapBuffers();
-}
-void OnKeyboardDown(unsigned char key, int x_t, int y_t)
-{
-	//poner aqui el código de teclado
-	scene.KeyDown(key);
-
-	glutPostRedisplay();
-}
-void OnMouseClick(int b, int state, int x, int y)
-{
-	bool down = (state == GLUT_DOWN);
-
-	//convertimos la constante de glut al enum nuestro
-	int button;
-	if (b == GLUT_LEFT_BUTTON) button = MOUSE_LEFT_BUTTON;
-	else if (b == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
-	else button = MOUSE_MIDDLE_BUTTON;
-
-	//Detectamos ctrl y shift
-	int specialKey = glutGetModifiers();
-	bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
-	bool shiftkey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
-
-	scene.MouseButton(x, y, button, down, shiftkey, ctrlKey);
-	glutPostRedisplay();
+void OnTimer(int v) {
+    glutPostRedisplay();
+    glutTimerFunc(16, OnTimer, 0);
 }
 
-#include <chrono>
-using namespace std::chrono;
+void OnReshape(int w, int h) {
+    W = w; H = (h == 0 ? 1 : h);
+    glViewport(0, 0, W, H);
+}
 
-void OnTimer(int value)
-{
-	// calcular dt real entre llamadas usando std::chrono
-	static auto last = high_resolution_clock::now();//Variable estatica que es global que se iniciializa la primera vez que se pasa por ese espacio se rellena con now cuando la hace automaticamente. Será siempre la misma last 
-	auto now = high_resolution_clock::now();//now siempre se ejecuta y se destruye y así vemos el tiempo que pasa
-	duration<double> elapsed = now - last;
-	double dt = elapsed.count();//nos lo da en milisegundos o micro segundos y ya lo sabemos nosotros
-	last = now;
-	//avanzamos el ciclo de luz del tablero
-	tablero.update(dt);
-	std::cout << "dt" << dt << std::endl;//para que en la consola aparezca el tiempo
-	// código de animacion usando dt en segundos
-	//mundo.mueve(dt);
-	// no borrar estas líneas.indicamos que se vuelva a dibujar la
-	//pantalla, para que se vean los cambios
-	glutPostRedisplay();
-	// recursivamente, le decimos que dentro de 25ms vuelva a llamar a
-	//esta funcion, para que se siga animando
-	glutTimerFunc(25, OnTimer, 0);
+// ═════════════════════════════════════════════════════════════
+//  OnDraw
+// ═════════════════════════════════════════════════════════════
+void OnDraw() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    switch (g_state) {
+
+    case GameState::E_INTRO:
+        g_intro.draw(W, H);
+        if (g_intro.wantsTransition()) {
+            g_intro.reset();
+            g_menu.reset();
+            g_state = GameState::E_MENU;
+        }
+        break;
+
+    case GameState::E_MENU:
+        g_menu.draw(W, H);
+        if (g_menu.wantsTransition()) {
+            GameState next = g_menu.nextState();
+            g_cfg = g_menu.getConfig();
+            if (next == GameState::E_GAMEOVER) exit(0);
+            if (next == GameState::E_TABLERO) {
+                // Inicializar tablero de Maria
+                if (!g_tablero) {
+                    g_tablero   = new Tablero();
+                    g_tablerogl = new Tablerogl(g_tablero);
+                    g_tablerogl->init();
+                }
+            }
+            g_state = next;
+        }
+        break;
+
+    case GameState::E_TABLERO:
+        if (g_tablerogl) g_tablerogl->Dibuja();
+        break;
+
+    case GameState::E_ARENA:
+        // TODO: arena
+        break;
+
+    case GameState::E_RANKING:
+        // TODO: ranking (Alba)
+        break;
+
+    case GameState::E_GAMEOVER:
+        // TODO: pantalla final (Ines)
+        break;
+
+    default: break;
+    }
+
+    glutSwapBuffers();
+}
+
+// ═════════════════════════════════════════════════════════════
+//  Teclado
+// ═════════════════════════════════════════════════════════════
+void OnKeyboard(unsigned char key, int x, int y) {
+    switch (g_state) {
+    case GameState::E_INTRO:
+        g_intro.skip();
+        break;
+    case GameState::E_MENU:
+        g_menu.keyDown(key);
+        break;
+    case GameState::E_TABLERO:
+        if (key == 27) { g_menu.reset(); g_state = GameState::E_MENU; break; }
+        if (g_tablerogl) g_tablerogl->KeyDown(key);
+        break;
+    default:
+        if (key == 27) { g_menu.reset(); g_state = GameState::E_MENU; }
+        break;
+    }
+    glutPostRedisplay();
+}
+
+void OnSpecial(int key, int x, int y) {
+    if (g_state == GameState::E_MENU) g_menu.specialKey(key);
+    glutPostRedisplay();
+}
+
+// ═════════════════════════════════════════════════════════════
+//  Raton
+// ═════════════════════════════════════════════════════════════
+void OnMouse(int button, int state, int x, int y) {
+    bool down = (state == GLUT_DOWN);
+    if (!down) return;
+    switch (g_state) {
+    case GameState::E_INTRO:
+        g_intro.skip();
+        break;
+    case GameState::E_MENU:
+        if (button == GLUT_LEFT_BUTTON) g_menu.mouseClick(x, y, W, H);
+        break;
+    case GameState::E_TABLERO:
+        if (g_tablerogl) {
+            bool ctrl  = (glutGetModifiers() & GLUT_ACTIVE_CTRL)  != 0;
+            bool shift = (glutGetModifiers() & GLUT_ACTIVE_SHIFT) != 0;
+            int  btn   = (button == GLUT_LEFT_BUTTON) ? MOUSE_LEFT_BUTTON : MOUSE_RIGHT_BUTTON;
+            g_tablerogl->MouseButton(x, y, btn, down, shift, ctrl);
+        }
+        break;
+    default: break;
+    }
+    glutPostRedisplay();
+}
+
+void OnMouseMove(int x, int y) {
+    if (g_state == GameState::E_MENU) g_menu.mouseMove(x, y, W, H);
+    glutPostRedisplay();
 }
