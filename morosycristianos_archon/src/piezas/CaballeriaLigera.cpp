@@ -1,7 +1,7 @@
-#include "CaballeríaLigera.h"
+#include "CaballeriaLigera.h"
 #include <iostream>
 
-CaballeríaLigera::CaballeríaLigera(Bando bando)
+CaballeriaLigera::CaballeriaLigera(Bando bando)
     : PiezaVoladora(
         bando == Bando::CRISTIANO ? "Caballeria Ligera" : "Jinete Bereber",  //nombre pieza
         // Bando cristiano: Caballeria Ligera, bando andalusí: Jinete Bereber
@@ -16,7 +16,7 @@ CaballeríaLigera::CaballeríaLigera(Bando bando)
     // vacío, PiezaVoladora (y Pieza) ya inicializan todo
 }
 
-void CaballeríaLigera::mostrarStats() const {
+void CaballeriaLigera::mostrarStats() const {
     // Llama al mostrarStats de Pieza (imprime nombre, vida, fuerza, etc.)
     Pieza::mostrarStats();
 

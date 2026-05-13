@@ -6,12 +6,12 @@
 // herencia múltiple: pieza voladora que usa arma carga
 //NADA ESPECIAL
 
-class CaballeríaLigera :
+class CaballeriaLigera :
     public PiezaVoladora, public ArmaCarga
 {
     // Constructor que recibe el bando para decidir que tipo de ficha es, el resto de stats están fijos en el .cpp
     // Bando Cristiano: caballería ligera, bando musulman: jinete bereber
-    CaballeríaLigera(Bando bando);
+    CaballeriaLigera(Bando bando);
 
 
     //metodo hederado de piezaVoladora

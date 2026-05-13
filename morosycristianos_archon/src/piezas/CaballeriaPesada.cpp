@@ -1,7 +1,7 @@
-#include "CaballerÍaPesada.h"
+#include "CaballeriaPesada.h"
 #include <iostream>
 
-CaballeríaPesada::CaballeríaPesada(Bando bando)
+CaballeriaPesada::CaballeriaPesada(Bando bando)
     : PiezaTerrestre(
         bando == Bando::CRISTIANO ? "Caballeria Pesada" : "Caballeria Acorazada",  //nombre pieza
         // si es cristiano Caballeria Pesada, si es musulman Caballeria Acorazada
@@ -16,7 +16,7 @@ CaballeríaPesada::CaballeríaPesada(Bando bando)
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }
 
-void CaballeríaPesada::mostrarStats() const {
+void CaballeriaPesada::mostrarStats() const {
     // Llama al mostrarStats de Pieza (imprime nombre, vida, fuerza, etc.)
     Pieza::mostrarStats();
 

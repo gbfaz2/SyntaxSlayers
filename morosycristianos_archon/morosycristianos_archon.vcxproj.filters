@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="piezas">
+      <UniqueIdentifier>{ce71c7ec-4988-4cd1-96d1-8e96afada7da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="coordinador">
+      <UniqueIdentifier>{3c2a8de7-6ad6-46fc-ab57-ff23b18d2edd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lib\ETSIDI.h">
@@ -23,6 +29,60 @@
     </ClInclude>
     <ClInclude Include="lib\glut.h">
       <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\Coordinador.h">
+      <Filter>coordinador</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Almogavar.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Arma.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\ArmaCarga.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\ArmaCuerpoaCuerpo.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\ArmaDistancia.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Ballestero.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\CaballeriaLigera.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\CaballeriaPesada.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Hechicero.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Infanteria.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Infiltrado.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Miliciano.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Pieza.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\PiezaTeleporte.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\PiezaTerrestre.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\PiezaVoladora.h">
+      <Filter>piezas</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\Rey.h">
+      <Filter>piezas</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -39,6 +99,60 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\Coordinador.cpp">
+      <Filter>coordinador</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Almogavar.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Arma.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\ArmaCarga.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\ArmaCuerpoaCuerpo.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\ArmaDistancia.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Ballestero.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\CaballeriaLigera.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\CaballeriaPesada.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Hechicero.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Infanteria.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Infiltrado.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Miliciano.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Pieza.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\PiezaTeleporte.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\PiezaTerrestre.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\PiezaVoladora.cpp">
+      <Filter>piezas</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\Rey.cpp">
+      <Filter>piezas</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
