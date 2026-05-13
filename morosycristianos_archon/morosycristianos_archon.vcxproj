@@ -141,7 +141,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Almogávar.cpp" />
     <ClCompile Include="Ballestero.cpp" />
+    <ClCompile Include="CaballeríaLigera.cpp" />
     <ClCompile Include="CaballeríaPesada.cpp" />
     <ClCompile Include="Hechicero.cpp" />
     <ClCompile Include="Infantería.cpp" />
@@ -155,7 +157,9 @@
     <ClCompile Include="src\Pieza.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Almogávar.h" />
     <ClInclude Include="Ballestero.h" />
+    <ClInclude Include="CaballeríaLigera.h" />
     <ClInclude Include="CaballeríaPesada.h" />
     <ClInclude Include="Hechicero.h" />
     <ClInclude Include="Infantería.h" />

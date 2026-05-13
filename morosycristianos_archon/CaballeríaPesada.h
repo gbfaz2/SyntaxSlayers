@@ -2,6 +2,7 @@
 #include "PiezaTerrestre.h"
 
 //  CABALLERÍA PESADA(cristiana) / CABALLERÍA ACORAZADA(Musulmana)
+//NADA ESPECIAL
 
 class CaballeríaPesada :
     public PiezaTerrestre
@@ -10,7 +11,7 @@ class CaballeríaPesada :
     //Caballería Pesada(cristiano) y Caballería Acorazada(musulman)
     CaballeríaPesada(Bando bando);
 
-    //metodo heredaro de piezaterrestre
+    //metodo hederado de piezaterrestre
     // Sobreescribe mostrarStats para añadir info de conjuros
     void mostrarStats() const override;
 };
