@@ -221,8 +221,8 @@ void MainMenu::drawPaso1(int w, int h) {
 
     float bw = 240, bh = 55, gap = 30;
     float sy = h / 2.0f + 10;
-    drawOpcion("  CRISTIANO (Cruz)", w / 2.0f - bw - gap / 2.0f, sy, bw, bh, m_sel == 0);
-    drawOpcion("  MUSULMAN (Luna)",  w / 2.0f + gap / 2.0f,       sy, bw, bh, m_sel == 1);
+    drawOpcion("  CRISTIANO  ", w / 2.0f - bw - gap / 2.0f, sy, bw, bh, m_sel == 0);
+    drawOpcion("  MUSULMAN ",  w / 2.0f + gap / 2.0f,       sy, bw, bh, m_sel == 1);
 }
 
 void MainMenu::drawPaso2(int w, int h) {
