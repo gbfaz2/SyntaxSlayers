@@ -141,7 +141,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Ballestero.cpp" />
+    <ClCompile Include="CaballeríaPesada.cpp" />
     <ClCompile Include="Hechicero.cpp" />
+    <ClCompile Include="Infantería.cpp" />
+    <ClCompile Include="Infiltrado.cpp" />
+    <ClCompile Include="Miliciano.cpp" />
     <ClCompile Include="PiezaTeleporte.cpp" />
     <ClCompile Include="PiezaTerrestre.cpp" />
     <ClCompile Include="PiezaVoladora.cpp" />
@@ -150,7 +155,12 @@
     <ClCompile Include="src\Pieza.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Ballestero.h" />
+    <ClInclude Include="CaballeríaPesada.h" />
     <ClInclude Include="Hechicero.h" />
+    <ClInclude Include="Infantería.h" />
+    <ClInclude Include="Infiltrado.h" />
+    <ClInclude Include="Miliciano.h" />
     <ClInclude Include="PiezaTeleporte.h" />
     <ClInclude Include="PiezaTerrestre.h" />
     <ClInclude Include="PiezaVoladora.h" />
