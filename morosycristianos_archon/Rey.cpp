@@ -3,8 +3,8 @@
 
 Rey::Rey(Bando bando)
     : PiezaTerrestre(
-        bando == Bando::CRISTIANO ? "Rey" : "Emir", 
-        //dependiendo si es cristiano, rey, si no, emir (rey mo
+        bando == Bando::CRISTIANO ? "Rey" : "Emir",   //nombre pieza
+        //dependiendo si es cristiano, rey, si no, emir (rey musulman)
         bando,
         80,   // vidaMax
         75,   // fuerza
@@ -59,7 +59,7 @@ void Rey::mostrarStats() const {
     // Llama al mostrarStats de Pieza
     Pieza::mostrarStats();
 
-    // Añade info de conjuros de si el elegido esta gastado o no
+    // Añade info de conjuros de si el elegido esta gastado o no (especial rey conjuro)
     std::cout << "--- Conjuros ---" << std::endl;
     std::cout << "Rutas Secretas    : " << (puedeUsarConjuro(Conjuro::RUTAS_SECRETAS) ? "Disponible" : "Gastado") << std::endl;
     std::cout << "Avituallamiento   : " << (puedeUsarConjuro(Conjuro::AVITUALLAMIENTO) ? "Disponible" : "Gastado") << std::endl;
