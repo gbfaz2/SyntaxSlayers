@@ -7,10 +7,10 @@
 // La pieza más resistente del juego. Lenta pero muy fuerte. Extrema
 //NADA ESPECIAL
 
-class Infantería :
+class Infanteria :
     public PiezaTerrestre, public ArmaCuerpoaCuerpo
 {
-    Infantería(Bando bando);
+    Infanteria(Bando bando);
 
     //METODO HEREDADO DE PIEZA TERRESTRE
     // Sobreescribe mostrarStats para identificar la pieza claramente

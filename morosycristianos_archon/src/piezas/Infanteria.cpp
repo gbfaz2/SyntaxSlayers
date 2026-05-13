@@ -1,7 +1,7 @@
-#include "InfanterÍa.h"
+#include "Infanteria.h"
 #include <iostream>
 
-Infantería::Infantería(Bando bando)
+Infanteria::Infanteria(Bando bando)
     : PiezaTerrestre(
         bando == Bando::CRISTIANO ? "Infanteria" : "Guardia Negra", //nombre pieza
         //dependiendo si es cristiano, infanteria, si no, guardia negra(musulman)
@@ -16,7 +16,7 @@ Infantería::Infantería(Bando bando)
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }
 
-void Infantería::mostrarStats() const {
+void Infanteria::mostrarStats() const {
     // Llama al mostrarStats de Pieza (imprime nombre, vida, fuerza, etc.)
     Pieza::mostrarStats();
 
