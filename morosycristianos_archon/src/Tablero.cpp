@@ -86,6 +86,7 @@ bool Tablero::esPuntoPoder(int fila, int col) const
 Tablero::Tablero()
 {
 	iniCasillas();
+	iniPiezas();
 	cout << "[Board] Tablero" << N << "x" << N << "creado." << endl;
 }
 
