@@ -99,6 +99,8 @@ void OnTimer(int value)
 	duration<double> elapsed = now - last;
 	double dt = elapsed.count();//nos lo da en milisegundos o micro segundos y ya lo sabemos nosotros
 	last = now;
+	//avanzamos el ciclo de luz del tablero
+	tablero.update(dt);
 	std::cout << "dt" << dt << std::endl;//para que en la consola aparezca el tiempo
 	// código de animacion usando dt en segundos
 	//mundo.mueve(dt);
@@ -107,5 +109,5 @@ void OnTimer(int value)
 	glutPostRedisplay();
 	// recursivamente, le decimos que dentro de 25ms vuelva a llamar a
 	//esta funcion, para que se siga animando
-	glutTimerFunc(10, OnTimer, 0);
+	glutTimerFunc(25, OnTimer, 0);
 }
