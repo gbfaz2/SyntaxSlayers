@@ -142,6 +142,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Almogávar.cpp" />
+    <ClCompile Include="Arma.cpp" />
+    <ClCompile Include="ArmaCarga.cpp" />
+    <ClCompile Include="ArmaCuerpoaCuerpo.cpp" />
+    <ClCompile Include="ArmaDistancia.cpp" />
     <ClCompile Include="Ballestero.cpp" />
     <ClCompile Include="CaballeríaLigera.cpp" />
     <ClCompile Include="CaballeríaPesada.cpp" />
@@ -158,6 +162,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Almogávar.h" />
+    <ClInclude Include="Arma.h" />
+    <ClInclude Include="ArmaCarga.h" />
+    <ClInclude Include="ArmaCuerpoaCuerpo.h" />
+    <ClInclude Include="ArmaDistancia.h" />
     <ClInclude Include="Ballestero.h" />
     <ClInclude Include="CaballeríaLigera.h" />
     <ClInclude Include="CaballeríaPesada.h" />

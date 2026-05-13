@@ -11,7 +11,7 @@ CaballeríaLigera::CaballeríaLigera(Bando bando)
         90,   // velAtaque — muy rápida atacando, su principal ventaja
         30,   // recarga   — cooldown bajo, puede atacar seguido
         5     // radioMov  — el mayor radio de movimiento volador
-    )
+    ), ArmaCarga("Lanza") //usan lanza siempre, sean cristianos o andalusí
 {
     // vacío, PiezaVoladora (y Pieza) ya inicializan todo
 }
@@ -19,4 +19,7 @@ CaballeríaLigera::CaballeríaLigera(Bando bando)
 void CaballeríaLigera::mostrarStats() const {
     // Llama al mostrarStats de Pieza (imprime nombre, vida, fuerza, etc.)
     Pieza::mostrarStats();
+
+    //informa del arma y su tipo
+    std::cout << "Arma     : " << getNombreArma() << " (Carga)" << std::endl;
 }

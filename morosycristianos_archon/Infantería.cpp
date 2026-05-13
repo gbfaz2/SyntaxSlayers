@@ -11,7 +11,7 @@ Infantería::Infantería(Bando bando)
         20,   // velAtaque — muy lenta atacando, su gran debilidad
         90,   // recarga   — cooldown altísimo, tarda mucho entre ataques
         2     // radioMov  — movimiento muy corto, avanza despacio
-    )
+    ), ArmaCuerpoaCuerpo(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta") //inicializa a una arma u a otra segun bando
 {
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }
@@ -19,5 +19,8 @@ Infantería::Infantería(Bando bando)
 void Infantería::mostrarStats() const {
     // Llama al mostrarStats de Pieza (imprime nombre, vida, fuerza, etc.)
     Pieza::mostrarStats();
+
+    //informa del tipo de arma 
+    std::cout << "Arma     : " << getNombreArma() << " (Cuerpo a cuerpo letal)" << std::endl;
    
 }

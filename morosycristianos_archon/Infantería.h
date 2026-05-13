@@ -1,12 +1,14 @@
 #pragma once
 #include "PiezaTerrestre.h"
+#include"ArmaCuerpoaCuerpo.h"
 
 // INFANTERÍA(cristiana) / GUARDIA NEGRA(Musulmana)
+// Herencia múltiple: pieza terrestre con arma cuerpo a cuerpo
 // La pieza más resistente del juego. Lenta pero muy fuerte. Extrema
 //NADA ESPECIAL
 
 class Infantería :
-    public PiezaTerrestre
+    public PiezaTerrestre, public ArmaCuerpoaCuerpo
 {
     Infantería(Bando bando);
 

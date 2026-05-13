@@ -1,13 +1,14 @@
 #pragma once
 #include "PiezaTerrestre.h"
 #include"Hechicero.h"
+#include"ArmaCuerpoaCuerpo.h"
 
 // REY(cristiana) / EMIR(Musulmana)
-//HERENCIA MÚLTIPLE
+//HERENCIA MÚLTIPLE (triple)
 //HABILIDAD ESPECIAL: puede usar conjuros
 
 class Rey :
-    public PiezaTerrestre, public Hechicero
+    public PiezaTerrestre, public Hechicero, public ArmaCuerpoaCuerpo
 {
 public:
     // Constructor que recibe bando para poder decidir en el rey.cpp el bando y que sea rey(cristiano) o emir(musulman)
