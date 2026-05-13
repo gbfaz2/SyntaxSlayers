@@ -24,7 +24,7 @@
     <ClInclude Include="src\menu.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\gamestate.h">
+    <ClInclude Include="src\estadojuego.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

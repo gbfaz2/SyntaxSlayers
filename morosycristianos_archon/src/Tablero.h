@@ -1,3 +1,6 @@
+
+//Autor: María Heredero
+
 //tablero.h - lógica del tablero 9x9.
 //Lo separamos de tablerogl.h porque tablero sabe qué hay en cada casilla y tablerogl sabe cómo pintarlo
 #pragma once

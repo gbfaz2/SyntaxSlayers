@@ -1,3 +1,6 @@
+
+//Autor: María Heredero
+
 // lo usamos para separar la lógica del dibujo. Primero probaremos a hacer un tablero vacío con un aspecto visual del Archon original
 #pragma once
 #include "Tablero.h"
