@@ -42,8 +42,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -145,9 +145,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Almogávar.h" />
+    <ClInclude Include="Arma.h" />
+    <ClInclude Include="ArmaCarga.h" />
+    <ClInclude Include="ArmaCuerpoaCuerpo.h" />
+    <ClInclude Include="ArmaDistancia.h" />
+    <ClInclude Include="Ballestero.h" />
+    <ClInclude Include="CaballeríaLigera.h" />
+    <ClInclude Include="CaballeríaPesada.h" />
+    <ClInclude Include="Hechicero.h" />
+    <ClInclude Include="Infantería.h" />
+    <ClInclude Include="Infiltrado.h" />
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
     <ClInclude Include="lib\glut.h" />
+    <ClInclude Include="Miliciano.h" />
+    <ClInclude Include="PiezaTeleporte.h" />
+    <ClInclude Include="PiezaTerrestre.h" />
+    <ClInclude Include="PiezaVoladora.h" />
+    <ClInclude Include="Rey.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -161,6 +177,22 @@
     <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Almogávar.cpp" />
+    <ClCompile Include="Arma.cpp" />
+    <ClCompile Include="ArmaCarga.cpp" />
+    <ClCompile Include="ArmaCuerpoaCuerpo.cpp" />
+    <ClCompile Include="ArmaDistancia.cpp" />
+    <ClCompile Include="Ballestero.cpp" />
+    <ClCompile Include="CaballeríaLigera.cpp" />
+    <ClCompile Include="CaballeríaPesada.cpp" />
+    <ClCompile Include="Hechicero.cpp" />
+    <ClCompile Include="Infantería.cpp" />
+    <ClCompile Include="Infiltrado.cpp" />
+    <ClCompile Include="Miliciano.cpp" />
+    <ClCompile Include="PiezaTeleporte.cpp" />
+    <ClCompile Include="PiezaTerrestre.cpp" />
+    <ClCompile Include="PiezaVoladora.cpp" />
+    <ClCompile Include="Rey.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
