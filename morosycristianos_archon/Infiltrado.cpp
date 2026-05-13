@@ -12,7 +12,7 @@ Infiltrado::Infiltrado(Bando bando)
         100,  // velAtaque — el más rápido atacando de todo el juego
         20,   // recarga   — cooldown bajísimo, puede atacar casi sin pausa
         5     // radioMov  — teleporte de largo alcance
-    )
+    ), ArmaCuerpoaCuerpo(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta") //inicializa a una arma u a otra segun bando
 {
     // vacío, PiezaTeleporte (y Pieza) ya inicializan todo
 }
@@ -35,5 +35,10 @@ void Infiltrado::copiarStats(Pieza& enemigo) {
 void Infiltrado::mostrarStats() const {
     // Llama al mostrarStats de Pieza 
     Pieza::mostrarStats();
+
+    //informa del tipo de arma 
+    std::cout << "Arma     : " << getNombreArma() << " (Cuerpo a cuerpo letal)" << std::endl;
+   
+    //informa de su habilidad especial
     std::cout << "Habilidad : Espionaje Tactico (copia stats del enemigo)" << std::endl;
 }

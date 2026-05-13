@@ -11,7 +11,7 @@ CaballeríaPesada::CaballeríaPesada(Bando bando)
         40,   // velAtaque — velocidad media-baja atacando
         60,   // recarga   — cooldown medio, no puede spamear ataques
         3     // radioMov  — movimiento estándar terrestre
-    )
+    ), ArmaCarga("Lanza") //usan lanza siempre, sean cristianos o andalusí
 {
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }
@@ -19,4 +19,7 @@ CaballeríaPesada::CaballeríaPesada(Bando bando)
 void CaballeríaPesada::mostrarStats() const {
     // Llama al mostrarStats de Pieza (imprime nombre, vida, fuerza, etc.)
     Pieza::mostrarStats();
+
+    //informa del arma y su tipo
+    std::cout << "Arma     : " << getNombreArma() << " (Carga)" << std::endl;
 }

@@ -11,8 +11,9 @@ Rey::Rey(Bando bando)
         60,   // velAtaque
         40,   // recarga
         3     // radioMov
-    ),
-    Hechicero()  // inicializa los conjuros a false
+    ), 
+    Hechicero(),// inicializa los conjuros a false
+    ArmaCuerpoaCuerpo(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta") //inicializa a una arma u a otra segun bando
 {
 }
 
@@ -58,6 +59,10 @@ void Rey::aplicarConjuro(Conjuro c) {
 void Rey::mostrarStats() const {
     // Llama al mostrarStats de Pieza
     Pieza::mostrarStats();
+
+    //informa que arma lleva y que tipo de arma 
+    std::cout << "Arma     : " << getNombreArma() << " (Cuerpo a cuerpo)" << std::endl;
+
 
     // Añade info de conjuros de si el elegido esta gastado o no (especial rey conjuro)
     std::cout << "--- Conjuros ---" << std::endl;

@@ -11,7 +11,7 @@ Almogávar::Almogávar(Bando bando)
         50,   // velAtaque — velocidad media, más lento que la CaballeríaLigera
         70,   // recarga   — cooldown alto, necesita tiempo entre ataques
         4     // radioMov  — buen alcance volador
-    )
+    ), ArmaDistancia(bando == Bando::CRISTIANO ? "Jabalinas incendiarias" : "Flechas") //segun bando, elige un arma u otra
 {
     // vacío, PiezaVoladora (y Pieza) ya inicializan todo
 }
@@ -33,6 +33,9 @@ void Almogávar::mostrarStats() const {
     // Llama al mostrarStats de Pieza (imprime nombre, vida, fuerza, etc.)
     Pieza::mostrarStats();
 
+    //informa del arma utilizada a distancia
+    std::cout << "Arma     : " << getNombreArma() << " (A distancia)" << std::endl;
+  
     //informa de su habilidad especial
     std::cout << "Habilidad : Carga Incendiaria (ataque de area)" << std::endl;
 }

@@ -1,13 +1,14 @@
 #pragma once
 #include "PiezaTeleporte.h"
+#include"ArmaCuerpoaCuerpo.h"
 
 
 // INFILTRADO(Cristiana) / ASESINO DE ÉLITE(Musulmana)
-//herencia de piezaTeleporte
+//herencia múltiple: pieza teleport con uso de arma cuerpo a cuerpo
 //HABILIDAD ESPECIAL:capacidad de copiar los stats
 
 class Infiltrado :
-    public PiezaTeleporte
+    public PiezaTeleporte, public ArmaCuerpoaCuerpo
 {
 public:
     // Constructor que solo recibe el bando para poder decidir el nombre de la pieza
