@@ -127,6 +127,7 @@ void Tablerogl::setCasillaColor(int fila, int col, bool dark)
 		//morado claro u oscuro
 		if (!dark) glColor3f(0.55f, 0.20f, 0.65f);//morado medio
 		else glColor3f(0.30f, 0.05f, 0.40f);//morado oscuro
+		break;
 	case Casilla_rival:
 		//rojo claro u oscuro
 		if (!dark)
