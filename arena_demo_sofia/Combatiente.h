@@ -103,4 +103,7 @@ public:
 	float danoAtaque() const { return _danoAtaque; }
 	bool atacando() const { return _tiempoAnimacionAtaque > 0.0f; } // Devuelve true si el combatiente esta en medio de la animacion de ataque, false si no
 	bool intentarAtacar(); // Intenta iniciar un ataque. Si el cooldown ha pasado, inicia la animacion de ataque y resetea el timer, devolviendo true. Si el cooldown no ha pasado, devuelve false y no hace nada
+
+	// Devuelve el color del combatiente por referencia
+	void color(float& r, float& g, float& b) const { r = _r;g = _g;b = _b; }
 };
