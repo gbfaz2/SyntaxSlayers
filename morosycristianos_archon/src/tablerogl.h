@@ -15,7 +15,10 @@ protected:
 	double centro_x, centro_y, centro_z;
 	double dist;
 
-	int xcasilla_sel, ycasilla_sel;
+	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
+	int fromFila, fromCol;//origen del movimiento en curso
+	bool piezaSeleccionada; //hay una pieza seleccionada esperando destino
+
 	bool controlKey, shiftKey;
 	bool leftButton, rightButton, midButton;
 public:
@@ -32,6 +35,10 @@ public:
 	void DibujaCruz(float cx, float cy, float size);//dibuja la cruz de los cristianos centrada
 	void DibujaLuna(float cx, float cy, float size);//dibuja la media luna de los musulmanes centrada
 	void DibujaPuntoPoder(float cx, float cy, float size);//dibuja el círculo amarillo en las casillas de punto de poder
+	void DibujaCasSelec();
+
+	void DibujaPiezas();
+	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
 
 	void KeyDown(unsigned char key);
 	void MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
