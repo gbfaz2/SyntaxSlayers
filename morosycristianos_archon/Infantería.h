@@ -3,6 +3,7 @@
 
 // INFANTERÍA(cristiana) / GUARDIA NEGRA(Musulmana)
 // La pieza más resistente del juego. Lenta pero muy fuerte. Extrema
+//NADA ESPECIAL
 
 class Infantería :
     public PiezaTerrestre

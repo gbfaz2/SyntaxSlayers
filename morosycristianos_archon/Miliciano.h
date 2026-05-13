@@ -2,6 +2,7 @@
 #include "PiezaTerrestre.h"
 
 // MILICIANO(cristiana) / GHAZÍ(Musulmana)
+//NADA ESPECIAL
 
 class Miliciano :
     public PiezaTerrestre
