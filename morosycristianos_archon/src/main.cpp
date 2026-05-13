@@ -36,6 +36,9 @@ int main(int argc, char* argv[])
 	//glutSpecialFunc(OnSpecialKeyboardDown); //gestion de los cursores
 
 	scene.init();
+	//para indicar al jugador como debe usar el ratón
+	cout << "[Game] Listo. Clic izquierdo = seleccionar/mover. "
+		<< "Clic derecho = cancelar. ESC = salir." << endl;
 
 	//pasarle el control a GLUT,que llamara a los callbacks
 	glutMainLoop();
