@@ -28,6 +28,7 @@
     <ClCompile Include="Arena.cpp" />
     <ClCompile Include="ArenaRenderer.cpp" />
     <ClCompile Include="Combatiente.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
