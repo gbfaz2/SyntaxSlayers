@@ -7,6 +7,7 @@
 #include"freeglut.h"
 using namespace std;
 
+static const int CIRCLE_SEGS = 32;//numero de segmentos para dibujar los circulos(usado para dibujar la media luna)
 Tablerogl::Tablerogl(Tablero* pb):m_tablero(pb)
 {
 	N = pb->getSize();//Siempre va a ser nueve, pero para asegurarnos mejor leerlo directamente de nuestra clase tablero
@@ -62,6 +63,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw()
 
 	glDisable(GL_LIGHTING);
 	DibujaCasillas();
+	DibujaSimbolos();
 
 	DibujaCuadricula();
 
@@ -118,33 +120,165 @@ void Tablerogl::DibujaCasilla(int fila, int col)
 void Tablerogl::setCasillaColor(int fila, int col, bool dark)
 {
 	TipoCasilla tipo = m_tablero->getCasilla(fila, col).tipo;
-	
-	//puntos de poder de momento serán siempre dorados
-	if (tipo == Casilla_poder) {
-		glColor3f(1.0f, 0.82f, 0.10f);
-		return;
-	}
 
-	//para el resto, primero elegimos el par de colores según la zona y luego cuák de los dos usar según dark de dibujarcasillas
+	//primero elegimos el par de colores según la zona y luego cuák de los dos usar según dark de dibujarcasillas
 	switch (tipo) {
 	case Casilla_local:
+		//morado claro u oscuro
+		if (!dark) glColor3f(0.55f, 0.20f, 0.65f);//morado medio
+		else glColor3f(0.30f, 0.05f, 0.40f);//morado oscuro
 	case Casilla_rival:
+		//rojo claro u oscuro
 		if (!dark)
-			glColor3f(0.45f, 0.65f, 0.85f); 
+			glColor3f(0.75f, 0.15f, 0.15f);//rojo medio
 		else
-			glColor3f(0.15f, 0.30f, 0.55f);
+			glColor3f(0.45f, 0.05f, 0.05f);//rojo oscuro
 		break;
-	case Casilla_dinamica:
-		if (!dark)
-			glColor3f(0.75f, 0.88f, 1.00f);
-		else
-			glColor3f(0.50f, 0.72f, 0.90f);
+	case Casilla_dinamica: {
+		//interpolación lineal entre color oscuro y claro según la fase de esta casilla
+		float fase = m_tablero->getCasilla(fila, col).fase;
+
+		float r_dark, g_dark, b_dark;//color cuando fase es 0
+		float r_light, g_light, b_light;//color cuando fase es 1
+
+		if (!dark) {
+
+			//casilla "clara" oscila entre azul medio y casi blanco
+			r_dark = 0.25f; g_dark = 0.45f; b_dark = 0.75f;
+			r_light = 0.75f; g_light = 0.88f; b_light = 1.00f;
+		}
+		else {
+			//casilla "oscura" que oscila entre azul oscuro y azul medio
+			r_dark = 0.10f; g_dark = 0.20f; b_dark = 0.50f;
+			r_light = 0.45f; g_light = 0.65f; b_light = 0.90f;
+		}
+
+		//interpolo cada canal RGB por separado
+		float r = r_dark + fase * (r_light - r_dark);
+		float g = g_dark + fase * (g_light - g_dark);
+		float b = b_dark + fase * (b_light - b_dark);
+
+		glColor3f(r, g, b);
 		break;
+	}
+	case Casilla_poder:
+		if (!dark) glColor3f(0.40f, 0.60f, 0.80f);
+		else glColor3f(0.20f, 0.35f, 0.60f);
+		break;
+
 	default:
 		glColor3f(1.0f, 1.0f, 1.00f);//ponemos un blanco por seguridad
 		break;
 	}
 
+}
+
+void Tablerogl::DibujaSimbolos()
+{
+	for (int fila = 0; fila < N; fila++) {
+		for (int col = 0; col < N; col++) {
+			//centro de estas casillas en coordenadas opengl
+			float cx, cy;
+			cell2center(fila, col, cx, cy);
+
+			//tamaño del simbolo menos que la casilla
+			float size = ancho * 0.38f;
+
+			TipoCasilla tipo = m_tablero->getCasilla(fila, col).tipo;
+
+			if (tipo == Casilla_local) {
+				DibujaCruz(cx, cy, size);
+			}
+			else if (tipo == Casilla_rival) {
+				DibujaLuna(cx, cy, size);
+			}
+			else if (tipo == Casilla_poder) {
+				DibujaPuntoPoder(cx, cy, size);
+			}
+		}
+	}
+}
+
+void Tablerogl::DibujaCruz(float cx, float cy, float size)
+{
+	glColor3f(1.0f, 1.0f, 1.0f); // blanco
+
+	float brazo = size;          // longitud del brazo (desde el centro)
+	float mitad_brazo = size * 0.30f;  // semiancho del brazo
+
+	glBegin(GL_QUADS);
+	// Brazo vertical (de arriba a abajo)
+	glVertex3f(cx - mitad_brazo, cy + brazo, 0.002f);//usamos z=0.002 para que quede delante de los rectángulos de casilla que están en -0.001
+	glVertex3f(cx + mitad_brazo, cy + brazo, 0.002f);
+	glVertex3f(cx + mitad_brazo, cy - brazo, 0.002f);
+	glVertex3f(cx - mitad_brazo, cy - brazo, 0.002f);
+
+	// Brazo horizontal (de izquierda a derecha)
+	glVertex3f(cx - brazo, cy + mitad_brazo, 0.002f);
+	glVertex3f(cx + brazo, cy + mitad_brazo, 0.002f);
+	glVertex3f(cx + brazo, cy - mitad_brazo, 0.002f);
+	glVertex3f(cx - brazo, cy - mitad_brazo, 0.002f);
+	glEnd();
+}
+
+void Tablerogl::DibujaLuna(float cx, float cy, float size)
+{
+	glColor3f(1.0f, 1.0f, 1.0f); // blanco
+
+	float R = size;           // radio del círculo exterior (la luna)
+	float r = size * 0.75f;   // radio del círculo interior (el "mordisco")
+	float dx = size * 0.35f;  // desplazamiento horizontal del círculo interior
+
+	glBegin(GL_TRIANGLE_FAN);
+	// Centro de la luna (para TRIANGLE_FAN)
+	glVertex3f(cx, cy, 0.002f);
+
+	for (int i = 0; i <= CIRCLE_SEGS; i++) {
+		float angulo = 2.0f * (float)3.14159265f * i / CIRCLE_SEGS;
+		float px = cx + R * cos(angulo); // punto en el círculo exterior
+		float py = cy + R * sin(angulo);
+
+		// ¿Está este punto fuera del círculo interior desplazado?
+		float distInterior = sqrt((px - (cx + dx)) * (px - (cx + dx)) + (py - cy) * (py - cy));
+
+		if (distInterior >= r) {
+			// Sí: este punto pertenece a la media luna entonces lo añadimos
+			glVertex3f(px, py, 0.002f);
+		}
+		else {
+			// No: el círculo interior lo cubre entonces ponemos el borde interior
+			// para cerrar el contorno de la media luna
+			float ang2 = atan2(py - cy, px - (cx + dx));
+			glVertex3f(cx + dx + r * cos(ang2), cy + r * sin(ang2), 0.002f);
+		}
+	}
+	glEnd();
+}
+
+void Tablerogl::DibujaPuntoPoder(float cx, float cy, float size)
+{
+
+	glColor3f(1.0f, 0.90f, 0.0f); // amarillo dorado
+
+	// círculo exterior (solo contorno)
+	glLineWidth(2.0f);
+	glBegin(GL_LINE_LOOP);
+	for (int i = 0; i < CIRCLE_SEGS; i++) {
+		float angulo = 2.0f * (float)3.14159265f * i / CIRCLE_SEGS;
+		glVertex3f(cx + size * cos(angulo),cy + size * sin(angulo),0.002f);
+	}
+	glEnd();
+	glLineWidth(1.0f);
+
+	// punto central sólido (disco pequeño)
+	float r = size * 0.30f; // radio del punto: 30% del radio del círculo
+	glBegin(GL_TRIANGLE_FAN);
+	glVertex3f(cx, cy, 0.002f); // centro del abanico
+	for (int i = 0; i <= CIRCLE_SEGS; i++) {
+		float angulo = 2.0f * (float)3.14159265f * i / CIRCLE_SEGS;
+		glVertex3f(cx + r * cos(angulo),cy + r * sin(angulo),0.002f);
+	}
+	glEnd();
 }
 
 void Tablerogl::DibujaCuadricula()//para delimitar el tablero del fondo
