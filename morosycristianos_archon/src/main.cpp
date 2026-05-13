@@ -104,7 +104,7 @@ void OnTimer(int value)
 	last = now;
 	//avanzamos el ciclo de luz del tablero
 	tablero.update(dt);
-	std::cout << "dt" << dt << std::endl;//para que en la consola aparezca el tiempo
+	//std::cout << "dt" << dt << std::endl;//para que en la consola aparezca el tiempo
 	// código de animacion usando dt en segundos
 	//mundo.mueve(dt);
 	// no borrar estas líneas.indicamos que se vuelva a dibujar la
