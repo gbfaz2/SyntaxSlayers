@@ -29,6 +29,7 @@ struct Casilla {
 class Tablero
 {
 	Casilla tablero[9][9];// la cuadrícula que es un array estático de 9*9
+	static constexpr float CYCLE_SPEED = 0.08f;
 
 	void iniCasillas();//asigna tipos de casilla
 	bool esPuntoPoder(int fila, int col) const;
