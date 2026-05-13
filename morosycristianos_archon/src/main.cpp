@@ -27,12 +27,6 @@ int main(int argc, char* argv[])
 	glutCreateWindow("Moros y Cristianos");
 
 	//habilitar luces y definir perspectiva
-	/*glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_COLOR_MATERIAL);
-	glMatrixMode(GL_PROJECTION);
-	gluPerspective(40.0, 800 / 600.0f, 0.1, 150);*/
 
 	//Registrar los callbacks
 	glutDisplayFunc(OnDraw);
