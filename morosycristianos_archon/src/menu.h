@@ -60,7 +60,7 @@ public:
     void reiniciar();
 
 private:
-    int           m_paso;       // 0=modo, 1=bando, 2=confirmar
+    int           m_paso;       // 0=modo, 1=bando, 2=batalla, 3=confirmar
     int           m_seleccion;  // opcion resaltada
     int           m_fotograma;
     bool          m_terminado;
@@ -71,12 +71,13 @@ private:
     void dibujarTitulo(int ancho, int alto);
     void dibujarPaso0(int ancho, int alto);   // seleccion de modo
     void dibujarPaso1(int ancho, int alto);   // seleccion de bando
-    void dibujarPaso2(int ancho, int alto);   // confirmacion
+    void dibujarPaso2(int ancho, int alto);   // seleccion de batalla
+    void dibujarPaso3(int ancho, int alto);   // confirmacion
     void dibujarPie(int ancho, int alto);
 
     void dibujarOpcion(const std::string& texto, float x, float y,
                        float ancho, float alto, bool seleccionada);
 
     void confirmar();
-    int  maxOpciones() const { return (m_paso == 0) ? 4 : 2; }
+    int maxOpciones() const { return (m_paso == 1) ? 2 : 4; }
 };

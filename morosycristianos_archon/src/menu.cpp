@@ -163,6 +163,7 @@ void MenuPrincipal::dibujar(int ancho, int alto) {
         case 0: dibujarPaso0(ancho, alto); break;
         case 1: dibujarPaso1(ancho, alto); break;
         case 2: dibujarPaso2(ancho, alto); break;
+        case 3: dibujarPaso3(ancho, alto); break;
     }
     dibujarPie(ancho, alto); 
     salir2D();
@@ -180,8 +181,8 @@ void MenuPrincipal::dibujarFondo(int ancho, int alto) {
     glLineWidth(2.0f);
     glColor3f(0.85f, 0.70f, 0.10f);
     glBegin(GL_LINES);
-        glVertex2f(ancho * 0.05f, alto * 0.70f);
-        glVertex2f(ancho * 0.95f, alto * 0.70f);
+        glVertex2f(ancho * 0.05f, alto * 0.75f);
+        glVertex2f(ancho * 0.95f, alto * 0.75f);
     glEnd();
     glLineWidth(1.0f);
 }
@@ -223,8 +224,6 @@ void MenuPrincipal::dibujarPaso1(int ancho, int alto) {
                           "Modo: Jugador vs Jugador" : "Modo: Jugador vs IA";
     dibujarTextoCentrado(modotxt, ancho / 2.0f, alto - 135,
                          0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
-    dibujarTextoCentrado("Elige tu bando:", ancho / 2.0f, alto - 155,
-                         0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_12);
 
 	float aw = 240, ah = 55, separacion = 30; // tamaño de las cajas y separación entre ellas
 	float sy = alto / 2.0f + 10; // coordenada y común a ambas opciones
@@ -236,9 +235,39 @@ void MenuPrincipal::dibujarPaso1(int ancho, int alto) {
                   ancho / 2.0f + separacion / 2.0f, sy,
                   aw, ah, m_seleccion == 1);
 }
-
-// Paso 2: confirmacion 
+// Paso 2: Elegir batalla
 void MenuPrincipal::dibujarPaso2(int ancho, int alto) {
+    dibujarTextoCentrado("Elige la batalla:", ancho / 2.0f, alto - 135,
+        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
+
+    float aw = 340, ah = 48, separacion = 12;
+    float sx = ancho / 2.0f - aw / 2.0f;
+    float sy = alto / 2.0f + 80;
+
+    const char* batallas[] = {
+        "  Batalla de Guadalete (711)",
+        "  Batalla de Alarcos (1195)",
+        "  Las Navas de Tolosa (1212)",
+        "  Reconquista de Granada (1492)"
+    };
+    for (int i = 0; i < 4; i++)
+        dibujarOpcion(batallas[i], sx, sy - i * (ah + separacion),
+            aw, ah, m_seleccion == i);
+
+    // Mostrar descripcion de la batalla resaltada
+    const char* descripciones[] = {
+        "Los musulmanes cruzan el estrecho y vencen al rey Rodrigo.",
+        "Al-Mansur derrota a Alfonso VIII de Castilla.",
+        "Los reinos cristianos unidos rompen el poder almohade.",
+        "Los Reyes Catolicos completan la Reconquista peninsular."
+    };
+    dibujarTextoCentrado(descripciones[m_seleccion],
+        ancho / 2.0f, alto / 2.0f - 140,
+        0.65f, 0.65f, 0.65f, GLUT_BITMAP_HELVETICA_12);
+}
+
+// Paso 3: confirmacion 
+void MenuPrincipal::dibujarPaso3(int ancho, int alto) {
     std::string modo  = (m_cfg.modo  == ModoJuego::JVJ) ?
                         "Jugador vs Jugador" : "Jugador vs IA";
     std::string bando = (m_cfg.bando == Bando::CRISTIANO) ?
@@ -323,6 +352,11 @@ void MenuPrincipal::ratonMovido(int mx, int my, int ancho, int alto) {
         if (enCaja(ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) m_seleccion = 0;
         if (enCaja(ancho / 2.0f + sep / 2.0f,       sy, aw, ah)) m_seleccion = 1;
     } else if (m_paso == 2) {
+        float aw = 340, ah = 48, sep = 12;
+        float sx = ancho / 2.0f - aw / 2.0f, sy = alto / 2.0f + 80;
+        for (int i = 0; i < 4; i++)
+             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) m_seleccion = i;
+    } else if (m_paso == 3) {
         float aw = 180, ah = 44, sep = 30, cy = alto / 2.0f - 20;
         if (enCaja(ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) m_seleccion = 0;
         if (enCaja(ancho / 2.0f + sep / 2.0f,       cy, aw, ah)) m_seleccion = 1;
@@ -347,14 +381,16 @@ void MenuPrincipal::confirmar() {
         m_cfg.bando = (m_seleccion == 0) ? Bando::CRISTIANO : Bando::MUSULMAN;
         m_paso = 2; m_seleccion = 0;
     } else if (m_paso == 2) {
+        m_cfg.batalla = (Batalla)m_seleccion;
+        m_cfg.turno1 = iniciativa(m_cfg.batalla); //para mostrar quien empieza
+        m_paso = 3; m_seleccion = 0;
+    } else if (m_paso == 3) {
         if (m_seleccion == 0) {
-            // Sortear la batalla al confirmar JUGAR
-            m_cfg.batalla = sortearBatalla();
-            m_cfg.turno1  = iniciativa(m_cfg.batalla);
-            m_siguiente   = EstadoJuego::DESTINO;
-            m_terminado   = true;
-        } else {
-            m_paso = 1; m_seleccion = 0;
+            m_siguiente = EstadoJuego::DESTINO;
+            m_terminado = true;
+        }
+        else {
+            m_paso = 2; m_seleccion = 0;
         }
     }
 }
