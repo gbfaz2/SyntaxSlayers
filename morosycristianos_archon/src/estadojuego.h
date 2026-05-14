@@ -3,8 +3,6 @@
 // Define los estados globales del juego, los modos, bandos y batallas historicas
 
 #pragma once
-#include <cstdlib>
-#include <ctime>
 
 // Estados principales del juego
 enum class EstadoJuego {
@@ -51,14 +49,19 @@ inline const char* nombreBatalla(Batalla b) {
     }
 }
 
-// Sortea una batalla aleatoria
-inline Batalla sortearBatalla() {
-    static bool inicializado = false;
-    if (!inicializado) {
-        srand((unsigned int)time(nullptr));
-        inicializado = true;
+// Descripcion historica de cada batalla
+inline const char* descripcionBatalla(Batalla b) {
+    switch (b) {
+    case Batalla::GUADALETE:
+        return "Los musulmanes cruzan el estrecho y vencen al rey Rodrigo.";
+    case Batalla::ALARCOS:
+        return "Al-Mansur derrota a Alfonso VIII de Castilla.";
+    case Batalla::NAVAS_TOLOSA:
+        return "Los reinos cristianos unidos rompen el poder almohade.";
+    case Batalla::GRANADA:
+        return "Los Reyes Catolicos completan la Reconquista peninsular.";
+    default: return "";
     }
-    return (Batalla)(rand() % 4);
 }
 
 // Configuracion de la partida actual
