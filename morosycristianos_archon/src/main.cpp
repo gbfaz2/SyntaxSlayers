@@ -3,8 +3,10 @@
 // Punto de entrada del juego, gestión de estados y callbacks de GLUT
 
 #include "freeglut.h"
+#include <ctime>
 #include "estadojuego.h"
 #include "menu.h"
+#include "pantallabatalla.h"
 #include "tablerogl.h"
 #include "Tablero.h"
 
@@ -14,9 +16,10 @@ int altoVentana  = 600;
 
 
 EstadoJuego   estadoActual = EstadoJuego::INTRO;
-ConfigPartida configuracion;
+ConfigPartida  configuracion;
 PantallaIntro  pantallaIntro;
 MenuPrincipal  menuPrincipal;
+PantallaDestino pantallaDestino;
 Tablero*    pTablero    = nullptr;
 Tablerogl*  pTablerogl  = nullptr;
 
@@ -30,6 +33,7 @@ void OnRedimensionar(int ancho, int alto);
 void OnTemporizador(int valor);
 
 int main(int argc, char* argv[]) {
+    srand((unsigned)time(nullptr));
     glutInit(&argc, argv);
     glutInitWindowSize(anchoVentana, altoVentana);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -84,9 +88,11 @@ void OnDibujar() {
             EstadoJuego siguiente = menuPrincipal.siguienteEstado();
             configuracion = menuPrincipal.getConfiguracion();
 
-            if (siguiente == EstadoJuego::FINAL) exit(0); 
+            if (siguiente == EstadoJuego::FINAL) exit(0);
 
-            if (siguiente == EstadoJuego::TABLERO) {
+            if (siguiente == EstadoJuego::DESTINO) {
+                pantallaDestino.reiniciar(configuracion);
+                // Inicializar tablero ya (se usara al salir de DESTINO)
                 if (!pTablero) {
                     pTablero   = new Tablero();
                     pTablerogl = new Tablerogl(pTablero);
@@ -95,6 +101,12 @@ void OnDibujar() {
             }
             estadoActual = siguiente;
         }
+        break;
+
+    case EstadoJuego::DESTINO:
+        pantallaDestino.dibujar(anchoVentana, altoVentana);
+        if (pantallaDestino.terminado())
+            estadoActual = EstadoJuego::TABLERO;
         break;
 
     case EstadoJuego::TABLERO:
@@ -128,6 +140,9 @@ void OnTeclado(unsigned char tecla, int x, int y) {
     case EstadoJuego::MENU:
         menuPrincipal.teclaPulsada(tecla);
         break;
+    case EstadoJuego::DESTINO:
+        pantallaDestino.avanzar();
+        break;
     case EstadoJuego::TABLERO:
         if (tecla == 27) { menuPrincipal.reiniciar(); estadoActual = EstadoJuego::MENU; break; }
         if (pTablerogl) pTablerogl->KeyDown(tecla);
@@ -153,7 +168,10 @@ void OnRaton(int boton, int estado, int x, int y) {
 
     switch (estadoActual) {
     case EstadoJuego::INTRO:
-		pantallaIntro.saltar(); // cualquier click salta la intro
+        pantallaIntro.saltar();
+        break;
+    case EstadoJuego::DESTINO:
+        pantallaDestino.avanzar();
         break;
     case EstadoJuego::MENU:
         if (boton == GLUT_LEFT_BUTTON)

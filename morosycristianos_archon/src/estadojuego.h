@@ -1,8 +1,11 @@
 
-// Autor: Ines AlcÃ©rreca SÃ¡nchez
+// Autor: Ines Alcérreca Sánchez
 // Define los estados globales del juego, los modos, bandos y batallas historicas
 
 #pragma once
+#include <vector>
+#include <string>
+#include <cstdlib>
 
 // Estados principales del juego
 enum class EstadoJuego {
@@ -30,6 +33,11 @@ enum class Batalla {
     NAVAS_TOLOSA,    // 1212 - victoria cristiana
     GRANADA          // 1492 - victoria cristiana
 };
+
+// Sortea una batalla aleatoria
+inline Batalla sortearBatalla() {
+    return static_cast<Batalla>(rand() % 4);
+}
 
 // Devuelve que bando tiene la iniciativa segun la batalla sorteada
 inline Bando iniciativa(Batalla b) {
@@ -61,6 +69,45 @@ inline const char* descripcionBatalla(Batalla b) {
     case Batalla::GRANADA:
         return "Los Reyes Catolicos completan la Reconquista peninsular.";
     default: return "";
+    }
+}
+
+// Contexto historico detallado (varias lineas) para la pantalla de destino
+inline std::vector<std::string> contextoBatalla(Batalla b) {
+    switch (b) {
+    case Batalla::GUADALETE:
+        return {
+            "Año 711. El caudillo bereber Tariq ibn Ziyad",
+            "cruza el Estrecho de Gibraltar con 7.000 hombres.",
+            "El rey visigodo Rodrigo cae derrotado junto al Guadalete.",
+            "En apenas tres años la Península cae bajo dominio islámico.",
+            "Comienza el largo período de Al-Ándalus."
+        };
+    case Batalla::ALARCOS:
+        return {
+            "Año 1195. El califa almohade Al-Mansur",
+            "dirige su ejército contra Alfonso VIII de Castilla.",
+            "En las llanuras de Alarcos, los castellanos son aplastados.",
+            "La derrota frena la Reconquista durante casi dos décadas.",
+            "Los almohades alcanzan su máximo poder en Hispania."
+        };
+    case Batalla::NAVAS_TOLOSA:
+        return {
+            "Año 1212. Una cruzada papal une a los reinos",
+            "de Castilla, Aragón y Navarra bajo una sola bandera.",
+            "En el paso de Sierra Morena, el ejército almohade",
+            "es destruido por la coalición cristiana.",
+            "El poder almohade jamás se recuperará."
+        };
+    case Batalla::GRANADA:
+        return {
+            "Año 1492. Tras diez años de campañas militares,",
+            "los Reyes Católicos asedian el reino nazarí de Granada.",
+            "El sultán Boabdil entrega las llaves el 2 de enero.",
+            "La última ciudad musulmana de la Península cae.",
+            "La Reconquista culmina. España nace."
+        };
+    default: return {};
     }
 }
 

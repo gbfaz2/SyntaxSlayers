@@ -147,12 +147,14 @@
   <ItemGroup>
     <ClInclude Include="src\estadojuego.h" />
     <ClInclude Include="src\menu.h" />
+    <ClInclude Include="src\pantallabatalla.h" />
     <ClInclude Include="src\Tablero.h" />
     <ClInclude Include="src\tablerogl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\menu.cpp" />
+    <ClCompile Include="src\pantallabatalla.cpp" />
     <ClCompile Include="src\Tablero.cpp" />
     <ClCompile Include="src\tablerogl.cpp" />
   </ItemGroup>
