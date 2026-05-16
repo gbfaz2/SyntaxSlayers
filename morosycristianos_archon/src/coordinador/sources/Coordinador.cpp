@@ -1,63 +1,178 @@
 #include "Coordinador.h"
 #include "freeglut.h"
+#include <ctime>
+#include <cstdlib>
+
+Coordinador::~Coordinador()
+{
+	delete pTablerogl;
+	delete pTablero;
+}
 
 void Coordinador::inicializa()
 {
-	estado = INTRO; // ARRANCA EN INTRO
+	srand((unsigned)time(nullptr));
+	pantallaIntro.reiniciar();
+	menuPrincipal.reiniciar();
+	estado = EstadoJuego::INTRO;
 }
 
 void Coordinador::dibuja()
 {
-	// TEST DE COLORES: CADA ESTADO PINTA LA PANTALLA DE UN COLOR
-	switch (estado) {
-	case INTRO:
-		glClearColor(1, 1, 1, 1); // BLANCO
-		break;
-	case MENU:
-		glClearColor(1, 0.5, 0, 1); // NARANJA
-		break;
-	case TABLERO:
-		glClearColor(0, 0.5, 0, 1); // VERDE
-		break;
-	case ARENA:
-		glClearColor(0, 0, 0.5, 1); // AZUL
-		break;
-	case PAUSA:
-		glClearColor(0.5, 0.5, 0.5, 1); // GRIS
-		break;
-	case RANKING:
-		glClearColor(1, 1, 0, 1); // AMARILLO
-		break;
-	case GAMEOVER:
-		glClearColor(0.5, 0, 0, 1); // ROJO
-		break;
-	}
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glClear(GL_COLOR_BUFFER_BIT); // LIMPIA PANTALLA CON COLOR
+    switch (estado) {
+
+    case EstadoJuego::INTRO:
+        pantallaIntro.dibujar(anchoVentana, altoVentana);
+        if (pantallaIntro.terminado()) {
+            pantallaIntro.reiniciar();
+            menuPrincipal.reiniciar();
+            estado = EstadoJuego::MENU;
+        }
+        break;
+
+    case EstadoJuego::MENU:
+        menuPrincipal.dibujar(anchoVentana, altoVentana);
+        if (menuPrincipal.terminado()) {
+            EstadoJuego siguiente = menuPrincipal.siguienteEstado();
+            configuracion = menuPrincipal.getConfiguracion();
+
+            if (siguiente == EstadoJuego::FINAL) exit(0);
+
+            if (siguiente == EstadoJuego::DESTINO) {
+                pantallaDestino.reiniciar(configuracion);
+                if (!pTablero) {
+                    pTablero = new Tablero();
+                    pTablerogl = new Tablerogl(pTablero);
+                    pTablerogl->init();
+                }
+            }
+            estado = siguiente;
+        }
+        break;
+
+    case EstadoJuego::DESTINO:
+        pantallaDestino.dibujar(anchoVentana, altoVentana);
+        if (pantallaDestino.terminado())
+            estado = EstadoJuego::TABLERO;
+        break;
+
+    case EstadoJuego::TABLERO:
+        if (pTablerogl) pTablerogl->Dibuja();
+        break;
+
+    case EstadoJuego::ARENA:
+        // TODO: arena de combate
+        break;
+
+    case EstadoJuego::RANKING:
+        // TODO: pantalla de ranking
+        break;
+
+    case EstadoJuego::FINAL:
+        // TODO: pantalla de fin de partida
+        break;
+
+    default: break;
+    }
+
+    glutSwapBuffers();
 }
 
 void Coordinador::tecla(unsigned char key)
 {
-	if (key == 27) exit(0); // ESCAPE: CIERRA JUEGO
-
-	// TEST RÁPIDO: CAMBIA DE ESTADO CON TECLAS PARA PROBAR LA MÁQUINA
-	if (key == '1') estado = INTRO; // PULSA 1: INTRO
-	if (key == '2') estado = MENU; // PULSA 2: MENU
-	if (key == '3') estado = TABLERO; // PULSA 3: TABLERO
-	if (key == '4') estado = ARENA; // PULSA 4: ARENA
-	if (key == '5') estado = PAUSA; // PULSA 5: PAUSA
-	if (key == '6') estado = RANKING; // PULSA 6: RANKING
-	if (key == '7') estado = GAMEOVER; // PULSA 7: GAMEOVER
+    switch (estado) {
+    case EstadoJuego::INTRO:
+        pantallaIntro.saltar();
+        break;
+    case EstadoJuego::MENU:
+        menuPrincipal.teclaPulsada(key);
+        break;
+    case EstadoJuego::DESTINO:
+        pantallaDestino.avanzar();
+        break;
+    case EstadoJuego::TABLERO:
+        if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; break; }
+        if (pTablerogl) pTablerogl->KeyDown(key);
+        break;
+    default:
+        if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
+        break;
+    }
+    glutPostRedisplay();
 }
 
 void Coordinador::tecla_especial(int key)
 {
-	// VACÍO POR AHORA
+    switch (estado) {
+    case EstadoJuego::MENU:
+        menuPrincipal.teclaEspecial(key);
+        break;
+    case EstadoJuego::TABLERO:
+        if (pTablerogl) pTablerogl->SpecialKey(key);
+        break;
+    default: break;
+    }
+    glutPostRedisplay();
+}
+
+void Coordinador::mueve(double /*dt*/)
+{
+    // La animación la manejan las propias pantallas por fotograma (glutPostRedisplay en OnTimer)
+}
+
+void Coordinador::raton(int boton, int state, int x, int y)
+{
+    bool pulsado = (state == GLUT_DOWN);
+    if (!pulsado) return;
+
+    switch (estado) {
+    case EstadoJuego::INTRO:
+        pantallaIntro.saltar();
+        break;
+    case EstadoJuego::DESTINO:
+        pantallaDestino.avanzar();
+        break;
+    case EstadoJuego::MENU:
+        if (boton == GLUT_LEFT_BUTTON)
+            menuPrincipal.ratonPulsado(x, y, anchoVentana, altoVentana);
+        break;
+    case EstadoJuego::TABLERO:
+        if (pTablerogl) {
+            int button;
+            if (boton == GLUT_LEFT_BUTTON)       button = MOUSE_LEFT_BUTTON;
+            else if (boton == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
+            else                                 button = MOUSE_MIDDLE_BUTTON;
+
+            int specialKey = glutGetModifiers();
+            bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
+            bool shiftKey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
+
+            pTablerogl->MouseButton(x, y, button, true, shiftKey, ctrlKey);
+        }
+        break;
+    default: break;
+    }
+    glutPostRedisplay();
 }
 
 void Coordinador::mueve(double dt)
 {
 	// VACÍO POR AHORA
+}
+
+void Coordinador::ratonMovido(int x, int y)
+{
+    if (estado == EstadoJuego::MENU)
+        menuPrincipal.ratonMovido(x, y, anchoVentana, altoVentana);
+    glutPostRedisplay();
+}
+
+void Coordinador::redimensionar(int ancho, int alto) {
+    anchoVentana = ancho;
+    altoVentana = (alto == 0) ? 1 : alto;
+    glViewport(0, 0, anchoVentana, altoVentana);
 }
 
 void Coordinador::raton(int button, int state, int x, int y)
