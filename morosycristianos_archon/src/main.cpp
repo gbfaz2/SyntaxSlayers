@@ -186,11 +186,21 @@ void OnRaton(int boton, int estado, int x, int y) {
         break;
     case EstadoJuego::TABLERO:
         if (pTablerogl) {
-            bool ctrl  = (glutGetModifiers() & GLUT_ACTIVE_CTRL)  != 0;
-            bool shift = (glutGetModifiers() & GLUT_ACTIVE_SHIFT) != 0;
-            int  btn   = (boton == GLUT_LEFT_BUTTON) ?
-                         MOUSE_LEFT_BUTTON : MOUSE_RIGHT_BUTTON;
-            pTablerogl->MouseButton(x, y, btn, pulsado, shift, ctrl);
+            bool down = (estado == GLUT_DOWN);
+
+            //convertimos la constante de glut al enum nuestro
+            int button;
+            if (boton == GLUT_LEFT_BUTTON) button = MOUSE_LEFT_BUTTON;
+            else if (boton == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
+            else button = MOUSE_MIDDLE_BUTTON;
+
+            //Detectamos ctrl y shift
+            int specialKey = glutGetModifiers();
+            bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
+            bool shiftkey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
+
+            pTablerogl->MouseButton(x, y, button, down, shiftkey, ctrlKey);
+            glutPostRedisplay();
         }
         break;
     default: break;
