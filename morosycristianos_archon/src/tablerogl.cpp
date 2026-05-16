@@ -165,10 +165,10 @@ void Tablerogl::setCasillaColor(int fila, int col)
 {
 	switch (m_tablero->getCasilla(fila, col).tipo) {
 	case Casilla_local:
-		glColor3f(0.55f, 0.10f, 0.65f); // morado
+		glColor3f(0.50f, 0.04f, 0.04f);// rojo oscuro 
 		return;
 	case Casilla_rival:
-		glColor3f(0.50f, 0.04f, 0.04f); // rojo oscuro
+		glColor3f(0.55f, 0.10f, 0.65f);// morado
 		return;
 	case Casilla_dinamica:
 		glColor3f(0.35f, 0.35f, 0.35f); // gris
