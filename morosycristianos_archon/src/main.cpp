@@ -3,12 +3,10 @@
 #include "freeglut.h"
 #include <iostream>
 #include "ETSIDI.h"
-#include "GestorTurnos.h"
 using namespace std;
 
 
 Tablero tablero; //centralizamos la lógica, que crea los 9x9 tipos de casilla
-GestorTurnos gestorTurnos;
 Tablerogl scene(&tablero);//recibe puntero al tablero
 
 
