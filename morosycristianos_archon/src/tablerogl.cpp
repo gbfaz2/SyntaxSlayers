@@ -7,7 +7,6 @@
 #include "freeglut.h"
 #include "ETSIDI.h"
 #include <cmath>
-#include <string>
 
 using namespace std;
 
@@ -131,29 +130,9 @@ void Tablerogl::DibujaFondo()
 
 void Tablerogl::DibujaTitulo()
 {
-	float total = N * ancho;
-	float cx = total / 2.0f;   // centro horizontal del tablero
-	float y = ancho * 0.4f;   // un poco por encima del borde superior
-
-	glDisable(GL_LIGHTING);
-
-	glColor3f(0.9f, 0.1f, 0.1f); // rojo oscuro
-
-	// Para simplicidad lo centramos visualmente con offset manual.
-	float charW = total / 40.0f; // ancho aproximado de un carácter en coords mundo
-	float startX = cx - 3.0f * charW; // 6 chars, empezamos a la izquierda del centro
-
-	// Dibujamos letra a letra con glutBitmapCharacter
-	const char* titulo = "ARCHON";
-	glRasterPos3f(startX, y, 0.01f);
-	for (int i = 0; titulo[i]; i++)
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
-
-	// Sombra / borde: lo dibujamos ligeramente desplazado en blanco
-	glColor3f(1.0f, 1.0f, 1.0f);
-	glRasterPos3f(startX - charW * 0.1f, y + charW * 0.1f, 0.005f);
-	for (int i = 0; titulo[i]; i++)
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+	ETSIDI::setTextColor(1, 0, 0);
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+	ETSIDI::printxy("ARCHON", 330, 570);
 }
 
 void Tablerogl::DibujaCasillas()
