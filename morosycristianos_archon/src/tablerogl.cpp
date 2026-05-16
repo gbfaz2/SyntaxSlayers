@@ -406,7 +406,7 @@ void Tablerogl::DibujaPieza(int fil, int col)
 	glLineWidth(1.0f);
 }*/
 
-void Tablerogl::trySelectorMove(Bando bando)
+void Tablerogl::trySelectorMove(BandoPieza bando)
 {
 	int idx = (bando == bando_local) ? 0 : 1;
 	int cr = Filacursor[idx];

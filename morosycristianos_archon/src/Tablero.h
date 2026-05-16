@@ -22,7 +22,7 @@ enum TipoCasilla {
 };
 
 //bando de una pieza
-enum Bando {
+enum BandoPieza {
 	bando_nada, //sin pieza
 	bando_local, //pieza cristiana(de momento)
 	bando_rival //pieza musulmana (de momento)
@@ -50,7 +50,7 @@ struct Casilla {
 	TipoCasilla tipo{ Casilla_dinamica };//Inicializamos aquí en la declaración
 	//float fase{ 0.0f };//0-local, 0.5-neutral, 1-rival
 	TipoPieza pieza{ pieza_nada };
-	Bando bando{ bando_nada };
+	BandoPieza bando{ bando_nada };
 };
 //con la clase tablero voy a gestionar la cuadrícula lógica de 9x9. Para ello un array estático donde vamos a fijar el tamaño N=9
 //añado un método que avanza el ciclo  de luz, recibe el tiempo transcurrido desde el ultimo frame y actualiza la fase de cada casilla dinámica
@@ -62,7 +62,7 @@ class Tablero
 	void iniCasillas();//asigna tipos de casilla
 	void iniPiezas();//coloca las piezas en sus posiciones iniciales
 	bool esPuntoPoder(int fila, int col) const;
-	void lugar(int fila, int col, TipoPieza p, Bando b) {
+	void lugar(int fila, int col, TipoPieza p, BandoPieza b) {
 		tablero[fila][col].pieza = p;
 		tablero[fila][col].bando = b;
 	}
