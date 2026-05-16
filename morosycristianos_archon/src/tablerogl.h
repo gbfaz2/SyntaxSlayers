@@ -49,6 +49,8 @@ public:
 	void DibujaPiezas();
 	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
 
+	void trySelectorMove(Bando bando);
+
 	void KeyDown(unsigned char key);
 	void SpecialKey(int key);
 	void MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
