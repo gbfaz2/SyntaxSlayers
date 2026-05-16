@@ -63,10 +63,10 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	lugar(7, 8, pieza_cubog, bando_rival);//guardia negra
 	lugar(2, 8, pieza_cono, bando_rival);//caballería acorazada
 	lugar(6, 8, pieza_cono, bando_rival);//caballería acorazada
-	// en la columna 1 los arqueros (esquinas) y soldados (centro)
+	// en la columna 7 los arqueros (esquinas) y soldados (centro)
 	lugar(0, 7, pieza_cilindro, bando_rival);//arquero ghazí
 	lugar(8, 7, pieza_cilindro, bando_rival);//arquero ghazí
-	for (int fila = 1; fila <= 7; fila++) lugar(fila, 1, pieza_cubo_p, bando_rival);//soldados ghazís
+	for (int fila = 1; fila <= 7; fila++) lugar(fila, 7, pieza_cubo_p, bando_rival);//soldados ghazís
 
 }
 
