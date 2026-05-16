@@ -14,6 +14,8 @@ void OnTimer(int value);
 void OnKeyboardDown(unsigned char key, int x, int y);
 void OnSpecialKeyboardDown(int key, int x, int y);
 void OnMouseClick(int button, int state, int x, int y);
+void OnPassiveMotion(int x, int y);
+void OnReshape(int ancho, int alto);
 
 // ─────────────────────────────────────────────────────────────
 int main(int argc, char* argv[])
@@ -38,6 +40,9 @@ int main(int argc, char* argv[])
     glutKeyboardFunc(OnKeyboardDown);
     glutSpecialFunc(OnSpecialKeyboardDown);
     glutMouseFunc(OnMouseClick);
+    glutPassiveMotionFunc(OnPassiveMotion);
+    glutReshapeFunc(OnReshape);
+
 
     glutMainLoop();
     return 0;
@@ -73,8 +78,18 @@ void OnMouseClick(int button, int state, int x, int y)
     juego.raton(button, state, x, y);
     glutPostRedisplay();
 }
+void OnPassiveMotion(int x, int y)
+{
+    juego.ratonMovido(x, y);
+    glutPostRedisplay();
+}
 
-void OnTimer(int /*value*/)
+void OnReshape(int ancho, int alto)
+{
+    juego.redimensionar(ancho, alto);
+    glutPostRedisplay();
+}
+void OnTimer(int dt)
 {
     static auto last = high_resolution_clock::now();
     auto now = high_resolution_clock::now();
