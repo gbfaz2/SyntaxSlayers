@@ -18,6 +18,7 @@ enum TipoCasilla {
 	Casilla_poder//uno de los 5 puntos estratégicos del tablero
 };
 
+//cuidado conflicto con clases: Bando ya existe!!
 //bando de una pieza
 enum Bando {
 	bando_nada, //sin pieza
