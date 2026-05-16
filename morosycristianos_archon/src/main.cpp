@@ -89,7 +89,7 @@ void OnReshape(int ancho, int alto)
     juego.redimensionar(ancho, alto);
     glutPostRedisplay();
 }
-void OnTimer(int dt)
+void OnTimer(int /*VALUE*/)
 {
     static auto last = high_resolution_clock::now();
     auto now = high_resolution_clock::now();
@@ -100,4 +100,4 @@ void OnTimer(int dt)
 
     glutPostRedisplay();
     glutTimerFunc(25, OnTimer, 0);
-}
+} 

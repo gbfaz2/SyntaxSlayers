@@ -72,7 +72,7 @@ class Tablero
 public:
 	static const int N = 9;//constante no vamos a modificarlo
 	Tablero();//constructor por defecto que llama al método iniCasillas()
-	~Tablero() {};
+	~Tablero();
 	int getSize() const { return N; }
 	//acceso de solo lectura a una casilla, lo usará tablerogl para saber qué color pintar. usaremos (0,0) como la esquina superior izquierda 
 	const Casilla& getCasilla(int fila, int col) const { return tablero[fila][col]; }// el valor de retorno es const para que no se pueda modificar desde fuera
