@@ -172,20 +172,20 @@ void Tablerogl::setCasillaColor(int fila, int col)
 {
 	switch (m_tablero->getCasilla(fila, col).tipo) {
 	case Casilla_local:
-		glColor3f(0.58f, 0.12f, 0.68f); // morado
+		glColor3f(0.55f, 0.10f, 0.65f); // morado
 		return;
 	case Casilla_rival:
-		glColor3f(0.55f, 0.05f, 0.05f); // rojo oscuro
+		glColor3f(0.50f, 0.04f, 0.04f); // rojo oscuro
 		return;
 	case Casilla_dinamica:
-		glColor3f(0.38f, 0.38f, 0.38f); // gris
+		glColor3f(0.35f, 0.35f, 0.35f); // gris
 		return;
 	case Casilla_poder:
 		// El power point usa el color de la zona en que está
 		// (para que encaje visualmente) y encima dibujamos el círculo
-		if (col < 4)       glColor3f(0.58f, 0.12f, 0.68f); // zona morada
-		else if (col == 4) glColor3f(0.38f, 0.38f, 0.38f); // zona gris
-		else               glColor3f(0.55f, 0.05f, 0.05f); // zona roja
+		if (col < 4)       glColor3f(0.55f, 0.10f, 0.65f); // zona morada
+		else if (col == 4) glColor3f(0.35f, 0.35f, 0.35f); // zona gris
+		else               glColor3f(0.50f, 0.04f, 0.04f); // zona roja
 		return;
 	default:
 		glColor3f(0.5f, 0.5f, 0.5f);
@@ -331,7 +331,7 @@ void Tablerogl::DibujaPieza(int fil, int col)
 	float escala = ancho * 0.30f; // escala base
 
 	glPushMatrix();
-	glTranslatef(cx, cy, escala + 0.008f); // elevamos sobre el tablero
+	glTranslatef(cx, cy, escala + 0.01f); // elevamos sobre el tablero
 
 	switch (casilla.pieza) {
 
@@ -416,22 +416,52 @@ void Tablerogl::DibujaPieza(int fil, int col)
 void Tablerogl::trySelectorMove(Bando bando)
 {
 	int idx = (bando == bando_local) ? 0 : 1;
-	int cf = Filacursor[idx], cc = Colcursor[idx];
+	int cr = Filacursor[idx];
+	int cc = Colcursor[idx];
 
 	if (!piezaSeleccionada) {
-		const Casilla& c = m_tablero->getCasilla(cf, cc);
+		// Intentamos seleccionar una pieza propia
+		const Casilla& c = m_tablero->getCasilla(cr, cc);
 		if (c.pieza != pieza_nada && c.bando == bando) {
-			fromFila = cf; fromCol = cc; fromBando = bando;
-			piezaSeleccionada = true;
+			fromFila = cr;
+			fromCol = cc;
+			fromBando = bando;
+			piezaSeleccionada= true;
+			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
+				<< "] Seleccionada en (" << cr << "," << cc << ")" << endl;
 		}
+		else {
+			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
+				<< "] No hay pieza propia en (" << cr << "," << cc << ")" << endl;
+		}
+
 	}
 	else {
-		if (fromBando != bando)return;
-		if (cf == fromFila && cc == fromCol) piezaSeleccionada = false; fromFila = fromCol = -1; return;
-		if (m_tablero->puedeMover(fromFila, fromCol, cf, cc))m_tablero->muevePieza(fromFila, fromCol, cf, cc);
-		else
-			cout << "Movimiento invalido." << endl;
-		piezaSeleccionada = false; fromFila = fromCol = -1;
+		// Ya hay pieza seleccionada: este clic es el destino
+
+		// Solo puede mover el equipo que seleccionó la pieza
+		if (fromBando != bando) return;
+
+		if (cr == fromFila && cc == fromCol) {
+			// Clic en la misma casilla → cancelar selección
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
+			cout << "Selección cancelada." << endl;
+			return;
+		}
+
+		if (m_tablero->puedeMover(fromFila, fromCol, cr, cc)) {
+			bool combat = m_tablero->muevePieza(fromFila, fromCol, cr, cc);
+			if (combat)
+				cout << "¡COMBATE! (pantalla de combate pendiente)" << endl;
+		}
+		else {
+			cout << "Movimiento inválido: casilla ocupada por aliado." << endl;
+		}
+
+		// En cualquier caso, deseleccionamos
+		piezaSeleccionada = false;
+		fromFila = fromCol = -1;
 	}
 }
 
@@ -458,10 +488,10 @@ void Tablerogl::KeyDown(unsigned char key)
 void Tablerogl::SpecialKey(int key)
 {
 	int& rR = Filacursor[1]; int& cR = Colcursor[1];
-	if (key == GLUT_KEY_UP) { if (rR > 0)   rR--; }
-	if (key == GLUT_KEY_DOWN) { if (rR < N - 1) rR++; }
-	if (key == GLUT_KEY_LEFT) { if (cR > 0)   cR--; }
-	if (key == GLUT_KEY_RIGHT) { if (cR < N - 1) cR++; }
+	if (key == GLUT_KEY_UP && rR > 0)   rR--;
+	if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
+	if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
+	if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
 }
 
 void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
