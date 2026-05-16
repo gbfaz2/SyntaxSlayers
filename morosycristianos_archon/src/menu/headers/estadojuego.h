@@ -24,7 +24,7 @@ enum class EstadoJuego {
 enum class ModoJuego { NINGUNO, JVJ, JVIA };
 
 // Bando del jugador
-enum class Bando { NINGUNO, CRISTIANO, MUSULMAN };
+enum class BandoJugador { NINGUNO, CRISTIANO, MUSULMAN };
 
 // Las 4 batallas historicas del juego
 enum class Batalla {
@@ -40,10 +40,10 @@ inline Batalla sortearBatalla() {
 }
 
 // Devuelve que bando tiene la iniciativa segun la batalla sorteada
-inline Bando iniciativa(Batalla b) {
+inline BandoJugador iniciativa(Batalla b) {
     if (b == Batalla::GUADALETE || b == Batalla::ALARCOS)
-        return Bando::MUSULMAN;
-    return Bando::CRISTIANO;
+        return BandoJugador::MUSULMAN;
+    return BandoJugador::CRISTIANO;
 }
 
 // Nombre de la batalla para mostrar en pantalla
@@ -114,7 +114,7 @@ inline std::vector<std::string> contextoBatalla(Batalla b) {
 // Configuracion de la partida actual
 struct ConfigPartida {
     ModoJuego modo = ModoJuego::NINGUNO;
-    Bando     bando = Bando::NINGUNO;
+    BandoJugador     bando = BandoJugador::NINGUNO;
     Batalla   batalla = Batalla::GUADALETE;
-    Bando     turno1 = Bando::NINGUNO;   // quien empieza
+    BandoJugador     turno1 = BandoJugador::NINGUNO;   // quien empieza
 };
