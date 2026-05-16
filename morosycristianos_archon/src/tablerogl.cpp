@@ -71,10 +71,6 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 
 	glDisable(GL_LIGHTING);
 
-	ETSIDI::setTextColor(1, 1, 0);
-	ETSIDI::setFont("fuentes/nuevafuente.ttf", 16);
-	ETSIDI::printxy("ARCHON", 0, 20);
-
 	DibujaFondo();//fondo png detrás de todo
 	DibujaCasillas();
 	DibujaSimbolos();
@@ -110,22 +106,24 @@ void Tablerogl::DibujaFondo()
 	auto tex = ETSIDI::getTexture("imagenes/fondo_tablero.png");
 	if (tex.id == 0)return;
 
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0, 1, 0, 1, -1, 1);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex.id);
-	glDisable(GL_LIGHTING);
+	glColor3f(1, 1, 1);
 
-	// El quad cubre un área mayor que el tablero para verse como fondo
-	float total = N * ancho;
-	float margen = ancho * 1.5f; // margen alrededor del tablero
-	float x0 = -margen, x1 = total + margen;
-	float y0 = margen, y1 = -(total + margen);
-
-	glColor3f(1, 1, 1); // sin tinte de color
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(x0, y0, -0.01f);
-	glTexCoord2f(1, 0); glVertex3f(x1, y0, -0.01f);
-	glTexCoord2f(1, 1); glVertex3f(x1, y1, -0.01f);
-	glTexCoord2f(0, 1); glVertex3f(x0, y1, -0.01f);
+	glTexCoord2f(0, 0); glVertex2f(0, 0);
+	glTexCoord2f(1, 0); glVertex2f(1, 0);
+	glTexCoord2f(1, 1); glVertex2f(1, 1);
+	glTexCoord2f(0, 1); glVertex2f(0, 1);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
