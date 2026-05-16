@@ -18,7 +18,6 @@ enum TipoCasilla {
 	Casilla_poder//uno de los 5 puntos estratégicos del tablero
 };
 
-//cuidado conflicto con clases: Bando ya existe!!
 //bando de una pieza
 enum Bando {
 	bando_nada, //sin pieza
@@ -29,10 +28,14 @@ enum Bando {
 //tipo de pieza (forma geometrica de momento)
 enum TipoPieza {
 	pieza_nada,
-	pieza_capitan,//esfera grande-1 por bando
-	pieza_soldado,//cubo-6 por bando
-	pieza_caballero,//piramide-3 por bando
-	pieza_arquero//cilindro -3 por bando
+	pieza_esfera,//esfera grande-1 por bando rey/emir
+	pieza_dodecaedro,//1 por bando- infiltrado/asesino
+	pieza_icosaedro,//1 por bando- almogavar/arqueo a caballo
+	pieza_tetraedro,//2 por bando-caballería ligera/jinete bereber
+	pieza_cubog,//cubo grande - 2 por bando infantería pesada/guardia negra
+	pieza_cono,//2 por bando- caballería pesada/cab.acorazada
+	pieza_cilindro,//2 por bando-ballestero/arquero ghazí
+	pieza_cubo_p//7 por bando- miliciano/soldado ghazí
 };
 
 //estrucura de casilla
@@ -57,11 +60,6 @@ class Tablero
 	void iniPiezas();//coloca las piezas en sus posiciones iniciales
 	bool esPuntoPoder(int fila, int col) const;
 
-	//coloca una pieza de forma explícita para evitar confusión de índices
-	/*void lugar(int fila, int col, TipoPieza p, Bando b) {
-		tablero[fila][col].pieza = p;
-		tablero[fila][col].bando = b;
-	}*/
 public:
 	static const int N = 9;//constante no vamos a modificarlo
 	Tablero();//constructor por defecto que llama al método iniCasillas()
