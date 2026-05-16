@@ -13,14 +13,59 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="piezas">
-      <UniqueIdentifier>{ce71c7ec-4988-4cd1-96d1-8e96afada7da}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="coordinador">
-      <UniqueIdentifier>{3c2a8de7-6ad6-46fc-ab57-ff23b18d2edd}</UniqueIdentifier>
+    <Filter Include="menu">
+      <UniqueIdentifier>{0ae4d12d-6eb8-4716-b2e1-a3c298365faa}</UniqueIdentifier>
     </Filter>
     <Filter Include="arena">
-      <UniqueIdentifier>{d2978a1d-3d4f-4fec-b649-cd8b6d975b78}</UniqueIdentifier>
+      <UniqueIdentifier>{b4a721b3-6cfa-4ee9-b071-9c6ca46bfae7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="coordinador">
+      <UniqueIdentifier>{3563514e-ab78-49dd-a922-5001b80b75a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ia">
+      <UniqueIdentifier>{f8aa06fb-dc9b-4106-83a0-b90b193c65a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="piezas">
+      <UniqueIdentifier>{d619e999-33aa-4f6a-bf52-727c5ab39357}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tablero">
+      <UniqueIdentifier>{94486d74-2822-4323-bf80-d7f4d1207e4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arena\Headers">
+      <UniqueIdentifier>{4ca95967-9c9d-4444-8796-b24bd891c02c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="menu\Headers">
+      <UniqueIdentifier>{ce6fedf6-47d7-4cff-9a3f-02494adc6a4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="coordinador\Headers">
+      <UniqueIdentifier>{efb694c3-5a1a-49a7-886e-eeee8f9abe36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ia\Headers">
+      <UniqueIdentifier>{5653d438-a616-4477-886c-62a1fc58b3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tablero\Headers">
+      <UniqueIdentifier>{322994d0-009b-4df2-8a94-c26ba145c369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="piezas\Headers">
+      <UniqueIdentifier>{48e1d579-171f-48b0-8b92-35ccbb43ea43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="arena\Sources">
+      <UniqueIdentifier>{776c8d91-1e91-4c71-85ad-b1cdd1ccb28e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="menu\Sources">
+      <UniqueIdentifier>{e369beb8-3057-4ff4-b599-85673464d847}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="coordinador\Sources">
+      <UniqueIdentifier>{df0c5038-61d4-41df-9e93-38fcca8c42b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ia\Sources">
+      <UniqueIdentifier>{f13d6174-3e53-43a7-8ba3-ed9afdd8b1a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tablero\Sources">
+      <UniqueIdentifier>{9c45e23a-0611-40ac-b15f-8e5b68187873}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="piezas\Sources">
+      <UniqueIdentifier>{e35e07a1-7417-463e-b431-83f0b94c078f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -33,71 +78,83 @@
     <ClInclude Include="lib\glut.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\coordinador\Coordinador.h">
-      <Filter>coordinador</Filter>
+    <ClInclude Include="src\ia\headers\placeholder_ia.h">
+      <Filter>ia\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Almogavar.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\arena\headers\placeholder_arena.h">
+      <Filter>arena\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Arma.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\menu\headers\placeholder_menu.h">
+      <Filter>menu\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\ArmaCarga.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\tablero\headers\placeholder_tablero.h">
+      <Filter>tablero\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\ArmaCuerpoaCuerpo.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\coordinador\headers\Coordinador.h">
+      <Filter>coordinador\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\ArmaDistancia.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Almogavar.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Ballestero.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Arma.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\CaballeriaLigera.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\ArmaCarga.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\CaballeriaPesada.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\ArmaCuerpoaCuerpo.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Hechicero.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\ArmaDistancia.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Infanteria.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Ballestero.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Infiltrado.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\CaballeriaLigera.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Miliciano.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\CaballeriaPesada.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Pieza.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Hechicero.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\PiezaTeleporte.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Infanteria.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\PiezaTerrestre.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Infiltrado.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\PiezaVoladora.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Miliciano.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\Rey.h">
-      <Filter>piezas</Filter>
+    <ClInclude Include="src\piezas\headers\Pieza.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\Arena.h">
-      <Filter>arena</Filter>
+    <ClInclude Include="src\piezas\headers\PiezaTeleporte.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\ArenaRenderer.h">
-      <Filter>arena</Filter>
+    <ClInclude Include="src\piezas\headers\PiezaTerrestre.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\Combatiente.h">
-      <Filter>arena</Filter>
+    <ClInclude Include="src\piezas\headers\PiezaVoladora.h">
+      <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\InputState.h">
-      <Filter>arena</Filter>
+    <ClInclude Include="src\piezas\headers\Rey.h">
+      <Filter>piezas\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arena\headers\Arena.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arena\headers\ArenaRenderer.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arena\headers\Combatiente.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arena\headers\InputState.h">
+      <Filter>arena\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -115,68 +172,80 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
     </ClCompile>
-    <ClCompile Include="src\coordinador\Coordinador.cpp">
-      <Filter>coordinador</Filter>
+    <ClCompile Include="src\ia\headers\placeholder_ia.cpp">
+      <Filter>ia\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Almogavar.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\arena\sources\placeholder_arena.cpp">
+      <Filter>arena\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Arma.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\menu\sources\placeholder_menu.cpp">
+      <Filter>menu\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\ArmaCarga.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\tablero\sources\placeholder_tablero.cpp">
+      <Filter>tablero\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\ArmaCuerpoaCuerpo.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\coordinador\sources\Coordinador.cpp">
+      <Filter>coordinador\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\ArmaDistancia.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Almogavar.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Ballestero.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Arma.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\CaballeriaLigera.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\ArmaCarga.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\CaballeriaPesada.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\ArmaCuerpoaCuerpo.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Hechicero.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\ArmaDistancia.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Infanteria.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Ballestero.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Infiltrado.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\CaballeriaLigera.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Miliciano.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\CaballeriaPesada.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Pieza.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Hechicero.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\PiezaTeleporte.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Infanteria.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\PiezaTerrestre.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Infiltrado.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\PiezaVoladora.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Miliciano.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\piezas\Rey.cpp">
-      <Filter>piezas</Filter>
+    <ClCompile Include="src\piezas\sources\Pieza.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\arena\Arena.cpp">
-      <Filter>arena</Filter>
+    <ClCompile Include="src\piezas\sources\PiezaTeleporte.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\arena\ArenaRenderer.cpp">
-      <Filter>arena</Filter>
+    <ClCompile Include="src\piezas\sources\PiezaTerrestre.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\arena\Combatiente.cpp">
-      <Filter>arena</Filter>
+    <ClCompile Include="src\piezas\sources\PiezaVoladora.cpp">
+      <Filter>piezas\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\sources\Rey.cpp">
+      <Filter>piezas\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arena\sources\Arena.cpp">
+      <Filter>arena\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp">
+      <Filter>arena\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arena\sources\Combatiente.cpp">
+      <Filter>arena\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,5 +1,5 @@
 #include "freeglut.h"
-#include "Coordinador.h"
+#include "coordinador.h"
 #include <chrono>
 using namespace std::chrono;
 
