@@ -18,6 +18,7 @@ Tablerogl scene(&tablero);//recibe puntero al tablero
 void OnDraw(void); //esta funcion sera llamada para dibujar
 void OnTimer(int value); //esta funcion sera llamada cuando transcurra una temporizacion
 void OnKeyboardDown(unsigned char key, int x, int y); //cuando se pulse una tecla	
+void OnSpecialKeyboardDown(int key, int x, int y);
 void OnMouseClick(int b, int state, int x, int y);
 
 //void OnSpecialKeyboardDown(int key, int x, int y);
@@ -37,13 +38,17 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(OnDraw);
 	glutTimerFunc(25, OnTimer, 0);//le decimos que dentro de 25ms llame 1 vez a la funcion OnTimer()
 	glutKeyboardFunc(OnKeyboardDown);
+	glutSpecialFunc(OnSpecialKeyboardDown);
 	glutMouseFunc(OnMouseClick);
 	//glutSpecialFunc(OnSpecialKeyboardDown); //gestion de los cursores
 
 	scene.init();
 	//para indicar al jugador como debe usar el ratón
-	cout << "[Game] Listo. Clic izquierdo = seleccionar/mover. "
-		<< "Clic derecho = cancelar. ESC = salir." << endl;
+	cout << "=== MOROS Y CRISTIANOS ===" << endl;
+	cout << "LOCAL  : WASD=cursor | ESPACIO=seleccionar/mover" << endl;
+	cout << "RIVAL  : Flechas=cursor | ENTER=seleccionar/mover" << endl;
+	cout << "RATON  : Clic izq=seleccionar/mover | Der=cancelar" << endl;
+	cout << "ESC=cancelar seleccion | Q=salir" << endl;
 
 	//pasarle el control a GLUT,que llamara a los callbacks
 	glutMainLoop();
@@ -51,11 +56,6 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-/*void OnSpecialKeyboardDown(int key, int x, int y)
-{
-	mundo.tecla_especial(key);
-}
-*/
 void OnDraw(void)
 {
 	//Borrado de la pantalla	
@@ -77,6 +77,13 @@ void OnKeyboardDown(unsigned char key, int x_t, int y_t)
 
 	glutPostRedisplay();
 }
+
+void OnSpecialKeyboardDown(int key, int x, int y)
+{
+	scene.SpecialKey(key);
+	glutPostRedisplay();
+}
+
 void OnMouseClick(int b, int state, int x, int y)
 {
 	bool down = (state == GLUT_DOWN);
@@ -108,10 +115,10 @@ void OnTimer(int value)
 	double dt = elapsed.count();//nos lo da en milisegundos o micro segundos y ya lo sabemos nosotros
 	last = now;
 	//avanzamos el ciclo de luz del tablero
-	tablero.update(dt);
+	//tablero.update(dt);
 
 	//para actualizar con cada frame el cronometro de cada turno
-	gestorTurnos.update(dt);
+	//gestorTurnos.update(dt);
 
 	//std::cout << "dt" << dt << std::endl;//para que en la consola aparezca el tiempo
 	// código de animacion usando dt en segundos
