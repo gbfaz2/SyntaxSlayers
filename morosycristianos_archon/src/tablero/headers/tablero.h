@@ -7,6 +7,7 @@
 //el cambio se produce gradualmente usando una fase 0.1 que tablerogl interpola para colorear la casilla. Segun la fase 0 maxima ventaja local, 0.5 neutral y 1.0 máxima ventaja rival
 #pragma once
 #include <cmath>
+#include "Pieza.h"
 // enumeración del tipo de terreno de cada casilla
 //a la izq está la zona local
 //a la derecha está la zona rival
@@ -51,6 +52,7 @@ struct Casilla {
 	//float fase{ 0.0f };//0-local, 0.5-neutral, 1-rival
 	TipoPieza pieza{ pieza_nada };
 	BandoPieza bando{ bando_nada };
+	Pieza* obj{ nullptr };   // puntero al objeto real de la pieza (nullptr = casilla vacía)
 };
 //con la clase tablero voy a gestionar la cuadrícula lógica de 9x9. Para ello un array estático donde vamos a fijar el tamaño N=9
 //añado un método que avanza el ciclo  de luz, recibe el tiempo transcurrido desde el ultimo frame y actualiza la fase de cada casilla dinámica
@@ -70,7 +72,7 @@ class Tablero
 public:
 	static const int N = 9;//constante no vamos a modificarlo
 	Tablero();//constructor por defecto que llama al método iniCasillas()
-
+	~Tablero() {};
 	int getSize() const { return N; }
 	//acceso de solo lectura a una casilla, lo usará tablerogl para saber qué color pintar. usaremos (0,0) como la esquina superior izquierda 
 	const Casilla& getCasilla(int fila, int col) const { return tablero[fila][col]; }// el valor de retorno es const para que no se pueda modificar desde fuera

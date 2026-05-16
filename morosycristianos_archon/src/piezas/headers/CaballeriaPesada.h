@@ -9,6 +9,7 @@
 class CaballeriaPesada :
     public PiezaTerrestre, public ArmaCarga
 {
+public:
     // Constructor que recibe bando para poder decidir en el miliciano.cpp el bando y que se llame de una manera o de otra
     //Caballería Pesada(cristiano) y Caballería Acorazada(musulman)
     CaballeriaPesada(Bando bando);
