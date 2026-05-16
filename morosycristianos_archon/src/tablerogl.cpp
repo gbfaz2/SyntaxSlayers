@@ -1,3 +1,6 @@
+
+//Autor: María Heredero
+
 //aquí se va a dibujar el tablero. 
 //Se recorren las 81 casillas del tablero y por cada una decide si es clara(par) u oscura (impar), según el tipo de casillas elige el par de colores concreto y luego dibuja un rectángulo relleno con el color
 //Por último se dibuja la cuadrícula negra encima
