@@ -54,7 +54,7 @@ struct Casilla {
 class Tablero
 {
 	Casilla tablero[9][9];// la cuadrícula que es un array estático de 9*9
-	static constexpr float CYCLE_SPEED = 0.05f;//va a ser un ciclo cada 20 segundos
+	//static constexpr float CYCLE_SPEED = 0.05f;//va a ser un ciclo cada 20 segundos
 
 	void iniCasillas();//asigna tipos de casilla
 	void iniPiezas();//coloca las piezas en sus posiciones iniciales

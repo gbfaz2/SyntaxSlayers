@@ -8,20 +8,26 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 	for (int fila = 0; fila < N; fila++) {
 		for (int col = 0; col < N; col++) {
 			//asignamos el tipo base según la columna
-			if (col <= 2) tablero[fila][col].tipo = Casilla_local;
-			else if (col >= 6) tablero[fila][col].tipo = Casilla_rival;
-			else tablero[fila][col].tipo = Casilla_dinamica;
+			if (col == 4) tablero[fila][col].tipo = Casilla_dinamica;
+			else if (col < 4) {
+				tablero[fila][col].tipo = ((fila+col)%2 ==0) ? Casilla_local:Casilla_rival;
+			}
+			else {
+				//hacemos como un espejo de lo que tenemos a la izq
+				int espejocol = 8 - col;
+				tablero[fila][col].tipo = ((fila + espejocol) % 2 == 0) ? Casilla_rival : Casilla_local;
+			}
 
 			//distribuimos las 3 columnas centrales(casillas dinámicas) usando (fila*N+col) para que cada casilla empiece en un punto ditinto del ciclo
-			if (tablero[fila][col].tipo == Casilla_dinamica) {
+			/*if (tablero[fila][col].tipo == Casilla_dinamica) {
 				tablero[fila][col].fase = (float)((fila * N + col) % 10) / 10.0f;
-			}
+			}*/
 
 			//Los puntos de poder sobreescriben el tipo base pero mantienen el ciclo dinámico (también oscilan)
 			//Los compruebo al final para que tengan prioridad absoluta
 			if (esPuntoPoder(fila, col)) {
 				tablero[fila][col].tipo = Casilla_poder;
-				tablero[fila][col].fase = 0.0f; //empiezan en ventaja local
+				//tablero[fila][col].fase = 0.0f; //empiezan en ventaja local
 			}
 		}
 
