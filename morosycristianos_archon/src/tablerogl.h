@@ -17,10 +17,12 @@ protected:
 	double centro_x, centro_y, centro_z;
 	double dist;
 
-	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
+	int Filacursor[2], Colcursor[2];
 	int fromFila, fromCol;//origen del movimiento en curso
+	Bando fromBando;
 	bool piezaSeleccionada; //hay una pieza seleccionada esperando destino
 
+	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
 	bool controlKey, shiftKey;
 	bool leftButton, rightButton, midButton;
 public:
@@ -28,21 +30,27 @@ public:
 	virtual ~Tablerogl(){}//destructor virtual
 
 	void init(); //Luces más perspectiva desde donde lo vamos a ver
-	void Dibuja();//casillas y cuadrícul
+
+	void DibujaFondo();
+	void DibujaTitulo();
+	void Dibuja();//casillas y cuadrícula
 	void DibujaCasillas();//recorre 9x9 y pinta cada casilla
 	void DibujaCasilla(int fila, int col); //Dibuja un quad de relleno
 	void DibujaCuadricula();
-	void setCasillaColor(int fila, int col, bool dark);//Elige el color que tiene que tener la casilla correspondiente
+	void setCasillaColor(int fila, int col);//Elige el color que tiene que tener la casilla correspondiente
 	void DibujaSimbolos();//dibuja encima de cada casilla su simbolo correspondiente, ahora si casilla local(cristianos) cruz blanca, si no (media luna blanca)
 	void DibujaCruz(float cx, float cy, float size);//dibuja la cruz de los cristianos centrada
 	void DibujaLuna(float cx, float cy, float size);//dibuja la media luna de los musulmanes centrada
 	void DibujaPuntoPoder(float cx, float cy, float size);//dibuja el círculo amarillo en las casillas de punto de poder
-	void DibujaCasSelec();
+	void DibujaCasSelec(int fila, int col, float r, float g, float b, float lw, float z);
+	void DibujaCursores();
+	void DibujaSeleccion();
 
 	void DibujaPiezas();
 	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
 
 	void KeyDown(unsigned char key);
+	void SpecialKey(int key);
 	void MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
 
 	//conversores de coordenadas cogidas del repositorio de Pablo
