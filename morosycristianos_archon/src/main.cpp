@@ -2,6 +2,7 @@
 #include "tablerogl.h"
 #include "freeglut.h"
 #include <iostream>
+#include "ETSIDI.h"
 #include "GestorTurnos.h"
 using namespace std;
 
@@ -62,10 +63,15 @@ void OnDraw(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//Para definir el punto de vista
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	/*glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();*/
 
 	scene.Dibuja();
+	glDisable(GL_DEPTH_TEST);
+	ETSIDI::setTextColor(1.0f, 0.0f, 0.0f);               // amarillo
+	ETSIDI::setFont("fuentes/Bitwise.ttf", 36);        // fuente grande
+	ETSIDI::printxy("ARCHON", 330, 570);                   // centrado arriba
+	glEnable(GL_DEPTH_TEST);
 
 	//no borrar esta linea ni poner nada despues
 	glutSwapBuffers();

@@ -71,11 +71,11 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	glDisable(GL_LIGHTING);
 
 	DibujaFondo();//fondo png detrás de todo
+	glClear(GL_DEPTH_BUFFER_BIT);
 	DibujaCasillas();
 	DibujaSimbolos();
 	DibujaCursores();//los cursores del teclado
 	DibujaSeleccion();//la pieza seleccionada
-	DibujaTitulo();
 
 	glEnable(GL_LIGHTING);
 	DibujaPiezas();
@@ -95,44 +95,34 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	glPopMatrix();
 
 	glDisable(GL_BLEND);
-	glEnable(GL_LIGHTING);//lo restauramos para las piezas 3D
+	//glEnable(GL_LIGHTING);//lo restauramos para las piezas 3D
 
 }
 
 void Tablerogl::DibujaFondo()
 {
 	//intentamos cargar la textura y si no existiera el archivo, ETSIDI devuelve id=0 y no pasa nada
-	auto tex = ETSIDI::getTexture("imagenes/fondo_tablero.png");
+	auto tex = ETSIDI::getTexture("imagenes/fondo.png");
 	if (tex.id == 0)return;
-
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	glOrtho(0, 1, 0, 1, -1, 1);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex.id);
+	glDisable(GL_LIGHTING);
 	glColor3f(1, 1, 1);
 
+	// Quad grande centrado en el tablero, muy por detrás en Z.
+	float cx = (float)centro_x;
+	float cy = (float)centro_y;
+	float medio = 2.5f;
+
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex2f(0, 0);
-	glTexCoord2f(1, 0); glVertex2f(1, 0);
-	glTexCoord2f(1, 1); glVertex2f(1, 1);
-	glTexCoord2f(0, 1); glVertex2f(0, 1);
+	glTexCoord2f(0, 0); glVertex3f(cx - medio, cy - medio, -0.5f);
+	glTexCoord2f(1, 0); glVertex3f(cx + medio, cy - medio, -0.5f);
+	glTexCoord2f(1, 1); glVertex3f(cx + medio, cy + medio, -0.5f);
+	glTexCoord2f(0, 1); glVertex3f(cx - medio, cy + medio, -0.5f);
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
-}
-
-void Tablerogl::DibujaTitulo()
-{
-	ETSIDI::setTextColor(1, 0, 0);
-	ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
-	ETSIDI::printxy("ARCHON", 330, 570);
 }
 
 void Tablerogl::DibujaCasillas()
