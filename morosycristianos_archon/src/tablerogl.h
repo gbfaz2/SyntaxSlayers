@@ -32,7 +32,7 @@ public:
 	void init(); //Luces más perspectiva desde donde lo vamos a ver
 
 	void DibujaFondo();
-	void DibujaTitulo();
+	
 	void Dibuja();//casillas y cuadrícula
 	void DibujaCasillas();//recorre 9x9 y pinta cada casilla
 	void DibujaCasilla(int fila, int col); //Dibuja un quad de relleno

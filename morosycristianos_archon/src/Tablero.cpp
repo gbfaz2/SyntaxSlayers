@@ -27,7 +27,7 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 		{ D,  R,  L,  R,  D,  L,  R,  L,  D },  // fila 5 (=fila 3)
 		{ L,  D,  R,  L,  D,  R,  L,  D,  R },  // fila 6 (=fila 2)
 		{ R,  L,  D,  R,  D,  L,  D,  R,  L },  // fila 7 (=fila 1)
-		{ L,  R,  L,  D,  D,  D,  R,  L,  R} // fila 8 (=fila 0)
+		{ L,  R,  L,  D,  D,  D,  R,  L,  R}, // fila 8 (=fila 0)
 	};
 	for (int fila = 0; fila < N; fila++) {
 		for (int col = 0; col < N; col++)
