@@ -23,8 +23,8 @@ Tablerogl::Tablerogl(Tablero* pb):m_tablero(pb)
 	centro_y = -N * ancho / 2.0;
 	centro_z = 0.0;
 
-	Filacursor[0] = 4; Colcursor[0] = 1; //Cursor local
-	Filacursor[1] = 4; Colcursor[1] = 7;//Cursor rival
+	Filacursor[0] = 0; Colcursor[0] = 1; //Cursor local
+	Filacursor[1] = 0; Colcursor[1] = 7;//Cursor rival
 
 	xcasilla_sel = -1;//todavía no hay casilla seleccionada
 	ycasilla_sel = -1;
