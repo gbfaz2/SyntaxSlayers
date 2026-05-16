@@ -86,7 +86,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	DibujaPiezas();
 	glDisable(GL_LIGHTING);
 
-	DibujaCuadricula();
+	//DibujaCuadricula();
 
 	//hacemos un rectángulo transparente para captura del ratón, para garantizar que siempre hay algo en z=0 bajo el cursor.
 	glEnable(GL_BLEND);
@@ -422,7 +422,7 @@ void Tablerogl::DibujaPieza(int fil, int col)
 	glPopMatrix();
 }
 
-void Tablerogl::DibujaCuadricula()
+/*void Tablerogl::DibujaCuadricula()
 {
 	glColor3f(0, 0, 0);
 	float total = N * ancho;
@@ -434,7 +434,7 @@ void Tablerogl::DibujaCuadricula()
 		glEnd();
 	}
 	glLineWidth(1.0f);
-}
+}*/
 
 void Tablerogl::trySelectorMove(Bando bando)
 {
