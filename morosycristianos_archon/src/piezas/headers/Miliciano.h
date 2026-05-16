@@ -9,6 +9,7 @@
 class Miliciano :
     public PiezaTerrestre, public ArmaCuerpoaCuerpo
 {
+public:
     // Constructor que recibe bando para poder decidir en el miliciano.cpp el bando y que se llame de una manera o de otra
     //miliciano(cristiano) y Ghazí(musulman)
     Miliciano(Bando bando);
