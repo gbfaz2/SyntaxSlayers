@@ -5,6 +5,10 @@
 #include "tablerogl.h"
 #include <iostream>
 #include "freeglut.h"
+#include "ETSIDI.h"
+#include <cmath>
+#include <string>
+
 using namespace std;
 
 static const int CIRCLE_SEGS = 32;//numero de segmentos para dibujar los circulos(usado para dibujar la media luna)
