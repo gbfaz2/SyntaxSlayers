@@ -84,3 +84,23 @@ void Arena::limitarPosicion(Combatiente& c)
 
 	c.posicion(x, c.y(), z);
 }
+
+void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora)
+{
+	// Creamos los combatientes con las stats reales de las piezas del tablero P1 (atacante) siempre empieza a la izquierda, color segun bando
+	float r1 = atacante.getBando() == Bando::CRISTIANO ? 0.89f : 0.39f;
+	float g1 = atacante.getBando() == Bando::CRISTIANO ? 0.29f : 0.60f;
+	float b1 = atacante.getBando() == Bando::CRISTIANO ? 0.29f : 0.13f;
+
+	// P2 (defensora) siempre empieza a la derecha, color segun bando
+	float r2 = defensora.getBando() == Bando::CRISTIANO ? 0.89f : 0.39f;
+	float g2 = defensora.getBando() == Bando::CRISTIANO ? 0.29f : 0.60f;
+	float b2 = defensora.getBando() == Bando::CRISTIANO ? 0.29f : 0.13f;
+
+	// Sustituimos los combatientes con los datos reales
+	_p1 = Combatiente(-4.0f, 0.0f, r1, g1, b1, atacante);
+	_p2 = Combatiente(4.0f, 0.0f, r2, g2, b2, defensora);
+
+	// Reseteamos el resultado
+	_resultado = ResultadoCombate::EnCurso;
+}

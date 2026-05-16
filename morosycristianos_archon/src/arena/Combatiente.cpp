@@ -70,3 +70,22 @@ bool Combatiente::intentarAtacar()
 	_tiempoAnimacionAtaque = 0.18f; // por ejemplo, la animacion dura 0.18 segundos
 	return true;
 }
+
+Combatiente::Combatiente(float x, float z, float r, float g, float b, const Pieza& pieza)
+	: _x{ x }, _y{ 0.0f }, _z{ z },
+	_r{ r }, _g{ g }, _b{ b },
+	_nombre{ pieza.getNombre() }
+{
+	// Usamos los stats reales de la pieza del tablero
+	// La vida de Pieza es int (0-100), la convertimos a float
+	_vida = static_cast<float>(pieza.getVida());  // no existe aun, lo añadimos luego
+	_vidaMax = static_cast<float>(pieza.getVidaMax()); // tampoco existe aun
+
+	// La fuerza de Pieza se convierte en daño del combatiente
+	_danoAtaque = static_cast<float>(pieza.getFuerza());
+
+	// La recarga de Pieza se convierte en cooldown (normalizamos de 0-100 a 0-2 segundos)
+	// recarga 20 (baja) -> cooldown 0.2s (ataca rapido)
+	// recarga 90 (alta) -> cooldown 0.9s (ataca lento)
+	_cooldownAtaque = pieza.getRecarga() / 100.0f;
+}
