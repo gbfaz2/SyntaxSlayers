@@ -37,6 +37,36 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 {
 	//BANDO LOCAL (columna 0 y 1)
+	//en la columna 0 las figuras especiales y el líder
+	lugar(4, 0, pieza_esfera, bando_local);//Rey cristiano
+	lugar(3, 0, pieza_dodecaedro, bando_local);//Espía
+	lugar(5, 0, pieza_icosaedro, bando_local);//Almogavar
+	lugar(0, 0, pieza_tetraedro, bando_local);//Caballería ligera
+	lugar(8, 0, pieza_tetraedro, bando_local);//caballería ligera
+	lugar(1, 0, pieza_cubog, bando_local);//infantería pesada
+	lugar(7, 0, pieza_cubog, bando_local);//infantería pesada
+	lugar(2, 0, pieza_cono, bando_local);//caballería pesada
+	lugar(6, 0, pieza_cono, bando_local);//caballería pesada
+	// en la columna 1 los ballesteros (esquinas) y milicianos (centro)
+	lugar(0, 1, pieza_cilindro, bando_local);//ballestero
+	lugar(8, 1, pieza_cilindro, bando_local);//ballestero
+	for (int fila = 1; fila <= 7; fila++) lugar(fila, 1, pieza_cubo_p, bando_local);//Milicianos
+
+	//BANDO RIVAL (columna 7,8)
+	//en la columna 8 las figuras especiales y el líder
+	lugar(4, 8, pieza_esfera, bando_rival);//Emir
+	lugar(3, 8, pieza_dodecaedro, bando_rival);//Asesino de élite
+	lugar(5, 8, pieza_icosaedro, bando_rival);//Arquero a caballo
+	lugar(0, 8, pieza_tetraedro, bando_rival);//Jinete Bereber
+	lugar(8, 8, pieza_tetraedro, bando_rival);//Jinete Bereber
+	lugar(1, 8, pieza_cubog, bando_rival);//guardia negra
+	lugar(7, 8, pieza_cubog, bando_rival);//guardia negra
+	lugar(2, 8, pieza_cono, bando_rival);//caballería acorazada
+	lugar(6, 8, pieza_cono, bando_rival);//caballería acorazada
+	// en la columna 1 los arqueros (esquinas) y soldados (centro)
+	lugar(0, 7, pieza_cilindro, bando_rival);//arquero ghazí
+	lugar(8, 7, pieza_cilindro, bando_rival);//arquero ghazí
+	for (int fila = 1; fila <= 7; fila++) lugar(fila, 1, pieza_cubo_p, bando_rival);//soldados ghazís
 
 }
 
@@ -57,7 +87,7 @@ Tablero::Tablero()
 	cout << "[Board] Tablero" << N << "x" << N << "creado." << endl;
 }
 
-void Tablero::update(double dt)
+/*void Tablero::update(double dt)
 {
 	for (int fila = 0; fila < N; fila++) {
 		for (int col = 0; col < N; col++) {
@@ -72,7 +102,7 @@ void Tablero::update(double dt)
 				tablero[fila][col].fase -= 1.0f;
 		}
 	}
-}
+}*/
 //en primer lugar la pieza puede moverse a un destino que esté dentro del tablero, no puede moverse a una casilla ocupada por su mismo equipo y puede moverse a una casilla vacía o con enemigo
 bool Tablero::puedeMover(int fr, int fc, int tr, int tc) const
 {
@@ -81,8 +111,7 @@ bool Tablero::puedeMover(int fr, int fc, int tr, int tc) const
 	//tiene que haber una pieza en el origen
 	if (tablero[fr][fc].pieza == pieza_nada) return false;
 	//no puede ir donde hay un aliado
-	Bando BandoOrigen = tablero[fr][fc].bando;
-	if (tablero[tr][tc].pieza != pieza_nada && tablero[tr][tc].bando == BandoOrigen) return false;
+	if (tablero[tr][tc].pieza != pieza_nada && tablero[tr][tc].bando == tablero[fr][fc].bando) return false;
 
 	return true;
 }
