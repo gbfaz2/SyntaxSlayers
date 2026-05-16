@@ -3,35 +3,43 @@
 #include <iostream>
 using std::cout, std::endl;
 //Ahora también asigna una fase inicial distinta a cada casilla dinámica según su posición en el tablero
+
+Tablero::Tablero()
+{
+	iniCasillas();
+	iniPiezas();
+	cout << "[Board] Tablero" << N << "x" << N << "creado." << endl;
+}
+//hacemos la cuarta parte superior izq lugi espejo vertical de las filas inferiores. Una vez está esa mitad completa espejo invertido horizontal de la otra mitad
 void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona local, dinámica, rival) y los 5 puntos de poder sobreescriben su casilla
 {
+	const TipoCasilla L = Casilla_local;
+	const TipoCasilla R = Casilla_rival;
+	const TipoCasilla D = Casilla_dinamica;
+
+	TipoCasilla patron[9][9] = {
+		//   c0  c1  c2  c3  c4  c5  c6  c7  c8
+		{ L,  R,  L,  D,  D,  D,  R,  L,  R },  // fila 0
+		{ R,  L,  D,  R,  D,  L,  D,  R,  L },  // fila 1
+		{ L,  D,  R,  L,  D,  R,  L,  D,  R },  // fila 2
+		{ D,  R,  L,  R,  D,  L,  R,  L,  D },  // fila 3
+		{ R,  D,  D,  D,  D,  D,  D,  D,  L },  // fila 4 (col0=DARK, col8=LIGHT, resto gris)
+		{ D,  R,  L,  R,  D,  L,  R,  L,  D },  // fila 5 (=fila 3)
+		{ L,  D,  R,  L,  D,  R,  L,  D,  R },  // fila 6 (=fila 2)
+		{ R,  L,  D,  R,  D,  L,  D,  R,  L },  // fila 7 (=fila 1)
+		{ L,  R,  L,  D,  D,  D,  R,  L,  R} // fila 8 (=fila 0)
+	};
 	for (int fila = 0; fila < N; fila++) {
-		for (int col = 0; col < N; col++) {
-			//asignamos el tipo base según la columna
-			if (col == 4) tablero[fila][col].tipo = Casilla_dinamica;
-			else if (col < 4) {
-				tablero[fila][col].tipo = ((fila+col)%2 ==0) ? Casilla_local:Casilla_rival;
-			}
-			else {
-				//hacemos como un espejo de lo que tenemos a la izq
-				int espejocol = 8 - col;
-				tablero[fila][col].tipo = ((fila + espejocol) % 2 == 0) ? Casilla_rival : Casilla_local;
-			}
-
-			//distribuimos las 3 columnas centrales(casillas dinámicas) usando (fila*N+col) para que cada casilla empiece en un punto ditinto del ciclo
-			/*if (tablero[fila][col].tipo == Casilla_dinamica) {
-				tablero[fila][col].fase = (float)((fila * N + col) % 10) / 10.0f;
-			}*/
-
-			//Los puntos de poder sobreescriben el tipo base pero mantienen el ciclo dinámico (también oscilan)
-			//Los compruebo al final para que tengan prioridad absoluta
-			if (esPuntoPoder(fila, col)) {
-				tablero[fila][col].tipo = Casilla_poder;
-				//tablero[fila][col].fase = 0.0f; //empiezan en ventaja local
-			}
-		}
-
+		for (int col = 0; col < N; col++)
+			tablero[fila][col].tipo = patron[fila][col];
 	}
+
+	//los puntos de poder los sobreescribimos al tipo base
+	tablero[0][4].tipo = Casilla_poder;
+	tablero[4][0].tipo = Casilla_poder;
+	tablero[4][4].tipo = Casilla_poder;
+	tablero[4][8].tipo = Casilla_poder;
+	tablero[8][4].tipo = Casilla_poder;
 }
 
 void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
@@ -78,13 +86,6 @@ bool Tablero::esPuntoPoder(int fila, int col) const
 	if (fila == 8 && col == 4) return true;
 	if (fila == 4 && col == 8) return true;
 	return false;
-}
-
-Tablero::Tablero()
-{
-	iniCasillas();
-	iniPiezas();
-	cout << "[Board] Tablero" << N << "x" << N << "creado." << endl;
 }
 
 /*void Tablero::update(double dt)
