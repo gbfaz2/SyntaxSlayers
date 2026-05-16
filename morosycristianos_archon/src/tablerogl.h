@@ -22,7 +22,7 @@ protected:
 
 	int Filacursor[2], Colcursor[2];
 	int fromFila, fromCol;//origen del movimiento en curso
-	Bando fromBando;
+	BandoPieza fromBando;
 	bool piezaSeleccionada; //hay una pieza seleccionada esperando destino
 
 	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
@@ -52,7 +52,7 @@ public:
 	void DibujaPiezas();
 	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
 
-	void trySelectorMove(Bando bando);
+	void trySelectorMove(BandoPieza bando);
 
 	void KeyDown(unsigned char key);
 	void SpecialKey(int key);

@@ -156,8 +156,15 @@ void OnTeclado(unsigned char tecla, int x, int y) {
 
 // TECLAS ESPECIALES (Flechas, etc)
 void OnTeclaEspecial(int tecla, int x, int y) {
-    if (estadoActual == EstadoJuego::MENU)
+    switch (estadoActual) {
+    case EstadoJuego::MENU:
         menuPrincipal.teclaEspecial(tecla);
+        break;
+    case EstadoJuego::TABLERO:
+        if (pTablerogl) pTablerogl->SpecialKey(tecla);
+        break;
+    default: break;
+    }
     glutPostRedisplay();
 }
 

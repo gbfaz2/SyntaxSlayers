@@ -30,10 +30,10 @@ void PantallaDestino::reiniciar(const ConfigPartida& cfg) {
 
 	// IMAGENES DE LAS BATALLAS
     const char* rutas[] = {
-    "bin\\imagenes\\GUADALETE.png",
-    "bin\\imagenes\\ALARCOS.png",
-    "bin\\imagenes\\NAVAS_TOLOSA.png",
-    "bin\\imagenes\\GRANADA.png"
+    "imagenes\\GUADALETE.png",
+    "imagenes\\ALARCOS.png",
+    "imagenes\\NAVAS_TOLOSA.png",
+    "imagenes\\GRANADA.png"
     };
     m_textura = ETSIDI::getTexture(rutas[(int)cfg.batalla]); 
 
