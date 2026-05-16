@@ -1,4 +1,6 @@
 #pragma once
+#include "Pieza.h"
+#include <string>
 
 // Unidad que pelea dentro de la arena de combate
 // Representa a un soldado del bando Cristiano o Andalusi en la fase
@@ -62,9 +64,14 @@ class Combatiente
 	// Daño que inflige el ataque
 	float _danoAtaque{ 12.0f };
 
+	// Nombre de la pieza (para mostrarlo en el HUD)
+	std::string _nombre{ "" };
+
 public:
 	// Constructor: crea un combatiente con la posicion y el color dados
 	Combatiente(float x, float y, float z, float r, float g, float b); // y valdra 0 siempre a no ser que metamos voladores
+	// Constructor nuevo: crea un combatiente usando los stats de una Pieza real del tablero de Alba
+	Combatiente(float x, float z, float r, float g, float b, const Pieza& pieza);
 
 	// Añado getters. Los implemento aqui porque son muy cortos (funcion inline), asi si hay que añadir otro getter, solo toco este archivo
 	// Devuelven informacion sobre el combatiente. Son const, porque no modifican el objeto
