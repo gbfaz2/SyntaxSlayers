@@ -4,7 +4,7 @@
 
 #include "tablerogl.h"
 #include <iostream>
-#include"freeglut.h"
+#include "freeglut.h"
 using namespace std;
 
 static const int CIRCLE_SEGS = 32;//numero de segmentos para dibujar los circulos(usado para dibujar la media luna)
@@ -491,7 +491,7 @@ void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, 
 	// Clic derecho: cancela selección
 	if (button == MOUSE_RIGHT_BUTTON) {
 		piezaSeleccionada = false;
-		fromFila= fromCol = -1;
+		fromFila = fromCol = -1;
 		return;
 	}
 
@@ -503,7 +503,31 @@ void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, 
 
 	const Casilla& clicked = m_tablero->getCasilla(clickFila, clickCol);
 
+
+	//la logica de puede mover o puede no mover ya la tengo yo implementada en cada pieza, cambiar necesario CUIDADO
 	if (!piezaSeleccionada) {
+		// cancelar si clicka la misma casilla
+		/*if (clickFila == fromFila && clickCol == fromCol) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
+			return;
+		}
+
+		// primero: ¿es tu turno?
+		if (!gestorTurnos.esDelBandoActual(*m_tablero, fromFila, fromCol)) {
+			cout << "[GestorTurnos] No es tu turno!" << endl;
+			piezaSeleccionada = false;
+			return;
+		}
+
+		// segundo: ¿puede moverse ahí?
+		if (m_tablero->puedeMover(fromFila, fromCol, clickFila, clickCol)) {
+			bool batalla = m_tablero->muevePieza(fromFila, fromCol, clickFila, clickCol);
+			gestorTurnos.terminarTurno();
+			if (batalla)
+				cout << "[Mouse] Combate!" << endl;*/
+
+
 		// ── SIN SELECCIÓN: intentamos seleccionar una pieza ──
 		if (clicked.pieza != pieza_soldado) {
 			// Hay pieza aquí → la seleccionamos
@@ -515,33 +539,38 @@ void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, 
 		}
 		// Si no hay pieza, no hacemos nada
 
-	}
-	else {
-		// ── CON SELECCIÓN: intentamos mover ──
+	
+		else {
+			// ── CON SELECCIÓN: intentamos mover ──
 
-		if (clickFila == fromFila && clickCol == fromCol) {
-			// Clic en la misma casilla → cancelar selección
+			if (clickFila == fromFila && clickCol == fromCol) {
+				// Clic en la misma casilla → cancelar selección
+				piezaSeleccionada = false;
+				fromFila = fromCol = -1;
+				return;
+			}
+
+			if (m_tablero->puedeMover(fromFila, fromCol, clickFila, clickCol)) {
+
+				// Movimiento válido
+				bool batalla = m_tablero->muevePieza(fromFila, fromCol,clickFila, clickCol);
+				if (batalla) {
+					// TODO: activar pantalla de combate
+					// Por ahora el combate elimina al defensor
+					cout << "[Mouse] Combate! (pantalla de combate pendiente)" << endl;
+				}
+			}
+			else {
+				cout << "[Mouse] Movimiento inválido: casilla ocupada por aliado." << endl;
+			}
+
+
+
+			// En cualquier caso, deseleccionamos
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
-			return;
 		}
-
-		if (m_tablero->puedeMover(fromFila, fromCol, clickFila, clickCol)) {
-			// Movimiento válido
-			bool batalla = m_tablero->muevePieza(fromFila, fromCol,clickFila, clickCol);
-			if (batalla) {
-				// TODO: activar pantalla de combate
-				// Por ahora el combate elimina al defensor
-				cout << "[Mouse] Combate! (pantalla de combate pendiente)" << endl;
-			}
-		}
-		else {
-			cout << "[Mouse] Movimiento inválido: casilla ocupada por aliado." << endl;
-		}
-
-		// En cualquier caso, deseleccionamos
-		piezaSeleccionada = false;
-		fromFila = fromCol = -1;
+		return;
 	}
 }
 

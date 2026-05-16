@@ -2,10 +2,15 @@
 #include "tablerogl.h"
 #include "freeglut.h"
 #include <iostream>
+#include "GestorTurnos.h"
 using namespace std;
 
+
 Tablero tablero; //centralizamos la lógica, que crea los 9x9 tipos de casilla
+GestorTurnos gestorTurnos;
 Tablerogl scene(&tablero);//recibe puntero al tablero
+
+
 
 //los callback, funciones que seran llamadas automaticamente por la glut
 //cuando sucedan eventos
@@ -104,6 +109,10 @@ void OnTimer(int value)
 	last = now;
 	//avanzamos el ciclo de luz del tablero
 	tablero.update(dt);
+
+	//para actualizar con cada frame el cronometro de cada turno
+	gestorTurnos.update(dt);
+
 	//std::cout << "dt" << dt << std::endl;//para que en la consola aparezca el tiempo
 	// código de animacion usando dt en segundos
 	//mundo.mueve(dt);
