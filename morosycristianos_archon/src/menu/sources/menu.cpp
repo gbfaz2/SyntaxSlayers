@@ -270,7 +270,7 @@ void MenuPrincipal::dibujarPaso2(int ancho, int alto) {
 void MenuPrincipal::dibujarPaso3(int ancho, int alto) {
     std::string modo = (m_cfg.modo == ModoJuego::JVJ) ?
         "Jugador vs Jugador" : "Jugador vs IA";
-    std::string bando = (m_cfg.bando == Bando::CRISTIANO) ?
+    std::string bando = (m_cfg.bando == BandoJugador::CRISTIANO) ?
         "Cristiano" : "Musulman";
 
     dibujarTextoCentrado("Modo:  " + modo, ancho / 2.0f, alto / 2.0f + 70,
@@ -382,7 +382,7 @@ void MenuPrincipal::confirmar() {
         }
     }
     else if (m_paso == 1) {
-        m_cfg.bando = (m_seleccion == 0) ? Bando::CRISTIANO : Bando::MUSULMAN;
+        m_cfg.bando = (m_seleccion == 0) ? BandoJugador::CRISTIANO : BandoJugador::MUSULMAN;
         m_paso = 2; m_seleccion = 0;
     }
     else if (m_paso == 2) {
