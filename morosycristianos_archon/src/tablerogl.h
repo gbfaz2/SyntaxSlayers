@@ -36,7 +36,7 @@ public:
 	void Dibuja();//casillas y cuadrícula
 	void DibujaCasillas();//recorre 9x9 y pinta cada casilla
 	void DibujaCasilla(int fila, int col); //Dibuja un quad de relleno
-	void DibujaCuadricula();
+	//void DibujaCuadricula();
 	void setCasillaColor(int fila, int col);//Elige el color que tiene que tener la casilla correspondiente
 	void DibujaSimbolos();//dibuja encima de cada casilla su simbolo correspondiente, ahora si casilla local(cristianos) cruz blanca, si no (media luna blanca)
 	void DibujaCruz(float cx, float cy, float size);//dibuja la cruz de los cristianos centrada
