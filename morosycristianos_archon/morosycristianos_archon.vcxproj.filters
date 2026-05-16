@@ -84,12 +84,6 @@
     <ClInclude Include="src\arena\headers\placeholder_arena.h">
       <Filter>arena\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\menu\headers\placeholder_menu.h">
-      <Filter>menu\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tablero\headers\placeholder_tablero.h">
-      <Filter>tablero\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\coordinador\headers\Coordinador.h">
       <Filter>coordinador\Headers</Filter>
     </ClInclude>
@@ -144,6 +138,21 @@
     <ClInclude Include="src\piezas\headers\Rey.h">
       <Filter>piezas\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\tablero\Headers\tablero.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\tablerogl.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu\headers\estadojuego.h">
+      <Filter>menu\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu\headers\menu.h">
+      <Filter>menu\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu\headers\pantallabatalla.h">
+      <Filter>menu\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -165,12 +174,6 @@
     </ClCompile>
     <ClCompile Include="src\arena\sources\placeholder_arena.cpp">
       <Filter>arena\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\menu\sources\placeholder_menu.cpp">
-      <Filter>menu\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tablero\sources\placeholder_tablero.cpp">
-      <Filter>tablero\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\coordinador\sources\Coordinador.cpp">
       <Filter>coordinador\Sources</Filter>
@@ -225,6 +228,18 @@
     </ClCompile>
     <ClCompile Include="src\piezas\sources\Rey.cpp">
       <Filter>piezas\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\Sources\tablero.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\tablerogl.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sources\menu.cpp">
+      <Filter>menu\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sources\pantallabatalla.cpp">
+      <Filter>menu\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
