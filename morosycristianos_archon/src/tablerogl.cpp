@@ -11,7 +11,7 @@
 
 using namespace std;
 
-static const int CIRCLE_SEGS = 32;//numero de segmentos para dibujar los circulos(usado para dibujar la media luna)
+static const int SEGS = 24;//numero de segmentos para dibujar los circulos(usado para dibujar la media luna)
 Tablerogl::Tablerogl(Tablero* pb):m_tablero(pb)
 {
 	N = pb->getSize();//Siempre va a ser nueve, pero para asegurarnos mejor leerlo directamente de nuestra clase tablero
@@ -23,10 +23,14 @@ Tablerogl::Tablerogl(Tablero* pb):m_tablero(pb)
 	centro_y = -N * ancho / 2.0;
 	centro_z = 0.0;
 
+	Filacursor[0] = 4; Colcursor[0] = 1; //Cursor local
+	Filacursor[1] = 4; Colcursor[1] = 7;//Cursor rival
+
 	xcasilla_sel = -1;//todavía no hay casilla seleccionada
 	ycasilla_sel = -1;
 
 	fromFila = fromCol = -1;
+	fromBando = bando_nada;
 	piezaSeleccionada = false;//no hay pieza seleccionada
 
 	leftButton = rightButton = midButton = false;
@@ -44,6 +48,7 @@ void Tablerogl::init()
 	gluPerspective(40.0, 800 / 600.0f, 0.1, 150);
 }
 
+
 void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casillas-símbolos-casilla seleccionada-piezas-cuadrícula-quad transparente para el ratón
 {
 	//Recalculamos el centro. Por si N cambiara
@@ -51,7 +56,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	centro_y = -N * ancho / 2.0f;
 
 	//ponemos un color de fondo
-	glClearColor(0.18f, 0.08f, 0.04f, 1.0f);
+	glClearColor(0.10f, 0.06f, 0.03f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//colocamos la cámara
@@ -66,9 +71,12 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 
 	glDisable(GL_LIGHTING);
 
+	DibujaFondo();//fondo png detrás de todo
 	DibujaCasillas();
 	DibujaSimbolos();
-	DibujaCasSelec();
+	DibujaCursores();//los cursores del teclado
+	DibujaSeleccion();//la pieza seleccionada
+	DibujaTitulo();
 
 	glEnable(GL_LIGHTING);
 	DibujaPiezas();
@@ -91,14 +99,66 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	glEnable(GL_LIGHTING);//lo restauramos para las piezas 3D
 }
 
+void Tablerogl::DibujaFondo()
+{
+	//intentamos cargar la textura y si no existiera el archivo, ETSIDI devuelve id=0 y no pasa nada
+	auto tex = ETSIDI::getTexture("imagenes/fondo_tablero.png");
+	if (tex.id == 0)return;
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex.id);
+	glDisable(GL_LIGHTING);
+
+	// El quad cubre un área mayor que el tablero para verse como fondo
+	float total = N * ancho;
+	float margen = ancho * 1.5f; // margen alrededor del tablero
+	float x0 = -margen, x1 = total + margen;
+	float y0 = margen, y1 = -(total + margen);
+
+	glColor3f(1, 1, 1); // sin tinte de color
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(x0, y0, -0.01f);
+	glTexCoord2f(1, 0); glVertex3f(x1, y0, -0.01f);
+	glTexCoord2f(1, 1); glVertex3f(x1, y1, -0.01f);
+	glTexCoord2f(0, 1); glVertex3f(x0, y1, -0.01f);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+}
+
+void Tablerogl::DibujaTitulo()
+{
+	float total = N * ancho;
+	float cx = total / 2.0f;   // centro horizontal del tablero
+	float y = ancho * 0.4f;   // un poco por encima del borde superior
+
+	glDisable(GL_LIGHTING);
+
+	glColor3f(0.9f, 0.1f, 0.1f); // rojo oscuro
+
+	// Para simplicidad lo centramos visualmente con offset manual.
+	float charW = total / 40.0f; // ancho aproximado de un carácter en coords mundo
+	float startX = cx - 3.0f * charW; // 6 chars, empezamos a la izquierda del centro
+
+	// Dibujamos letra a letra con glutBitmapCharacter
+	const char* titulo = "ARCHON";
+	glRasterPos3f(startX, y, 0.01f);
+	for (int i = 0; titulo[i]; i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+
+	// Sombra / borde: lo dibujamos ligeramente desplazado en blanco
+	glColor3f(1.0f, 1.0f, 1.0f);
+	glRasterPos3f(startX - charW * 0.1f, y + charW * 0.1f, 0.005f);
+	for (int i = 0; titulo[i]; i++)
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, titulo[i]);
+}
+
 void Tablerogl::DibujaCasillas()
 {
 	for (int fila = 0; fila < N; fila++) {
 		for (int col = 0; col < N; col++) {
-			//¿es una casilla clara u oscura?
-			bool dark = (fila + col) % 2 == 1;//es impar
-			//elegimos el color en función del tipo
-			setCasillaColor(fila,col,dark);
+			//elegimos el color en función de su posición
+			setCasillaColor(fila,col);
 
 			//Dibujamos la casilla
 			DibujaCasilla(fila, col);
@@ -126,54 +186,28 @@ void Tablerogl::DibujaCasilla(int fila, int col)
 	glEnd();
 }
 
-void Tablerogl::setCasillaColor(int fila, int col, bool dark)
+void Tablerogl::setCasillaColor(int fila, int col)
 {
-	TipoCasilla tipo = m_tablero->getCasilla(fila, col).tipo;
-	//Colores fijos (LOCAL Y RIVAL no oscilan)
-	if (tipo == Casilla_local) {
-		if (!dark)glColor3f(0.60f, 0.15f, 0.70f); //morado medio
-		else glColor3f(0.30f, 0.05f, 0.40f);//morado oscuro
+	switch (m_tablero->getCasilla(fila, col).tipo) {
+	case Casilla_local:
+		glColor3f(0.58f, 0.12f, 0.68f); // morado
 		return;
-	}
-	if (tipo == Casilla_rival) {
-		if (!dark)glColor3f(0.75f, 0.10f, 0.70f); //rojo medio
-		else glColor3f(0.45f, 0.03f, 0.03f);//rojo oscuro
+	case Casilla_rival:
+		glColor3f(0.55f, 0.05f, 0.05f); // rojo oscuro
 		return;
+	case Casilla_dinamica:
+		glColor3f(0.38f, 0.38f, 0.38f); // gris
+		return;
+	case Casilla_poder:
+		// El power point usa el color de la zona en que está
+		// (para que encaje visualmente) y encima dibujamos el círculo
+		if (col < 4)       glColor3f(0.58f, 0.12f, 0.68f); // zona morada
+		else if (col == 4) glColor3f(0.38f, 0.38f, 0.38f); // zona gris
+		else               glColor3f(0.55f, 0.05f, 0.05f); // zona roja
+		return;
+	default:
+		glColor3f(0.5f, 0.5f, 0.5f);
 	}
-	
-	//casillas dinámicas y puntos de poder: interpolamos según la fase
-	float fase = m_tablero->getCasilla(fila, col).fase;
-	float rL, gL, bL; // color cuando fase=0.0 (ventaja local, morado)
-	float rN, gN, bN; // color cuando fase=0.5 (neutro, gris)
-	float rR, gR, bR; // color cuando fase=1.0 (ventaja rival, rojo)
-
-	if (!dark) {
-		rL = 0.60f; gL = 0.15f; bL = 0.70f; // morado medio
-		rN = 0.55f; gN = 0.55f; bN = 0.55f; // gris medio
-		rR = 0.75f; gR = 0.10f; bR = 0.10f; // rojo medio
-	}
-	else {
-		rL = 0.30f; gL = 0.05f; bL = 0.40f; // morado oscuro
-		rN = 0.30f; gN = 0.30f; bN = 0.30f; // gris oscuro
-		rR = 0.45f; gR = 0.03f; bR = 0.03f; // rojo oscuro
-	}
-
-	float r, g, b;
-	if (fase <= 0.5f) {
-		float t = fase / 0.5f; // 0→0.5 se convierte en 0→1
-		r = rL + t * (rN - rL);
-		g = gL + t * (gN - gL);
-		b = bL + t * (bN - bL);
-	}
-	else {
-		// Tramo 2: gris → rojo (phase 0.5 a 1.0)
-		float t = (fase - 0.5f) / 0.5f; // 0.5→1.0 se convierte en 0→1
-		r = rN + t * (rR - rN);
-		g = gN + t * (gR - gN);
-		b = bN + t * (bR - bN);
-	}
-
-	glColor3f(r, g, b);
 }
 
 void Tablerogl::DibujaSimbolos()
@@ -185,19 +219,14 @@ void Tablerogl::DibujaSimbolos()
 			cell2center(fila, col, cx, cy);
 
 			//tamaño del simbolo menos que la casilla
-			float size = ancho * 0.38f;
+			float size = ancho * 0.34f;
 
 			TipoCasilla tipo = m_tablero->getCasilla(fila, col).tipo;
 
-			if (tipo == Casilla_local) {
-				DibujaCruz(cx, cy, size);
-			}
-			else if (tipo == Casilla_rival) {
-				DibujaLuna(cx, cy, size);
-			}
-			else if (tipo == Casilla_poder) {
-				DibujaPuntoPoder(cx, cy, size);
-			}
+			if (tipo == Casilla_local) DibujaCruz(cx, cy, size);
+
+			else if (tipo == Casilla_rival) DibujaLuna(cx, cy, size);
+			else if (tipo == Casilla_poder) DibujaPuntoPoder(cx, cy, size);
 		}
 	}
 }
@@ -226,31 +255,18 @@ void Tablerogl::DibujaCruz(float cx, float cy, float size)
 
 void Tablerogl::DibujaLuna(float cx, float cy, float size)
 {
-
-	// Primero: disco blanco completo
 	glColor3f(1.0f, 1.0f, 1.0f);
-	glBegin(GL_TRIANGLE_FAN);
-	glVertex3f(cx, cy, 0.002f); // centro
-	for (int i = 0; i <= CIRCLE_SEGS; i++) {
-		float a = 2.0f * 3.14159265f * i / CIRCLE_SEGS;
-		glVertex3f(cx + size * cosf(a), cy + size * sinf(a), 0.002f);
-	}
-	glEnd();
-
-	// Luego disco del color de la casilla, desplazado 
-	// El color debe coincidir con el fondo de la casilla (dark o no)
-	bool dark = false; // las casillas rival pares son claras (row+col par)
-	glColor3f(0.60f, 0.07f, 0.07f); // rojo medio (fondo de la zona)
-
-	float dx = size * 0.40f;  // desplazamiento a la derecha
-	float rInner = size * 0.80f; // radio del disco que "tapa"
-	float ox = cx + dx;       // centro del disco tapador
 
 	glBegin(GL_TRIANGLE_FAN);
-	glVertex3f(ox, cy, 0.002f); // Z=0.003 para estar delante del blanco
-	for (int i = 0; i <= CIRCLE_SEGS; i++) {
-		float a = 2.0f * 3.14159265f * i / CIRCLE_SEGS;
-		glVertex3f(ox + rInner * cosf(a),cy + rInner * sinf(a), 0.002f);
+	glVertex3f(cx, cy, 0.002f); // centro del abanico
+	// Arco de 90° a 270° (mitad izquierda del círculo)
+	// Con 90°=arriba y 270°=abajo dibujamos la mitad derecha visible
+	for (int i = 0; i <= SEGS; i++) {
+		// Mapeamos i de 0..SEGS a ángulo de -90° a +90°
+		// (parte derecha del círculo, que en pantalla queda a la izq
+		//  porque el tablero rival está a la derecha)
+		float a = -3.14159265f / 2.0f + 3.14159265f * i / SEGS;
+		glVertex3f(cx + size * cosf(a),cy + size * sinf(a),0.002f);
 	}
 	glEnd();
 }
@@ -263,8 +279,8 @@ void Tablerogl::DibujaPuntoPoder(float cx, float cy, float size)
 	// círculo exterior (solo contorno)
 	glLineWidth(2.0f);
 	glBegin(GL_LINE_LOOP);
-	for (int i = 0; i < CIRCLE_SEGS; i++) {
-		float angulo = 2.0f * (float)3.14159265f * i / CIRCLE_SEGS;
+	for (int i = 0; i < SEGS; i++) {
+		float angulo = 2.0f * (float)3.14159265f * i / SEGS;
 		glVertex3f(cx + size * cos(angulo),cy + size * sin(angulo),0.002f);
 	}
 	glEnd();
@@ -274,45 +290,39 @@ void Tablerogl::DibujaPuntoPoder(float cx, float cy, float size)
 	float r = size * 0.30f; // radio del punto: 30% del radio del círculo
 	glBegin(GL_TRIANGLE_FAN);
 	glVertex3f(cx, cy, 0.002f); // centro del abanico
-	for (int i = 0; i <= CIRCLE_SEGS; i++) {
-		float angulo = 2.0f * (float)3.14159265f * i / CIRCLE_SEGS;
+	for (int i = 0; i <= SEGS; i++) {
+		float angulo = 2.0f * (float)3.14159265f * i / SEGS;
 		glVertex3f(cx + r * cos(angulo),cy + r * sin(angulo),0.002f);
 	}
 	glEnd();
 }
 
-void Tablerogl::DibujaCasSelec()//para resaltar en amarillo la casilla seleccionada y la casilla bajo el cursor se resalta en blanco
+void Tablerogl::DibujaCasSelec(int fila, int col, float r, float g, float b, float lw, float z)//para resaltar en amarillo la casilla seleccionada y la casilla bajo el cursor se resalta en blanco
 {
-	//Casilla bajo el cursor 
-	if (xcasilla_sel >= 0 && xcasilla_sel < N && ycasilla_sel >= 0 && ycasilla_sel < N) {
-		float x0 = ycasilla_sel * ancho, x1 = x0 + ancho;
-		float y0 = -xcasilla_sel * ancho, y1 = y0 - ancho;
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glLineWidth(2.0f);
-		glBegin(GL_LINE_LOOP);
-		glVertex3f(x0 + 0.003f, y0 - 0.003f, 0.005f);
-		glVertex3f(x1 - 0.003f, y0 - 0.003f, 0.005f);
-		glVertex3f(x1 - 0.003f, y1 + 0.003f, 0.005f);
-		glVertex3f(x0 + 0.003f, y1 + 0.003f, 0.005f);
-		glEnd();
-		glLineWidth(1.0f);
-	}
-
-	//Pieza seleccionada (origen del movimiento): amarillo
-	if (piezaSeleccionada && fromFila >= 0 && fromCol >= 0) {
-		float x0 = fromCol * ancho, x1 = x0 + ancho;
-		float y0 = -fromFila * ancho, y1 = y0 - ancho;
-		glColor3f(1.0f, 1.0f, 0.0f); // amarillo brillante
-		glLineWidth(3.5f);
-		glBegin(GL_LINE_LOOP);
-		glVertex3f(x0 + 0.004f, y0 - 0.004f, 0.005f);
-		glVertex3f(x1 - 0.004f, y0 - 0.004f, 0.005f);
-		glVertex3f(x1 - 0.004f, y1 + 0.004f, 0.005f);
-		glVertex3f(x0 + 0.004f, y1 + 0.004f, 0.005f);
-		glEnd();
-		glLineWidth(1.0f);
-	}
+	float x0 = col * ancho + 0.004f, x1 = (col + 1) * ancho - 0.004f;
+	float y0 = -fila * ancho - 0.004f, y1 = -(fila + 1) * ancho + 0.004f;
+	glColor3f(r, g, b);
+	glLineWidth(lw);
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(x0, y0, z); glVertex3f(x1, y0, z);
+	glVertex3f(x1, y1, z); glVertex3f(x0, y1, z);
+	glEnd();
+	glLineWidth(1.0f);
 }
+//Para el bando local[0]-> amarillo (WASD+ESPACIO) y para el rival [1]->cian (FLECHAS + ENTER)
+void Tablerogl::DibujaCursores()
+{
+	DibujaCasSelec(Filacursor[0], Colcursor[0], 1.0f, 1.0f, 0.0f, 3.0f, 0.005f);
+	DibujaCasSelec(Filacursor[1], Colcursor[1], 0.0f, 1.0f, 1.0f, 3.0f, 0.005f);
+}
+
+void Tablerogl::DibujaSeleccion()
+{
+	if (!piezaSeleccionada || fromFila < 0)return;
+	DibujaCasSelec(fromFila, fromCol, 1.0f, 1.0f, 1.0f, 4.0f, 0.006f);
+}
+
+
 
 void Tablerogl::DibujaPiezas()//va a recorrer todo el tablero y dibuja la pieza de la casilla que corresponda
 {
@@ -327,125 +337,149 @@ void Tablerogl::DibujaPiezas()//va a recorrer todo el tablero y dibuja la pieza 
 void Tablerogl::DibujaPieza(int fil, int col)
 {
 	const Casilla& casilla = m_tablero->getCasilla(fil, col);
-
-	//centro de la casilla en opengl
 	float cx, cy;
 	cell2center(fil, col, cx, cy);
-	// Color según bando
+
+	// Color del equipo
 	if (casilla.bando == bando_local)
 		glColor3f(1.00f, 0.95f, 0.85f); // blanco crema
 	else
-		glColor3f(0.85f, 0.55f, 0.20f); // naranja arena
+		glColor3f(0.90f, 0.55f, 0.15f); // naranja
 
-	float escala_pieza = ancho * 0.35f; // escala base de la pieza
+	float escala = ancho * 0.30f; // escala base
 
 	glPushMatrix();
-	glTranslatef(cx, cy, escala_pieza); // elevamos la pieza sobre el tablero
+	glTranslatef(cx, cy, escala + 0.008f); // elevamos sobre el tablero
 
 	switch (casilla.pieza) {
 
-	case pieza_capitan:
-		// Esfera grande: el capitán es el más visible
-		glutSolidSphere(escala_pieza * 1.0f, 16, 16);
+	case pieza_esfera:
+		// Esfera grande: el líder (Rey / Emir)
+		glutSolidSphere(escala * 1.0f, 16, 16);
 		break;
 
-	case pieza_soldado:
-		// Cubo pequeño: tropa básica
-		glutSolidCube(escala_pieza * 1.2f);
+	case pieza_dodecaedro:
+		// Dodecaedro: Infiltrado / Asesino de Élite
+		// glutSolidDodecahedron tiene radio ~1, escalamos
+		glScalef(escala * 0.55f, escala * 0.55f, escala * 0.55f);
+		glutSolidDodecahedron();
 		break;
 
-	case pieza_caballero:
-		// Pirámide: base cuadrada + 4 triángulos laterales
-		// La dibujamos manualmente con GL_TRIANGLES y GL_QUADS
-	{
-		float altura = escala_pieza * 1.4f; // altura de la pirámide
-		float base = escala_pieza * 0.7f; // semilado de la base
+	case pieza_icosaedro:
+		// Icosaedro: Almogávar / Arquero a Caballo
+		glScalef(escala * 0.65f, escala * 0.65f, escala * 0.65f);
+		glutSolidIcosahedron();
+		break;
 
-		// Base cuadrada (GL_QUADS)
-		glBegin(GL_QUADS);
-		glNormal3f(0, 0, -1);
-		glVertex3f(-base, -base, -escala_pieza); glVertex3f(base, -base, -escala_pieza);
-		glVertex3f(base, base, -escala_pieza); glVertex3f(-base, base, -escala_pieza);
-		glEnd();
+	case pieza_tetraedro:
+		// Tetraedro: Caballería Ligera / Jinete Bereber
+		glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
+		glutSolidTetrahedron();
+		break;
 
-		// 4 caras laterales (GL_TRIANGLES)
-		// Cara frontal
-		glBegin(GL_TRIANGLES);
-		glNormal3f(0, -1, 0.5f);
-		glVertex3f(-base, -base, -escala_pieza); glVertex3f(base, -base, -escala_pieza);
-		glVertex3f(0, 0, altura - escala_pieza);
-		// Cara trasera
-		glNormal3f(0, 1, 0.5f);
-		glVertex3f(base, base, -escala_pieza); glVertex3f(-base, base, -escala_pieza);
-		glVertex3f(0, 0, altura - escala_pieza);
-		// Cara derecha
-		glNormal3f(1, 0, 0.5f);
-		glVertex3f(base, -base, -escala_pieza); glVertex3f(base, base, -escala_pieza);
-		glVertex3f(0, 0, altura - escala_pieza);
-		// Cara izquierda
-		glNormal3f(-1, 0, 0.5f);
-		glVertex3f(-base, base, -escala_pieza); glVertex3f(-base, -base, -escala_pieza);
-		glVertex3f(0, 0, altura - escala_pieza);
-		glEnd();
-	}
-	break;
+	case pieza_cubog:
+		// Cubo grande: Infantería Pesada / Guardia Negra
+		glutSolidCube(escala * 1.1f);
+		break;
 
-	case pieza_arquero:
-		// Cilindro: lo dibujamos con gluCylinder
+	case pieza_cono:
+		// Cono: Caballería Pesada / Caballería Acorazada
 	{
 		GLUquadric* q = gluNewQuadric();
-		glRotatef(-90, 1, 0, 0); // lo ponemos vertical
-		gluCylinder(q, escala_pieza * 0.4f, escala_pieza * 0.4f, escala_pieza * 1.2f, 12, 1);
-		// Tapas del cilindro
-		gluDisk(q, 0, escala_pieza * 0.4f, 12, 1); // tapa inferior
-		glTranslatef(0, 0, escala_pieza * 1.2f);
-		gluDisk(q, 0, escala_pieza * 0.4f, 12, 1); // tapa superior
+		glRotatef(90, 1, 0, 0);            // lo ponemos apuntando arriba
+		glTranslatef(0, 0, -escala * 0.7f);     // lo centramos
+		gluCylinder(q, escala * 0.5f, 0.0f, escala * 1.2f, 12, 1); // base→punta
+		gluDisk(q, 0, escala * 0.5f, 12, 1);      // tapa de la base
 		gluDeleteQuadric(q);
 	}
 	break;
 
-	default:
-		break;
+	case pieza_cilindro:
+		// Cilindro: Ballestero / Arquero Ghazí
+	{
+		GLUquadric* q = gluNewQuadric();
+		glTranslatef(0, 0, -escala * 0.5f);
+		gluCylinder(q, escala * 0.35f, escala * 0.35f, escala * 1.0f, 12, 1);
+		gluDisk(q, 0, escala * 0.35f, 12, 1);     // tapa inferior
+		glTranslatef(0, 0, escala * 1.0f);
+		gluDisk(q, 0, escala * 0.35f, 12, 1);     // tapa superior
+		gluDeleteQuadric(q);
+	}
+	break;
+
+	case pieza_cubo_p:
+		// Cubo pequeño: Miliciano / Soldado Ghazí
+		glutSolidCube(escala * 0.75f);
+	break;
+	default: break;
 	}
 
 	glPopMatrix();
 }
 
-void Tablerogl::DibujaCuadricula()//para delimitar el tablero del fondo
+void Tablerogl::DibujaCuadricula()
 {
-	glColor3f(0.0f, 0.0f, 0.0f);//ponemos un color negro para todas las líneas
-	float total = N * ancho;//longitud todal del tablero
-
+	glColor3f(0, 0, 0);
+	float total = N * ancho;
 	for (int i = 0; i <= N; i++) {
-		//hacemos un borde exterior más grueso
-		if (i % N == 0) glLineWidth(4.0f);//primera y última línea
-		else glLineWidth(1.0f);//líneas interiores
-
+		glLineWidth(i % N == 0 ? 4.0f : 1.0f);
 		glBegin(GL_LINES);
-		//Línea vertical: x = i*ancho, va de arriba (y=0) a abajo (y=-total)
-		glVertex3f(i * ancho, 0.0f, 0.0f);
-		glVertex3f(i * ancho, -total, 0.0f);
-
-		//Linea horizontal: y = -i*ancho, va de izq (x=0) a derecha (x=total)
-		glVertex3f(0.0f, -i * ancho, 0.0f);
-		glVertex3f(total, -i * ancho, 0.0f);
+		glVertex3f(i * ancho, 0, 0); glVertex3f(i * ancho, -total, 0);
+		glVertex3f(0, -i * ancho, 0); glVertex3f(total, -i * ancho, 0);
 		glEnd();
 	}
-	glLineWidth(1.0f);//restauramos el grosor por defecto
+	glLineWidth(1.0f);
+}
+
+void Tablerogl::trySelectorMove(Bando bando)
+{
+	int idx = (bando == bando_local) ? 0 : 1;
+	int cf = Filacursor[idx], cc = Colcursor[idx];
+
+	if (!piezaSeleccionada) {
+		const Casilla& c = m_tablero->getCasilla(cf, cc);
+		if (c.pieza != pieza_nada && c.bando == bando) {
+			fromFila = cf; fromCol = cc; fromBando = bando;
+			piezaSeleccionada = true;
+		}
+	}
+	else {
+		if (fromBando != bando)return;
+		if (cf == fromFila && cc == fromCol) piezaSeleccionada = false; fromFila = fromCol = -1; return;
+		if (m_tablero->puedeMover(fromFila, fromCol, cf, cc))m_tablero->muevePieza(fromFila, fromCol, cf, cc);
+		else
+			cout << "Movimiento invalido." << endl;
+		piezaSeleccionada = false; fromFila = fromCol = -1;
+	}
 }
 
 void Tablerogl::KeyDown(unsigned char key)
 {
-	if (key == 27 || key == 'q' || key == 'Q') {
-		cout << "[Board] cerrando." << endl;
-		exit(0);
-	}
-
-	// ESC también cancela la selección actual
 	if (key == 27) {
-		piezaSeleccionada = false;
-		fromFila = fromCol = -1;
+		if (piezaSeleccionada) { piezaSeleccionada = false; fromFila = fromCol = -1; }
+		else exit(0);
+		return;
 	}
+	if (key == 'q' || key == 'Q') { exit(0); return; }
+
+	// WASD: cursor LOCAL
+	int& rL = Filacursor[0]; int& cL = Colcursor[0];
+	if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
+	if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
+	if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
+	if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
+
+	if (key == ' ')  trySelectorMove(bando_local);
+	if (key == 13)   trySelectorMove(bando_rival); // Enter
+}
+
+void Tablerogl::SpecialKey(int key)
+{
+	int& rR = Filacursor[1]; int& cR = Colcursor[1];
+	if (key == GLUT_KEY_UP) { if (rR > 0)   rR--; }
+	if (key == GLUT_KEY_DOWN) { if (rR < N - 1) rR++; }
+	if (key == GLUT_KEY_LEFT) { if (cR > 0)   cR--; }
+	if (key == GLUT_KEY_RIGHT) { if (cR < N - 1) cR++; }
 }
 
 void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
@@ -506,77 +540,21 @@ void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, 
 	if (clickFila < 0 || clickFila >= N || clickCol < 0 || clickCol >= N) return;
 
 	const Casilla& clicked = m_tablero->getCasilla(clickFila, clickCol);
-
-
-	//la logica de puede mover o puede no mover ya la tengo yo implementada en cada pieza, cambiar necesario CUIDADO
-	if (!piezaSeleccionada) {
-		// cancelar si clicka la misma casilla
-		/*if (clickFila == fromFila && clickCol == fromCol) {
-			piezaSeleccionada = false;
-			fromFila = fromCol = -1;
-			return;
-		}
-
-		// primero: ¿es tu turno?
-		if (!gestorTurnos.esDelBandoActual(*m_tablero, fromFila, fromCol)) {
-			cout << "[GestorTurnos] No es tu turno!" << endl;
-			piezaSeleccionada = false;
-			return;
-		}
-
-		// segundo: ¿puede moverse ahí?
-		if (m_tablero->puedeMover(fromFila, fromCol, clickFila, clickCol)) {
-			bool batalla = m_tablero->muevePieza(fromFila, fromCol, clickFila, clickCol);
-			gestorTurnos.terminarTurno();
-			if (batalla)
-				cout << "[Mouse] Combate!" << endl;*/
-
-
-		// ── SIN SELECCIÓN: intentamos seleccionar una pieza ──
-		if (clicked.pieza != pieza_soldado) {
-			// Hay pieza aquí → la seleccionamos
-			fromFila = clickFila;
-			fromCol = clickCol;
-			piezaSeleccionada = true;
-			cout << "[Mouse] Pieza seleccionada en ("
-				<< fromFila << "," << fromCol << ")" << endl;
-		}
-		// Si no hay pieza, no hacemos nada
-
 	
-		else {
-			// ── CON SELECCIÓN: intentamos mover ──
-
-			if (clickFila == fromFila && clickCol == fromCol) {
-				// Clic en la misma casilla → cancelar selección
-				piezaSeleccionada = false;
-				fromFila = fromCol = -1;
-				return;
-			}
-
-			if (m_tablero->puedeMover(fromFila, fromCol, clickFila, clickCol)) {
-
-				// Movimiento válido
-				bool batalla = m_tablero->muevePieza(fromFila, fromCol,clickFila, clickCol);
-				if (batalla) {
-					// TODO: activar pantalla de combate
-					// Por ahora el combate elimina al defensor
-					cout << "[Mouse] Combate! (pantalla de combate pendiente)" << endl;
-				}
-			}
-			else {
-				cout << "[Mouse] Movimiento inválido: casilla ocupada por aliado." << endl;
-			}
-
-
-
-			// En cualquier caso, deseleccionamos
-			piezaSeleccionada = false;
-			fromFila = fromCol = -1;
+	if (!piezaSeleccionada) {
+		if (clicked.pieza != pieza_nada) {
+			int idx = (clicked.bando == bando_local) ? 0 : 1;
+			Filacursor[idx] = clickFila; Colcursor[idx] = clickCol;
+			trySelectorMove(clicked.bando);
 		}
-		return;
+	}
+	else {
+		int idx = (fromBando == bando_local) ? 0 : 1;
+		Filacursor[idx] = clickFila; Colcursor[idx] = clickCol;
+		trySelectorMove(fromBando);
 	}
 }
+
 
 
 
