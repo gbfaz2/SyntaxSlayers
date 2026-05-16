@@ -145,12 +145,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GestorTurnos.h" />
     <ClInclude Include="src\Tablero.h" />
     <ClInclude Include="src\tablerogl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="GestorTurnos.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Tablero.cpp" />
     <ClCompile Include="src\tablerogl.cpp" />
