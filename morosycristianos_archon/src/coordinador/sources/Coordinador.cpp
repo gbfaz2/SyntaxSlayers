@@ -157,10 +157,10 @@ void Coordinador::raton(int boton, int state, int x, int y)
     glutPostRedisplay();
 }
 
-void Coordinador::mueve(double dt)
+/*void Coordinador::mueve(double dt)
 {
 	// VACÍO POR AHORA
-}
+}*/
 
 void Coordinador::ratonMovido(int x, int y)
 {
@@ -175,7 +175,7 @@ void Coordinador::redimensionar(int ancho, int alto) {
     glViewport(0, 0, anchoVentana, altoVentana);
 }
 
-void Coordinador::raton(int button, int state, int x, int y)
+/*void Coordinador::raton(int button, int state, int x, int y)
 {
 	// VACÍO POR AHORA
-}
+}*/
