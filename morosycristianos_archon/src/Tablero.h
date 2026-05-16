@@ -45,7 +45,7 @@ enum TipoPieza {
 //añado que piza hay y a que bando pertenece 
 struct Casilla {
 	TipoCasilla tipo{ Casilla_dinamica };//Inicializamos aquí en la declaración
-	float fase{ 0.0f };//0-local, 0.5-neutral, 1-rival
+	//float fase{ 0.0f };//0-local, 0.5-neutral, 1-rival
 	TipoPieza pieza{ pieza_nada };
 	Bando bando{ bando_nada };
 };
@@ -68,7 +68,7 @@ public:
 	//acceso de solo lectura a una casilla, lo usará tablerogl para saber qué color pintar. usaremos (0,0) como la esquina superior izquierda 
 	const Casilla& getCasilla(int fila, int col) const { return tablero[fila][col]; }// el valor de retorno es const para que no se pueda modificar desde fuera
 	Casilla& getCasilla(int fila, int col) { return tablero[fila][col]; }
-	void update(double dt);//en cada frame sumo (dt*velocidad) a la fase de cada casilla, y en tablerogl interpola el color entre el color oscuro y el claro según el valor de fase
+	//void update(double dt);//en cada frame sumo (dt*velocidad) a la fase de cada casilla, y en tablerogl interpola el color entre el color oscuro y el claro según el valor de fase
 	//añado método para ver si se puede mover la pieza 
 	bool puedeMover(int fr, int fc, int tr, int tc)const;
 	//añado método para ver si va a haber combate o no, false si no hay combate y true si hay combate
