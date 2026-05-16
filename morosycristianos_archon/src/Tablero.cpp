@@ -1,4 +1,7 @@
+
+//Autor: María Heredero
 //Tablero.cpp: implementación del tablero. Primero voy a hacer el tablero vacío 
+
 #include "Tablero.h"
 #include <iostream>
 using std::cout, std::endl;
