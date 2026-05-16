@@ -71,6 +71,10 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 
 	glDisable(GL_LIGHTING);
 
+	ETSIDI::setTextColor(1, 1, 0);
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 16);
+	ETSIDI::printxy("ARCHON", 0, 20);
+
 	DibujaFondo();//fondo png detrás de todo
 	DibujaCasillas();
 	DibujaSimbolos();
@@ -97,6 +101,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 
 	glDisable(GL_BLEND);
 	glEnable(GL_LIGHTING);//lo restauramos para las piezas 3D
+
 }
 
 void Tablerogl::DibujaFondo()
@@ -265,8 +270,8 @@ void Tablerogl::DibujaLuna(float cx, float cy, float size)
 		// Mapeamos i de 0..SEGS a ángulo de -90° a +90°
 		// (parte derecha del círculo, que en pantalla queda a la izq
 		//  porque el tablero rival está a la derecha)
-		float a = -3.14159265f / 2.0f + 3.14159265f * i / SEGS;
-		glVertex3f(cx + size * cosf(a),cy + size * sinf(a),0.002f);
+		float a = -3.14159265f / 2.0f - 3.14159265f * i / SEGS;
+		glVertex3f(cx + size * cosf(a),cy - size * sinf(a),0.002f);
 	}
 	glEnd();
 }
