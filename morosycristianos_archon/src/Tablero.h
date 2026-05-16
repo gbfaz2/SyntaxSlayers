@@ -59,6 +59,10 @@ class Tablero
 	void iniCasillas();//asigna tipos de casilla
 	void iniPiezas();//coloca las piezas en sus posiciones iniciales
 	bool esPuntoPoder(int fila, int col) const;
+	void lugar(int fila, int col, TipoPieza p, Bando b) {
+		tablero[fila][col].pieza = p;
+		tablero[fila][col].bando = b;
+	}
 
 public:
 	static const int N = 9;//constante no vamos a modificarlo

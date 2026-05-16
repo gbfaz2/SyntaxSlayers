@@ -36,47 +36,8 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 
 void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 {
-	//BANDO LOCAL(columnas 0 y 1)
-	//Capitan: columna 0, fila 4
-	tablero[4][0].pieza = pieza_capitan;
-	tablero[4][0].bando = bando_local;
+	//BANDO LOCAL (columna 0 y 1)
 
-	//Caballeros: columna 0, filas impares excepto la del capitán
-	tablero[1][0].pieza = pieza_caballero; tablero[1][0].bando = bando_local;
-	tablero[3][0].pieza = pieza_caballero; tablero[3][0].bando = bando_local;
-	tablero[5][0].pieza = pieza_caballero; tablero[5][0].bando = bando_local;
-	tablero[7][0].pieza = pieza_caballero; tablero[7][0].bando = bando_local;
-
-	//Arqueros: columna 0, esquinas
-	tablero[0][0].pieza = pieza_arquero; tablero[0][0].bando = bando_local;
-	tablero[8][0].pieza = pieza_arquero; tablero[8][0].bando = bando_local;
-
-	//Soldados: columna 1, todas las filas
-	for (int fila = 0; fila < N; fila++) {
-		tablero[fila][1].pieza = pieza_soldado;
-		tablero[fila][1].bando = bando_local;
-	}
-
-	//BANDO RIVAL (columnas 7 y 8)
-	//Capitan
-	tablero[4][8].pieza = pieza_capitan;
-	tablero[4][8].bando = bando_rival;
-
-	//Caballeros: columna 8, filas impares excepto la del capitán
-	tablero[1][8].pieza = pieza_caballero; tablero[1][8].bando = bando_rival;
-	tablero[3][8].pieza = pieza_caballero; tablero[3][8].bando = bando_rival;
-	tablero[5][8].pieza = pieza_caballero; tablero[5][8].bando = bando_rival;
-	tablero[7][8].pieza = pieza_caballero; tablero[7][8].bando = bando_rival;
-
-	//Arqueros: columna 8, esquinas
-	tablero[0][8].pieza = pieza_arquero; tablero[0][0].bando = bando_rival;
-	tablero[8][8].pieza = pieza_arquero; tablero[8][0].bando = bando_rival;
-
-	//Soldados: columna 7, todas las filas
-	for (int fila = 0; fila < N; fila++) {
-		tablero[fila][7].pieza = pieza_soldado;
-		tablero[fila][7].bando = bando_rival;
-	}
 }
 
 bool Tablero::esPuntoPoder(int fila, int col) const
