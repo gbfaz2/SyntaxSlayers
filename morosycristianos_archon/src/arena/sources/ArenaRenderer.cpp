@@ -300,6 +300,4 @@ void ArenaRenderer::dibujar(const Arena& arena)
 
 	// HUD encima de todo
 	dibujarHUD(arena);
-
-	glutSwapBuffers(); // mostrar el frame en pantalla
 }
