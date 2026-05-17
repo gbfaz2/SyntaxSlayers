@@ -66,6 +66,7 @@ public:
     int getFuerza()    const { return fuerza; } //devuelve la fuerza
     int getVelAtaque() const { return velAtaque; }  //devuelve la velocidad
     int getRecarga()   const { return recarga; }  //devuelve la recarga
+    int getRadioMov() const { return radioMov; }//devuelve el radio de movimiento de cada pieza
 
 
     // Para la demo: muestra las stats por consola
