@@ -24,7 +24,10 @@ void Coordinador::dibuja()
     switch (estado) {
 
     case EstadoJuego::INTRO:
+        entrar2D(anchoVentana, altoVentana); // <-- Gafas 2D para la intro
         pantallaIntro.dibujar(anchoVentana, altoVentana);
+        salir2D();                           // <-- Nos quitamos las gafas 2D
+
         if (pantallaIntro.terminado()) {
             pantallaIntro.reiniciar();
             menuPrincipal.reiniciar();
@@ -33,7 +36,10 @@ void Coordinador::dibuja()
         break;
 
     case EstadoJuego::MENU:
+        entrar2D(anchoVentana, altoVentana); // <-- Gafas 2D para el menú
         menuPrincipal.dibujar(anchoVentana, altoVentana);
+        salir2D();
+
         if (menuPrincipal.terminado()) {
             EstadoJuego siguiente = menuPrincipal.siguienteEstado();
             configuracion = menuPrincipal.getConfiguracion();
@@ -53,33 +59,44 @@ void Coordinador::dibuja()
         break;
 
     case EstadoJuego::DESTINO:
+        entrar2D(anchoVentana, altoVentana); // <-- Gafas 2D para la pantalla Destino
         pantallaDestino.dibujar(anchoVentana, altoVentana);
+        salir2D();
+
         if (pantallaDestino.terminado())
             estado = EstadoJuego::TABLERO;
         break;
 
     case EstadoJuego::TABLERO:
-        if (pTablerogl) pTablerogl->Dibuja();
+        if (pTablerogl) {
+            // --- GAFAS 3D PARA TU TABLERO ---
+            glEnable(GL_DEPTH_TEST);
+            glEnable(GL_LIGHTING);
+            glEnable(GL_LIGHT0);
+            glEnable(GL_COLOR_MATERIAL);
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(40.0, (float)anchoVentana / (float)altoVentana, 0.1, 150.0);
+
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            // --------------------------------
+
+            pTablerogl->Dibuja();
+        }
         break;
 
     case EstadoJuego::ARENA:
-        // TODO: arena de combate
         break;
-
     case EstadoJuego::RANKING:
-        // TODO: pantalla de ranking
         break;
-
     case EstadoJuego::FINAL:
-        // TODO: pantalla de fin de partida
         break;
-
     default: break;
     }
-
     glutSwapBuffers();
 }
-
 void Coordinador::tecla(unsigned char key)
 {
     switch (estado) {

@@ -25,13 +25,14 @@ int main(int argc, char* argv[])
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutCreateWindow("Moros y Cristianos");
 
-    glEnable(GL_LIGHT0);
+    
+    /*glEnable(GL_LIGHT0);
     glEnable(GL_LIGHTING);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_COLOR_MATERIAL);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(40.0, 1024.0 / 768.0, 0.1, 150.0);
+    gluPerspective(40.0, 1024.0 / 768.0, 0.1, 150.0);*/
 
     juego.inicializa();
 
