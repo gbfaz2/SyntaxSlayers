@@ -144,18 +144,6 @@
     <ClInclude Include="src\piezas\headers\Rey.h">
       <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\headers\Arena.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\arena\headers\ArenaRenderer.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\arena\headers\Combatiente.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\arena\headers\InputState.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -237,15 +225,6 @@
     </ClCompile>
     <ClCompile Include="src\piezas\sources\Rey.cpp">
       <Filter>piezas\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\arena\sources\Arena.cpp">
-      <Filter>arena\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp">
-      <Filter>arena\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\arena\sources\Combatiente.cpp">
-      <Filter>arena\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
