@@ -19,7 +19,7 @@ Tablero::Tablero()
 {
 	iniCasillas();
 	iniPiezas();
-	cout << "[Board] Tablero" << N << "x" << N << "creado." << endl;
+	cout << "[Tablero]" << N << "x" << N << "creado." << endl;
 }
 Tablero::~Tablero()
 {
@@ -133,10 +133,10 @@ bool Tablero::muevePieza(int fr, int fc, int tr, int tc)
 		tablero[tr][tc].obj = nullptr;
 	}
 	//Movemos la pieza al destino
+	tablero[tr][tc].pieza = tablero[fr][fc].pieza;
+	tablero[tr][tc].bando = tablero[fr][fc].bando;
 	tablero[tr][tc].obj = tablero[fr][fc].obj;
 	if (tablero[tr][tc].obj) tablero[tr][tc].obj->setPosicion(tr, tc);
-	tablero[tr][tc].pieza = tablero[fr][fc].pieza;  
-	tablero[tr][tc].bando = tablero[fr][fc].bando;
 
 	//Vaciamos el origen
 	tablero[fr][fc].pieza = pieza_nada;
@@ -145,8 +145,82 @@ bool Tablero::muevePieza(int fr, int fc, int tr, int tc)
 
 
 	if (batalla)
-		cout << "[Board] COMBATE en (" << tr << "," << tc << ")!" << endl;
+		cout << "[Tablero] COMBATE en (" << tr << "," << tc << ")!" << endl;
 	else
-		cout << "[Board] Movido: (" << fr << "," << fc << ") → (" << tr << "," << tc << ")" << endl;
+		cout << "[Tablero] Movido: (" << fr << "," << fc << ") → (" << tr << "," << tc << ")" << endl;
 	return batalla;
+}
+
+int Tablero::getRadioMovimiento(int fila, int col) const
+{
+	const Casilla& c = tablero[fila][col];
+
+	// Si la pieza tiene objeto real, usamos su radio propio
+	if (c.obj != nullptr)
+		return c.obj->getRadio();
+
+	// Fallback por tipo (por si obj no estuviera inicializado)
+	switch (c.pieza) {
+	case pieza_esfera:      return 3; // Rey/Emir: radio grande
+	case pieza_dodecaedro:  return 9; // Infiltrado: puede ir a cualquier lado
+	case pieza_icosaedro:   return 4; // Almogávar
+	case pieza_tetraedro:   return 3; // Caballería ligera
+	case pieza_cubog:       return 2; // Infantería pesada
+	case pieza_cono:        return 3; // Caballería pesada
+	case pieza_cilindro:    return 3; // Ballestero/Arquero
+	case pieza_cubo_p:      return 3; // Miliciano/Soldado
+	default:                return 1;
+	}
+}
+
+std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
+{
+	std::vector<CasillaPos> resultado;
+	if (tablero[fila][col].pieza == pieza_nada) return resultado;
+
+	int radio = getRadioMovimiento(fila, col);
+
+	// Comprobamos todas las casillas dentro del cuadrado radio×radio
+	for (int df = -radio; df <= radio; df++) {
+		for (int dc = -radio; dc <= radio; dc++) {
+			if (df == 0 && dc == 0) continue; // la casilla propia no cuenta
+			int tf = fila + df;
+			int tc = col + dc;
+			if (puedeMover(fila, col, tf, tc))
+				resultado.push_back({ tf, tc });
+		}
+	}
+	return resultado;
+}
+
+BandoPieza Tablero::checkVicoria() const
+{
+	// ── Condición 1: puntos de poder ──
+	const int poderPos[5][2] = { {0,4},{4,0},{4,4},{4,8},{8,4} };
+	int poderLocal = 0, poderRival = 0;
+
+	for (auto& pp : poderPos) {
+		const Casilla& c = tablero[pp[0]][pp[1]];
+		if (c.pieza != pieza_nada) {
+			if (c.bando == bando_local) poderLocal++;
+			else                        poderRival++;
+		}
+	}
+	if (poderLocal == 5) return bando_local;
+	if (poderRival == 5) return bando_rival;
+
+	// ── Condición 2: solo quedan piezas de un bando ──
+	bool hayLocal = false, hayRival = false;
+	for (int f = 0; f < N; f++)
+		for (int c = 0; c < N; c++) {
+			if (tablero[f][c].pieza == pieza_nada) continue;
+			if (tablero[f][c].bando == bando_local) hayLocal = true;
+			if (tablero[f][c].bando == bando_rival) hayRival = true;
+		}
+
+	if (hayLocal && !hayRival) return bando_local;
+	if (!hayLocal && hayRival) return bando_rival;
+
+	return bando_nada; // nadie ha ganado todavía
+	return BandoPieza();
 }
