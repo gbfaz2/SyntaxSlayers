@@ -53,6 +53,14 @@ void Tablerogl::init()
 
 void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casillas-símbolos-casilla seleccionada-piezas-cuadrícula-quad transparente para el ratón
 {
+	glEnable(GL_DEPTH_TEST);    // Que las piezas no se solapen mal
+	glEnable(GL_LIGHTING);      // Encender las luces
+	glEnable(GL_LIGHT0);
+	glEnable(GL_COLOR_MATERIAL);
+
+	glMatrixMode(GL_PROJECTION); // Seleccionar la lente de la cámara
+	glLoadIdentity();
+	gluPerspective(40.0, 1024.0 / 768.0, 0.1, 150.0);
 	//Recalculamos el centro. Por si N cambiara
 	centro_x = N * ancho / 2.0f;
 	centro_y = -N * ancho / 2.0f;
