@@ -1,5 +1,5 @@
 #include "freeglut.h"
-#include "Coordinador.h"
+#include "coordinador.h"
 #include <chrono>
 using namespace std::chrono;
 
@@ -14,6 +14,18 @@ void OnTimer(int value);
 void OnKeyboardDown(unsigned char key, int x, int y);
 void OnSpecialKeyboardDown(int key, int x, int y);
 void OnMouseClick(int button, int state, int x, int y);
+
+void OnKeyboardUp(unsigned char key, int, int)
+{
+    juego.tecla_up(key);
+    glutPostRedisplay();
+}
+
+void OnSpecialKeyboardUp(int key, int, int)
+{
+    juego.tecla_especial_up(key);
+    glutPostRedisplay();
+}
 
 // ─────────────────────────────────────────────────────────────
 int main(int argc, char* argv[])
@@ -38,6 +50,9 @@ int main(int argc, char* argv[])
     glutKeyboardFunc(OnKeyboardDown);
     glutSpecialFunc(OnSpecialKeyboardDown);
     glutMouseFunc(OnMouseClick);
+
+    glutKeyboardUpFunc(OnKeyboardUp);
+    glutSpecialUpFunc(OnSpecialKeyboardUp);
 
     glutMainLoop();
     return 0;

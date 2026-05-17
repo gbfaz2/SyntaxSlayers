@@ -46,18 +46,12 @@
 *.user
 *.suo
 
-# Excepciones: las dependencias de las librerías SÍ se suben
+# Excepciones: las dependencias de freeglut SÍ se suben
 !**/freeglut.dll
 !**/freeglut.lib
 !**/freeglut
 !**/freeglut.h
-!**/ETSIDI.lib
-!**/ETSIDI.dll
-!**/ETSIDI.h
-!**/fmodL.dll
-!**/glut32.dll
-!**/glut32.lib
-!**/glut.h
+
 # Carpetas de compilación de Visual Studio (C++ moderno)
 x64/
 Debug/
@@ -77,10 +71,3 @@ Release/
 *.ipdb
 *.tmp
 *.cache
-
-#Sube las carpetas de lib y bin
-!**/lib/
-!**/bin/
-!*.lib
-!*.dll
-!*.h

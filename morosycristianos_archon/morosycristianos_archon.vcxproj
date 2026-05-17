@@ -43,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -113,7 +113,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)src\piezas;$(ProjectDir)src\tablero;$(ProjectDir)src\arena;$(ProjectDir)src\coordinador;$(ProjectDir)src\ia;$(ProjectDir)src\menu</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)piezas\source;$(ProjectDir)src\piezas\headers;$(ProjectDir)src\tablero\source;$(ProjectDir)src\tablero\headers;$(ProjectDir)src\arena\source;$(ProjectDir)src\arena\headers;$(ProjectDir)src\coordinador\source;$(ProjectDir)src\coordinador\headers;$(ProjectDir)src\ia\source;$(ProjectDir)src\ia\headers;$(ProjectDir)src\menu\source;$(ProjectDir)src\menu\headers</AdditionalIncludeDirectories>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
@@ -133,7 +133,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)src\piezas;$(ProjectDir)src\tablero;$(ProjectDir)src\arena;$(ProjectDir)src\coordinador;$(ProjectDir)src\ia;$(ProjectDir)src\menu</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)piezas\source;$(ProjectDir)src\piezas\headers;$(ProjectDir)src\tablero\source;$(ProjectDir)src\tablero\headers;$(ProjectDir)src\arena\source;$(ProjectDir)src\arena\headers;$(ProjectDir)src\coordinador\source;$(ProjectDir)src\coordinador\headers;$(ProjectDir)src\ia\source;$(ProjectDir)src\ia\headers;$(ProjectDir)src\menu\source;$(ProjectDir)src\menu\headers</AdditionalIncludeDirectories>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
@@ -148,24 +148,32 @@
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
     <ClInclude Include="lib\glut.h" />
-    <ClInclude Include="src\coordinador\Coordinador.h" />
-    <ClInclude Include="src\piezas\Almogavar.h" />
-    <ClInclude Include="src\piezas\Arma.h" />
-    <ClInclude Include="src\piezas\ArmaCarga.h" />
-    <ClInclude Include="src\piezas\ArmaCuerpoaCuerpo.h" />
-    <ClInclude Include="src\piezas\ArmaDistancia.h" />
-    <ClInclude Include="src\piezas\Ballestero.h" />
-    <ClInclude Include="src\piezas\CaballeriaLigera.h" />
-    <ClInclude Include="src\piezas\CaballeriaPesada.h" />
-    <ClInclude Include="src\piezas\Hechicero.h" />
-    <ClInclude Include="src\piezas\Infanteria.h" />
-    <ClInclude Include="src\piezas\Infiltrado.h" />
-    <ClInclude Include="src\piezas\Miliciano.h" />
-    <ClInclude Include="src\piezas\Pieza.h" />
-    <ClInclude Include="src\piezas\PiezaTeleporte.h" />
-    <ClInclude Include="src\piezas\PiezaTerrestre.h" />
-    <ClInclude Include="src\piezas\PiezaVoladora.h" />
-    <ClInclude Include="src\piezas\Rey.h" />
+    <ClInclude Include="src\arena\headers\Arena.h" />
+    <ClInclude Include="src\arena\headers\ArenaRenderer.h" />
+    <ClInclude Include="src\arena\headers\Combatiente.h" />
+    <ClInclude Include="src\arena\headers\InputState.h" />
+    <ClInclude Include="src\arena\headers\placeholder_arena.h" />
+    <ClInclude Include="src\coordinador\headers\Coordinador.h" />
+    <ClInclude Include="src\ia\headers\placeholder_ia.h" />
+    <ClInclude Include="src\menu\headers\placeholder_menu.h" />
+    <ClInclude Include="src\piezas\headers\Almogavar.h" />
+    <ClInclude Include="src\piezas\headers\Arma.h" />
+    <ClInclude Include="src\piezas\headers\ArmaCarga.h" />
+    <ClInclude Include="src\piezas\headers\ArmaCuerpoaCuerpo.h" />
+    <ClInclude Include="src\piezas\headers\ArmaDistancia.h" />
+    <ClInclude Include="src\piezas\headers\Ballestero.h" />
+    <ClInclude Include="src\piezas\headers\CaballeriaLigera.h" />
+    <ClInclude Include="src\piezas\headers\CaballeriaPesada.h" />
+    <ClInclude Include="src\piezas\headers\Hechicero.h" />
+    <ClInclude Include="src\piezas\headers\Infanteria.h" />
+    <ClInclude Include="src\piezas\headers\Infiltrado.h" />
+    <ClInclude Include="src\piezas\headers\Miliciano.h" />
+    <ClInclude Include="src\piezas\headers\Pieza.h" />
+    <ClInclude Include="src\piezas\headers\PiezaTeleporte.h" />
+    <ClInclude Include="src\piezas\headers\PiezaTerrestre.h" />
+    <ClInclude Include="src\piezas\headers\PiezaVoladora.h" />
+    <ClInclude Include="src\piezas\headers\Rey.h" />
+    <ClInclude Include="src\tablero\headers\placeholder_tablero.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -179,25 +187,32 @@
     <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\coordinador\Coordinador.cpp" />
+    <ClCompile Include="src\arena\sources\Arena.cpp" />
+    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp" />
+    <ClCompile Include="src\arena\sources\Combatiente.cpp" />
+    <ClCompile Include="src\arena\sources\placeholder_arena.cpp" />
+    <ClCompile Include="src\coordinador\sources\Coordinador.cpp" />
+    <ClCompile Include="src\ia\headers\placeholder_ia.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\piezas\Almogavar.cpp" />
-    <ClCompile Include="src\piezas\Arma.cpp" />
-    <ClCompile Include="src\piezas\ArmaCarga.cpp" />
-    <ClCompile Include="src\piezas\ArmaCuerpoaCuerpo.cpp" />
-    <ClCompile Include="src\piezas\ArmaDistancia.cpp" />
-    <ClCompile Include="src\piezas\Ballestero.cpp" />
-    <ClCompile Include="src\piezas\CaballeriaLigera.cpp" />
-    <ClCompile Include="src\piezas\CaballeriaPesada.cpp" />
-    <ClCompile Include="src\piezas\Hechicero.cpp" />
-    <ClCompile Include="src\piezas\Infanteria.cpp" />
-    <ClCompile Include="src\piezas\Infiltrado.cpp" />
-    <ClCompile Include="src\piezas\Miliciano.cpp" />
-    <ClCompile Include="src\piezas\Pieza.cpp" />
-    <ClCompile Include="src\piezas\PiezaTeleporte.cpp" />
-    <ClCompile Include="src\piezas\PiezaTerrestre.cpp" />
-    <ClCompile Include="src\piezas\PiezaVoladora.cpp" />
-    <ClCompile Include="src\piezas\Rey.cpp" />
+    <ClCompile Include="src\menu\sources\placeholder_menu.cpp" />
+    <ClCompile Include="src\piezas\sources\Almogavar.cpp" />
+    <ClCompile Include="src\piezas\sources\Arma.cpp" />
+    <ClCompile Include="src\piezas\sources\ArmaCarga.cpp" />
+    <ClCompile Include="src\piezas\sources\ArmaCuerpoaCuerpo.cpp" />
+    <ClCompile Include="src\piezas\sources\ArmaDistancia.cpp" />
+    <ClCompile Include="src\piezas\sources\Ballestero.cpp" />
+    <ClCompile Include="src\piezas\sources\CaballeriaLigera.cpp" />
+    <ClCompile Include="src\piezas\sources\CaballeriaPesada.cpp" />
+    <ClCompile Include="src\piezas\sources\Hechicero.cpp" />
+    <ClCompile Include="src\piezas\sources\Infanteria.cpp" />
+    <ClCompile Include="src\piezas\sources\Infiltrado.cpp" />
+    <ClCompile Include="src\piezas\sources\Miliciano.cpp" />
+    <ClCompile Include="src\piezas\sources\Pieza.cpp" />
+    <ClCompile Include="src\piezas\sources\PiezaTeleporte.cpp" />
+    <ClCompile Include="src\piezas\sources\PiezaTerrestre.cpp" />
+    <ClCompile Include="src\piezas\sources\PiezaVoladora.cpp" />
+    <ClCompile Include="src\piezas\sources\Rey.cpp" />
+    <ClCompile Include="src\tablero\sources\placeholder_tablero.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
