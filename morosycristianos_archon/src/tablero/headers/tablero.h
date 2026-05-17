@@ -7,6 +7,7 @@
 //el cambio se produce gradualmente usando una fase 0.1 que tablerogl interpola para colorear la casilla. Segun la fase 0 maxima ventaja local, 0.5 neutral y 1.0 máxima ventaja rival
 #pragma once
 #include <cmath>
+#include <vector>
 #include "Pieza.h"
 // enumeración del tipo de terreno de cada casilla
 //a la izq está la zona local
@@ -54,6 +55,7 @@ struct Casilla {
 	BandoPieza bando{ bando_nada };
 	Pieza* obj{ nullptr };   // puntero al objeto real de la pieza (nullptr = casilla vacía)
 };
+struct CasillaPos { int fila, col; };//Par fila, columna para las casillas válidas de movimiento
 //con la clase tablero voy a gestionar la cuadrícula lógica de 9x9. Para ello un array estático donde vamos a fijar el tamaño N=9
 //añado un método que avanza el ciclo  de luz, recibe el tiempo transcurrido desde el ultimo frame y actualiza la fase de cada casilla dinámica
 class Tablero
@@ -82,6 +84,14 @@ public:
 	bool puedeMover(int fr, int fc, int tr, int tc)const;
 	//añado método para ver si va a haber combate o no, false si no hay combate y true si hay combate
 	bool muevePieza(int fr, int fc, int tr, int tc);
+	//añado un método que devuelve el radio de movimiento de la pieza
+	int getRadioMovimiento(int fila, int col)const;
+
+	//devuelve casillas a las que puede moverse la pieza, respetando su radio de movimiento y las reglas básicas
+	std::vector<CasillaPos> casillasValidas(int fila, int col) const;
+
+	//añado método para comprobar las dos condiciones de victoria (bando controla 5 puntos de poder o solo quedan piezas de un bando)
+	BandoPieza checkVicoria()const;
 };
 
 
