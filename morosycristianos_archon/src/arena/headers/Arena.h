@@ -1,6 +1,7 @@
 #pragma once
 #include "Combatiente.h"
 #include "InputState.h"
+#include "IAArena.h"
 
 // Escenario de combate que contiene a los dos combatienyes y 
 // la logica de quien le da a quien
@@ -29,6 +30,8 @@ class Arena
 
 	void resolverAtaque(Combatiente& atacante, Combatiente& objetivo); // Resuelve un ataque de un combatiente a otro, comprobando el cooldown, el alcance y aplicando el daño
 	void limitarPosicion(Combatiente& c); // Limita la posicion de un combatiente dentro de los bordes de la arena
+
+	IAArena _ia; // CONTROLADOR IA DEL ENEMIGO
 
 public:
 	// Constructor: crea la arena con los dos combatientes en sus posiciones iniciales

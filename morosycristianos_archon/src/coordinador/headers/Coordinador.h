@@ -1,19 +1,26 @@
 #pragma once
+#include "Arena.h"
+#include "ArenaRenderer.h"
+#include "InputState.h"
 
 class Coordinador
 {
-	// DEFINIMOS LOS ESTADOS AQUÍ MISMO PARA NO DEPENDER DE OTROS ARCHIVOS
 	enum Estado { INTRO, MENU, TABLERO, ARENA, PAUSA, RANKING, GAMEOVER };
-	Estado estado{ INTRO }; // ESTADO INICIAL
+	Estado estado{ ARENA }; // ARRANCA DIRECTO EN ARENA PARA PRUEBAS
+
+	Arena _arena;           // LOGICA DEL COMBATE
+	InputState _input;      // ESTADO DEL TECLADO
 
 public:
-	Coordinador() = default; // CONSTRUCTOR
-	virtual ~Coordinador() = default; // DESTRUCTOR
+	Coordinador() = default;
+	virtual ~Coordinador() = default;
 
-	void inicializa(); // SETUP INICIAL
-	void tecla(unsigned char key); // GESTIÓN TECLADO
-	void tecla_especial(int key); // GESTIÓN FLECHAS
-	void mueve(double dt); // ACTUALIZA LÓGICA
-	void dibuja(); // PINTA SEGÚN ESTADO
-	void raton(int button, int state, int x, int y); // GESTIÓN RATÓN
+	void inicializa();
+	void tecla(unsigned char key);
+	void tecla_up(unsigned char key);
+	void tecla_especial(int key);
+	void tecla_especial_up(int key);
+	void mueve(double dt);
+	void dibuja();
+	void raton(int button, int state, int x, int y);
 };

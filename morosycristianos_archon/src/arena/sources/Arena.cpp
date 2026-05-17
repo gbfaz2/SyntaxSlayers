@@ -21,6 +21,9 @@ void Arena::actualizar(float dt, InputState& input)
 	// Si el combate ya ha terminado, no hago nada
 	if (_resultado != ResultadoCombate::EnCurso) return;
 
+	// LA IA RELLENA EL INPUT DE P2 ANTES DE PROCESARLO
+	_ia.actualizar(_p2, _p1, input.p2);
+
 	// Proceso el input del jugador 1 (Cristiano)
 	if (input.p1.delante) _p1.pedirMovimiento(Direccion::Delante);
 	if (input.p1.atras) _p1.pedirMovimiento(Direccion::Atras);
