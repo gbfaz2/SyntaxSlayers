@@ -157,7 +157,7 @@ int Tablero::getRadioMovimiento(int fila, int col) const
 
 	// Si la pieza tiene objeto real, usamos su radio propio
 	if (c.obj != nullptr)
-		return c.obj->getRadio();
+		return c.obj->getRadioMov();
 
 	// Fallback por tipo (por si obj no estuviera inicializado)
 	switch (c.pieza) {
@@ -178,15 +178,22 @@ std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
 	std::vector<CasillaPos> resultado;
 	if (tablero[fila][col].pieza == pieza_nada) return resultado;
 
-	int radio = getRadioMovimiento(fila, col);
+	const Casilla& origen = tablero[fila][col];
 
-	// Comprobamos todas las casillas dentro del cuadrado radio×radio
-	for (int df = -radio; df <= radio; df++) {
-		for (int dc = -radio; dc <= radio; dc++) {
-			if (df == 0 && dc == 0) continue; // la casilla propia no cuenta
-			int tf = fila + df;
-			int tc = col + dc;
-			if (puedeMover(fila, col, tf, tc))
+	for (int tf = 0; tf < N; tf++) {
+		for (int tc = 0; tc < N; tc++) {
+			if (tf == fila && tc == col) continue;
+
+			// puedeMoverse() ya implementa las reglas de cada tipo:
+			//   PiezaTerrestre → sin diagonal, max radioMov casillas
+			//   PiezaVoladora  → con diagonal, max radioMov casillas
+			//   PiezaTeleporte → cualquier casilla del tablero
+			bool moviendose = (origen.obj != nullptr)
+				? origen.obj->puedeMoverse(tf, tc)
+				: true; // fallback: sin restricción
+
+			// puedeMover() del tablero comprueba que no hay aliado
+			if (moviendose && puedeMover(fila, col, tf, tc))
 				resultado.push_back({ tf, tc });
 		}
 	}
