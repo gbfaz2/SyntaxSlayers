@@ -95,7 +95,6 @@ void Coordinador::dibuja()
         break;
     default: break;
     }
-    glutSwapBuffers();
 }
 void Coordinador::tecla(unsigned char key)
 {
