@@ -148,9 +148,14 @@
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
     <ClInclude Include="lib\glut.h" />
-    <ClInclude Include="src\arena\headers\placeholder_arena.h" />
+    <ClInclude Include="src\arena\headers\Arena.h" />
+    <ClInclude Include="src\arena\headers\ArenaRenderer.h" />
+    <ClInclude Include="src\arena\headers\Combatiente.h" />
+    <ClInclude Include="src\arena\headers\InputState.h" />
     <ClInclude Include="src\coordinador\headers\Coordinador.h" />
-    <ClInclude Include="src\ia\headers\placeholder_ia.h" />
+    <ClInclude Include="src\ia\headers\IAArena.h" />
+    <ClInclude Include="src\ia\headers\MinimaxTablero.h" />
+    <ClInclude Include="src\ia\headers\SugerenciasTablero.h" />
     <ClInclude Include="src\menu\headers\placeholder_menu.h" />
     <ClInclude Include="src\piezas\headers\Almogavar.h" />
     <ClInclude Include="src\piezas\headers\Arma.h" />
@@ -183,9 +188,13 @@
     <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\arena\sources\placeholder_arena.cpp" />
+    <ClCompile Include="src\arena\sources\Arena.cpp" />
+    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp" />
+    <ClCompile Include="src\arena\sources\Combatiente.cpp" />
     <ClCompile Include="src\coordinador\sources\Coordinador.cpp" />
-    <ClCompile Include="src\ia\headers\placeholder_ia.cpp" />
+    <ClCompile Include="src\ia\sources\IAArena.cpp" />
+    <ClCompile Include="src\ia\sources\MinimaxTablero.cpp" />
+    <ClCompile Include="src\ia\sources\SugerenciasTablero.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\menu\sources\placeholder_menu.cpp" />
     <ClCompile Include="src\piezas\sources\Almogavar.cpp" />

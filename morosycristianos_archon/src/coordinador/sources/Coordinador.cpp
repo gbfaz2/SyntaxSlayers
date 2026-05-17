@@ -3,64 +3,65 @@
 
 void Coordinador::inicializa()
 {
-	estado = INTRO; // ARRANCA EN INTRO
+	estado = ARENA; // ARRANCA EN ARENA PARA PRUEBAS
+	ArenaRenderer::configurarVista(1024, 768); // CONFIGURA CAMARA Y PROYECCION
 }
 
 void Coordinador::dibuja()
 {
-	// TEST DE COLORES: CADA ESTADO PINTA LA PANTALLA DE UN COLOR
 	switch (estado) {
-	case INTRO:
-		glClearColor(1, 1, 1, 1); // BLANCO
-		break;
-	case MENU:
-		glClearColor(1, 0.5, 0, 1); // NARANJA
-		break;
-	case TABLERO:
-		glClearColor(0, 0.5, 0, 1); // VERDE
-		break;
 	case ARENA:
-		glClearColor(0, 0, 0.5, 1); // AZUL
+		ArenaRenderer::dibujar(_arena); // PINTA EL FRAME COMPLETO
 		break;
-	case PAUSA:
-		glClearColor(0.5, 0.5, 0.5, 1); // GRIS
-		break;
-	case RANKING:
-		glClearColor(1, 1, 0, 1); // AMARILLO
-		break;
-	case GAMEOVER:
-		glClearColor(0.5, 0, 0, 1); // ROJO
+	default:
+		glClearColor(0.1f, 0.1f, 0.1f, 1); // GRIS OSCURO PARA OTROS ESTADOS
+		glClear(GL_COLOR_BUFFER_BIT);
 		break;
 	}
-
-	glClear(GL_COLOR_BUFFER_BIT); // LIMPIA PANTALLA CON COLOR
 }
 
 void Coordinador::tecla(unsigned char key)
 {
-	if (key == 27) exit(0); // ESCAPE: CIERRA JUEGO
+	if (key == 27) exit(0); // ESC: CIERRA
 
-	// TEST RÁPIDO: CAMBIA DE ESTADO CON TECLAS PARA PROBAR LA MÁQUINA
-	if (key == '1') estado = INTRO; // PULSA 1: INTRO
-	if (key == '2') estado = MENU; // PULSA 2: MENU
-	if (key == '3') estado = TABLERO; // PULSA 3: TABLERO
-	if (key == '4') estado = ARENA; // PULSA 4: ARENA
-	if (key == '5') estado = PAUSA; // PULSA 5: PAUSA
-	if (key == '6') estado = RANKING; // PULSA 6: RANKING
-	if (key == '7') estado = GAMEOVER; // PULSA 7: GAMEOVER
+	if (estado == ARENA) {
+		// CONTROLES P1: WASD + F
+		if (key == 'w' || key == 'W') _input.p1.delante = true;
+		if (key == 's' || key == 'S') _input.p1.atras = true;
+		if (key == 'a' || key == 'A') _input.p1.izquierda = true;
+		if (key == 'd' || key == 'D') _input.p1.derecha = true;
+		if (key == 'f' || key == 'F') _input.p1.atacar = true;
+	}
+}
+
+void Coordinador::tecla_up(unsigned char key)
+{
+	if (estado == ARENA) {
+		// SUELTA TECLAS P1
+		if (key == 'w' || key == 'W') _input.p1.delante = false;
+		if (key == 's' || key == 'S') _input.p1.atras = false;
+		if (key == 'a' || key == 'A') _input.p1.izquierda = false;
+		if (key == 'd' || key == 'D') _input.p1.derecha = false;
+	}
 }
 
 void Coordinador::tecla_especial(int key)
 {
-	// VACÍO POR AHORA
+	// VACIO: P2 LO CONTROLA LA IA
+}
+
+void Coordinador::tecla_especial_up(int key)
+{
+	// VACIO: P2 LO CONTROLA LA IA
 }
 
 void Coordinador::mueve(double dt)
 {
-	// VACÍO POR AHORA
+	if (estado == ARENA)
+		_arena.actualizar((float)dt, _input); // AVANZA LA LOGICA
 }
 
 void Coordinador::raton(int button, int state, int x, int y)
 {
-	// VACÍO POR AHORA
+	// VACIO POR AHORA
 }
