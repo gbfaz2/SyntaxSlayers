@@ -18,8 +18,8 @@ class IAArena
     Estado _estado{ Estado::PATRULLAR }; // ESTADO INICIAL
 
     // UMBRALES QUE DISPARAN LOS CAMBIOS DE ESTADO
-    float _distanciaAtaque{ 2.0f };   // DISTANCIA PARA PASAR A ATACAR
-    float _distanciaPerseguir{ 6.0f }; // DISTANCIA PARA EMPEZAR A PERSEGUIR
+    float _distanciaAtaque{ 2.0f };    // DISTANCIA PARA ATACAR
+    float _distanciaPerseguir{ 7.0f }; // MITAD DE LA ARENA
     float _umbralHuida{ 0.25f };       // % DE VIDA PARA HUIR (25%)
 
 public:

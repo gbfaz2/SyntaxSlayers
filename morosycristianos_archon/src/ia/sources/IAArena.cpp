@@ -1,7 +1,6 @@
 #include "IAArena.h"
 #include <cmath> // PARA sqrt
 
-// ─────────────────────────────────────────────────────────────
 
 void IAArena::actualizar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
 {
@@ -19,7 +18,6 @@ void IAArena::actualizar(const Combatiente& enemigo, const Combatiente& jugador,
     }
 }
 
-// ─────────────────────────────────────────────────────────────
 
 float IAArena::calcularDistancia(const Combatiente& a, const Combatiente& b) const
 {
@@ -28,7 +26,6 @@ float IAArena::calcularDistancia(const Combatiente& a, const Combatiente& b) con
     return std::sqrt(dx * dx + dz * dz); // DISTANCIA EUCLIDEA
 }
 
-// ─────────────────────────────────────────────────────────────
 
 void IAArena::actualizarEstado(const Combatiente& enemigo, const Combatiente& jugador, float distancia)
 {
@@ -52,19 +49,16 @@ void IAArena::actualizarEstado(const Combatiente& enemigo, const Combatiente& ju
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-
 void IAArena::accionPatrullar(EstadoJugador& inputIA)
 {
-    // SE MUEVE HACIA ADELANTE HASTA QUE EL JUGADOR ENTRE EN RANGO
-    inputIA.delante = true;
+    // ESPERA QUIETA, SIN MOVERSE
+    inputIA.delante = false;
     inputIA.atras = false;
     inputIA.izquierda = false;
     inputIA.derecha = false;
     inputIA.atacar = false;
 }
 
-// ─────────────────────────────────────────────────────────────
 
 void IAArena::accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
 {
@@ -91,7 +85,6 @@ void IAArena::accionPerseguir(const Combatiente& enemigo, const Combatiente& jug
     }
 }
 
-// ─────────────────────────────────────────────────────────────
 
 void IAArena::accionAtacar(EstadoJugador& inputIA)
 {
@@ -103,7 +96,6 @@ void IAArena::accionAtacar(EstadoJugador& inputIA)
     inputIA.atacar = true; // DISPARA EL ATAQUE
 }
 
-// ─────────────────────────────────────────────────────────────
 
 void IAArena::accionHuir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
 {

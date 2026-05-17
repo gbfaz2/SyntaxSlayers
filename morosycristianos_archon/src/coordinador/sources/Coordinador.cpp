@@ -32,6 +32,8 @@ void Coordinador::tecla(unsigned char key)
 		if (key == 'd' || key == 'D') _input.p1.derecha = true;
 		if (key == 'f' || key == 'F') _input.p1.atacar = true;
 	}
+
+	if (key == 'r' || key == 'R') _arena.reiniciar(); // REINICIA COMBATE
 }
 
 void Coordinador::tecla_up(unsigned char key)
