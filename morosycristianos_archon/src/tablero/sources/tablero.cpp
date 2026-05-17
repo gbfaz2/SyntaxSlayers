@@ -135,6 +135,8 @@ bool Tablero::muevePieza(int fr, int fc, int tr, int tc)
 	//Movemos la pieza al destino
 	tablero[tr][tc].obj = tablero[fr][fc].obj;
 	if (tablero[tr][tc].obj) tablero[tr][tc].obj->setPosicion(tr, tc);
+	tablero[tr][tc].pieza = tablero[fr][fc].pieza;  
+	tablero[tr][tc].bando = tablero[fr][fc].bando;
 
 	//Vaciamos el origen
 	tablero[fr][fc].pieza = pieza_nada;
