@@ -85,10 +85,11 @@ void Coordinador::dibuja()
 			pTablerogl->Dibuja();
 
 			// TODO: CUANDO MARIA IMPLEMENTE huboColision()
-			// if (pTablerogl->huboColision()) {
-			//     _arena.iniciarCombate(pTablerogl->getPiezaAtacante(), pTablerogl->getPiezaDefensora());
-			//     estado = EstadoJuego::ARENA;
-			// }
+			if (pTablerogl->huboColision()) {
+			    _arena.iniciarCombate(*pTablerogl->getPiezaAtacante(), *pTablerogl->getPiezaDefensora());
+				//Aquí hay que poner algo de deletear a la pieza que pierda en la arena sin perder datos
+				estado = EstadoJuego::ARENA;
+			}
 		}
 		break;
 
