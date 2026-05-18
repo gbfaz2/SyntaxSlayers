@@ -89,3 +89,4 @@ Combatiente::Combatiente(float x, float z, float r, float g, float b, const Piez
 	// recarga 90 (alta) -> cooldown 0.9s (ataca lento)
 	_cooldownAtaque = pieza.getRecarga() / 100.0f;
 }
+
