@@ -1,5 +1,5 @@
 
-// Autor: Ines AlcÈrreca S·nchez
+// Autor: Ines Alc√©rreca S√°nchez
 // Define los estados globales del juego, los modos, bandos y batallas historicas
 
 #pragma once
@@ -24,7 +24,7 @@ enum class EstadoJuego {
 enum class ModoJuego { NINGUNO, JVJ, JVIA };
 
 // Bando del jugador
-enum class Bando { NINGUNO, CRISTIANO, MUSULMAN };
+enum class BandoJugador { NINGUNO, CRISTIANO, MUSULMAN };
 
 // Las 4 batallas historicas del juego
 enum class Batalla {
@@ -40,20 +40,20 @@ inline Batalla sortearBatalla() {
 }
 
 // Devuelve que bando tiene la iniciativa segun la batalla sorteada
-inline Bando iniciativa(Batalla b) {
+inline BandoJugador iniciativa(Batalla b) {
     if (b == Batalla::GUADALETE || b == Batalla::ALARCOS)
-        return Bando::MUSULMAN;
-    return Bando::CRISTIANO;
+        return BandoJugador::MUSULMAN;
+    return BandoJugador::CRISTIANO;
 }
 
 // Nombre de la batalla para mostrar en pantalla
 inline const char* nombreBatalla(Batalla b) {
     switch (b) {
-        case Batalla::GUADALETE:    return "Batalla de Guadalete (711)";
-        case Batalla::ALARCOS:      return "Batalla de Alarcos (1195)";
-        case Batalla::NAVAS_TOLOSA: return "Las Navas de Tolosa (1212)";
-        case Batalla::GRANADA:      return "Reconquista de Granada (1492)";
-        default:                    return "";
+    case Batalla::GUADALETE:    return "Batalla de Guadalete (711)";
+    case Batalla::ALARCOS:      return "Batalla de Alarcos (1195)";
+    case Batalla::NAVAS_TOLOSA: return "Las Navas de Tolosa (1212)";
+    case Batalla::GRANADA:      return "Reconquista de Granada (1492)";
+    default:                    return "";
     }
 }
 
@@ -77,35 +77,35 @@ inline std::vector<std::string> contextoBatalla(Batalla b) {
     switch (b) {
     case Batalla::GUADALETE:
         return {
-            "AÒo 711. El caudillo bereber Tariq ibn Ziyad",
+            "A√±o 711. El caudillo bereber Tariq ibn Ziyad",
             "cruza el Estrecho de Gibraltar con 7.000 hombres.",
             "El rey visigodo Rodrigo cae derrotado junto al Guadalete.",
-            "En apenas tres aÒos la PenÌnsula cae bajo dominio isl·mico.",
-            "Comienza el largo perÌodo de Al-¡ndalus."
+            "En apenas tres a√±os la Pen√≠nsula cae bajo dominio isl√°mico.",
+            "Comienza el largo per√≠odo de Al-√Åndalus."
         };
     case Batalla::ALARCOS:
         return {
-            "AÒo 1195. El califa almohade Al-Mansur",
-            "dirige su ejÈrcito contra Alfonso VIII de Castilla.",
+            "A√±o 1195. El califa almohade Al-Mansur",
+            "dirige su ej√©rcito contra Alfonso VIII de Castilla.",
             "En las llanuras de Alarcos, los castellanos son aplastados.",
-            "La derrota frena la Reconquista durante casi dos dÈcadas.",
-            "Los almohades alcanzan su m·ximo poder en Hispania."
+            "La derrota frena la Reconquista durante casi dos d√©cadas.",
+            "Los almohades alcanzan su m√°ximo poder en Hispania."
         };
     case Batalla::NAVAS_TOLOSA:
         return {
-            "AÒo 1212. Una cruzada papal une a los reinos",
-            "de Castilla, AragÛn y Navarra bajo una sola bandera.",
-            "En el paso de Sierra Morena, el ejÈrcito almohade",
-            "es destruido por la coaliciÛn cristiana.",
-            "El poder almohade jam·s se recuperar·."
+            "A√±o 1212. Una cruzada papal une a los reinos",
+            "de Castilla, Arag√≥n y Navarra bajo una sola bandera.",
+            "En el paso de Sierra Morena, el ej√©rcito almohade",
+            "es destruido por la coalici√≥n cristiana.",
+            "El poder almohade jam√°s se recuperar√°."
         };
     case Batalla::GRANADA:
         return {
-            "AÒo 1492. Tras diez aÒos de campaÒas militares,",
-            "los Reyes CatÛlicos asedian el reino nazarÌ de Granada.",
-            "El sult·n Boabdil entrega las llaves el 2 de enero.",
-            "La ˙ltima ciudad musulmana de la PenÌnsula cae.",
-            "La Reconquista culmina. EspaÒa nace."
+            "A√±o 1492. Tras diez a√±os de campa√±as militares,",
+            "los Reyes Cat√≥licos asedian el reino nazar√≠ de Granada.",
+            "El sult√°n Boabdil entrega las llaves el 2 de enero.",
+            "La √∫ltima ciudad musulmana de la Pen√≠nsula cae.",
+            "La Reconquista culmina. Espa√±a nace."
         };
     default: return {};
     }
@@ -113,8 +113,8 @@ inline std::vector<std::string> contextoBatalla(Batalla b) {
 
 // Configuracion de la partida actual
 struct ConfigPartida {
-    ModoJuego modo      = ModoJuego::NINGUNO;
-    Bando     bando     = Bando::NINGUNO;
-    Batalla   batalla   = Batalla::GUADALETE;
-    Bando     turno1    = Bando::NINGUNO;   // quien empieza
+    ModoJuego modo = ModoJuego::NINGUNO;
+    BandoJugador     bando = BandoJugador::NINGUNO;
+    Batalla   batalla = Batalla::GUADALETE;
+    BandoJugador     turno1 = BandoJugador::NINGUNO;   // quien empieza
 };
