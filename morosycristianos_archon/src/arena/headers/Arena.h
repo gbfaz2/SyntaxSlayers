@@ -2,6 +2,7 @@
 #include "Combatiente.h"
 #include "InputState.h"
 #include "IAArena.h"
+#include "estadojuego.h"
 
 // Escenario de combate que contiene a los dos combatienyes y 
 // la logica de quien le da a quien
@@ -32,6 +33,7 @@ class Arena
 	void limitarPosicion(Combatiente& c); // Limita la posicion de un combatiente dentro de los bordes de la arena
 
 	IAArena _ia; // CONTROLADOR IA DEL ENEMIGO
+	ModoJuego _modo{ ModoJuego::JVIA }; // POR DEFECTO, EL MODO DE JUEGO ES JUGADOR VS IA, PERO SE PUEDE CAMBIAR A JVJ DESDE EL MENU
 
 public:
 	// Constructor: crea la arena con los dos combatientes en sus posiciones iniciales
@@ -39,7 +41,8 @@ public:
 
 	void actualizar(float dt, InputState& input); // avanza la simulacion un frame
 	void reiniciar(); // reinicia el combate, volviendo a las posiciones iniciales y reseteando la vida de los combatientes
-	void iniciarCombate(const Pieza& atacante, const Pieza& defensora);
+	void iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo); // INCIA UN COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU
+																						// Y EL MODO DE JUEGO (JVJ O JVIA)
 	
 	// Getters (informacion para el renderer)
 	const Combatiente& p1() const { return _p1; } // const, de esta manera el renderer puede leer el combatiente pero no modificarlo
@@ -47,4 +50,5 @@ public:
 	float ancho() const { return _ancho; }
 	float profundo() const { return _profundo; }
 	ResultadoCombate resultado() const { return _resultado; }
+	
 };

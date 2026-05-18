@@ -22,8 +22,9 @@ void Arena::actualizar(float dt, InputState& input)
 	// Si el combate ya ha terminado, no hago nada
 	if (_resultado != ResultadoCombate::EnCurso) return;
 
-	// LA IA RELLENA EL INPUT DE P2 ANTES DE PROCESARLO
-	_ia.actualizar(_p2, _p1, input.p2, dt);
+	// LA IA SOLO ACTUA EN MODO JVIA
+	if (_modo == ModoJuego::JVIA)
+		_ia.actualizar(_p2, _p1, input.p2, dt);
 
 	// Proceso el input del jugador 1 (Cristiano)
 	if (input.p1.delante) _p1.pedirMovimiento(Direccion::Delante);
@@ -89,8 +90,9 @@ void Arena::limitarPosicion(Combatiente& c)
 	c.posicion(x, c.y(), z);
 }
 
-void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora)
+void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo)
 {
+	_modo = modo;
 	std::cout << "[Arena] iniciarCombate llamado!" << std::endl;
 
 	// Creamos los combatientes con las stats reales de las piezas del tablero P1 (atacante) siempre empieza a la izquierda, color segun bando

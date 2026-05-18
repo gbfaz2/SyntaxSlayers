@@ -70,9 +70,10 @@ void Coordinador::dibuja()
 		pantallaDestino.dibujar(anchoVentana, altoVentana);
 		salir2D();
 
-		if (pantallaDestino.terminado())
+		if (pantallaDestino.terminado()) {
 			estado = EstadoJuego::TABLERO;
-		    ETSIDI::playMusica("sonido_fondo_tablero.wav", true);//bucle sonido de fondo durante tablero
+			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+		}
 		break;
 
 	case EstadoJuego::TABLERO:
@@ -94,7 +95,10 @@ void Coordinador::dibuja()
 			// TODO: CUANDO MARIA IMPLEMENTE huboColision()
 			if (pTablerogl->huboColision()) 
 			{
-			    _arena.iniciarCombate(*pTablerogl->getPiezaAtacante(), *pTablerogl->getPiezaDefensora());
+				_arena.iniciarCombate(*pTablerogl->getPiezaAtacante(),
+					*pTablerogl->getPiezaDefensora(),
+					configuracion.modo); // INICIA COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU Y EL MODO DE JUEGO (JVJ O JVIA)
+
 				ETSIDI::stopMusica(); //colision: deja de sonar musica tablero
 				ETSIDI::play("sonido_combate_fight.wav");
 				ArenaRenderer::configurarVista(anchoVentana, altoVentana);
@@ -105,9 +109,9 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::ARENA:
-		ArenaRenderer::dibujar(_arena); // PINTA EL FRAME DE LA ARENA
-		if (_arena.resultado() != ResultadoCombate::EnCurso)
-			estado = EstadoJuego::TABLERO; // VUELVE AL TABLERO AL TERMINAR
+		ArenaRenderer::dibujar(_arena);
+			// SOLO VOLVER AL TABLERO CUANDO EL JUGADOR TOQUE UNA TECLA, PARA DAR TIEMPO A VER EL RESULTADO DEL COMBATE
+			// NO HACER NADA AQUÍ, SOLO ESPERAR A QUE EL JUGADOR PULSE UNA TECLA PARA VOLVER AL TABLERO
 		break;
 
 	case EstadoJuego::RANKING:
@@ -141,13 +145,25 @@ void Coordinador::tecla(unsigned char key)
 		if (pTablerogl) pTablerogl->KeyDown(key);
 		break;
 	case EstadoJuego::ARENA:
-		if (key == 'r' || key == 'R') _arena.reiniciar(); // REINICIA COMBATE
+
 		// CONTROLES P1: WASD + F
 		if (key == 'w' || key == 'W') _input.p1.delante = true;
 		if (key == 's' || key == 'S') _input.p1.atras = true;
 		if (key == 'a' || key == 'A') _input.p1.izquierda = true;
 		if (key == 'd' || key == 'D') _input.p1.derecha = true;
 		if (key == 'f' || key == 'F') _input.p1.atacar = true;
+
+		// CONTROLES P2 (solo en JvJ): flechas + L
+		if (configuracion.modo == ModoJuego::JVJ) {
+			// Las flechas van por tecla_especial, aquí solo el ataque
+			if (key == 'l' || key == 'L') _input.p2.atacar = true;
+		}
+
+		// ENTER o ESC VUELVE AL TABLERO DESDE LA ARENA CUANDO EL COMBATE HAYA TERMINADO (GANE P1, GANE P2 O EMPATE)
+		if ((key == 13 || key == 27) && _arena.resultado() != ResultadoCombate::EnCurso) {
+			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+			estado = EstadoJuego::TABLERO;
+		}
 		break;
 
 	default:
@@ -177,6 +193,14 @@ void Coordinador::tecla_especial(int key)
 	case EstadoJuego::TABLERO:
 		if (pTablerogl) pTablerogl->SpecialKey(key);
 		break;
+	case EstadoJuego::ARENA:
+		if (configuracion.modo == ModoJuego::JVJ) {
+			if (key == GLUT_KEY_UP)    _input.p2.delante = true;
+			if (key == GLUT_KEY_DOWN)  _input.p2.atras = true;
+			if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = true;
+			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = true;
+		}
+		break;
 	default: break;
 	}
 	glutPostRedisplay();
@@ -184,7 +208,12 @@ void Coordinador::tecla_especial(int key)
 
 void Coordinador::tecla_especial_up(int key)
 {
-	// VACIO: P2 LO CONTROLA LA IA
+	if (estado == EstadoJuego::ARENA && configuracion.modo == ModoJuego::JVJ) {
+		if (key == GLUT_KEY_UP)    _input.p2.delante = false;
+		if (key == GLUT_KEY_DOWN)  _input.p2.atras = false;
+		if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = false;
+		if (key == GLUT_KEY_RIGHT) _input.p2.derecha = false;
+	}
 }
 
 void Coordinador::mueve(double dt)
