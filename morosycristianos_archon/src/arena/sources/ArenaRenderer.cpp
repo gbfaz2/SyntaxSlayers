@@ -244,11 +244,11 @@ void ArenaRenderer::dibujarHUD(const Arena& arena)
 
 		const char* msg = "";
 		if (arena.resultado() == ResultadoCombate::GanaP1)
-			msg = "Gana el Cristiano!  -  R para reiniciar";
+			msg = "Gana el Cristiano!  -  ENTER para volver al tablero";
 		else if (arena.resultado() == ResultadoCombate::GanaP2)
-			msg = "Gana el Andalusi!  -  R para reiniciar";
+			msg = "Gana el Andalusi!  -  ENTER para volver al tablero";
 		else
-			msg = "Empate!  -  R para reiniciar";
+			msg = "Empate!  -  ENTER para volver al tablero";
 
 		// Centrar el texto en pantalla
 		float xMsg = _anchoVentana * 0.5f - strlen(msg) * 4.5f;
