@@ -16,6 +16,8 @@ void OnSpecialKeyboardDown(int key, int x, int y);
 void OnMouseClick(int button, int state, int x, int y);
 void OnPassiveMotion(int x, int y);
 void OnReshape(int ancho, int alto);
+void OnKeyboardUp(unsigned char key, int x, int y);
+void OnSpecialKeyboardUp(int key, int x, int y);
 
 // ─────────────────────────────────────────────────────────────
 int main(int argc, char* argv[])
@@ -44,7 +46,8 @@ int main(int argc, char* argv[])
     glutMouseFunc(OnMouseClick);
     glutPassiveMotionFunc(OnPassiveMotion);
     glutReshapeFunc(OnReshape);
-
+    glutKeyboardUpFunc(OnKeyboardUp);
+    glutSpecialUpFunc(OnSpecialKeyboardUp); 
 
     glutMainLoop();
     return 0;
@@ -103,3 +106,15 @@ void OnTimer(int /*VALUE*/)
     glutPostRedisplay();
     glutTimerFunc(25, OnTimer, 0);
 } 
+
+void OnKeyboardUp(unsigned char key, int /*x*/, int /*y*/)
+{
+    juego.tecla_up(key);
+    glutPostRedisplay();
+}
+
+void OnSpecialKeyboardUp(int key, int /*x*/, int /*y*/)
+{
+    juego.tecla_especial_up(key);
+    glutPostRedisplay();
+}

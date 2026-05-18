@@ -26,6 +26,9 @@ public:
         int toFila, int toCol
     );
 
+    Pieza* getUltimoAtacante()  const { return _ultimoAtacante; }
+    Pieza* getUltimaDefensora() const { return _ultimaDefensora; }
+
 private:
 
     //métodos privados internos:
@@ -45,5 +48,7 @@ private:
         Tablero& tablero,
         int toFila, int toCol
     );
-   
+
+    Pieza* _ultimoAtacante{ nullptr };
+    Pieza* _ultimaDefensora{ nullptr };
 };

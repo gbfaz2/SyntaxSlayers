@@ -8,6 +8,7 @@
 // Es el único que llama María desde tablerogl
 // 1. Primero deja que la pieza valide geometría (radio, diagonal, límites)
 // 2. Luego según el tipo de movimiento, escanea el tablero de forma distinta
+
 ResultadoMovimiento GestorMovimiento::resolverMovimiento(
     Pieza* pieza,//usamos puntero * por el polimorfismo
     Tablero& tablero,//copia directa con &
@@ -111,6 +112,9 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
                 //pone la posicion de la pieza actual a su casilla actual
                 pieza->setPosicion(fila, col);
 
+                _ultimoAtacante = pieza;
+                _ultimaDefensora = tablero.getCasilla(fila, col).obj; // ya está en destino
+
                 //retorna combate, como resultado del movimiento
                 return ResultadoMovimiento::COMBATE;
             }
@@ -122,13 +126,14 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
     }
     //salimos del bucle->hemos llegado al destino
     //comprobamos qué hay ahí con el otro método
+
     return comprobarDestino(pieza, tablero, toFila, toCol);
 }
-
 
 // COMPROBAR DESTINO
 // Solo mira la casilla destino, sin recorrer el camino
 // La usan voladoras y teleporte directamente
+
 ResultadoMovimiento GestorMovimiento::comprobarDestino(
     Pieza* pieza,
     Tablero& tablero,
@@ -167,7 +172,12 @@ ResultadoMovimiento GestorMovimiento::comprobarDestino(
     std::cout << "[GestorMovimiento] Enemigo en destino ("
         << toFila << "," << toCol << ") — COMBATE!" << std::endl;
 
-    tablero.muevePieza(fromFila, fromCol, toFila, toCol);
+    Pieza* capturada = tablero.muevePieza(fromFila, fromCol, toFila, toCol);
     pieza->setPosicion(toFila, toCol);
+    _ultimoAtacante = pieza;
+    _ultimaDefensora = capturada;
+
+   // tablero.muevePieza(fromFila, fromCol, toFila, toCol);
+   // pieza->setPosicion(toFila, toCol);
     return ResultadoMovimiento::COMBATE;
 }

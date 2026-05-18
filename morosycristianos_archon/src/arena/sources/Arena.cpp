@@ -1,5 +1,6 @@
 #include "Arena.h"
 #include <cmath> // para std::abs en resolverAtaque
+#include <iostream>
 
 // Constructor: crea la arena con los dos combatientes en sus posiciones iniciales
 Arena::Arena()
@@ -90,6 +91,8 @@ void Arena::limitarPosicion(Combatiente& c)
 
 void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora)
 {
+	std::cout << "[Arena] iniciarCombate llamado!" << std::endl;
+
 	// Creamos los combatientes con las stats reales de las piezas del tablero P1 (atacante) siempre empieza a la izquierda, color segun bando
 	float r1 = atacante.getBando() == Bando::CRISTIANO ? 0.89f : 0.39f;
 	float g1 = atacante.getBando() == Bando::CRISTIANO ? 0.29f : 0.60f;
@@ -106,4 +109,7 @@ void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora)
 
 	// Reseteamos el resultado
 	_resultado = ResultadoCombate::EnCurso;
+
+	std::cout << "[Arena] vida p1: " << _p1.vida() << " vida p2: " << _p2.vida() << std::endl;
+	std::cout << "[Arena] resultado = EnCurso" << std::endl;
 }

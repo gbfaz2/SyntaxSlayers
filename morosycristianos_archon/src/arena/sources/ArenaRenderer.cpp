@@ -2,6 +2,7 @@
 #include "freeglut.h"
 #include <cstdio> // Para sprintf (formatear texto)
 #include <cstring> // Para strlen (calcular longitud de texto)
+#include <string>
 
 // Inicializacion de variables estaticas
 int ArenaRenderer::_anchoVentana = 900;
@@ -217,16 +218,18 @@ void ArenaRenderer::dibujarHUD(const Arena& arena)
 	float fracP1 = arena.p1().vida() / arena.p1().vidaMax();
 	dibujarBarraVida(margen, margen, anchoBarra, altoBarra,
 		fracP1, 0.89f, 0.29f, 0.29f);
+	std::string etiquetaP1 = arena.p1().nombre() + " - WASD + F";
 	dibujarTexto(margen, margen + altoBarra + 16,
-		"P1 Cristiano - WASD + F", 1.0f, 1.0f, 1.0f);
+		etiquetaP1.c_str(), 1.0f, 1.0f, 1.0f);
 
 	// P2 (Andalusi, verde) - arriba derecha
 	float fracP2 = arena.p2().vida() / arena.p2().vidaMax();
 	float xP2 = _anchoVentana - margen - anchoBarra;
 	dibujarBarraVida(xP2, margen, anchoBarra, altoBarra,
 		fracP2, 0.39f, 0.60f, 0.13f);
+	std::string etiquetaP2 = arena.p2().nombre() + " - IA";
 	dibujarTexto(xP2, margen + altoBarra + 16,
-		"P2 Andalusi - Flechas + L", 1.0f, 1.0f, 1.0f);
+		etiquetaP2.c_str(), 1.0f, 1.0f, 1.0f);
 
 	// Mensaje de fin de combate
 	if (arena.resultado() != ResultadoCombate::EnCurso) {
