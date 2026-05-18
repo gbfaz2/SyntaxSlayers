@@ -115,7 +115,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 void Tablerogl::DibujaFondo()
 {
 	//intentamos cargar la textura y si no existiera el archivo, ETSIDI devuelve id=0 y no pasa nada
-	auto tex = ETSIDI::getTexture("bin\\imagenes/fondo.png");
+	auto tex = ETSIDI::getTexture("imagenes/fondo.png");
 	if (tex.id == 0)return;
 
 	glEnable(GL_TEXTURE_2D);
