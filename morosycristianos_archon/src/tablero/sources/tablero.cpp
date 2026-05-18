@@ -188,9 +188,7 @@ std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
 			//   PiezaTerrestre → sin diagonal, max radioMov casillas
 			//   PiezaVoladora  → con diagonal, max radioMov casillas
 			//   PiezaTeleporte → cualquier casilla del tablero
-			bool moviendose = (origen.obj != nullptr)
-				? origen.obj->puedeMoverse(tf, tc)
-				: true; // fallback: sin restricción
+			bool moviendose = (origen.obj != nullptr)? origen.obj->puedeMoverse(tf, tc): true; // fallback: sin restricción
 
 			// puedeMover() del tablero comprueba que no hay aliado
 			if (moviendose && puedeMover(fila, col, tf, tc))
