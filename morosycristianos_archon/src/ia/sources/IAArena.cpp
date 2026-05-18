@@ -2,19 +2,18 @@
 #include <cmath> // PARA sqrt
 
 
-void IAArena::actualizar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
+void IAArena::actualizar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt)
 {
     float distancia = calcularDistancia(enemigo, jugador); // DISTANCIA ACTUAL ENTRE LOS DOS
 
     actualizarEstado(enemigo, jugador, distancia); // DECIDE EN QUE ESTADO ESTAR
 
-    // EJECUTA LA ACCION DEL ESTADO ACTUAL
     switch (_estado)
     {
-    case Estado::PATRULLAR: accionPatrullar(inputIA);                        break;
-    case Estado::PERSEGUIR: accionPerseguir(enemigo, jugador, inputIA);      break;
-    case Estado::ATACAR:    accionAtacar(inputIA);                           break;
-    case Estado::HUIR:      accionHuir(enemigo, jugador, inputIA);           break;
+    case Estado::PATRULLAR: accionPatrullar(inputIA, dt);break;
+    case Estado::PERSEGUIR: accionPerseguir(enemigo, jugador, inputIA);break;
+    case Estado::ATACAR:    accionAtacar(inputIA);break;
+    case Estado::HUIR:      accionHuir(enemigo, jugador, inputIA);break;
     }
 }
 
@@ -49,11 +48,18 @@ void IAArena::actualizarEstado(const Combatiente& enemigo, const Combatiente& ju
     }
 }
 
-void IAArena::accionPatrullar(EstadoJugador& inputIA)
+void IAArena::accionPatrullar(EstadoJugador& inputIA, float dt)
 {
-    // ESPERA QUIETA, SIN MOVERSE
-    inputIA.delante = false;
-    inputIA.atras = false;
+    _tiempoPatrulla += dt; // ACUMULA TIEMPO
+
+    if (_tiempoPatrulla >= _duracionPatrulla) // TIEMPO CUMPLIDO
+    {
+        _patrullaArriba = !_patrullaArriba; // CAMBIA DIRECCION
+        _tiempoPatrulla = 0.0f;             // RESETEA TIMER
+    }
+
+    inputIA.delante = _patrullaArriba;  // SUBE O BAJA SEGUN DIRECCION
+    inputIA.atras = !_patrullaArriba;
     inputIA.izquierda = false;
     inputIA.derecha = false;
     inputIA.atacar = false;
@@ -62,7 +68,6 @@ void IAArena::accionPatrullar(EstadoJugador& inputIA)
 
 void IAArena::accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
 {
-    // RESETEA INPUT ANTES DE DECIDIR
     inputIA.delante = false;
     inputIA.atras = false;
     inputIA.izquierda = false;
@@ -72,17 +77,12 @@ void IAArena::accionPerseguir(const Combatiente& enemigo, const Combatiente& jug
     float dx = jugador.x() - enemigo.x(); // DIFERENCIA EN X HACIA EL JUGADOR
     float dz = jugador.z() - enemigo.z(); // DIFERENCIA EN Z HACIA EL JUGADOR
 
-    // MUEVE EN EL EJE DOMINANTE PARA IR HACIA EL JUGADOR
-    if (std::abs(dx) > std::abs(dz)) // MAS SEPARADOS EN X QUE EN Z
-    {
-        if (dx > 0) inputIA.derecha = true;  // JUGADOR A LA DERECHA
-        else        inputIA.izquierda = true; // JUGADOR A LA IZQUIERDA
-    }
-    else // MAS SEPARADOS EN Z
-    {
-        if (dz > 0) inputIA.delante = true; // JUGADOR DELANTE
-        else        inputIA.atras = true;   // JUGADOR DETRAS
-    }
+    // MUEVE EN AMBOS EJES SIMULTANEAMENTE
+    if (dx > 0.1f)       inputIA.derecha = true;   // JUGADOR A LA DERECHA
+    else if (dx < -0.1f) inputIA.izquierda = true;  // JUGADOR A LA IZQUIERDA
+
+    if (dz > 0.1f)       inputIA.atras = true;    // INVERTIDO: Z POSITIVO ES ATRAS
+    else if (dz < -0.1f) inputIA.delante = true;  // INVERTIDO: Z NEGATIVO ES DELANTE
 }
 
 
@@ -117,7 +117,7 @@ void IAArena::accionHuir(const Combatiente& enemigo, const Combatiente& jugador,
     }
     else // EJE Z DOMINANTE
     {
-        if (dz > 0) inputIA.delante = true; // SE ALEJA HACIA ADELANTE
-        else        inputIA.atras = true;   // SE ALEJA HACIA ATRAS
+        if (dz > 0.1f)       inputIA.delante = true;  // HUYE EN Z POSITIVO
+        else if (dz < -0.1f) inputIA.atras = true;    // HUYE EN Z NEGATIVO
     }
 }
