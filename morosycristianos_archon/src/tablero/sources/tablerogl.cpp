@@ -536,7 +536,18 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 		else if (resultado == ResultadoMovimiento::COMBATE) {
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
-			// Aquí irá tu lógica de combate más adelante...
+			
+			// Avisamos al coordinador de que hay combate pendiente
+			Pieza* atacante = gestorMovimiento.getUltimoAtacante();
+			Pieza* defensora = gestorMovimiento.getUltimaDefensora();
+
+			if (atacante && defensora) {
+				_pAtacante = atacante;
+				_pDefensora = defensora;
+				_combatePendiente = true;
+			}
+
+			gestorTurnos.terminarTurno();
 		}
 		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
 		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
@@ -656,9 +667,6 @@ void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, 
 	}
 }
 
-
-
-
 void Tablerogl::cell2center(int casilla_x, int casilla_y, float& glx, float& gly)
 {
 	glx = casilla_y * ancho + ancho / 2.0f;
@@ -673,4 +681,7 @@ void Tablerogl::world2cell(double x, double y, int& casilla_x, int& casilla_y)
 
 void Tablerogl::limpiarCombate()
 {
+	_combatePendiente = false;
+	_pAtacante = nullptr;
+	_pDefensora = nullptr; 
 }
