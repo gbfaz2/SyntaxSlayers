@@ -9,6 +9,7 @@ Coordinador::~Coordinador()
 	delete pTablero;   // LIBERA TABLERO
 }
 
+
 void Coordinador::inicializa()
 {
 	srand((unsigned)time(nullptr));
@@ -173,6 +174,19 @@ void Coordinador::tecla_especial_up(int key)
 
 void Coordinador::mueve(double dt)
 {
+	//actualiza gestor turnos por dt
+	if (estado == EstadoJuego::TABLERO && pTablero) {
+		// Actualiza el cronómetro del turno
+		gestorTurnos.update(dt);
+
+		// Comprueba si alguien ha ganado
+		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
+		if (rv != ResultadoVictoria::SIN_GANADOR) {
+			estado = EstadoJuego::FINAL;
+		}
+	}
+	
+	
 	if (estado == EstadoJuego::ARENA)
 		_arena.actualizar((float)dt, _input); // AVANZA LA LOGICA DE LA ARENA
 }
