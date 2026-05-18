@@ -92,6 +92,8 @@ public:
 
 	//añado método para comprobar las dos condiciones de victoria (bando controla 5 puntos de poder o solo quedan piezas de un bando)
 	BandoPieza checkVicoria()const;
+
+	Pieza* buscarPieza(TipoPieza tipo, BandoPieza bando) const;
 };
 
 

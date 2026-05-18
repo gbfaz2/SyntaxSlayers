@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GestorHechizos.h" />
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
     <ClInclude Include="lib\glut.h" />
@@ -221,6 +222,7 @@
     <ClCompile Include="src\piezas\sources\PiezaTerrestre.cpp" />
     <ClCompile Include="src\piezas\sources\PiezaVoladora.cpp" />
     <ClCompile Include="src\piezas\sources\Rey.cpp" />
+    <ClCompile Include="src\tablero\sources\GestorHechizos.cpp" />
     <ClCompile Include="src\tablero\sources\GestorMovimiento.cpp" />
     <ClCompile Include="src\tablero\sources\GestorTurnos.cpp" />
     <ClCompile Include="src\tablero\sources\GestorVictoria.cpp" />
