@@ -305,6 +305,48 @@ void Tablerogl::DibujaSeleccion()
 	DibujaCasSelec(fromFila, fromCol, 1.0f, 1.0f, 1.0f, 4.0f, 0.006f);
 }
 
+void Tablerogl::DibujaMovimientosValidos()
+{
+	if (!piezaSeleccionada || fromFila < 0)return;
+
+	auto validas = m_tablero->casillasValidas(fromFila, fromCol);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	for (const auto& pos : validas) {
+		float x0 = pos.col * ancho;
+		float x1 = x0 + ancho;
+		float y0 = -pos.fila * ancho;
+		float y1 = y0 - ancho;
+
+		//relleno amarillo semitransparente
+		glColor4f(1.0f, 1.0f, 0.0f, 0.25f);
+		glBegin(GL_QUADS);
+		glVertex3f(x0, y0, 0.004f); glVertex3f(x1, y0, 0.004f);
+		glVertex3f(x1, y1, 0.004f); glVertex3f(x0, y1, 0.004f);
+		glEnd();
+
+		// Contorno amarillo sólido
+		glColor4f(1.0f, 1.0f, 0.0f, 0.85f);
+		glLineWidth(2.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(x0 + 0.003f, y0 - 0.003f, 0.005f);
+		glVertex3f(x1 - 0.003f, y0 - 0.003f, 0.005f);
+		glVertex3f(x1 - 0.003f, y1 + 0.003f, 0.005f);
+		glVertex3f(x0 + 0.003f, y1 + 0.003f, 0.005f);
+		glEnd();
+		glLineWidth(1.0f);
+	}
+
+	glDisable(GL_BLEND);
+}
+
+void Tablerogl::DibujaVictoria()
+{
+
+}
+
 
 
 void Tablerogl::DibujaPiezas()//va a recorrer todo el tablero y dibuja la pieza de la casilla que corresponda
