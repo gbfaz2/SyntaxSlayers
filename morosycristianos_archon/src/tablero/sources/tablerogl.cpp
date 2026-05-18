@@ -35,6 +35,8 @@ Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
 	fromBando = bando_nada;
 	piezaSeleccionada = false;//no hay pieza seleccionada
 
+	victoria_ = bando_nada;//la partida sigue en curso, nadie a ganado
+
 	leftButton = rightButton = midButton = false;
 	controlKey = shiftKey = false;
 }
@@ -344,7 +346,40 @@ void Tablerogl::DibujaMovimientosValidos()
 
 void Tablerogl::DibujaVictoria()
 {
+	//lo dibujamos en coordenadas mundo, centrado en el tablero
+	float cx = (float)centro_x;
+	float cy = (float)centro_y;
+	float hw = N * ancho * 0.45f;//semiancho del cartel
+	float hh = N * ancho * 0.15f;//semialto
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.75f);
+	glBegin(GL_QUADS);
+	glVertex3f(cx - hw, cy + hh, 0.02f);
+	glVertex3f(cx + hw, cy + hh, 0.02f);
+	glVertex3f(cx + hw, cy - hh, 0.02f);
+	glVertex3f(cx - hw, cy - hh, 0.02f);
+	glEnd();
+	glDisable(GL_BLEND);
+
+	//Textos de victoria que aparecen si victoria_!=bando_nada
+	if (victoria_ == bando_local) {
+		ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f); // dorado
+		ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+		ETSIDI::printxy("VICTORIA CRISTIANA", 300, 400);
+	}
+	else {
+		ETSIDI::setTextColor(0.75f, 0.20f, 0.90f, 1.0f); // morado
+		ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+		ETSIDI::printxy("VICTORIA AL-ANDALUS", 280, 400);
+	}
+
+	ETSIDI::setTextColor(0.80f, 0.80f, 0.80f, 1.0f);
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
+	ETSIDI::printxy("Pulsa ESC para volver al menu", 310, 360);
+
+	glEnable(GL_DEPTH_TEST);
 }
 
 
