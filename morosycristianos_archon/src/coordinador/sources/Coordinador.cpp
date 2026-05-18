@@ -2,6 +2,7 @@
 #include "freeglut.h"
 #include <ctime>
 #include <cstdlib>
+#include <IAArena.h>
 
 Coordinador::~Coordinador()
 {
@@ -125,30 +126,22 @@ void Coordinador::tecla(unsigned char key)
 		if (pTablerogl) pTablerogl->KeyDown(key);
 		break;
 	case EstadoJuego::ARENA:
-		if (key == 'r' || key == 'R') _arena.reiniciar(); // REINICIA COMBATE
-		// CONTROLES P1: WASD + F
+		if (key == 'r' || key == 'R') _arena.reiniciar();
 		if (key == 'w' || key == 'W') _input.p1.delante = true;
 		if (key == 's' || key == 'S') _input.p1.atras = true;
 		if (key == 'a' || key == 'A') _input.p1.izquierda = true;
 		if (key == 'd' || key == 'D') _input.p1.derecha = true;
 		if (key == 'f' || key == 'F') _input.p1.atacar = true;
+
+		if (configuracion.modo == ModoJuego::JVJ) { // COMPRUEBA MODO DOS JUGADORES
+			if (key == 'i' || key == 'I') _input.p2.atacar = true; // ASIGNA ATAQUE P2
+		}
 		break;
 	default:
 		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
 		break;
 	}
 	glutPostRedisplay();
-}
-
-void Coordinador::tecla_up(unsigned char key)
-{
-	if (estado == EstadoJuego::ARENA) {
-		// SUELTA TECLAS P1
-		if (key == 'w' || key == 'W') _input.p1.delante = false;
-		if (key == 's' || key == 'S') _input.p1.atras = false;
-		if (key == 'a' || key == 'A') _input.p1.izquierda = false;
-		if (key == 'd' || key == 'D') _input.p1.derecha = false;
-	}
 }
 
 void Coordinador::tecla_especial(int key)
@@ -160,6 +153,14 @@ void Coordinador::tecla_especial(int key)
 	case EstadoJuego::TABLERO:
 		if (pTablerogl) pTablerogl->SpecialKey(key);
 		break;
+	case EstadoJuego::ARENA:
+		if (configuracion.modo == ModoJuego::JVJ) { // COMPRUEBA MODO DOS JUGADORES
+			if (key == GLUT_KEY_UP) _input.p2.delante = true; // MUEVE P2 ADELANTE
+			if (key == GLUT_KEY_DOWN) _input.p2.atras = true; // MUEVE P2 ATRAS
+			if (key == GLUT_KEY_LEFT) _input.p2.izquierda = true; // MUEVE P2 IZQUIERDA
+			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = true; // MUEVE P2 DERECHA
+		}
+		break;
 	default: break;
 	}
 	glutPostRedisplay();
@@ -167,13 +168,22 @@ void Coordinador::tecla_especial(int key)
 
 void Coordinador::tecla_especial_up(int key)
 {
-	// VACIO: P2 LO CONTROLA LA IA
+	if (estado == EstadoJuego::ARENA) {
+		if (configuracion.modo == ModoJuego::JVJ) { // COMPRUEBA MODO DOS JUGADORES
+			if (key == GLUT_KEY_UP) _input.p2.delante = false; // DETIENE ADELANTE P2
+			if (key == GLUT_KEY_DOWN) _input.p2.atras = false; // DETIENE ATRAS P2
+			if (key == GLUT_KEY_LEFT) _input.p2.izquierda = false; // DETIENE IZQUIERDA P2
+			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = false; // DETIENE DERECHA P2
+		}
+	}
 }
 
 void Coordinador::mueve(double dt)
 {
-	if (estado == EstadoJuego::ARENA)
-		_arena.actualizar((float)dt, _input); // AVANZA LA LOGICA DE LA ARENA
+	if (estado == EstadoJuego::ARENA) {
+		_arena.setContraIA(configuracion.modo == ModoJuego::JVIA); // ACTIVA IA SI MODO ES JVIA
+		_arena.actualizar((float)dt, _input);
+	}
 }
 
 void Coordinador::raton(int boton, int state, int x, int y)
