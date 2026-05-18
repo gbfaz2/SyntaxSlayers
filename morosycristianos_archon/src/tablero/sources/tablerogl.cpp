@@ -561,25 +561,33 @@ void Tablerogl::KeyDown(unsigned char key)
 	}
 	if (key == 'q' || key == 'Q') { exit(0); return; }
 
-	// WASD: cursor LOCAL
-	int& rL = Filacursor[0]; int& cL = Colcursor[0];
-	if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
-	if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
-	if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
-	if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
+	
+	if (gestorTurnos.getBandoActual() == bando_local) {
+		int& rL = Filacursor[0]; int& cL = Colcursor[0];
+		if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
+		if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
+		if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
+		if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
 
-	if (key == ' ')  trySelectorMove(bando_local);
-	if (key == 13)   trySelectorMove(bando_rival); // Enter
+		if (key == ' ')  trySelectorMove(bando_local);
+	}
+
+	if (gestorTurnos.getBandoActual() == bando_rival) {
+		if (key == 13)   trySelectorMove(bando_rival); // Enter
+	}
 }
 
 void Tablerogl::SpecialKey(int key)
 {
 	if (victoria_ != bando_nada) return;
-	int& rR = Filacursor[1]; int& cR = Colcursor[1];
-	if (key == GLUT_KEY_UP && rR > 0)   rR--;
-	if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
-	if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
-	if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
+
+	if (gestorTurnos.getBandoActual() == bando_rival) {
+		int& rR = Filacursor[1]; int& cR = Colcursor[1];
+		if (key == GLUT_KEY_UP && rR > 0)   rR--;
+		if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
+		if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
+		if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
+	}
 }
 
 void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
