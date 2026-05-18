@@ -66,6 +66,7 @@ void Coordinador::dibuja()
 
 		if (pantallaDestino.terminado())
 			estado = EstadoJuego::TABLERO;
+		    ETSIDI::playMusica("sonido_fondo_tablero.wav", true);//bucle sonido de fondo durante tablero
 		break;
 
 	case EstadoJuego::TABLERO:
@@ -88,6 +89,7 @@ void Coordinador::dibuja()
 			if (pTablerogl->huboColision()) 
 			{
 			    _arena.iniciarCombate(*pTablerogl->getPiezaAtacante(), *pTablerogl->getPiezaDefensora());
+				ETSIDI::stopMusica(); //colision: deja de sonar musica tablero
 				ArenaRenderer::configurarVista(anchoVentana, altoVentana);
 				pTablerogl->limpiarCombate();
 				estado = EstadoJuego::ARENA;
@@ -124,7 +126,11 @@ void Coordinador::tecla(unsigned char key)
 		pantallaDestino.avanzar();
 		break;
 	case EstadoJuego::TABLERO:
-		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; break; }
+		if (key == 27) { 
+			ETSIDI::stopMusica(); 
+			menuPrincipal.reiniciar(); 
+			estado = EstadoJuego::MENU; break; 
+		}
 		if (pTablerogl) pTablerogl->KeyDown(key);
 		break;
 	case EstadoJuego::ARENA:
@@ -138,7 +144,7 @@ void Coordinador::tecla(unsigned char key)
 		break;
 
 	default:
-		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
+		if (key == 27) { ETSIDI::stopMusica(); menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
 		break;
 	}
 	glutPostRedisplay();
@@ -184,6 +190,7 @@ void Coordinador::mueve(double dt)
 		// Comprueba si alguien ha ganado
 		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 		if (rv != ResultadoVictoria::SIN_GANADOR) {
+			ETSIDI::stopMusica();
 			estado = EstadoJuego::FINAL;
 		}
 	}
