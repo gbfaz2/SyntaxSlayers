@@ -17,9 +17,9 @@ static float fr() { return (float)rand() / RAND_MAX; }
 
 
 void PantallaDestino::reiniciar(const ConfigPartida& cfg) {
-    m_cfg          = cfg;
-    m_fotograma    = 0;
-    m_terminado    = false;
+    m_cfg = cfg;
+    m_fotograma = 0;
+    m_terminado = false;
     m_letraVisible = 0;
     m_particulas.clear();
     m_particulas.reserve(400);
@@ -28,14 +28,14 @@ void PantallaDestino::reiniciar(const ConfigPartida& cfg) {
     m_totalLetras = 0;
     for (const auto& l : m_lineas) m_totalLetras += (int)l.size();
 
-	// IMAGENES DE LAS BATALLAS
+    // IMAGENES DE LAS BATALLAS
     const char* rutas[] = {
     "bin\\imagenes\\GUADALETE.png",
     "bin\\imagenes\\ALARCOS.png",
     "bin\\imagenes\\NAVAS_TOLOSA.png",
     "bin\\imagenes\\GRANADA.png"
     };
-    m_textura = ETSIDI::getTexture(rutas[(int)cfg.batalla]); 
+    m_textura = ETSIDI::getTexture(rutas[(int)cfg.batalla]);
 
 }
 
@@ -74,15 +74,15 @@ void PantallaDestino::actualizar(int ancho, int alto) {
         if (m_fotograma % 2 == 0) m_letraVisible++;
 
     for (auto& p : m_particulas) {
-        p.x   += p.vx;
-        p.y   += p.vy;
+        p.x += p.vx;
+        p.y += p.vy;
         p.vida -= 1.0f;
-        p.alfa  = (p.vida / p.vidaMax) * 0.80f;
+        p.alfa = (p.vida / p.vidaMax) * 0.80f;
     }
     auto muerta = [&](const Particula& p) {
         return p.vida <= 0 || p.x < -20 || p.x > ancho + 20
-                           || p.y < -20 || p.y > alto  + 20;
-    };
+            || p.y < -20 || p.y > alto + 20;
+        };
     m_particulas.erase(
         std::remove_if(m_particulas.begin(), m_particulas.end(), muerta),
         m_particulas.end());
@@ -93,13 +93,13 @@ void PantallaDestino::actualizar(int ancho, int alto) {
 void PantallaDestino::colorParticula(float& r, float& g, float& b, float v) const {
     switch (m_cfg.batalla) {
     case Batalla::GUADALETE:    // arena dorada
-        r = 0.82f + v*0.12f; g = 0.55f + v*0.25f; b = 0.05f + v*0.15f; break;
+        r = 0.82f + v * 0.12f; g = 0.55f + v * 0.25f; b = 0.05f + v * 0.15f; break;
     case Batalla::ALARCOS:      // brasas rojas
-        r = 0.90f + v*0.10f; g = 0.25f + v*0.35f; b = 0.01f;           break;
+        r = 0.90f + v * 0.10f; g = 0.25f + v * 0.35f; b = 0.01f;           break;
     case Batalla::NAVAS_TOLOSA: // polvo de luz
-        r = 0.65f + v*0.35f; g = 0.80f + v*0.20f; b = 1.0f;            break;
+        r = 0.65f + v * 0.35f; g = 0.80f + v * 0.20f; b = 1.0f;            break;
     case Batalla::GRANADA:      // petalos dorados/rosados
-        r = 0.90f + v*0.10f; g = 0.60f + v*0.20f; b = 0.15f + v*0.45f; break;
+        r = 0.90f + v * 0.10f; g = 0.60f + v * 0.20f; b = 0.15f + v * 0.45f; break;
     }
 }
 
@@ -109,36 +109,36 @@ void PantallaDestino::emitir(int ancho, int alto) {
         float v = fr();
         colorParticula(p.r, p.g, p.b, v);
         p.vidaMax = 90.0f + fr() * 110.0f;
-        p.vida    = p.vidaMax;
-        p.alfa    = 0.7f;
+        p.vida = p.vidaMax;
+        p.alfa = 0.7f;
 
         switch (m_cfg.batalla) {
         case Batalla::GUADALETE:    // arena soplada de izquierda a derecha
-            p.x   = -5.0f;
-            p.y   = fr() * alto;
-            p.vx  = 1.5f + fr() * 2.5f;
-            p.vy  = (fr() - 0.5f) * 0.6f;
+            p.x = -5.0f;
+            p.y = fr() * alto;
+            p.vx = 1.5f + fr() * 2.5f;
+            p.vy = (fr() - 0.5f) * 0.6f;
             p.tam = 1.5f + fr() * 2.5f;
             break;
         case Batalla::ALARCOS:      // brasas ascendentes desde abajo
-            p.x   = ancho * (0.1f + fr() * 0.8f);
-            p.y   = fr() * alto * 0.25f;
-            p.vx  = (fr() - 0.5f) * 1.5f;
-            p.vy  = 1.0f + fr() * 2.5f;
+            p.x = ancho * (0.1f + fr() * 0.8f);
+            p.y = fr() * alto * 0.25f;
+            p.vx = (fr() - 0.5f) * 1.5f;
+            p.vy = 1.0f + fr() * 2.5f;
             p.tam = 1.0f + fr() * 3.5f;
             break;
         case Batalla::NAVAS_TOLOSA: // polvo de luz cayendo desde arriba
-            p.x   = fr() * ancho;
-            p.y   = alto + 5.0f;
-            p.vx  = (fr() - 0.5f) * 0.8f;
-            p.vy  = -(0.5f + fr() * 1.2f);
+            p.x = fr() * ancho;
+            p.y = alto + 5.0f;
+            p.vx = (fr() - 0.5f) * 0.8f;
+            p.vy = -(0.5f + fr() * 1.2f);
             p.tam = 1.0f + fr() * 2.5f;
             break;
         case Batalla::GRANADA:      // petalos cayendo suavemente
-            p.x   = fr() * ancho;
-            p.y   = alto + 5.0f;
-            p.vx  = (fr() - 0.5f) * 1.0f;
-            p.vy  = -(0.3f + fr() * 1.0f);
+            p.x = fr() * ancho;
+            p.y = alto + 5.0f;
+            p.vx = (fr() - 0.5f) * 1.0f;
+            p.vy = -(0.3f + fr() * 1.0f);
             p.tam = 2.0f + fr() * 3.0f;
             break;
         }
@@ -154,7 +154,7 @@ void PantallaDestino::dibujarParticulas() {
         glPointSize(p.tam);
         glColor4f(p.r, p.g, p.b, p.alfa);
         glBegin(GL_POINTS);
-            glVertex2f(p.x, p.y);
+        glVertex2f(p.x, p.y);
         glEnd();
     }
     glDisable(GL_POINT_SMOOTH);
@@ -165,20 +165,20 @@ void PantallaDestino::dibujarParticulas() {
 // FONDO DEGRADADO
 
 void PantallaDestino::coloresFondo(float& r1, float& g1, float& b1,
-                                   float& r2, float& g2, float& b2) const {
+    float& r2, float& g2, float& b2) const {
     switch (m_cfg.batalla) {
     case Batalla::GUADALETE:    // desierto: naranja oscuro → marron
-        r1=0.55f; g1=0.27f; b1=0.04f;
-        r2=0.16f; g2=0.07f; b2=0.01f; break;
+        r1 = 0.55f; g1 = 0.27f; b1 = 0.04f;
+        r2 = 0.16f; g2 = 0.07f; b2 = 0.01f; break;
     case Batalla::ALARCOS:      // noche de batalla: negro → carmesi
-        r1=0.04f; g1=0.01f; b1=0.01f;
-        r2=0.36f; g2=0.04f; b2=0.02f; break;
+        r1 = 0.04f; g1 = 0.01f; b1 = 0.01f;
+        r2 = 0.36f; g2 = 0.04f; b2 = 0.02f; break;
     case Batalla::NAVAS_TOLOSA: // amanecer en Sierra Morena: azul → verde-azul
-        r1=0.04f; g1=0.06f; b1=0.22f;
-        r2=0.10f; g2=0.26f; b2=0.22f; break;
+        r1 = 0.04f; g1 = 0.06f; b1 = 0.22f;
+        r2 = 0.10f; g2 = 0.26f; b2 = 0.22f; break;
     case Batalla::GRANADA:      // atardecer: purpura → naranja calido
-        r1=0.12f; g1=0.04f; b1=0.22f;
-        r2=0.44f; g2=0.18f; b2=0.04f; break;
+        r1 = 0.12f; g1 = 0.04f; b1 = 0.22f;
+        r2 = 0.44f; g2 = 0.18f; b2 = 0.04f; break;
     }
 }
 
@@ -221,7 +221,7 @@ void PantallaDestino::dibujarEfectos(int ancho, int alto) {
         glLineWidth(1.5f);
         for (int j = 0; j < 5; j++) {
             float yBase = alto * 0.10f + j * 16.0f;
-            float fase  = m_fotograma * 0.04f + j * 1.3f;
+            float fase = m_fotograma * 0.04f + j * 1.3f;
             glColor4f(0.85f, 0.55f, 0.10f, 0.12f);
             glBegin(GL_LINE_STRIP);
             for (int x = 0; x <= ancho; x += 10) {
@@ -238,27 +238,27 @@ void PantallaDestino::dibujarEfectos(int ancho, int alto) {
 
     case Batalla::GRANADA:
         break;
-    
+
     case Batalla::NAVAS_TOLOSA: {
-        float cx  = ancho * 0.5f;
-        float ty  = (float)alto + 10.0f;
+        float cx = ancho * 0.5f;
+        float ty = (float)alto + 10.0f;
         int nRayos = 10;
         for (int r = 0; r < nRayos; r++) {
-            float t     = (r / (float)(nRayos - 1)) - 0.5f;
-            float angA  = t * 1.4f;
-            float angB  = (t + 1.0f / (nRayos - 1)) * 1.4f;
+            float t = (r / (float)(nRayos - 1)) - 0.5f;
+            float angA = t * 1.4f;
+            float angB = (t + 1.0f / (nRayos - 1)) * 1.4f;
             float pulse = (sinf(m_fotograma * 0.03f + r * 0.7f) + 1.0f) * 0.5f;
             glColor4f(1.0f, 0.95f, 0.70f, 0.05f + pulse * 0.07f);
             float len = ancho * 1.5f;
             glBegin(GL_TRIANGLES);
-                glVertex2f(cx, ty);
-                glVertex2f(cx + sinf(angA)*len, ty - cosf(angA)*len);
-                glVertex2f(cx + sinf(angB)*len, ty - cosf(angB)*len);
+            glVertex2f(cx, ty);
+            glVertex2f(cx + sinf(angA) * len, ty - cosf(angA) * len);
+            glVertex2f(cx + sinf(angB) * len, ty - cosf(angB) * len);
             glEnd();
         }
         break;
     }
-    } 
+    }
 
     glDisable(GL_BLEND);
 }

@@ -1,4 +1,5 @@
 
+
 // Autor: Ines Alcérreca Sánchez
 // Pantallas E_INTRO y E_MENU 
 
@@ -8,16 +9,16 @@
 
 
 void dibujarTexto(const std::string& texto, float x, float y,
-                  float r, float g, float b, void* fuente = nullptr);
+    float r, float g, float b, void* fuente = nullptr);
 
 void dibujarTextoCentrado(const std::string& texto, float cx, float y,
-                           float r, float g, float b, void* fuente = nullptr);
+    float r, float g, float b, void* fuente = nullptr);
 
 void dibujarRectangulo(float x, float y, float ancho, float alto,
-                       float r, float g, float b, float alfa = 1.0f);
+    float r, float g, float b, float alfa = 1.0f);
 
 void dibujarBorde(float x, float y, float ancho, float alto,
-                  float r, float g, float b, float grosor = 2.0f);
+    float r, float g, float b, float grosor = 2.0f);
 
 void entrar2D(int ancho, int alto);
 void salir2D();
@@ -38,7 +39,7 @@ private:
     int  m_fotograma;
     bool m_terminado;
 
-	static const int DURACION = 250; // fotogramas (aprox 4 segundos a 60 fps)
+    static const int DURACION = 250; // fotogramas (aprox 4 segundos a 60 fps)
 };
 
 
@@ -76,7 +77,7 @@ private:
     void dibujarPie(int ancho, int alto);
 
     void dibujarOpcion(const std::string& texto, float x, float y,
-                       float ancho, float alto, bool seleccionada);
+        float ancho, float alto, bool seleccionada);
 
     void confirmar();
     int maxOpciones() const { return (m_paso == 1) ? 2 : 4; }

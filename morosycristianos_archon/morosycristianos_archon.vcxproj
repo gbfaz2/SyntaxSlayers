@@ -42,8 +42,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v145</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -113,14 +113,14 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>lib;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)piezas\source;$(ProjectDir)src\piezas\headers;$(ProjectDir)src\tablero\source;$(ProjectDir)src\tablero\headers;$(ProjectDir)src\arena\source;$(ProjectDir)src\arena\headers;$(ProjectDir)src\coordinador\source;$(ProjectDir)src\coordinador\headers;$(ProjectDir)src\ia\source;$(ProjectDir)src\ia\headers;$(ProjectDir)src\menu\source;$(ProjectDir)src\menu\headers</AdditionalIncludeDirectories>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib,bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ETSIDI.lib; freeglut.lib</AdditionalDependencies>
+      <AdditionalDependencies>ETSIDI.lib; freeglut.lib; glut32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir).vs\tmp\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
@@ -133,30 +133,93 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>lib;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)piezas\source;$(ProjectDir)src\piezas\headers;$(ProjectDir)src\tablero\source;$(ProjectDir)src\tablero\headers;$(ProjectDir)src\arena\source;$(ProjectDir)src\arena\headers;$(ProjectDir)src\coordinador\source;$(ProjectDir)src\coordinador\headers;$(ProjectDir)src\ia\source;$(ProjectDir)src\ia\headers;$(ProjectDir)src\menu\source;$(ProjectDir)src\menu\headers</AdditionalIncludeDirectories>
       <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>lib,bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>ETSIDI.lib; freeglut.lib</AdditionalDependencies>
+      <AdditionalDependencies>ETSIDI.lib; freeglut.lib; glut32.lib</AdditionalDependencies>
       <ProgramDatabaseFile>$(SolutionDir).vs\tmp\$(TargetName).pdb</ProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\estadojuego.h" />
-    <ClInclude Include="src\menu.h" />
-    <ClInclude Include="src\pantallabatalla.h" />
-    <ClInclude Include="src\Tablero.h" />
-    <ClInclude Include="src\tablerogl.h" />
+    <ClInclude Include="lib\ETSIDI.h" />
+    <ClInclude Include="lib\freeglut.h" />
+    <ClInclude Include="lib\glut.h" />
+    <ClInclude Include="src\arena\headers\Arena.h" />
+    <ClInclude Include="src\arena\headers\ArenaRenderer.h" />
+    <ClInclude Include="src\arena\headers\Combatiente.h" />
+    <ClInclude Include="src\arena\headers\InputState.h" />
+    <ClInclude Include="src\coordinador\headers\Coordinador.h" />
+    <ClInclude Include="src\ia\headers\IAArena.h" />
+    <ClInclude Include="src\ia\headers\MinimaxTablero.h" />
+    <ClInclude Include="src\ia\headers\SugerenciasTablero.h" />
+    <ClInclude Include="src\menu\headers\estadojuego.h" />
+    <ClInclude Include="src\menu\headers\menu.h" />
+    <ClInclude Include="src\menu\headers\pantallabatalla.h" />
+    <ClInclude Include="src\piezas\headers\Almogavar.h" />
+    <ClInclude Include="src\piezas\headers\Arma.h" />
+    <ClInclude Include="src\piezas\headers\ArmaCarga.h" />
+    <ClInclude Include="src\piezas\headers\ArmaCuerpoaCuerpo.h" />
+    <ClInclude Include="src\piezas\headers\ArmaDistancia.h" />
+    <ClInclude Include="src\piezas\headers\Ballestero.h" />
+    <ClInclude Include="src\piezas\headers\CaballeriaLigera.h" />
+    <ClInclude Include="src\piezas\headers\CaballeriaPesada.h" />
+    <ClInclude Include="src\piezas\headers\Hechicero.h" />
+    <ClInclude Include="src\piezas\headers\Infanteria.h" />
+    <ClInclude Include="src\piezas\headers\Infiltrado.h" />
+    <ClInclude Include="src\piezas\headers\Miliciano.h" />
+    <ClInclude Include="src\piezas\headers\Pieza.h" />
+    <ClInclude Include="src\piezas\headers\PiezaTeleporte.h" />
+    <ClInclude Include="src\piezas\headers\PiezaTerrestre.h" />
+    <ClInclude Include="src\piezas\headers\PiezaVoladora.h" />
+    <ClInclude Include="src\piezas\headers\Rey.h" />
+    <ClInclude Include="src\tablero\headers\tablero.h" />
+    <ClInclude Include="src\tablero\headers\tablerogl.h" />
   </ItemGroup>
   <ItemGroup>
+    <Library Include="lib\ETSIDI.lib" />
+    <Library Include="lib\freeglut.lib" />
+    <Library Include="lib\glut32.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\ETSIDI.dll" />
+    <None Include="bin\fmodL.dll" />
+    <None Include="bin\freeglut.dll" />
+    <None Include="lib\ETSIDI.exp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\arena\sources\Arena.cpp" />
+    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp" />
+    <ClCompile Include="src\arena\sources\Combatiente.cpp" />
+    <ClCompile Include="src\coordinador\sources\Coordinador.cpp" />
+    <ClCompile Include="src\ia\sources\IAArena.cpp" />
+    <ClCompile Include="src\ia\sources\MinimaxTablero.cpp" />
+    <ClCompile Include="src\ia\sources\SugerenciasTablero.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\menu.cpp" />
-    <ClCompile Include="src\pantallabatalla.cpp" />
-    <ClCompile Include="src\Tablero.cpp" />
-    <ClCompile Include="src\tablerogl.cpp" />
+    <ClCompile Include="src\menu\sources\menu.cpp" />
+    <ClCompile Include="src\menu\sources\pantallabatalla.cpp" />
+    <ClCompile Include="src\piezas\sources\Almogavar.cpp" />
+    <ClCompile Include="src\piezas\sources\Arma.cpp" />
+    <ClCompile Include="src\piezas\sources\ArmaCarga.cpp" />
+    <ClCompile Include="src\piezas\sources\ArmaCuerpoaCuerpo.cpp" />
+    <ClCompile Include="src\piezas\sources\ArmaDistancia.cpp" />
+    <ClCompile Include="src\piezas\sources\Ballestero.cpp" />
+    <ClCompile Include="src\piezas\sources\CaballeriaLigera.cpp" />
+    <ClCompile Include="src\piezas\sources\CaballeriaPesada.cpp" />
+    <ClCompile Include="src\piezas\sources\Hechicero.cpp" />
+    <ClCompile Include="src\piezas\sources\Infanteria.cpp" />
+    <ClCompile Include="src\piezas\sources\Infiltrado.cpp" />
+    <ClCompile Include="src\piezas\sources\Miliciano.cpp" />
+    <ClCompile Include="src\piezas\sources\Pieza.cpp" />
+    <ClCompile Include="src\piezas\sources\PiezaTeleporte.cpp" />
+    <ClCompile Include="src\piezas\sources\PiezaTerrestre.cpp" />
+    <ClCompile Include="src\piezas\sources\PiezaVoladora.cpp" />
+    <ClCompile Include="src\piezas\sources\Rey.cpp" />
+    <ClCompile Include="src\tablero\sources\tablero.cpp" />
+    <ClCompile Include="src\tablero\sources\tablerogl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

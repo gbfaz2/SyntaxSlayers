@@ -16,10 +16,10 @@ struct Particula {
 
 class PantallaDestino {
     ConfigPartida            m_cfg;
-    int                      m_fotograma    = 0;
-    bool                     m_terminado    = false;
+    int                      m_fotograma = 0;
+    bool                     m_terminado = false;
     int                      m_letraVisible = 0;
-    int                      m_totalLetras  = 0;
+    int                      m_totalLetras = 0;
     std::vector<Particula>   m_particulas;
     std::vector<std::string> m_lineas;
 
@@ -32,12 +32,12 @@ class PantallaDestino {
     void dibujarContinuar(int ancho, int alto);
 
     void  coloresFondo(float& r1, float& g1, float& b1,
-                       float& r2, float& g2, float& b2) const;
+        float& r2, float& g2, float& b2) const;
     void  colorParticula(float& r, float& g, float& b, float variacion) const;
     float alfaEntrada() const;
     bool  textoCompleto() const;
 
-	ETSIDI::GLTexture m_textura = { 0, 0, 0 }; //para el fondo animado 
+    ETSIDI::GLTexture m_textura = { 0, 0, 0 }; //para el fondo animado 
 
 public:
     PantallaDestino() = default;
