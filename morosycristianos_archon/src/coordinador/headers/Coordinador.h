@@ -1,19 +1,42 @@
 #pragma once
+#include "estadojuego.h"
+#include "menu.h"
+#include "pantallabatalla.h"
+#include "tablero.h"
+#include "tablerogl.h"
+#include "Arena.h"
+#include "ArenaRenderer.h"
+#include "InputState.h"
 
 class Coordinador
 {
-	// DEFINIMOS LOS ESTADOS AQUÍ MISMO PARA NO DEPENDER DE OTROS ARCHIVOS
-	enum Estado { INTRO, MENU, TABLERO, ARENA, PAUSA, RANKING, GAMEOVER };
-	Estado estado{ INTRO }; // ESTADO INICIAL
+	EstadoJuego     estado{ EstadoJuego::INTRO }; // ESTADO INICIAL
+
+	int             anchoVentana{ 800 };
+	int             altoVentana{ 600 };
+
+	PantallaIntro   pantallaIntro;
+	MenuPrincipal   menuPrincipal;
+	PantallaDestino pantallaDestino;
+	ConfigPartida   configuracion;
+	Tablero* pTablero{ nullptr };
+	Tablerogl* pTablerogl{ nullptr };
+
+	Arena           _arena;   // LOGICA DEL COMBATE
+	InputState      _input;   // ESTADO DEL TECLADO
 
 public:
-	Coordinador() = default; // CONSTRUCTOR
-	virtual ~Coordinador() = default; // DESTRUCTOR
+	Coordinador() = default;
+	~Coordinador();
 
-	void inicializa(); // SETUP INICIAL
-	void tecla(unsigned char key); // GESTIÓN TECLADO
-	void tecla_especial(int key); // GESTIÓN FLECHAS
-	void mueve(double dt); // ACTUALIZA LÓGICA
-	void dibuja(); // PINTA SEGÚN ESTADO
-	void raton(int button, int state, int x, int y); // GESTIÓN RATÓN
+	void inicializa();
+	void dibuja();
+	void tecla(unsigned char key);
+	void tecla_up(unsigned char key);         // TECLA SOLTADA
+	void tecla_especial(int key);
+	void tecla_especial_up(int key);          // FLECHA SOLTADA
+	void mueve(double dt);
+	void raton(int button, int state, int x, int y);
+	void ratonMovido(int x, int y);
+	void redimensionar(int ancho, int alto);
 };

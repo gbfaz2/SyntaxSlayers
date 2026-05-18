@@ -1,66 +1,226 @@
 #include "Coordinador.h"
 #include "freeglut.h"
+#include <ctime>
+#include <cstdlib>
+
+Coordinador::~Coordinador()
+{
+	delete pTablerogl; // LIBERA TABLEROGL
+	delete pTablero;   // LIBERA TABLERO
+}
 
 void Coordinador::inicializa()
 {
-	estado = INTRO; // ARRANCA EN INTRO
+	srand((unsigned)time(nullptr));
+	pantallaIntro.reiniciar();
+	menuPrincipal.reiniciar();
+	ArenaRenderer::configurarVista(anchoVentana, altoVentana); // CONFIGURA CAMARA ARENA
+	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
 }
 
 void Coordinador::dibuja()
 {
-	// TEST DE COLORES: CADA ESTADO PINTA LA PANTALLA DE UN COLOR
-	switch (estado) {
-	case INTRO:
-		glClearColor(1, 1, 1, 1); // BLANCO
-		break;
-	case MENU:
-		glClearColor(1, 0.5, 0, 1); // NARANJA
-		break;
-	case TABLERO:
-		glClearColor(0, 0.5, 0, 1); // VERDE
-		break;
-	case ARENA:
-		glClearColor(0, 0, 0.5, 1); // AZUL
-		break;
-	case PAUSA:
-		glClearColor(0.5, 0.5, 0.5, 1); // GRIS
-		break;
-	case RANKING:
-		glClearColor(1, 1, 0, 1); // AMARILLO
-		break;
-	case GAMEOVER:
-		glClearColor(0.5, 0, 0, 1); // ROJO
-		break;
-	}
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glClear(GL_COLOR_BUFFER_BIT); // LIMPIA PANTALLA CON COLOR
+	switch (estado) {
+
+	case EstadoJuego::INTRO:
+		entrar2D(anchoVentana, altoVentana);
+		pantallaIntro.dibujar(anchoVentana, altoVentana);
+		salir2D();
+
+		if (pantallaIntro.terminado()) {
+			pantallaIntro.reiniciar();
+			menuPrincipal.reiniciar();
+			estado = EstadoJuego::MENU;
+		}
+		break;
+
+	case EstadoJuego::MENU:
+		entrar2D(anchoVentana, altoVentana);
+		menuPrincipal.dibujar(anchoVentana, altoVentana);
+		salir2D();
+
+		if (menuPrincipal.terminado()) {
+			EstadoJuego siguiente = menuPrincipal.siguienteEstado();
+			configuracion = menuPrincipal.getConfiguracion();
+
+			if (siguiente == EstadoJuego::FINAL) exit(0);
+
+			if (siguiente == EstadoJuego::DESTINO) {
+				pantallaDestino.reiniciar(configuracion);
+				if (!pTablero) { // SOLO CREA EL TABLERO UNA VEZ
+					pTablero = new Tablero();
+					pTablerogl = new Tablerogl(pTablero);
+					pTablerogl->init();
+				}
+			}
+			estado = siguiente;
+		}
+		break;
+
+	case EstadoJuego::DESTINO:
+		entrar2D(anchoVentana, altoVentana);
+		pantallaDestino.dibujar(anchoVentana, altoVentana);
+		salir2D();
+
+		if (pantallaDestino.terminado())
+			estado = EstadoJuego::TABLERO;
+		break;
+
+	case EstadoJuego::TABLERO:
+		if (pTablerogl) {
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
+			glEnable(GL_LIGHT0);
+			glEnable(GL_COLOR_MATERIAL);
+
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(40.0, (float)anchoVentana / (float)altoVentana, 0.1, 150.0);
+
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+
+			pTablerogl->Dibuja();
+
+			// TODO: CUANDO MARIA IMPLEMENTE huboColision()
+			// if (pTablerogl->huboColision()) {
+			//     _arena.iniciarCombate(pTablerogl->getPiezaAtacante(), pTablerogl->getPiezaDefensora());
+			//     estado = EstadoJuego::ARENA;
+			// }
+		}
+		break;
+
+	case EstadoJuego::ARENA:
+		ArenaRenderer::dibujar(_arena); // PINTA EL FRAME DE LA ARENA
+		if (_arena.resultado() != ResultadoCombate::EnCurso)
+			estado = EstadoJuego::TABLERO; // VUELVE AL TABLERO AL TERMINAR
+		break;
+
+	case EstadoJuego::RANKING:
+		break;
+
+	case EstadoJuego::FINAL:
+		break;
+
+	default: break;
+	}
 }
 
 void Coordinador::tecla(unsigned char key)
 {
-	if (key == 27) exit(0); // ESCAPE: CIERRA JUEGO
+	switch (estado) {
+	case EstadoJuego::INTRO:
+		pantallaIntro.saltar();
+		break;
+	case EstadoJuego::MENU:
+		menuPrincipal.teclaPulsada(key);
+		break;
+	case EstadoJuego::DESTINO:
+		pantallaDestino.avanzar();
+		break;
+	case EstadoJuego::TABLERO:
+		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; break; }
+		if (pTablerogl) pTablerogl->KeyDown(key);
+		break;
+	case EstadoJuego::ARENA:
+		if (key == 'r' || key == 'R') _arena.reiniciar(); // REINICIA COMBATE
+		// CONTROLES P1: WASD + F
+		if (key == 'w' || key == 'W') _input.p1.delante = true;
+		if (key == 's' || key == 'S') _input.p1.atras = true;
+		if (key == 'a' || key == 'A') _input.p1.izquierda = true;
+		if (key == 'd' || key == 'D') _input.p1.derecha = true;
+		if (key == 'f' || key == 'F') _input.p1.atacar = true;
+		break;
+	default:
+		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
+		break;
+	}
+	glutPostRedisplay();
+}
 
-	// TEST RÁPIDO: CAMBIA DE ESTADO CON TECLAS PARA PROBAR LA MÁQUINA
-	if (key == '1') estado = INTRO; // PULSA 1: INTRO
-	if (key == '2') estado = MENU; // PULSA 2: MENU
-	if (key == '3') estado = TABLERO; // PULSA 3: TABLERO
-	if (key == '4') estado = ARENA; // PULSA 4: ARENA
-	if (key == '5') estado = PAUSA; // PULSA 5: PAUSA
-	if (key == '6') estado = RANKING; // PULSA 6: RANKING
-	if (key == '7') estado = GAMEOVER; // PULSA 7: GAMEOVER
+void Coordinador::tecla_up(unsigned char key)
+{
+	if (estado == EstadoJuego::ARENA) {
+		// SUELTA TECLAS P1
+		if (key == 'w' || key == 'W') _input.p1.delante = false;
+		if (key == 's' || key == 'S') _input.p1.atras = false;
+		if (key == 'a' || key == 'A') _input.p1.izquierda = false;
+		if (key == 'd' || key == 'D') _input.p1.derecha = false;
+	}
 }
 
 void Coordinador::tecla_especial(int key)
 {
-	// VACÍO POR AHORA
+	switch (estado) {
+	case EstadoJuego::MENU:
+		menuPrincipal.teclaEspecial(key);
+		break;
+	case EstadoJuego::TABLERO:
+		if (pTablerogl) pTablerogl->SpecialKey(key);
+		break;
+	default: break;
+	}
+	glutPostRedisplay();
+}
+
+void Coordinador::tecla_especial_up(int key)
+{
+	// VACIO: P2 LO CONTROLA LA IA
 }
 
 void Coordinador::mueve(double dt)
 {
-	// VACÍO POR AHORA
+	if (estado == EstadoJuego::ARENA)
+		_arena.actualizar((float)dt, _input); // AVANZA LA LOGICA DE LA ARENA
 }
 
-void Coordinador::raton(int button, int state, int x, int y)
+void Coordinador::raton(int boton, int state, int x, int y)
 {
-	// VACÍO POR AHORA
+	bool pulsado = (state == GLUT_DOWN);
+	if (!pulsado) return;
+
+	switch (estado) {
+	case EstadoJuego::INTRO:
+		pantallaIntro.saltar();
+		break;
+	case EstadoJuego::DESTINO:
+		pantallaDestino.avanzar();
+		break;
+	case EstadoJuego::MENU:
+		if (boton == GLUT_LEFT_BUTTON)
+			menuPrincipal.ratonPulsado(x, y, anchoVentana, altoVentana);
+		break;
+	case EstadoJuego::TABLERO:
+		if (pTablerogl) {
+			int button;
+			if (boton == GLUT_LEFT_BUTTON)       button = MOUSE_LEFT_BUTTON;
+			else if (boton == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
+			else                                 button = MOUSE_MIDDLE_BUTTON;
+
+			int specialKey = glutGetModifiers();
+			bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
+			bool shiftKey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
+
+			pTablerogl->MouseButton(x, y, button, true, shiftKey, ctrlKey);
+		}
+		break;
+	default: break;
+	}
+	glutPostRedisplay();
+}
+
+void Coordinador::ratonMovido(int x, int y)
+{
+	if (estado == EstadoJuego::MENU)
+		menuPrincipal.ratonMovido(x, y, anchoVentana, altoVentana);
+	glutPostRedisplay();
+}
+
+void Coordinador::redimensionar(int ancho, int alto)
+{
+	anchoVentana = ancho;
+	altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
+	glViewport(0, 0, anchoVentana, altoVentana);
 }
