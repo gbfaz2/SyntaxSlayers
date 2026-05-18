@@ -156,7 +156,9 @@
     <ClInclude Include="src\ia\headers\IAArena.h" />
     <ClInclude Include="src\ia\headers\MinimaxTablero.h" />
     <ClInclude Include="src\ia\headers\SugerenciasTablero.h" />
-    <ClInclude Include="src\menu\headers\placeholder_menu.h" />
+    <ClInclude Include="src\menu\headers\estadojuego.h" />
+    <ClInclude Include="src\menu\headers\menu.h" />
+    <ClInclude Include="src\menu\headers\pantallabatalla.h" />
     <ClInclude Include="src\piezas\headers\Almogavar.h" />
     <ClInclude Include="src\piezas\headers\Arma.h" />
     <ClInclude Include="src\piezas\headers\ArmaCarga.h" />
@@ -174,7 +176,8 @@
     <ClInclude Include="src\piezas\headers\PiezaTerrestre.h" />
     <ClInclude Include="src\piezas\headers\PiezaVoladora.h" />
     <ClInclude Include="src\piezas\headers\Rey.h" />
-    <ClInclude Include="src\tablero\headers\placeholder_tablero.h" />
+    <ClInclude Include="src\tablero\headers\tablero.h" />
+    <ClInclude Include="src\tablero\headers\tablerogl.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -196,7 +199,8 @@
     <ClCompile Include="src\ia\sources\MinimaxTablero.cpp" />
     <ClCompile Include="src\ia\sources\SugerenciasTablero.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\menu\sources\placeholder_menu.cpp" />
+    <ClCompile Include="src\menu\sources\menu.cpp" />
+    <ClCompile Include="src\menu\sources\pantallabatalla.cpp" />
     <ClCompile Include="src\piezas\sources\Almogavar.cpp" />
     <ClCompile Include="src\piezas\sources\Arma.cpp" />
     <ClCompile Include="src\piezas\sources\ArmaCarga.cpp" />
@@ -214,7 +218,8 @@
     <ClCompile Include="src\piezas\sources\PiezaTerrestre.cpp" />
     <ClCompile Include="src\piezas\sources\PiezaVoladora.cpp" />
     <ClCompile Include="src\piezas\sources\Rey.cpp" />
-    <ClCompile Include="src\tablero\sources\placeholder_tablero.cpp" />
+    <ClCompile Include="src\tablero\sources\tablero.cpp" />
+    <ClCompile Include="src\tablero\sources\tablerogl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
