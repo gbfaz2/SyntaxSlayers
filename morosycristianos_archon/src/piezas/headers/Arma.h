@@ -29,4 +29,3 @@ public:
     // MÉTODO VIRTUAL PURO (=0): Cada arma ataca distinto en la arena
     virtual void realizarAtaque() const = 0;
 };
-
