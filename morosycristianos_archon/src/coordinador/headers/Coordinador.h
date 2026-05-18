@@ -4,11 +4,13 @@
 #include "pantallabatalla.h"
 #include "tablero.h"
 #include "tablerogl.h"
+#include "Arena.h"
+#include "ArenaRenderer.h"
+#include "InputState.h"
 
 class Coordinador
 {
-	// DEFINIMOS LOS ESTADOS AQUÍ MISMO PARA NO DEPENDER DE OTROS ARCHIVOS
-	EstadoJuego     estado{ EstadoJuego::INTRO };
+	EstadoJuego     estado{ EstadoJuego::INTRO }; // ESTADO INICIAL
 
 	int             anchoVentana{ 800 };
 	int             altoVentana{ 600 };
@@ -20,16 +22,21 @@ class Coordinador
 	Tablero* pTablero{ nullptr };
 	Tablerogl* pTablerogl{ nullptr };
 
-public:
-	Coordinador() = default; // CONSTRUCTOR
-	~Coordinador(); // DESTRUCTOR
+	Arena           _arena;   // LOGICA DEL COMBATE
+	InputState      _input;   // ESTADO DEL TECLADO
 
-	void inicializa(); // SETUP INICIAL
-	void dibuja(); // PINTA SEGÚN ESTADO
-	void tecla(unsigned char key); // GESTIÓN TECLADO
-	void tecla_especial(int key); // GESTIÓN FLECHAS
-	void mueve(double dt); // ACTUALIZA LÓGICA
-	void raton(int button, int state, int x, int y); // GESTIÓN RATÓN
+public:
+	Coordinador() = default;
+	~Coordinador();
+
+	void inicializa();
+	void dibuja();
+	void tecla(unsigned char key);
+	void tecla_up(unsigned char key);         // TECLA SOLTADA
+	void tecla_especial(int key);
+	void tecla_especial_up(int key);          // FLECHA SOLTADA
+	void mueve(double dt);
+	void raton(int button, int state, int x, int y);
 	void ratonMovido(int x, int y);
 	void redimensionar(int ancho, int alto);
 };
