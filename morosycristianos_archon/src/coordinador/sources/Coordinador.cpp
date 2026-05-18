@@ -2,12 +2,12 @@
 #include "freeglut.h"
 #include <ctime>
 #include <cstdlib>
-#include <IAArena.h>
 
 Coordinador::~Coordinador()
 {
 	delete pTablerogl; // LIBERA TABLEROGL
 	delete pTablero;   // LIBERA TABLERO
+	delete pGestorHechizos;
 }
 
 void Coordinador::inicializa()
@@ -54,6 +54,11 @@ void Coordinador::dibuja()
 					pTablero = new Tablero();
 					pTablerogl = new Tablerogl(pTablero);
 					pTablerogl->init();
+
+					pGestorHechizos = new GestorHechizos(*pTablero,
+						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
+						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+
 				}
 			}
 			estado = siguiente;
@@ -65,8 +70,10 @@ void Coordinador::dibuja()
 		pantallaDestino.dibujar(anchoVentana, altoVentana);
 		salir2D();
 
-		if (pantallaDestino.terminado())
+		if (pantallaDestino.terminado()) {
 			estado = EstadoJuego::TABLERO;
+			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+		}
 		break;
 
 	case EstadoJuego::TABLERO:
@@ -86,17 +93,25 @@ void Coordinador::dibuja()
 			pTablerogl->Dibuja();
 
 			// TODO: CUANDO MARIA IMPLEMENTE huboColision()
-			// if (pTablerogl->huboColision()) {
-			//     _arena.iniciarCombate(pTablerogl->getPiezaAtacante(), pTablerogl->getPiezaDefensora());
-			//     estado = EstadoJuego::ARENA;
-			// }
+			if (pTablerogl->huboColision()) 
+			{
+				_arena.iniciarCombate(*pTablerogl->getPiezaAtacante(),
+					*pTablerogl->getPiezaDefensora(),
+					configuracion.modo); // INICIA COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU Y EL MODO DE JUEGO (JVJ O JVIA)
+
+				ETSIDI::stopMusica(); //colision: deja de sonar musica tablero
+				ETSIDI::play("sonido_combate_fight.wav");
+				ArenaRenderer::configurarVista(anchoVentana, altoVentana);
+				pTablerogl->limpiarCombate();
+				estado = EstadoJuego::ARENA;
+			}
 		}
 		break;
 
 	case EstadoJuego::ARENA:
-		ArenaRenderer::dibujar(_arena); // PINTA EL FRAME DE LA ARENA
-		if (_arena.resultado() != ResultadoCombate::EnCurso)
-			estado = EstadoJuego::TABLERO; // VUELVE AL TABLERO AL TERMINAR
+		ArenaRenderer::dibujar(_arena);
+			// SOLO VOLVER AL TABLERO CUANDO EL JUGADOR TOQUE UNA TECLA, PARA DAR TIEMPO A VER EL RESULTADO DEL COMBATE
+			// NO HACER NADA AQUÍ, SOLO ESPERAR A QUE EL JUGADOR PULSE UNA TECLA PARA VOLVER AL TABLERO
 		break;
 
 	case EstadoJuego::RANKING:
@@ -122,26 +137,51 @@ void Coordinador::tecla(unsigned char key)
 		pantallaDestino.avanzar();
 		break;
 	case EstadoJuego::TABLERO:
-		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; break; }
+		if (key == 27) { 
+			ETSIDI::stopMusica(); 
+			menuPrincipal.reiniciar(); 
+			estado = EstadoJuego::MENU; break; 
+		}
 		if (pTablerogl) pTablerogl->KeyDown(key);
 		break;
 	case EstadoJuego::ARENA:
-		if (key == 'r' || key == 'R') _arena.reiniciar();
+
+		// CONTROLES P1: WASD + F
 		if (key == 'w' || key == 'W') _input.p1.delante = true;
 		if (key == 's' || key == 'S') _input.p1.atras = true;
 		if (key == 'a' || key == 'A') _input.p1.izquierda = true;
 		if (key == 'd' || key == 'D') _input.p1.derecha = true;
 		if (key == 'f' || key == 'F') _input.p1.atacar = true;
 
-		if (configuracion.modo == ModoJuego::JVJ) { // COMPRUEBA MODO DOS JUGADORES
-			if (key == 'i' || key == 'I') _input.p2.atacar = true; // ASIGNA ATAQUE P2
+		// CONTROLES P2 (solo en JvJ): flechas + L
+		if (configuracion.modo == ModoJuego::JVJ) {
+			// Las flechas van por tecla_especial, aquí solo el ataque
+			if (key == 'l' || key == 'L') _input.p2.atacar = true;
+		}
+
+		// ENTER o ESC VUELVE AL TABLERO DESDE LA ARENA CUANDO EL COMBATE HAYA TERMINADO (GANE P1, GANE P2 O EMPATE)
+		if ((key == 13 || key == 27) && _arena.resultado() != ResultadoCombate::EnCurso) {
+			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+			estado = EstadoJuego::TABLERO;
 		}
 		break;
+
 	default:
-		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
+		if (key == 27) { ETSIDI::stopMusica(); menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
 		break;
 	}
 	glutPostRedisplay();
+}
+
+void Coordinador::tecla_up(unsigned char key)
+{
+	if (estado == EstadoJuego::ARENA) {
+		// SUELTA TECLAS P1
+		if (key == 'w' || key == 'W') _input.p1.delante = false;
+		if (key == 's' || key == 'S') _input.p1.atras = false;
+		if (key == 'a' || key == 'A') _input.p1.izquierda = false;
+		if (key == 'd' || key == 'D') _input.p1.derecha = false;
+	}
 }
 
 void Coordinador::tecla_especial(int key)
@@ -154,11 +194,11 @@ void Coordinador::tecla_especial(int key)
 		if (pTablerogl) pTablerogl->SpecialKey(key);
 		break;
 	case EstadoJuego::ARENA:
-		if (configuracion.modo == ModoJuego::JVJ) { // COMPRUEBA MODO DOS JUGADORES
-			if (key == GLUT_KEY_UP) _input.p2.delante = true; // MUEVE P2 ADELANTE
-			if (key == GLUT_KEY_DOWN) _input.p2.atras = true; // MUEVE P2 ATRAS
-			if (key == GLUT_KEY_LEFT) _input.p2.izquierda = true; // MUEVE P2 IZQUIERDA
-			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = true; // MUEVE P2 DERECHA
+		if (configuracion.modo == ModoJuego::JVJ) {
+			if (key == GLUT_KEY_UP)    _input.p2.delante = true;
+			if (key == GLUT_KEY_DOWN)  _input.p2.atras = true;
+			if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = true;
+			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = true;
 		}
 		break;
 	default: break;
@@ -168,22 +208,31 @@ void Coordinador::tecla_especial(int key)
 
 void Coordinador::tecla_especial_up(int key)
 {
-	if (estado == EstadoJuego::ARENA) {
-		if (configuracion.modo == ModoJuego::JVJ) { // COMPRUEBA MODO DOS JUGADORES
-			if (key == GLUT_KEY_UP) _input.p2.delante = false; // DETIENE ADELANTE P2
-			if (key == GLUT_KEY_DOWN) _input.p2.atras = false; // DETIENE ATRAS P2
-			if (key == GLUT_KEY_LEFT) _input.p2.izquierda = false; // DETIENE IZQUIERDA P2
-			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = false; // DETIENE DERECHA P2
-		}
+	if (estado == EstadoJuego::ARENA && configuracion.modo == ModoJuego::JVJ) {
+		if (key == GLUT_KEY_UP)    _input.p2.delante = false;
+		if (key == GLUT_KEY_DOWN)  _input.p2.atras = false;
+		if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = false;
+		if (key == GLUT_KEY_RIGHT) _input.p2.derecha = false;
 	}
 }
 
 void Coordinador::mueve(double dt)
 {
-	if (estado == EstadoJuego::ARENA) {
-		_arena.setContraIA(configuracion.modo == ModoJuego::JVIA); // ACTIVA IA SI MODO ES JVIA
-		_arena.actualizar((float)dt, _input);
+	//actualiza gestor turnos por dt
+	if (estado == EstadoJuego::TABLERO && pTablero) {
+		// Actualiza el cronómetro del turno
+		gestorTurnos.update(dt);
+
+		// Comprueba si alguien ha ganado
+		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
+		if (rv != ResultadoVictoria::SIN_GANADOR) {
+			ETSIDI::stopMusica();
+			estado = EstadoJuego::FINAL;
+		}
 	}
+	
+	if (estado == EstadoJuego::ARENA)
+		_arena.actualizar((float)dt, _input); // AVANZA LA LOGICA DE LA ARENA
 }
 
 void Coordinador::raton(int boton, int state, int x, int y)

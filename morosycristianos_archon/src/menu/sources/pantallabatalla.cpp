@@ -30,10 +30,10 @@ void PantallaDestino::reiniciar(const ConfigPartida& cfg) {
 
     // IMAGENES DE LAS BATALLAS
     const char* rutas[] = {
-    "bin\\imagenes\\GUADALETE.png",
-    "bin\\imagenes\\ALARCOS.png",
-    "bin\\imagenes\\NAVAS_TOLOSA.png",
-    "bin\\imagenes\\GRANADA.png"
+    "imagenes\\GUADALETE.png",
+    "imagenes\\ALARCOS.png",
+    "imagenes\\NAVAS_TOLOSA.png",
+    "imagenes\\GRANADA.png"
     };
     m_textura = ETSIDI::getTexture(rutas[(int)cfg.batalla]);
 
@@ -272,7 +272,7 @@ void PantallaDestino::dibujarTextos(int ancho, int alto) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Titulo (screen y=85 = openGL y=alto-85)
-    ETSIDI::setFont("bin\\fuentes\\ARIALNBI.ttf", 24);
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 24);
     ETSIDI::setTextColor((0.85f + brillo) * alfa,
         (0.70f + brillo * 0.5f) * alfa,
         0.10f * alfa, alfa);
@@ -288,7 +288,7 @@ void PantallaDestino::dibujarTextos(int ancho, int alto) {
     glLineWidth(1.0f);
 
     // Contexto historico (maquina de escribir)
-    ETSIDI::setFont("bin\\fuentes\\ARIALNBI.ttf", 18);
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 18);
     int letrasRestantes = m_letraVisible;
     for (int i = 0; i < (int)m_lineas.size(); i++) {
         if (letrasRestantes <= 0) break;
@@ -306,7 +306,7 @@ void PantallaDestino::dibujarTextos(int ancho, int alto) {
 void PantallaDestino::dibujarContinuar(int ancho, int alto) {
     if (!textoCompleto()) return;
     float parpadeo = (sinf(m_fotograma * 0.08f) + 1.0f) * 0.5f;
-    ETSIDI::setFont("bin\\fuentes\\ARIALNBI.ttf", 12);
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 12);
     ETSIDI::setTextColor(0.80f, 0.78f, 0.65f, 0.35f + parpadeo * 0.65f);
     ETSIDI::printxy("Pulsa cualquier tecla para comenzar la batalla",
         ancho / 2 - 230, 30);

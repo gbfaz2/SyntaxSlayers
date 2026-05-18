@@ -1,6 +1,6 @@
 
-// Autor: Ines Alc√©rreca S√°nchez
-// Implementaci√≥n de las pantallas de introducci√≥n y men√∫ principal
+// Autor: Ines AlcÈrreca S·nchez
+// ImplementaciÛn de las pantallas de introducciÛn y men˙ principal
 
 #include "menu.h"
 #include "freeglut.h"
@@ -125,7 +125,7 @@ void PantallaIntro::dibujar(int ancho, int alto) {
 
     // Texto de skip (parpadea en la segunda mitad)
     if (m_fotograma > DURACION / 2) {
-        float parpadeo = (sinf(m_fotograma * 0.1f) + 1.0f) * 0.5f * alfa; //si quiero q parpadee m√°s r√°pido aumento la frecuencia del seno
+        float parpadeo = (sinf(m_fotograma * 0.1f) + 1.0f) * 0.5f * alfa; //si quiero q parpadee m·s r·pido aumento la frecuencia del seno
         std::string skip = "Pulsa cualquier tecla para continuar";
         int pk = glutBitmapLength((unsigned char*)GLUT_BITMAP_HELVETICA_12,
             (const unsigned char*)skip.c_str());
@@ -149,8 +149,8 @@ void MenuPrincipal::reiniciar() {
     m_seleccion = 0; // opcion resaltada
     m_fotograma = 0; // para animaciones
     m_terminado = false; // cuando el jugador confirma, se marca como terminado para que el main cambie de estado
-    m_siguiente = EstadoJuego::MENU; // el estado al que se pasar√° cuando termine (puede ser MENU, TABLERO, ARENA, RANKING...)
-    m_cfg = ConfigPartida(); // configuraci√≥n de partida (modo, bando, batalla, turno1)
+    m_siguiente = EstadoJuego::MENU; // el estado al que se pasar· cuando termine (puede ser MENU, TABLERO, ARENA, RANKING...)
+    m_cfg = ConfigPartida(); // configuraciÛn de partida (modo, bando, batalla, turno1)
 }
 
 // Dibujo principal 
@@ -225,8 +225,8 @@ void MenuPrincipal::dibujarPaso1(int ancho, int alto) {
     dibujarTextoCentrado(modotxt, ancho / 2.0f, alto - 135,
         0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
 
-    float aw = 240, ah = 55, separacion = 30; // tama√±o de las cajas y separaci√≥n entre ellas
-    float sy = alto / 2.0f + 10; // coordenada y com√∫n a ambas opciones
+    float aw = 240, ah = 55, separacion = 30; // tamaÒo de las cajas y separaciÛn entre ellas
+    float sy = alto / 2.0f + 10; // coordenada y com˙n a ambas opciones
 
     dibujarOpcion("  CRISTIANO ",
         ancho / 2.0f - aw - separacion / 2.0f, sy,

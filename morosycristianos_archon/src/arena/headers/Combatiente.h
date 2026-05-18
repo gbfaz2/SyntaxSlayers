@@ -113,4 +113,6 @@ public:
 
 	// Devuelve el color del combatiente por referencia
 	void color(float& r, float& g, float& b) const { r = _r;g = _g;b = _b; }
+
+	std::string nombre() const { return _nombre; }
 };

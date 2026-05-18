@@ -1,6 +1,6 @@
 
 
-// Autor: Ines AlcÃ©rreca SÃ¡nchez
+// Autor: Ines Alcérreca Sánchez
 // Pantallas E_INTRO y E_MENU 
 
 #pragma once

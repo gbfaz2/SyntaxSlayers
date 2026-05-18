@@ -115,7 +115,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 void Tablerogl::DibujaFondo()
 {
 	//intentamos cargar la textura y si no existiera el archivo, ETSIDI devuelve id=0 y no pasa nada
-	auto tex = ETSIDI::getTexture("bin\\imagenes/fondo.png");
+	auto tex = ETSIDI::getTexture("imagenes/fondo.png");
 	if (tex.id == 0)return;
 
 	glEnable(GL_TEXTURE_2D);
@@ -493,56 +493,64 @@ void Tablerogl::DibujaPieza(int fil, int col)
 
 void Tablerogl::trySelectorMove(BandoPieza bando)
 {
+	//Obtenemos las coordenadas a las que apunta el cursor o el ratón en este momento
 	int idx = (bando == bando_local) ? 0 : 1;
-	int cr = Filacursor[idx];
-	int cc = Colcursor[idx];
+	int currentFila = Filacursor[idx];
+	int currentCol = Colcursor[idx];
 
+	// Si NO hay pieza seleccionada, estamos en FASE DE SELECCIÓN
 	if (!piezaSeleccionada) {
-		// Intentamos seleccionar una pieza propia
-		const Casilla& c = m_tablero->getCasilla(cr, cc);
-		if (c.pieza != pieza_nada && c.bando == bando) {
-			fromFila = cr;
-			fromCol = cc;
+
+		// Comprobamos si la pieza en esa casilla pertenece al bando que tiene el turno
+		if (gestorTurnos.esDelBandoActual(*m_tablero, currentFila, currentCol)) {
+			// Es válida. Guardamos el origen y marcamos como seleccionada
+			fromFila = currentFila;
+			fromCol = currentCol;
 			fromBando = bando;
 			piezaSeleccionada = true;
-			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
-				<< "] Seleccionada en (" << cr << "," << cc << ")" << endl;
 		}
-		else {
-			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
-				<< "] No hay pieza propia en (" << cr << "," << cc << ")" << endl;
-		}
-
+		// Si no es su turno o la casilla está vacía, no hace nada y sale
+		return;
 	}
+
+	// Si YA HAY pieza seleccionada, estamos en FASE DE MOVIMIENTO
 	else {
-		// Ya hay pieza seleccionada: este clic es el destino
-
-		// Solo puede mover el equipo que seleccionó la pieza
-		if (fromBando != bando) return;
-
-		if (cr == fromFila && cc == fromCol) {
-			// Clic en la misma casilla → cancelar selección
-			piezaSeleccionada = false;
-			fromFila = fromCol = -1;
-			cout << "Seleccion cancelada." << endl;
+		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
+		if (!pieza) {
+			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
 			return;
 		}
 
-		if (m_tablero->puedeMover(fromFila, fromCol, cr, cc)) {
-			bool combat = m_tablero->muevePieza(fromFila, fromCol, cr, cc);
-			if (combat)
-				cout << "¡COMBATE! (pantalla de combate pendiente)" << endl;
-			victoria_ = m_tablero->checkVicoria();
-			if (victoria_ != bando_nada) 
-				cout << "[Victoria] gana el bando" << (victoria_ == bando_local ? "LOCAL" : "RIVAL") << endl;
-		}
-		else {
-			cout << "Movimiento invalido: casilla ocupada por aliado." << endl;
-		}
+		// Intentamos mover la pieza desde el origen al destino (currentFila, currentCol)
+		ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
+			pieza, *m_tablero, currentFila, currentCol
+		);
 
-		// En cualquier caso, deseleccionamos
-		piezaSeleccionada = false;
-		fromFila = fromCol = -1;
+		if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1; // Reseteamos el origen
+
+			// ¡IMPORTANTE! Aquí debes avisar al gestor de turnos de que el turno ha terminado
+			gestorTurnos.terminarTurno();
+		}
+		else if (resultado == ResultadoMovimiento::COMBATE) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
+			
+			// Avisamos al coordinador de que hay combate pendiente
+			Pieza* atacante = gestorMovimiento.getUltimoAtacante();
+			Pieza* defensora = gestorMovimiento.getUltimaDefensora();
+
+			if (atacante && defensora) {
+				_pAtacante = atacante;
+				_pDefensora = defensora;
+				_combatePendiente = true;
+			}
+
+			gestorTurnos.terminarTurno();
+		}
+		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
+		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
 	}
 }
 
@@ -556,25 +564,33 @@ void Tablerogl::KeyDown(unsigned char key)
 	}
 	if (key == 'q' || key == 'Q') { exit(0); return; }
 
-	// WASD: cursor LOCAL
-	int& rL = Filacursor[0]; int& cL = Colcursor[0];
-	if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
-	if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
-	if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
-	if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
+	
+	if (gestorTurnos.getBandoActual() == bando_local) {
+		int& rL = Filacursor[0]; int& cL = Colcursor[0];
+		if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
+		if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
+		if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
+		if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
 
-	if (key == ' ')  trySelectorMove(bando_local);
-	if (key == 13)   trySelectorMove(bando_rival); // Enter
+		if (key == ' ')  trySelectorMove(bando_local);
+	}
+
+	if (gestorTurnos.getBandoActual() == bando_rival) {
+		if (key == 13)   trySelectorMove(bando_rival); // Enter
+	}
 }
 
 void Tablerogl::SpecialKey(int key)
 {
 	if (victoria_ != bando_nada) return;
-	int& rR = Filacursor[1]; int& cR = Colcursor[1];
-	if (key == GLUT_KEY_UP && rR > 0)   rR--;
-	if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
-	if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
-	if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
+
+	if (gestorTurnos.getBandoActual() == bando_rival) {
+		int& rR = Filacursor[1]; int& cR = Colcursor[1];
+		if (key == GLUT_KEY_UP && rR > 0)   rR--;
+		if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
+		if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
+		if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
+	}
 }
 
 void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
@@ -651,9 +667,6 @@ void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, 
 	}
 }
 
-
-
-
 void Tablerogl::cell2center(int casilla_x, int casilla_y, float& glx, float& gly)
 {
 	glx = casilla_y * ancho + ancho / 2.0f;
@@ -664,4 +677,11 @@ void Tablerogl::world2cell(double x, double y, int& casilla_x, int& casilla_y)
 {
 	casilla_x = (int)(fabs(y / ancho));
 	casilla_y = (int)(x / ancho);
+}
+
+void Tablerogl::limpiarCombate()
+{
+	_combatePendiente = false;
+	_pAtacante = nullptr;
+	_pDefensora = nullptr; 
 }
