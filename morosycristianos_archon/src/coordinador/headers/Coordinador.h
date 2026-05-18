@@ -10,6 +10,7 @@
 #include "GestorMovimiento.h"
 #include "GestorTurnos.h"
 #include "GestorVictoria.h"
+#include "GestorHechizos.h"
 
 class Coordinador
 {
@@ -32,6 +33,7 @@ class Coordinador
 	GestorMovimiento gestorMovimiento;
 	GestorTurnos     gestorTurnos;
 	GestorVictoria   gestorVictoria;
+	GestorHechizos* pGestorHechizos{ nullptr };
 
 public:
 	Coordinador() = default;

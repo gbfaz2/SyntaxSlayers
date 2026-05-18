@@ -7,6 +7,7 @@ Coordinador::~Coordinador()
 {
 	delete pTablerogl; // LIBERA TABLEROGL
 	delete pTablero;   // LIBERA TABLERO
+	delete pGestorHechizos;
 }
 
 void Coordinador::inicializa()
@@ -53,6 +54,11 @@ void Coordinador::dibuja()
 					pTablero = new Tablero();
 					pTablerogl = new Tablerogl(pTablero);
 					pTablerogl->init();
+
+					pGestorHechizos = new GestorHechizos(*pTablero,
+						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
+						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+
 				}
 			}
 			estado = siguiente;
