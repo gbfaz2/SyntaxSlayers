@@ -30,6 +30,10 @@ protected:
 	bool leftButton, rightButton, midButton;
 
 	BandoPieza victoria_;//resultado de chackVictoria actualizado cada movimiento
+
+	bool _combatePendiente{ false };
+	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
+	Pieza* _pDefensora{ nullptr };//extraída del tablero
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() {}//destructor virtual
@@ -66,6 +70,12 @@ public:
 	//conversores de coordenadas cogidas del repositorio de Pablo
 	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);
 	void world2cell(double x, double y, int& casilla_x, int& casilla_y);//dado un punto (x,y) en coordenadas opengl, devuelve la fila y columna del tablero
+
+	bool huboColision() const { return _combatePendiente; }
+	Pieza* getPiezaAtacante() const { return _pAtacante; }
+	Pieza* getPiezaDefensora() const { return _pDefensora; }
+
+	void limpiarCombate();//para liberar a la defensora y resetear los flags
 };
 
 

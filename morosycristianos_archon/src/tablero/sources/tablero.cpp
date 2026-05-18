@@ -124,12 +124,13 @@ bool Tablero::puedeMover(int fr, int fc, int tr, int tc) const
 	return true;
 }
 
-bool Tablero::muevePieza(int fr, int fc, int tr, int tc)
+Pieza* Tablero::muevePieza(int fr, int fc, int tr, int tc)
 {
 	bool batalla = (tablero[tr][tc].pieza != pieza_nada && tablero[tr][tc].bando != tablero[fr][fc].bando);
-	// Si hay combate, eliminamos la pieza destino
+	// Si hay combate, extraemos la pieza defensora en vez de que hace
+	Pieza* capturada = nullptr;
 	if (batalla) {
-		delete tablero[tr][tc].obj;
+		capturada= tablero[tr][tc].obj;
 		tablero[tr][tc].obj = nullptr;
 	}
 	//Movemos la pieza al destino
@@ -148,7 +149,7 @@ bool Tablero::muevePieza(int fr, int fc, int tr, int tc)
 		cout << "[Tablero] COMBATE en (" << tr << "," << tc << ")!" << endl;
 	else
 		cout << "[Tablero] Movido: (" << fr << "," << fc << ") → (" << tr << "," << tc << ")" << endl;
-	return batalla;
+	return capturada;
 }
 
 int Tablero::getRadioMovimiento(int fila, int col) const
