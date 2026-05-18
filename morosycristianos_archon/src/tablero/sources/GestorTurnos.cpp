@@ -63,4 +63,5 @@ bool GestorTurnos::esDelBandoActual(const Tablero& tablero, int fila, int col) c
     // Consultamos el bando de la pieza en esa casilla
     // Si es del bando que tiene el turno ahora, devuelve true
     return tablero.getCasilla(fila, col).bando == _turnoActual;
+
 }

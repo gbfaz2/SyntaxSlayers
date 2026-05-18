@@ -35,6 +35,8 @@ Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
 	fromBando = bando_nada;
 	piezaSeleccionada = false;//no hay pieza seleccionada
 
+	victoria_ = bando_nada;//la partida sigue en curso, nadie a ganado
+
 	leftButton = rightButton = midButton = false;
 	controlKey = shiftKey = false;
 }
@@ -305,6 +307,81 @@ void Tablerogl::DibujaSeleccion()
 	DibujaCasSelec(fromFila, fromCol, 1.0f, 1.0f, 1.0f, 4.0f, 0.006f);
 }
 
+void Tablerogl::DibujaMovimientosValidos()
+{
+	if (!piezaSeleccionada || fromFila < 0)return;
+
+	auto validas = m_tablero->casillasValidas(fromFila, fromCol);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	for (const auto& pos : validas) {
+		float x0 = pos.col * ancho;
+		float x1 = x0 + ancho;
+		float y0 = -pos.fila * ancho;
+		float y1 = y0 - ancho;
+
+		//relleno amarillo semitransparente
+		glColor4f(1.0f, 1.0f, 0.0f, 0.25f);
+		glBegin(GL_QUADS);
+		glVertex3f(x0, y0, 0.004f); glVertex3f(x1, y0, 0.004f);
+		glVertex3f(x1, y1, 0.004f); glVertex3f(x0, y1, 0.004f);
+		glEnd();
+
+		// Contorno amarillo sólido
+		glColor4f(1.0f, 1.0f, 0.0f, 0.85f);
+		glLineWidth(2.0f);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(x0 + 0.003f, y0 - 0.003f, 0.005f);
+		glVertex3f(x1 - 0.003f, y0 - 0.003f, 0.005f);
+		glVertex3f(x1 - 0.003f, y1 + 0.003f, 0.005f);
+		glVertex3f(x0 + 0.003f, y1 + 0.003f, 0.005f);
+		glEnd();
+		glLineWidth(1.0f);
+	}
+
+	glDisable(GL_BLEND);
+}
+
+void Tablerogl::DibujaVictoria()
+{
+	//lo dibujamos en coordenadas mundo, centrado en el tablero
+	float cx = (float)centro_x;
+	float cy = (float)centro_y;
+	float hw = N * ancho * 0.45f;//semiancho del cartel
+	float hh = N * ancho * 0.15f;//semialto
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.75f);
+	glBegin(GL_QUADS);
+	glVertex3f(cx - hw, cy + hh, 0.02f);
+	glVertex3f(cx + hw, cy + hh, 0.02f);
+	glVertex3f(cx + hw, cy - hh, 0.02f);
+	glVertex3f(cx - hw, cy - hh, 0.02f);
+	glEnd();
+	glDisable(GL_BLEND);
+
+	//Textos de victoria que aparecen si victoria_!=bando_nada
+	if (victoria_ == bando_local) {
+		ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f); // dorado
+		ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+		ETSIDI::printxy("VICTORIA CRISTIANA", 300, 400);
+	}
+	else {
+		ETSIDI::setTextColor(0.75f, 0.20f, 0.90f, 1.0f); // morado
+		ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+		ETSIDI::printxy("VICTORIA AL-ANDALUS", 280, 400);
+	}
+
+	ETSIDI::setTextColor(0.80f, 0.80f, 0.80f, 1.0f);
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
+	ETSIDI::printxy("Pulsa ESC para volver al menu", 310, 360);
+
+	glEnable(GL_DEPTH_TEST);
+}
+
 
 
 void Tablerogl::DibujaPiezas()//va a recorrer todo el tablero y dibuja la pieza de la casilla que corresponda
@@ -416,27 +493,60 @@ void Tablerogl::DibujaPieza(int fil, int col)
 
 void Tablerogl::trySelectorMove(BandoPieza bando)
 {
-	if (!piezaSeleccionada) return;
 
-	Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
-	if (!pieza) return;
+	// 1. Obtenemos las coordenadas a las que apunta el cursor o el ratón en este momento
+	int idx = (bando == bando_local) ? 0 : 1;
+	int currentFila = Filacursor[idx];
+	int currentCol = Colcursor[idx];
 
-	ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
-		pieza, *m_tablero, xcasilla_sel, ycasilla_sel
-	);
+	// Si NO hay pieza seleccionada, estamos en FASE DE SELECCIÓN
+	if (!piezaSeleccionada) {
 
-	if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
-		piezaSeleccionada = false;
+		// Comprobamos si la pieza en esa casilla pertenece al bando que tiene el turno
+		if (gestorTurnos.esDelBandoActual(*m_tablero, currentFila, currentCol)) {
+			// Es válida. Guardamos el origen y marcamos como seleccionada
+			fromFila = currentFila;
+			fromCol = currentCol;
+			fromBando = bando;
+			piezaSeleccionada = true;
+		}
+		// Si no es su turno o la casilla está vacía, no hace nada y sale
+		return;
 	}
-	else if (resultado == ResultadoMovimiento::COMBATE) {
-		// aquí se abrirá la arena cuando esté lista
-		piezaSeleccionada = false;
+
+	// Si YA HAY pieza seleccionada, estamos en FASE DE MOVIMIENTO
+	else {
+		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
+		if (!pieza) {
+			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
+			return;
+		}
+
+		// Intentamos mover la pieza desde el origen al destino (currentFila, currentCol)
+		ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
+			pieza, *m_tablero, currentFila, currentCol
+		);
+
+		if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1; // Reseteamos el origen
+
+			// ¡IMPORTANTE! Aquí debes avisar al gestor de turnos de que el turno ha terminado
+			gestorTurnos.terminarTurno();
+		}
+		else if (resultado == ResultadoMovimiento::COMBATE) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
+			// Aquí irá tu lógica de combate más adelante...
+		}
+		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
+		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
 	}
-	//si bloqueado, no hace nada
 }
 
 void Tablerogl::KeyDown(unsigned char key)
 {
+	if (victoria_ != bando_nada)return;
 	if (key == 27) {
 		if (piezaSeleccionada) { piezaSeleccionada = false; fromFila = fromCol = -1; }
 		else exit(0);
@@ -445,27 +555,39 @@ void Tablerogl::KeyDown(unsigned char key)
 	if (key == 'q' || key == 'Q') { exit(0); return; }
 
 	// WASD: cursor LOCAL
-	int& rL = Filacursor[0]; int& cL = Colcursor[0];
-	if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
-	if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
-	if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
-	if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
+	
 
-	if (key == ' ')  trySelectorMove(bando_local);
-	if (key == 13)   trySelectorMove(bando_rival); // Enter
+	if (gestorTurnos.getBandoActual() == bando_local) {
+		int& rL = Filacursor[0]; int& cL = Colcursor[0];
+		if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
+		if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
+		if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
+		if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
+
+		if (key == ' ')  trySelectorMove(bando_local);
+	}
+
+	if (gestorTurnos.getBandoActual() == bando_rival) {
+		if (key == 13)   trySelectorMove(bando_rival); // Enter
+	}
 }
 
 void Tablerogl::SpecialKey(int key)
 {
-	int& rR = Filacursor[1]; int& cR = Colcursor[1];
-	if (key == GLUT_KEY_UP && rR > 0)   rR--;
-	if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
-	if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
-	if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
+	if (victoria_ != bando_nada) return;
+
+	if (gestorTurnos.getBandoActual() == bando_rival) {
+		int& rR = Filacursor[1]; int& cR = Colcursor[1];
+		if (key == GLUT_KEY_UP && rR > 0)   rR--;
+		if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
+		if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
+		if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
+	}
 }
 
 void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
 {
+	if (victoria_ != bando_nada) return;
 	//leemos las matrices actuales de opengl
 	GLint viewport[4];
 	GLdouble modelview[16];

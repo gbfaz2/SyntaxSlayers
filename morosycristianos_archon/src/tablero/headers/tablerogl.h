@@ -5,6 +5,7 @@
 #pragma once
 #include "tablero.h"
 #include "GestorMovimiento.h"
+#include "GestorTurnos.h"
 
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -24,6 +25,7 @@ protected:
 	int Filacursor[2], Colcursor[2];
 	int fromFila, fromCol;//origen del movimiento en curso
 	BandoPieza fromBando;
+	BandoPieza victoria_;
 	bool piezaSeleccionada; //hay una pieza seleccionada esperando destino
 
 	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
@@ -32,6 +34,7 @@ protected:
 
 private:
 	GestorMovimiento gestorMovimiento;
+	GestorTurnos     gestorTurnos;
 
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
@@ -53,6 +56,9 @@ public:
 	void DibujaCasSelec(int fila, int col, float r, float g, float b, float lw, float z);
 	void DibujaCursores();
 	void DibujaSeleccion();
+
+	void DibujaMovimientosValidos();//se llama cuando hay una pieza seleccionada para resaltar las casillas a las que puede moverse
+	void DibujaVictoria();//dibuja el cartel de victoria si alguien ha ganado 
 
 	void DibujaPiezas();
 	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
