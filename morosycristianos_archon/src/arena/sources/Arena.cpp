@@ -22,7 +22,7 @@ void Arena::actualizar(float dt, InputState& input)
 	if (_resultado != ResultadoCombate::EnCurso) return;
 
 	// LA IA RELLENA EL INPUT DE P2 ANTES DE PROCESARLO
-	_ia.actualizar(_p2, _p1, input.p2);
+	_ia.actualizar(_p2, _p1, input.p2, dt);
 
 	// Proceso el input del jugador 1 (Cristiano)
 	if (input.p1.delante) _p1.pedirMovimiento(Direccion::Delante);
