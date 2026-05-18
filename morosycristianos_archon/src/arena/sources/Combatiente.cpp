@@ -88,4 +88,16 @@ Combatiente::Combatiente(float x, float z, float r, float g, float b, const Piez
 	// recarga 20 (baja) -> cooldown 0.2s (ataca rapido)
 	// recarga 90 (alta) -> cooldown 0.9s (ataca lento)
 	_cooldownAtaque = pieza.getRecarga() / 100.0f;
+
+	// VelAtaque → duracion de la animacion de ataque (inverso: mas veloz = animacion mas corta)
+	// velAtaque 20 (lento) -> animacion 0.3s
+	// velAtaque 100 (rapido) -> animacion 0.08s
+	_tiempoAnimacionAtaque = 0.0f; // empieza sin animar
+	float velNorm = pieza.getVelAtaque() / 100.0f; // 0-1
+	_cooldownAtaque = std::max(0.1f, _cooldownAtaque); // minimo 0.1s de cooldown
+
+	// RadioMov → velocidad en la arena (2 casillas = lento, 5 casillas = rapido)
+	// radioMov 2 -> velocidad 3.0 u/s
+	// radioMov 5 -> velocidad 6.0 u/s
+	_velocidad = 2.0f + pieza.getRadioMov() * 0.8f;
 }
