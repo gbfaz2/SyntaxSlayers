@@ -1,5 +1,5 @@
 
-// Autor: Ines Alc√©rreca S√°nchez
+// Autor: Ines AlcÈrreca S·nchez
 // Define los estados globales del juego, los modos, bandos y batallas historicas
 
 #pragma once
@@ -77,35 +77,35 @@ inline std::vector<std::string> contextoBatalla(Batalla b) {
     switch (b) {
     case Batalla::GUADALETE:
         return {
-            "A√±o 711. El caudillo bereber Tariq ibn Ziyad",
+            "AÒo 711. El caudillo bereber Tariq ibn Ziyad",
             "cruza el Estrecho de Gibraltar con 7.000 hombres.",
             "El rey visigodo Rodrigo cae derrotado junto al Guadalete.",
-            "En apenas tres a√±os la Pen√≠nsula cae bajo dominio isl√°mico.",
-            "Comienza el largo per√≠odo de Al-√Åndalus."
+            "En apenas tres aÒos la PenÌnsula cae bajo dominio isl·mico.",
+            "Comienza el largo perÌodo de Al-¡ndalus."
         };
     case Batalla::ALARCOS:
         return {
-            "A√±o 1195. El califa almohade Al-Mansur",
-            "dirige su ej√©rcito contra Alfonso VIII de Castilla.",
+            "AÒo 1195. El califa almohade Al-Mansur",
+            "dirige su ejÈrcito contra Alfonso VIII de Castilla.",
             "En las llanuras de Alarcos, los castellanos son aplastados.",
-            "La derrota frena la Reconquista durante casi dos d√©cadas.",
-            "Los almohades alcanzan su m√°ximo poder en Hispania."
+            "La derrota frena la Reconquista durante casi dos dÈcadas.",
+            "Los almohades alcanzan su m·ximo poder en Hispania."
         };
     case Batalla::NAVAS_TOLOSA:
         return {
-            "A√±o 1212. Una cruzada papal une a los reinos",
-            "de Castilla, Arag√≥n y Navarra bajo una sola bandera.",
-            "En el paso de Sierra Morena, el ej√©rcito almohade",
-            "es destruido por la coalici√≥n cristiana.",
-            "El poder almohade jam√°s se recuperar√°."
+            "AÒo 1212. Una cruzada papal une a los reinos",
+            "de Castilla, AragÛn y Navarra bajo una sola bandera.",
+            "En el paso de Sierra Morena, el ejÈrcito almohade",
+            "es destruido por la coaliciÛn cristiana.",
+            "El poder almohade jam·s se recuperar·."
         };
     case Batalla::GRANADA:
         return {
-            "A√±o 1492. Tras diez a√±os de campa√±as militares,",
-            "los Reyes Cat√≥licos asedian el reino nazar√≠ de Granada.",
-            "El sult√°n Boabdil entrega las llaves el 2 de enero.",
-            "La √∫ltima ciudad musulmana de la Pen√≠nsula cae.",
-            "La Reconquista culmina. Espa√±a nace."
+            "AÒo 1492. Tras diez aÒos de campaÒas militares,",
+            "los Reyes CatÛlicos asedian el reino nazarÌ de Granada.",
+            "El sult·n Boabdil entrega las llaves el 2 de enero.",
+            "La ˙ltima ciudad musulmana de la PenÌnsula cae.",
+            "La Reconquista culmina. EspaÒa nace."
         };
     default: return {};
     }
