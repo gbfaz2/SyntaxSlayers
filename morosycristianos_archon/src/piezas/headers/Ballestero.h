@@ -10,6 +10,7 @@
 class Ballestero :
     public PiezaTerrestre, public ArmaDistancia
 {
+public:
     // Constructor para recibe el bando y decidir nombre de la pieza 
     //Bando cristiano: ballestero, bando andalusí: arquero
     Ballestero(Bando bando);

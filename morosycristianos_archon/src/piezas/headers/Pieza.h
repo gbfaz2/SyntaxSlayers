@@ -66,7 +66,10 @@ public:
     int getFuerza()    const { return fuerza; } //devuelve la fuerza
     int getVelAtaque() const { return velAtaque; }  //devuelve la velocidad
     int getRecarga()   const { return recarga; }  //devuelve la recarga
+    int getRadioMov() const { return radioMov; }//devuelve el radio de movimiento de cada pieza
 
+    int getVida()    const { return vida; }
+    int getVidaMax() const { return vidaMax; }
 
     // Para la demo: muestra las stats por consola
     virtual void mostrarStats() const;  //esto es solo para la demo aunque quedaría bien, mostrar las stats por pantalla

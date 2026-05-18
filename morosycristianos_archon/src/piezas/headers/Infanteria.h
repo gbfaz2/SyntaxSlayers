@@ -10,6 +10,7 @@
 class Infanteria :
     public PiezaTerrestre, public ArmaCuerpoaCuerpo
 {
+public:
     Infanteria(Bando bando);
 
     //METODO HEREDADO DE PIEZA TERRESTRE

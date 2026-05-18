@@ -78,18 +78,6 @@
     <ClInclude Include="lib\glut.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
-    <ClInclude Include="src\ia\headers\placeholder_ia.h">
-      <Filter>ia\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\arena\headers\placeholder_arena.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\menu\headers\placeholder_menu.h">
-      <Filter>menu\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tablero\headers\placeholder_tablero.h">
-      <Filter>tablero\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\coordinador\headers\Coordinador.h">
       <Filter>coordinador\Headers</Filter>
     </ClInclude>
@@ -144,6 +132,42 @@
     <ClInclude Include="src\piezas\headers\Rey.h">
       <Filter>piezas\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\arena\headers\Arena.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arena\headers\ArenaRenderer.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arena\headers\Combatiente.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\arena\headers\InputState.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ia\headers\IAArena.h">
+      <Filter>ia\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ia\headers\MinimaxTablero.h">
+      <Filter>ia\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ia\headers\SugerenciasTablero.h">
+      <Filter>ia\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu\headers\estadojuego.h">
+      <Filter>menu\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu\headers\menu.h">
+      <Filter>menu\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\menu\headers\pantallabatalla.h">
+      <Filter>menu\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\tablero.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\tablerogl.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -159,18 +183,6 @@
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
       <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ia\headers\placeholder_ia.cpp">
-      <Filter>ia\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\arena\sources\placeholder_arena.cpp">
-      <Filter>arena\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\menu\sources\placeholder_menu.cpp">
-      <Filter>menu\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tablero\sources\placeholder_tablero.cpp">
-      <Filter>tablero\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\coordinador\sources\Coordinador.cpp">
       <Filter>coordinador\Sources</Filter>
@@ -225,6 +237,36 @@
     </ClCompile>
     <ClCompile Include="src\piezas\sources\Rey.cpp">
       <Filter>piezas\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arena\sources\Arena.cpp">
+      <Filter>arena\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp">
+      <Filter>arena\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arena\sources\Combatiente.cpp">
+      <Filter>arena\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ia\sources\IAArena.cpp">
+      <Filter>ia\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ia\sources\MinimaxTablero.cpp">
+      <Filter>ia\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ia\sources\SugerenciasTablero.cpp">
+      <Filter>ia\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sources\menu.cpp">
+      <Filter>menu\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\menu\sources\pantallabatalla.cpp">
+      <Filter>menu\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\tablero.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\tablerogl.cpp">
+      <Filter>tablero\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

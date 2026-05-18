@@ -1,42 +1,77 @@
-# Prerequisites
-*.d
+# === Visual Studio - basura del IDE ===
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.opendb
 
-# Compiled Object files
+# === Carpetas de compilación ===
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]uild/
+[Oo]ut/
+
+# === Archivos de objeto y compilación ===
+*.obj
+*.o
 *.slo
 *.lo
-*.o
-*.obj
+*.d
 
-# Precompiled Headers
-*.gch
+# === Precompilados ===
 *.pch
+*.gch
+*.ipch
 
-# Linker files
+# === Linker / Debugger ===
 *.ilk
-
-# Debugger Files
 *.pdb
+*.idb
+*.exp
+*.map
+*.tlog
+*.log
+*.lastbuildstate
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
+# === Ejecutables generados ===
 *.exe
 *.out
 *.app
 
+<<<<<<< HEAD
+# === NO ignoramos las librerías de la carpeta lib/ ===
+# (queremos que ETSIDI.lib, fmod.lib y fmod.dll viajen con el repo)
+# *.lib   <-- comentado a propósito
+# *.dll   <-- comentado a propósito
+
+# === Sí ignoramos librerías sueltas que no sean del proyecto ===
+# Si alguien deja un .lib o .dll fuera de lib/ por error, lo ignoramos
+/*.lib
+/*.dll
+/src/**/*.lib
+/src/**/*.dll
+
+# === Sistema operativo ===
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# === Editores ===
+*.swp
+*~
+.idea/
+.vscode/
+
+# === Archivos temporales / backups ===
+*.bak
+*.tmp
+=======
 # debug information files
 *.dwo
 # Carpetas específicas de Visual Studio
@@ -84,3 +119,4 @@ Release/
 !*.lib
 !*.dll
 !*.h
+>>>>>>> main

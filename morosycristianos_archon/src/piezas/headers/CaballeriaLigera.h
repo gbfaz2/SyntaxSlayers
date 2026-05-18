@@ -9,6 +9,7 @@
 class CaballeriaLigera :
     public PiezaVoladora, public ArmaCarga
 {
+public:
     // Constructor que recibe el bando para decidir que tipo de ficha es, el resto de stats están fijos en el .cpp
     // Bando Cristiano: caballería ligera, bando musulman: jinete bereber
     CaballeriaLigera(Bando bando);
