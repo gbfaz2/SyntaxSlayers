@@ -9,7 +9,6 @@ Coordinador::~Coordinador()
 	delete pTablero;   // LIBERA TABLERO
 }
 
-
 void Coordinador::inicializa()
 {
 	srand((unsigned)time(nullptr));
@@ -86,9 +85,11 @@ void Coordinador::dibuja()
 			pTablerogl->Dibuja();
 
 			// TODO: CUANDO MARIA IMPLEMENTE huboColision()
-			if (pTablerogl->huboColision()) {
+			if (pTablerogl->huboColision()) 
+			{
 			    _arena.iniciarCombate(*pTablerogl->getPiezaAtacante(), *pTablerogl->getPiezaDefensora());
-				//Aquí hay que poner algo de deletear a la pieza que pierda en la arena sin perder datos
+				ArenaRenderer::configurarVista(anchoVentana, altoVentana);
+				pTablerogl->limpiarCombate();
 				estado = EstadoJuego::ARENA;
 			}
 		}
@@ -135,6 +136,7 @@ void Coordinador::tecla(unsigned char key)
 		if (key == 'd' || key == 'D') _input.p1.derecha = true;
 		if (key == 'f' || key == 'F') _input.p1.atacar = true;
 		break;
+
 	default:
 		if (key == 27) { menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
 		break;
@@ -185,7 +187,6 @@ void Coordinador::mueve(double dt)
 			estado = EstadoJuego::FINAL;
 		}
 	}
-	
 	
 	if (estado == EstadoJuego::ARENA)
 		_arena.actualizar((float)dt, _input); // AVANZA LA LOGICA DE LA ARENA
