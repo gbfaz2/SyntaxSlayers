@@ -133,10 +133,12 @@ void Coordinador::tecla_especial(int key)
     glutPostRedisplay();
 }
 
-void Coordinador::mueve(double /*dt*/)
+/*
+void Coordinador::mueve(double dt)
 {
     // La animación la manejan las propias pantallas por fotograma (glutPostRedisplay en OnTimer)
-}
+}*/
+
 
 void Coordinador::raton(int boton, int state, int x, int y)
 {
@@ -173,10 +175,20 @@ void Coordinador::raton(int boton, int state, int x, int y)
     glutPostRedisplay();
 }
 
-/*void Coordinador::mueve(double dt)
+void Coordinador::mueve(double dt)
 {
-	// VACÍO POR AHORA
-}*/
+    //actualiza gestor turnos por dt
+    if (estado == EstadoJuego::TABLERO && pTablero) {
+        // Actualiza el cronómetro del turno
+        gestorTurnos.update(dt);
+
+        // Comprueba si alguien ha ganado
+        ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
+        if (rv != ResultadoVictoria::SIN_GANADOR) {
+            estado = EstadoJuego::FINAL;
+        }
+    }
+}
 
 void Coordinador::ratonMovido(int x, int y)
 {

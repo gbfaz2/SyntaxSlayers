@@ -200,6 +200,7 @@ std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
 	return resultado;
 }
 
+/*
 BandoPieza Tablero::checkVicoria() const
 {
 	// ── Condición 1: puntos de poder ──
@@ -231,3 +232,4 @@ BandoPieza Tablero::checkVicoria() const
 	return bando_nada; // nadie ha ganado todavía
 	return BandoPieza();
 }
+*/

@@ -4,6 +4,9 @@
 #include "pantallabatalla.h"
 #include "tablero.h"
 #include "tablerogl.h"
+#include "GestorMovimiento.h"
+#include "GestorTurnos.h"
+#include "GestorVictoria.h"
 
 class Coordinador
 {
@@ -17,8 +20,14 @@ class Coordinador
 	MenuPrincipal   menuPrincipal;
 	PantallaDestino pantallaDestino;
 	ConfigPartida   configuracion;
+
 	Tablero* pTablero{ nullptr };
 	Tablerogl* pTablerogl{ nullptr };
+
+	GestorMovimiento gestorMovimiento;
+	GestorTurnos     gestorTurnos;
+	GestorVictoria   gestorVictoria;
+
 
 public:
 	Coordinador() = default; // CONSTRUCTOR

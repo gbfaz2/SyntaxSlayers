@@ -4,6 +4,7 @@
 // lo usamos para separar la lógica del dibujo. Primero probaremos a hacer un tablero vacío con un aspecto visual del Archon original
 #pragma once
 #include "tablero.h"
+#include "GestorMovimiento.h"
 
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -28,6 +29,10 @@ protected:
 	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
 	bool controlKey, shiftKey;
 	bool leftButton, rightButton, midButton;
+
+private:
+	GestorMovimiento gestorMovimiento;
+
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() {}//destructor virtual

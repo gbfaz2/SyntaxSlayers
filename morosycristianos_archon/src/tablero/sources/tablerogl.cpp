@@ -416,54 +416,23 @@ void Tablerogl::DibujaPieza(int fil, int col)
 
 void Tablerogl::trySelectorMove(BandoPieza bando)
 {
-	int idx = (bando == bando_local) ? 0 : 1;
-	int cr = Filacursor[idx];
-	int cc = Colcursor[idx];
+	if (!piezaSeleccionada) return;
 
-	if (!piezaSeleccionada) {
-		// Intentamos seleccionar una pieza propia
-		const Casilla& c = m_tablero->getCasilla(cr, cc);
-		if (c.pieza != pieza_nada && c.bando == bando) {
-			fromFila = cr;
-			fromCol = cc;
-			fromBando = bando;
-			piezaSeleccionada = true;
-			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
-				<< "] Seleccionada en (" << cr << "," << cc << ")" << endl;
-		}
-		else {
-			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
-				<< "] No hay pieza propia en (" << cr << "," << cc << ")" << endl;
-		}
+	Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
+	if (!pieza) return;
 
-	}
-	else {
-		// Ya hay pieza seleccionada: este clic es el destino
+	ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
+		pieza, *m_tablero, xcasilla_sel, ycasilla_sel
+	);
 
-		// Solo puede mover el equipo que seleccionó la pieza
-		if (fromBando != bando) return;
-
-		if (cr == fromFila && cc == fromCol) {
-			// Clic en la misma casilla → cancelar selección
-			piezaSeleccionada = false;
-			fromFila = fromCol = -1;
-			cout << "Selección cancelada." << endl;
-			return;
-		}
-
-		if (m_tablero->puedeMover(fromFila, fromCol, cr, cc)) {
-			bool combat = m_tablero->muevePieza(fromFila, fromCol, cr, cc);
-			if (combat)
-				cout << "¡COMBATE! (pantalla de combate pendiente)" << endl;
-		}
-		else {
-			cout << "Movimiento inválido: casilla ocupada por aliado." << endl;
-		}
-
-		// En cualquier caso, deseleccionamos
+	if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
 		piezaSeleccionada = false;
-		fromFila = fromCol = -1;
 	}
+	else if (resultado == ResultadoMovimiento::COMBATE) {
+		// aquí se abrirá la arena cuando esté lista
+		piezaSeleccionada = false;
+	}
+	//si bloqueado, no hace nada
 }
 
 void Tablerogl::KeyDown(unsigned char key)

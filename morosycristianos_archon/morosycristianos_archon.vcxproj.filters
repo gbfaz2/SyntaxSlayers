@@ -153,6 +153,15 @@
     <ClInclude Include="src\menu\headers\pantallabatalla.h">
       <Filter>menu\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorMovimiento.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorTurnos.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorVictoria.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -240,6 +249,15 @@
     </ClCompile>
     <ClCompile Include="src\menu\sources\pantallabatalla.cpp">
       <Filter>menu\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorMovimiento.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorTurnos.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorVictoria.cpp">
+      <Filter>tablero\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

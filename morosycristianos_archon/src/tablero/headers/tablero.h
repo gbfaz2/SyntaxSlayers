@@ -91,7 +91,7 @@ public:
 	std::vector<CasillaPos> casillasValidas(int fila, int col) const;
 
 	//añado método para comprobar las dos condiciones de victoria (bando controla 5 puntos de poder o solo quedan piezas de un bando)
-	BandoPieza checkVicoria()const;
+	//BandoPieza checkVicoria()const;
 };
 
 
