@@ -230,3 +230,12 @@ BandoPieza Tablero::checkVicoria() const
 	return bando_nada; // nadie ha ganado todavía
 	return BandoPieza();
 }
+
+Pieza* Tablero::buscarPieza(TipoPieza tipo, BandoPieza bando) const
+{
+	for (int f = 0; f < N; f++)
+		for (int c = 0; c < N; c++)
+			if (tablero[f][c].pieza == tipo && tablero[f][c].bando == bando)
+				return tablero[f][c].obj;
+	return nullptr;
+}
