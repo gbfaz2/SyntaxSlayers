@@ -7,6 +7,10 @@
 #include "Arena.h"
 #include "ArenaRenderer.h"
 #include "InputState.h"
+#include "GestorMovimiento.h"
+#include "GestorTurnos.h"
+#include "GestorVictoria.h"
+#include "GestorHechizos.h"
 
 class Coordinador
 {
@@ -19,11 +23,17 @@ class Coordinador
 	MenuPrincipal   menuPrincipal;
 	PantallaDestino pantallaDestino;
 	ConfigPartida   configuracion;
+	
 	Tablero* pTablero{ nullptr };
 	Tablerogl* pTablerogl{ nullptr };
 
 	Arena           _arena;   // LOGICA DEL COMBATE
 	InputState      _input;   // ESTADO DEL TECLADO
+
+	GestorMovimiento gestorMovimiento;
+	GestorTurnos     gestorTurnos;
+	GestorVictoria   gestorVictoria;
+	GestorHechizos* pGestorHechizos{ nullptr };
 
 public:
 	Coordinador() = default;

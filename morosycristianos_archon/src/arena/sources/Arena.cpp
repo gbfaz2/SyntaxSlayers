@@ -1,5 +1,6 @@
 #include "Arena.h"
 #include <cmath> // para std::abs en resolverAtaque
+#include <iostream>
 
 // Constructor: crea la arena con los dos combatientes en sus posiciones iniciales
 Arena::Arena()
@@ -21,7 +22,9 @@ void Arena::actualizar(float dt, InputState& input)
 	// Si el combate ya ha terminado, no hago nada
 	if (_resultado != ResultadoCombate::EnCurso) return;
 
-	if (_contraIA) _ia.actualizar(_p2, _p1, input.p2, dt); // SOLO ACTIVA LA IA SI ESTA EN MODO PVC
+	// LA IA SOLO ACTUA EN MODO JVIA
+	if (_modo == ModoJuego::JVIA)
+		_ia.actualizar(_p2, _p1, input.p2, dt);
 
 	// Proceso el input del jugador 1 (Cristiano)
 	if (input.p1.delante) _p1.pedirMovimiento(Direccion::Delante);
@@ -87,8 +90,11 @@ void Arena::limitarPosicion(Combatiente& c)
 	c.posicion(x, c.y(), z);
 }
 
-void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora)
+void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo)
 {
+	_modo = modo;
+	std::cout << "[Arena] iniciarCombate llamado!" << std::endl;
+
 	// Creamos los combatientes con las stats reales de las piezas del tablero P1 (atacante) siempre empieza a la izquierda, color segun bando
 	float r1 = atacante.getBando() == Bando::CRISTIANO ? 0.89f : 0.39f;
 	float g1 = atacante.getBando() == Bando::CRISTIANO ? 0.29f : 0.60f;
@@ -105,4 +111,7 @@ void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora)
 
 	// Reseteamos el resultado
 	_resultado = ResultadoCombate::EnCurso;
+
+	std::cout << "[Arena] vida p1: " << _p1.vida() << " vida p2: " << _p2.vida() << std::endl;
+	std::cout << "[Arena] resultado = EnCurso" << std::endl;
 }
