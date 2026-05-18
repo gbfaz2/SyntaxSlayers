@@ -64,7 +64,7 @@ void OnDraw()
 
 void OnKeyboardDown(unsigned char key, int /*x*/, int /*y*/)
 {
-    if (key == 0) exit(0);   // ESC siempre cierra
+    if (key == '0') exit(0);   // ESC siempre cierra
     juego.tecla(key);
     glutPostRedisplay();
 }
