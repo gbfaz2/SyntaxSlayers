@@ -32,6 +32,7 @@ class Arena
 	void limitarPosicion(Combatiente& c); // Limita la posicion de un combatiente dentro de los bordes de la arena
 
 	IAArena _ia; // CONTROLADOR IA DEL ENEMIGO
+	bool _contraIA{ true }; // VARIABLE PARA CONTROL DE IA O PLAYER 2
 
 public:
 	// Constructor: crea la arena con los dos combatientes en sus posiciones iniciales
@@ -40,6 +41,7 @@ public:
 	void actualizar(float dt, InputState& input); // avanza la simulacion un frame
 	void reiniciar(); // reinicia el combate, volviendo a las posiciones iniciales y reseteando la vida de los combatientes
 	void iniciarCombate(const Pieza& atacante, const Pieza& defensora);
+	void setContraIA(bool ia) { _contraIA = ia; } // SETTER PARA CONTROLAR EL MODO DE JUEGO
 	
 	// Getters (informacion para el renderer)
 	const Combatiente& p1() const { return _p1; } // const, de esta manera el renderer puede leer el combatiente pero no modificarlo
@@ -47,4 +49,6 @@ public:
 	float ancho() const { return _ancho; }
 	float profundo() const { return _profundo; }
 	ResultadoCombate resultado() const { return _resultado; }
+
+
 };
