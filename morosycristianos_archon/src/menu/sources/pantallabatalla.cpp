@@ -272,7 +272,7 @@ void PantallaDestino::dibujarTextos(int ancho, int alto) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     // Titulo (screen y=85 = openGL y=alto-85)
-    ETSIDI::setFont("bin\\fuentes\\ARIALNBI.ttf", 24);
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 24);
     ETSIDI::setTextColor((0.85f + brillo) * alfa,
         (0.70f + brillo * 0.5f) * alfa,
         0.10f * alfa, alfa);
