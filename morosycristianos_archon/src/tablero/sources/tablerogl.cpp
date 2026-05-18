@@ -493,61 +493,53 @@ void Tablerogl::DibujaPieza(int fil, int col)
 
 void Tablerogl::trySelectorMove(BandoPieza bando)
 {
+	//Obtenemos las coordenadas a las que apunta el cursor o el ratón en este momento
 	int idx = (bando == bando_local) ? 0 : 1;
-	int cr = Filacursor[idx];
-	int cc = Colcursor[idx];
+	int currentFila = Filacursor[idx];
+	int currentCol = Colcursor[idx];
 
+	// Si NO hay pieza seleccionada, estamos en FASE DE SELECCIÓN
 	if (!piezaSeleccionada) {
-		// Intentamos seleccionar una pieza propia
-		const Casilla& c = m_tablero->getCasilla(cr, cc);
-		if (c.pieza != pieza_nada && c.bando == bando) {
-			fromFila = cr;
-			fromCol = cc;
+
+		// Comprobamos si la pieza en esa casilla pertenece al bando que tiene el turno
+		if (gestorTurnos.esDelBandoActual(*m_tablero, currentFila, currentCol)) {
+			// Es válida. Guardamos el origen y marcamos como seleccionada
+			fromFila = currentFila;
+			fromCol = currentCol;
 			fromBando = bando;
 			piezaSeleccionada = true;
-			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
-				<< "] Seleccionada en (" << cr << "," << cc << ")" << endl;
 		}
-		else {
-			cout << "[" << (bando == bando_local ? "LOCAL" : "RIVAL")
-				<< "] No hay pieza propia en (" << cr << "," << cc << ")" << endl;
-		}
-
+		// Si no es su turno o la casilla está vacía, no hace nada y sale
+		return;
 	}
+
+	// Si YA HAY pieza seleccionada, estamos en FASE DE MOVIMIENTO
 	else {
-		// Ya hay pieza seleccionada: este clic es el destino
-
-		// Solo puede mover el equipo que seleccionó la pieza
-		if (fromBando != bando) return;
-
-		if (cr == fromFila && cc == fromCol) {
-			// Clic en la misma casilla → cancelar selección
-			piezaSeleccionada = false;
-			fromFila = fromCol = -1;
-			cout << "Seleccion cancelada." << endl;
+		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
+		if (!pieza) {
+			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
 			return;
 		}
 
-		if (m_tablero->puedeMover(fromFila, fromCol, cr, cc)) {
-			Pieza* capturada = m_tablero->muevePieza(fromFila, fromCol, cr, cc);
-			if (capturada != nullptr) {
-				//hay combate y guardamos al atacante (ya en el destino) y la defensora capturada
-				_pAtacante = m_tablero->getCasilla(cr, cc).obj;
-				_pDefensora = capturada;
-				_combatePendiente = true;
-			}
-	
-			victoria_ = m_tablero->checkVicoria();
-			if (victoria_ != bando_nada) 
-				cout << "[Victoria] gana el bando " << (victoria_ == bando_local ? "LOCAL" : "RIVAL") << endl;
-		}
-		else {
-			cout << "Movimiento invalido: casilla ocupada por aliado." << endl;
-		}
+		// Intentamos mover la pieza desde el origen al destino (currentFila, currentCol)
+		ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
+			pieza, *m_tablero, currentFila, currentCol
+		);
 
-		// En cualquier caso, deseleccionamos
-		piezaSeleccionada = false;
-		fromFila = fromCol = -1;
+		if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1; // Reseteamos el origen
+
+			// ¡IMPORTANTE! Aquí debes avisar al gestor de turnos de que el turno ha terminado
+			gestorTurnos.terminarTurno();
+		}
+		else if (resultado == ResultadoMovimiento::COMBATE) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
+			// Aquí irá tu lógica de combate más adelante...
+		}
+		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
+		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
 	}
 }
 

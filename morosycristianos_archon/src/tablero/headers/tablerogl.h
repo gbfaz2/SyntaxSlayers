@@ -4,6 +4,8 @@
 // lo usamos para separar la lógica del dibujo. Primero probaremos a hacer un tablero vacío con un aspecto visual del Archon original
 #pragma once
 #include "tablero.h"
+#include "GestorMovimiento.h"
+#include "GestorTurnos.h"
 
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -23,17 +25,23 @@ protected:
 	int Filacursor[2], Colcursor[2];
 	int fromFila, fromCol;//origen del movimiento en curso
 	BandoPieza fromBando;
+	BandoPieza victoria_;//resultado de chackVictoria actualizado cada movimiento
 	bool piezaSeleccionada; //hay una pieza seleccionada esperando destino
 
 	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
 	bool controlKey, shiftKey;
 	bool leftButton, rightButton, midButton;
 
-	BandoPieza victoria_;//resultado de chackVictoria actualizado cada movimiento
+	
 
 	bool _combatePendiente{ false };
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
+
+private:
+	GestorMovimiento gestorMovimiento;
+	GestorTurnos     gestorTurnos;
+
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() {}//destructor virtual
