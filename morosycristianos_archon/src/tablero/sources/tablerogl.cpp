@@ -529,12 +529,17 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 		}
 
 		if (m_tablero->puedeMover(fromFila, fromCol, cr, cc)) {
-			bool combat = m_tablero->muevePieza(fromFila, fromCol, cr, cc);
-			if (combat)
-				cout << "¡COMBATE! (pantalla de combate pendiente)" << endl;
+			Pieza* capturada = m_tablero->muevePieza(fromFila, fromCol, cr, cc);
+			if (capturada != nullptr) {
+				//hay combate y guardamos al atacante (ya en el destino) y la defensora capturada
+				_pAtacante = m_tablero->getCasilla(cr, cc).obj;
+				_pDefensora = capturada;
+				_combatePendiente = true;
+			}
+	
 			victoria_ = m_tablero->checkVicoria();
 			if (victoria_ != bando_nada) 
-				cout << "[Victoria] gana el bando" << (victoria_ == bando_local ? "LOCAL" : "RIVAL") << endl;
+				cout << "[Victoria] gana el bando " << (victoria_ == bando_local ? "LOCAL" : "RIVAL") << endl;
 		}
 		else {
 			cout << "Movimiento invalido: casilla ocupada por aliado." << endl;
@@ -664,4 +669,8 @@ void Tablerogl::world2cell(double x, double y, int& casilla_x, int& casilla_y)
 {
 	casilla_x = (int)(fabs(y / ancho));
 	casilla_y = (int)(x / ancho);
+}
+
+void Tablerogl::limpiarCombate()
+{
 }
