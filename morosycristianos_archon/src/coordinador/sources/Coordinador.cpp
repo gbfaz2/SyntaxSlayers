@@ -90,6 +90,7 @@ void Coordinador::dibuja()
 			{
 			    _arena.iniciarCombate(*pTablerogl->getPiezaAtacante(), *pTablerogl->getPiezaDefensora());
 				ETSIDI::stopMusica(); //colision: deja de sonar musica tablero
+				ETSIDI::play("sonido_combate_fight.wav");
 				ArenaRenderer::configurarVista(anchoVentana, altoVentana);
 				pTablerogl->limpiarCombate();
 				estado = EstadoJuego::ARENA;
