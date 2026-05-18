@@ -524,7 +524,7 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			// Clic en la misma casilla → cancelar selección
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
-			cout << "Selección cancelada." << endl;
+			cout << "Seleccion cancelada." << endl;
 			return;
 		}
 
@@ -532,9 +532,12 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			bool combat = m_tablero->muevePieza(fromFila, fromCol, cr, cc);
 			if (combat)
 				cout << "¡COMBATE! (pantalla de combate pendiente)" << endl;
+			victoria_ = m_tablero->checkVicoria();
+			if (victoria_ != bando_nada) 
+				cout << "[Victoria] gana el bando" << (victoria_ == bando_local ? "LOCAL" : "RIVAL") << endl;
 		}
 		else {
-			cout << "Movimiento inválido: casilla ocupada por aliado." << endl;
+			cout << "Movimiento invalido: casilla ocupada por aliado." << endl;
 		}
 
 		// En cualquier caso, deseleccionamos
@@ -545,6 +548,7 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 void Tablerogl::KeyDown(unsigned char key)
 {
+	if (victoria_ != bando_nada)return;
 	if (key == 27) {
 		if (piezaSeleccionada) { piezaSeleccionada = false; fromFila = fromCol = -1; }
 		else exit(0);
@@ -565,6 +569,7 @@ void Tablerogl::KeyDown(unsigned char key)
 
 void Tablerogl::SpecialKey(int key)
 {
+	if (victoria_ != bando_nada) return;
 	int& rR = Filacursor[1]; int& cR = Colcursor[1];
 	if (key == GLUT_KEY_UP && rR > 0)   rR--;
 	if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
@@ -574,6 +579,7 @@ void Tablerogl::SpecialKey(int key)
 
 void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
 {
+	if (victoria_ != bando_nada) return;
 	//leemos las matrices actuales de opengl
 	GLint viewport[4];
 	GLdouble modelview[16];
