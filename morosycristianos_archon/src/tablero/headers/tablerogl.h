@@ -28,6 +28,8 @@ protected:
 	int xcasilla_sel, ycasilla_sel;//casilla bajo el cursor
 	bool controlKey, shiftKey;
 	bool leftButton, rightButton, midButton;
+
+	BandoPieza victoria_;//resultado de chackVictoria actualizado cada movimiento
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() {}//destructor virtual
@@ -48,6 +50,9 @@ public:
 	void DibujaCasSelec(int fila, int col, float r, float g, float b, float lw, float z);
 	void DibujaCursores();
 	void DibujaSeleccion();
+
+	void DibujaMovimientosValidos();//se llama cuando hay una pieza seleccionada para resaltar las casillas a las que puede moverse
+	void DibujaVictoria();//dibuja el cartel de victoria si alguien ha ganado 
 
 	void DibujaPiezas();
 	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
