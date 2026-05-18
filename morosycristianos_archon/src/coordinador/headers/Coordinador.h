@@ -1,26 +1,35 @@
 #pragma once
-#include "Arena.h"
-#include "ArenaRenderer.h"
-#include "InputState.h"
+#include "estadojuego.h"
+#include "menu.h"
+#include "pantallabatalla.h"
+#include "tablero.h"
+#include "tablerogl.h"
 
 class Coordinador
 {
-	enum Estado { INTRO, MENU, TABLERO, ARENA, PAUSA, RANKING, GAMEOVER };
-	Estado estado{ ARENA }; // ARRANCA DIRECTO EN ARENA PARA PRUEBAS
+	// DEFINIMOS LOS ESTADOS AQUÍ MISMO PARA NO DEPENDER DE OTROS ARCHIVOS
+	EstadoJuego     estado{ EstadoJuego::INTRO };
 
-	Arena _arena;           // LOGICA DEL COMBATE
-	InputState _input;      // ESTADO DEL TECLADO
+	int             anchoVentana{ 800 };
+	int             altoVentana{ 600 };
+
+	PantallaIntro   pantallaIntro;
+	MenuPrincipal   menuPrincipal;
+	PantallaDestino pantallaDestino;
+	ConfigPartida   configuracion;
+	Tablero* pTablero{ nullptr };
+	Tablerogl* pTablerogl{ nullptr };
 
 public:
-	Coordinador() = default;
-	virtual ~Coordinador() = default;
+	Coordinador() = default; // CONSTRUCTOR
+	~Coordinador(); // DESTRUCTOR
 
-	void inicializa();
-	void tecla(unsigned char key);
-	void tecla_up(unsigned char key);
-	void tecla_especial(int key);
-	void tecla_especial_up(int key);
-	void mueve(double dt);
-	void dibuja();
-	void raton(int button, int state, int x, int y);
+	void inicializa(); // SETUP INICIAL
+	void dibuja(); // PINTA SEGÚN ESTADO
+	void tecla(unsigned char key); // GESTIÓN TECLADO
+	void tecla_especial(int key); // GESTIÓN FLECHAS
+	void mueve(double dt); // ACTUALIZA LÓGICA
+	void raton(int button, int state, int x, int y); // GESTIÓN RATÓN
+	void ratonMovido(int x, int y);
+	void redimensionar(int ancho, int alto);
 };
