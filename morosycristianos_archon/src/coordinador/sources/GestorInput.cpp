@@ -2,6 +2,7 @@
 #include "freeglut.h"
 #include "menu.h"
 #include "tablerogl.h"
+#include "Coordinador.h" // INCLUDE COMPLETO SOLO EN EL CPP
 
 // =============================================================
 // MENU
@@ -214,4 +215,74 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
         _tablerogl->Colcursor[idx] = clickCol;
         _tablerogl->trySelectorMove(_tablerogl->fromBando);
     }
+}
+
+// =============================================================
+// ARENA
+// =============================================================
+
+void GestorInput::teclaArena(unsigned char key)
+{
+    if (!_coordinador) return; // COORDINADOR NO ASIGNADO
+
+    // CONTROLES P1: WASD + F
+    if (key == 'w' || key == 'W') _coordinador->_input.p1.delante = true;
+    if (key == 's' || key == 'S') _coordinador->_input.p1.atras = true;
+    if (key == 'a' || key == 'A') _coordinador->_input.p1.izquierda = true;
+    if (key == 'd' || key == 'D') _coordinador->_input.p1.derecha = true;
+    if (key == 'f' || key == 'F') _coordinador->_input.p1.atacar = true;
+
+    // CONTROLES P2 SOLO EN JVJ: L ATACA
+    if (_coordinador->configuracion.modo == ModoJuego::JVJ)
+        if (key == 'l' || key == 'L') _coordinador->_input.p2.atacar = true;
+
+    // ESC SIEMPRE VUELVE AL MENU
+    if (key == 27) {
+        ETSIDI::stopMusica();
+        _coordinador->reiniciarTablero();
+        _coordinador->estado = EstadoJuego::MENU;
+        return;
+    }
+
+    // ENTER VUELVE AL TABLERO SI EL COMBATE HA TERMINADO
+    if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
+        ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+        _coordinador->estado = EstadoJuego::TABLERO;
+        return;
+    }
+}
+
+void GestorInput::teclaUpArena(unsigned char key)
+{
+    if (!_coordinador) return; // COORDINADOR NO ASIGNADO
+
+    // SUELTA TECLAS P1
+    if (key == 'w' || key == 'W') _coordinador->_input.p1.delante = false;
+    if (key == 's' || key == 'S') _coordinador->_input.p1.atras = false;
+    if (key == 'a' || key == 'A') _coordinador->_input.p1.izquierda = false;
+    if (key == 'd' || key == 'D') _coordinador->_input.p1.derecha = false;
+}
+
+void GestorInput::teclaEspecialArena(int key)
+{
+    if (!_coordinador) return; // COORDINADOR NO ASIGNADO
+    if (_coordinador->configuracion.modo != ModoJuego::JVJ) return; // SOLO EN JVJ
+
+    // FLECHAS MUEVEN P2
+    if (key == GLUT_KEY_UP)    _coordinador->_input.p2.delante = true;
+    if (key == GLUT_KEY_DOWN)  _coordinador->_input.p2.atras = true;
+    if (key == GLUT_KEY_LEFT)  _coordinador->_input.p2.izquierda = true;
+    if (key == GLUT_KEY_RIGHT) _coordinador->_input.p2.derecha = true;
+}
+
+void GestorInput::teclaEspecialUpArena(int key)
+{
+    if (!_coordinador) return; // COORDINADOR NO ASIGNADO
+    if (_coordinador->configuracion.modo != ModoJuego::JVJ) return; // SOLO EN JVJ
+
+    // SUELTA FLECHAS P2
+    if (key == GLUT_KEY_UP)    _coordinador->_input.p2.delante = false;
+    if (key == GLUT_KEY_DOWN)  _coordinador->_input.p2.atras = false;
+    if (key == GLUT_KEY_LEFT)  _coordinador->_input.p2.izquierda = false;
+    if (key == GLUT_KEY_RIGHT) _coordinador->_input.p2.derecha = false;
 }

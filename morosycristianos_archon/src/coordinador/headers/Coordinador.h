@@ -15,6 +15,8 @@
 
 class Coordinador
 {
+	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
+	
 	EstadoJuego     estado{ EstadoJuego::INTRO }; // ESTADO INICIAL
 
 	int             anchoVentana{ 800 };
