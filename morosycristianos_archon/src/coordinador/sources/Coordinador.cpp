@@ -54,6 +54,7 @@ void Coordinador::dibuja()
 					pTablero = new Tablero();
 					pTablerogl = new Tablerogl(pTablero);
 					pTablerogl->init();
+					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
@@ -128,21 +129,22 @@ void Coordinador::tecla(unsigned char key)
 {
 	switch (estado) {
 	case EstadoJuego::INTRO:
-		pantallaIntro.saltar();
+		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR INTRO
 		break;
 	case EstadoJuego::MENU:
-		menuPrincipal.teclaPulsada(key);
+		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR MENU
 		break;
 	case EstadoJuego::DESTINO:
-		pantallaDestino.avanzar();
+		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR DESTINO
 		break;
 	case EstadoJuego::TABLERO:
-		if (key == 27) { 
-			ETSIDI::stopMusica(); 
-			menuPrincipal.reiniciar(); 
-			estado = EstadoJuego::MENU; break; 
+		if (key == 27) {
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
+			break;
 		}
-		if (pTablerogl) pTablerogl->KeyDown(key);
+		gestorInput.teclaTablero(key, estado); // GESTOR TECLAS TABLERO
 		break;
 	case EstadoJuego::ARENA:
 
@@ -167,8 +169,12 @@ void Coordinador::tecla(unsigned char key)
 		break;
 
 	default:
-		if (key == 27) { ETSIDI::stopMusica(); menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
-		break;
+		if (key == 27) {
+			ETSIDI::stopMusica();
+			menuPrincipal.reiniciar();
+			reiniciarTablero(); // REINICIA TABLERO AL VOLVER AL MENU
+		}
+			estado = EstadoJuego::MENU; break;
 	}
 	glutPostRedisplay();
 }
@@ -188,10 +194,10 @@ void Coordinador::tecla_especial(int key)
 {
 	switch (estado) {
 	case EstadoJuego::MENU:
-		menuPrincipal.teclaEspecial(key);
+		gestorInput.teclaEspecialMenu(key, estado, menuPrincipal); // GESTOR FLECHAS MENU
 		break;
 	case EstadoJuego::TABLERO:
-		if (pTablerogl) pTablerogl->SpecialKey(key);
+		gestorInput.teclaEspecialTablero(key); // GESTOR FLECHAS TABLERO
 		break;
 	case EstadoJuego::ARENA:
 		if (configuracion.modo == ModoJuego::JVJ) {
@@ -242,29 +248,24 @@ void Coordinador::raton(int boton, int state, int x, int y)
 
 	switch (estado) {
 	case EstadoJuego::INTRO:
-		pantallaIntro.saltar();
-		break;
 	case EstadoJuego::DESTINO:
-		pantallaDestino.avanzar();
-		break;
 	case EstadoJuego::MENU:
-		if (boton == GLUT_LEFT_BUTTON)
-			menuPrincipal.ratonPulsado(x, y, anchoVentana, altoVentana);
+		gestorInput.ratonMenu(boton, state, x, y, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR RATON
 		break;
 	case EstadoJuego::TABLERO:
-		if (pTablerogl) {
-			int button;
-			if (boton == GLUT_LEFT_BUTTON)       button = MOUSE_LEFT_BUTTON;
-			else if (boton == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
-			else                                 button = MOUSE_MIDDLE_BUTTON;
+	{
+		int button;
+		if (boton == GLUT_LEFT_BUTTON)       button = MOUSE_LEFT_BUTTON;
+		else if (boton == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
+		else                                 button = MOUSE_MIDDLE_BUTTON;
 
-			int specialKey = glutGetModifiers();
-			bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
-			bool shiftKey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
+		int specialKey = glutGetModifiers();
+		bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
+		bool shiftKey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
 
-			pTablerogl->MouseButton(x, y, button, true, shiftKey, ctrlKey);
-		}
-		break;
+		gestorInput.ratonTablero(x, y, button, (state == GLUT_DOWN), shiftKey, ctrlKey); // GESTOR RATON TABLERO
+	}
+	break;
 	default: break;
 	}
 	glutPostRedisplay();
@@ -272,8 +273,8 @@ void Coordinador::raton(int boton, int state, int x, int y)
 
 void Coordinador::ratonMovido(int x, int y)
 {
-	if (estado == EstadoJuego::MENU)
-		menuPrincipal.ratonMovido(x, y, anchoVentana, altoVentana);
+	gestorInput.setVentana(anchoVentana, altoVentana); // ACTUALIZA TAMAÑO
+	gestorInput.ratonMovidoMenu(x, y, estado, menuPrincipal); // GESTOR HOVER
 	glutPostRedisplay();
 }
 
@@ -282,4 +283,13 @@ void Coordinador::redimensionar(int ancho, int alto)
 	anchoVentana = ancho;
 	altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
 	glViewport(0, 0, anchoVentana, altoVentana);
+}
+
+void Coordinador::reiniciarTablero()
+{
+	delete pTablerogl; // DESTRUYE TABLEROGL
+	delete pTablero;   // DESTRUYE TABLERO
+	pTablero = nullptr;   // RESETEA PUNTERO
+	pTablerogl = nullptr; // RESETEA PUNTERO
+	menuPrincipal.reiniciar(); // RESETEA EL MENU TAMBIEN
 }
