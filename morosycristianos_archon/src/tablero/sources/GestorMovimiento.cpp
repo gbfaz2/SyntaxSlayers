@@ -106,14 +106,14 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
                 std::cout << "[GestorMovimiento] Enemigo en el camino en ("
                     << fila << "," << col << ") — COMBATE!" << std::endl;
               
-                //mueve pieza a la casilla escaneada
-                tablero.muevePieza(fromFila, fromCol, fila, col);
-
-                //pone la posicion de la pieza actual a su casilla actual
-                pieza->setPosicion(fila, col);
-
+                // NO MOVEMOS TODAVIA, igual que en comprobarDestino
                 _ultimoAtacante = pieza;
-                _ultimaDefensora = tablero.getCasilla(fila, col).obj; // ya está en destino
+                _ultimaDefensora = tablero.getCasilla(fila, col).obj;
+                _filaAtacante = fromFila;
+                _colAtacante = fromCol;
+                _filaDefensora = fila;
+                _colDefensora = col;
+
 
                 //retorna combate, como resultado del movimiento
                 return ResultadoMovimiento::COMBATE;
