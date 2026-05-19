@@ -114,7 +114,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     if (!_tablerogl) return;                           // TABLEROGL NO ASIGNADO
     if (_tablerogl->victoria_ != bando_nada) return;  // PARTIDA TERMINADA
 
-    if (key == 27) { // ESC: DESELECCIONA PIEZA (EL COORDINADOR GESTIONA EL MENU)
+    if (key == 'z' || key == 'Z') { // Z: CANCELA SELECCION P1
         if (_tablerogl->piezaSeleccionada) {
             _tablerogl->piezaSeleccionada = false;
             _tablerogl->fromFila = _tablerogl->fromCol = -1;
@@ -135,7 +135,47 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     }
 
     if (_tablerogl->gestorTurnos.getBandoActual() == bando_rival) {
-        if (key == ' ') _tablerogl->trySelectorMove(bando_rival); // ESPACIO: SELECCIONA O MUEVE RIVAL
+        if (key == '.') _tablerogl->trySelectorMove(bando_rival); // PUNTO: SELECCIONA O MUEVE
+        if (key == ',') { // COMA: CANCELA SELECCION
+            _tablerogl->piezaSeleccionada = false;
+            _tablerogl->fromFila = _tablerogl->fromCol = -1;
+        }
+    }
+
+    if (key == 'h' || key == 'H') { // H: ACTIVA HECHIZO AVITUALLAMIENTO P1
+        _tablerogl->_modoHechizo = true;
+        _tablerogl->_conjuroActivo = Conjuro::AVITUALLAMIENTO;
+        _tablerogl->_bandoHechizo = bando_local;
+    }
+
+    if (key == ' ') {
+        if (_tablerogl->_modoHechizo) { // MODO HECHIZO: APLICA EN CASILLA ACTUAL
+            int fila = _tablerogl->Filacursor[0];
+            int col = _tablerogl->Colcursor[0];
+            _coordinador->pGestorHechizos->avituallamiento(bando_local, fila, col);
+            _tablerogl->_modoHechizo = false; // DESACTIVA MODO HECHIZO
+        }
+        else {
+            _tablerogl->trySelectorMove(bando_local); // MOVIMIENTO NORMAL
+        }
+    }
+
+    if (key == 'j' || key == 'J') { // J: ACTIVA HECHIZO AVITUALLAMIENTO P2
+        _tablerogl->_modoHechizo = true;
+        _tablerogl->_conjuroActivo = Conjuro::AVITUALLAMIENTO;
+        _tablerogl->_bandoHechizo = bando_rival;
+    }
+
+    if (key == '.') {
+        if (_tablerogl->_modoHechizo) { // MODO HECHIZO: APLICA EN CASILLA ACTUAL
+            int fila = _tablerogl->Filacursor[1];
+            int col = _tablerogl->Colcursor[1];
+            _coordinador->pGestorHechizos->avituallamiento(bando_rival, fila, col);
+            _tablerogl->_modoHechizo = false; // DESACTIVA MODO HECHIZO
+        }
+        else {
+            _tablerogl->trySelectorMove(bando_rival); // MOVIMIENTO NORMAL
+        }
     }
 }
 
@@ -246,9 +286,18 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ENTER VUELVE AL TABLERO SI EL COMBATE HA TERMINADO
     if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
+        // APLICA RESULTADO DEL COMBATE AL TABLERO
+        bool ganaAtacante = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
+        if (_coordinador->pTablerogl && _coordinador->pTablerogl->_pAtacante && _coordinador->pTablerogl->_pDefensora) {
+            // RECUPERA POSICION DE LA ATACANTE ANTES DEL COMBATE
+            int fr = _coordinador->pTablerogl->_pAtacante->getFila();
+            int fc = _coordinador->pTablerogl->_pAtacante->getColumna();
+            int tr = _coordinador->pTablerogl->_pDefensora->getFila();
+            int tc = _coordinador->pTablerogl->_pDefensora->getColumna();
+            _coordinador->pTablero->muevePieza(fr, fc, tr, tc); // APLICA RESULTADO
+        }
         ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
         _coordinador->estado = EstadoJuego::TABLERO;
-        return;
     }
 }
 

@@ -91,7 +91,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	// PELICULA SEMITRANSPARENTE PARA ATENUAR EL TABLERO
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(0.0f, 0.0f, 0.0f, 0.35f); // MUY SUAVE // NEGRO AL 25% DE OPACIDAD, AJUSTAR A GUSTO
+	glColor4f(0.0f, 0.0f, 0.0f, 0.35f); // NEGRO AL 35% DE OPACIDAD, AJUSTAR A GUSTO
 	//float mitad = N * ancho / 2.0f;
 	glBegin(GL_QUADS);
 	glVertex3f(0.0f, 0.0f, 0.003f);

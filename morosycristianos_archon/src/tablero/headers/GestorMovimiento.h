@@ -29,6 +29,12 @@ public:
     Pieza* getUltimoAtacante()  const { return _ultimoAtacante; }
     Pieza* getUltimaDefensora() const { return _ultimaDefensora; }
 
+    int getFilaAtacante()  const { return _filaAtacante; }
+    int getColAtacante()   const { return _colAtacante; }
+    int getFilaDefensora() const { return _filaDefensora; }
+    int getColDefensora()  const { return _colDefensora; }
+
+
 private:
 
     //métodos privados internos:
@@ -51,4 +57,8 @@ private:
 
     Pieza* _ultimoAtacante{ nullptr };
     Pieza* _ultimaDefensora{ nullptr };
+    int _filaAtacante{ -1 };  // FILA DE LA ATACANTE ANTES DEL COMBATE
+    int _colAtacante{ -1 };   // COLUMNA DE LA ATACANTE ANTES DEL COMBATE
+    int _filaDefensora{ -1 }; // FILA DE LA DEFENSORA
+    int _colDefensora{ -1 };  // COLUMNA DE LA DEFENSORA
 };
