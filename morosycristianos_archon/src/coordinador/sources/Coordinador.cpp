@@ -97,6 +97,10 @@ void Coordinador::dibuja()
 			// TODO: CUANDO MARIA IMPLEMENTE huboColision()
 			if (pTablerogl->huboColision()) 
 			{
+				// Guardamos las piezas ANTES de limpiar
+				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
+				_pDefensoraCombate = pTablerogl->getPiezaDefensora();
+
 				_arena.iniciarCombate(*pTablerogl->getPiezaAtacante(),
 					*pTablerogl->getPiezaDefensora(),
 					configuracion.modo); // INICIA COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU Y EL MODO DE JUEGO (JVJ O JVIA)

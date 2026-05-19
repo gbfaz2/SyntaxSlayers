@@ -95,5 +95,3 @@ public:
 
 	Pieza* buscarPieza(TipoPieza tipo, BandoPieza bando) const;
 };
-
-
