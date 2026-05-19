@@ -11,6 +11,7 @@
 #include "GestorTurnos.h"
 #include "GestorVictoria.h"
 #include "GestorHechizos.h"
+#include "GestorInput.h"
 
 class Coordinador
 {
@@ -23,6 +24,7 @@ class Coordinador
 	MenuPrincipal   menuPrincipal;
 	PantallaDestino pantallaDestino;
 	ConfigPartida   configuracion;
+	GestorInput gestorInput; // GESTOR UNICO DE INPUT
 	
 	Tablero* pTablero{ nullptr };
 	Tablerogl* pTablerogl{ nullptr };
@@ -42,11 +44,12 @@ public:
 	void inicializa();
 	void dibuja();
 	void tecla(unsigned char key);
-	void tecla_up(unsigned char key);         // TECLA SOLTADA
+	void tecla_up(unsigned char key); // TECLA SOLTADA
 	void tecla_especial(int key);
-	void tecla_especial_up(int key);          // FLECHA SOLTADA
+	void tecla_especial_up(int key); // FLECHA SOLTADA
 	void mueve(double dt);
 	void raton(int button, int state, int x, int y);
 	void ratonMovido(int x, int y);
 	void redimensionar(int ancho, int alto);
+	void reiniciarTablero(); // REINICIA EL TABLERO AL ESTADO INICIAL
 };

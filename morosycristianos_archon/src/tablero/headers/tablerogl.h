@@ -39,6 +39,7 @@ protected:
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
 
 private:
+	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
 	GestorMovimiento gestorMovimiento;
 	GestorTurnos     gestorTurnos;
 
@@ -71,9 +72,6 @@ public:
 
 	void trySelectorMove(BandoPieza bando);
 
-	void KeyDown(unsigned char key);
-	void SpecialKey(int key);
-	void MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
 
 	//conversores de coordenadas cogidas del repositorio de Pablo
 	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);

@@ -49,16 +49,14 @@ public:
     MenuPrincipal();
 
     void dibujar(int ancho, int alto);
-    void teclaPulsada(unsigned char tecla);
-    void teclaEspecial(int tecla);
-    void ratonMovido(int x, int y, int ancho, int alto);
-    void ratonPulsado(int x, int y, int ancho, int alto);
 
     bool          terminado()    const { return m_terminado; }
     EstadoJuego   siguienteEstado() const { return m_siguiente; }
     ConfigPartida getConfiguracion() const { return m_cfg; }
 
     void reiniciar();
+
+    friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
 
 private:
     int           m_paso;       // 0=modo, 1=bando, 2=batalla, 3=confirmar
