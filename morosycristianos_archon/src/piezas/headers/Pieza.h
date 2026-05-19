@@ -73,4 +73,6 @@ public:
 
     // Para la demo: muestra las stats por consola
     virtual void mostrarStats() const;  //esto es solo para la demo aunque quedaría bien, mostrar las stats por pantalla
+
+    void setVida(int v) { vida = (v < vidaMax) ? v : vidaMax; }
 };

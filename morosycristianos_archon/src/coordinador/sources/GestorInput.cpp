@@ -322,6 +322,12 @@ void GestorInput::teclaArena(unsigned char key)
             }
         }
 
+        // Guardamos la vida restante de la ganadora
+        if (ganaP1 && _coordinador->_pAtacanteCombate)
+            _coordinador->_pAtacanteCombate->setVida((int)_coordinador->_arena.p1().vida());
+        else if (!ganaP1 && _coordinador->_pDefensoraCombate)
+            _coordinador->_pDefensoraCombate->setVida((int)_coordinador->_arena.p2().vida());
+
         _coordinador->_pAtacanteCombate = nullptr;
         _coordinador->_pDefensoraCombate = nullptr;
 
