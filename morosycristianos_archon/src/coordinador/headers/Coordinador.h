@@ -39,6 +39,9 @@ class Coordinador
 	GestorVictoria   gestorVictoria;
 	GestorHechizos* pGestorHechizos{ nullptr };
 
+	Pieza* _pAtacanteCombate{ nullptr };  // pieza atacante del combate actual
+	Pieza* _pDefensoraCombate{ nullptr }; // pieza defensora del combate actual
+
 public:
 	Coordinador() = default;
 	~Coordinador();

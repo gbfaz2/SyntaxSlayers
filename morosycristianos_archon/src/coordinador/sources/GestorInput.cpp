@@ -286,16 +286,26 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ENTER VUELVE AL TABLERO SI EL COMBATE HA TERMINADO
     if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
-        // APLICA RESULTADO DEL COMBATE AL TABLERO
-        bool ganaAtacante = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
-        if (_coordinador->pTablerogl && _coordinador->pTablerogl->_pAtacante && _coordinador->pTablerogl->_pDefensora) {
-            // RECUPERA POSICION DE LA ATACANTE ANTES DEL COMBATE
-            int fr = _coordinador->pTablerogl->_pAtacante->getFila();
-            int fc = _coordinador->pTablerogl->_pAtacante->getColumna();
-            int tr = _coordinador->pTablerogl->_pDefensora->getFila();
-            int tc = _coordinador->pTablerogl->_pDefensora->getColumna();
-            _coordinador->pTablero->muevePieza(fr, fc, tr, tc); // APLICA RESULTADO
+        bool ganaP1 = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
+
+        Pieza* perdedora = ganaP1 ? _coordinador->_pDefensoraCombate
+            : _coordinador->_pAtacanteCombate;
+
+        if (perdedora && _coordinador->pTablero) {
+            int fila = perdedora->getFila();
+            int col = perdedora->getColumna();
+            Casilla& c = _coordinador->pTablero->getCasilla(fila, col);
+            if (c.obj == perdedora) {
+                delete c.obj;
+                c.obj = nullptr;
+                c.pieza = pieza_nada;
+                c.bando = bando_nada;
+            }
         }
+
+        _coordinador->_pAtacanteCombate = nullptr;
+        _coordinador->_pDefensoraCombate = nullptr;
+
         ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
         _coordinador->estado = EstadoJuego::TABLERO;
     }
