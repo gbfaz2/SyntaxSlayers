@@ -6,7 +6,7 @@
 Combatiente::Combatiente(float x, float y, float z, float r, float g, float b)
 	: _x{ x }, _y{ y }, _z{ z }, _r{ r }, _g{ g }, _b{ b }
 {
-
+	_inicioX = x; // GUARDA EL LADO EN EL QUE EMPEZO
 }
 
 void Combatiente::posicion(float x, float y, float z)
@@ -35,10 +35,9 @@ void Combatiente::pedirMovimiento(Direccion d)
 
 void Combatiente::actualizar(float dt) 
 {
-	// Aplico el movimiento pedido por el jugador
-	if (_dxPedido != 0.0f || _dzPedido != 0.0f) 
+	if (_dxPedido != 0.0f || _dzPedido != 0.0f)
 	{
-		// Normalizamos el movimiento para que no sea mas rapido en diagonal
+		// NORMALIZA EL MOVIMIENTO PARA QUE NO SEA MAS RAPIDO EN DIAGONAL
 		float longitud = std::sqrt(_dxPedido * _dxPedido + _dzPedido * _dzPedido);
 		float nx = _dxPedido / longitud;
 		float nz = _dzPedido / longitud;
@@ -79,11 +78,12 @@ Combatiente::Combatiente(float x, float z, float r, float g, float b, const Piez
 {
 	// Usamos los stats reales de la pieza del tablero
 	// La vida de Pieza es int (0-100), la convertimos a float
-	_vida = static_cast<float>(pieza.getVida());  // no existe aun, lo añadimos luego
+	_vida = static_cast<float>(pieza.getVida()) * 1.0f;
 	_vidaMax = static_cast<float>(pieza.getVidaMax()); // tampoco existe aun
 
 	// La fuerza de Pieza se convierte en daño del combatiente
-	_danoAtaque = static_cast<float>(pieza.getFuerza());
+	//_danoAtaque = static_cast<float>(pieza.getFuerza());
+	_danoAtaque = static_cast<float>(pieza.getFuerza()) * 0.15f;
 
 	// Combinamos recarga y velAtaque para el cooldown real recarga alta = tarda en recargar, velAtaque alta = ataca mas rapido
 	float recargaNorm = pieza.getRecarga() / 100.0f;
