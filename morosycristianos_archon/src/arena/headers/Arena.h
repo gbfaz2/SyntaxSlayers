@@ -50,5 +50,6 @@ public:
 	float ancho() const { return _ancho; }
 	float profundo() const { return _profundo; }
 	ResultadoCombate resultado() const { return _resultado; }
+	void resolverColision(); // EVITA QUE LOS COMBATIENTES SE SOLAPEN
 	
 };

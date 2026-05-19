@@ -24,23 +24,22 @@ class IAArena
     float _tiempoPatrulla{ 0.0f };      // ACUMULA TIEMPO EN PATRULLA
     float _duracionPatrulla{ 0.5f };    // SEGUNDOS ANTES DE CAMBIAR DIRECCION
     bool _patrullaArriba{ true };       // DIRECCION ACTUAL DE PATRULLA
+    float _tiempoEntreAtaques{ 0.0f };   // ACUMULA TIEMPO ENTRE ATAQUES
+    float _cooldownIA{ 1.2f };           // SEGUNDOS ENTRE CADA ATAQUE DE LA IA
+
+    float calcularDistancia(const Combatiente& a, const Combatiente& b) const;
+    void  actualizarEstado(const Combatiente& enemigo, const Combatiente& jugador, float distancia);
+    void  accionPatrullar(EstadoJugador& inputIA, float dt);
+    void  accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA);
+    void  accionAtacar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt);
+    void  accionHuir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA);
 
 public:
     IAArena() = default;
 
+	void configurar(float alcanceAtaque); // SIRVE PARA CONFIGURAR LOS UMBRALES DE LA FSM SEGUN EL ALCANCE DE ATAQUE DEL ENEMIGO, PARA QUE SE ADAPTE A CUALQUIER PIEZA
+
     // RELLENA EL EstadoJugador DE _p2 SEGUN LA LOGICA DE LA FSM
     void actualizar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt);
-
-private:
-    // CALCULA DISTANCIA ENTRE LOS DOS COMBATIENTES
-    float calcularDistancia(const Combatiente& a, const Combatiente& b) const;
-
-    // TRANSICIONES ENTRE ESTADOS
-    void actualizarEstado(const Combatiente& enemigo, const Combatiente& jugador, float distancia);
-
-    // ACCIONES DE CADA ESTADO
-    void accionPatrullar(EstadoJugador& inputIA, float dt);
-    void accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA);
-    void accionAtacar(EstadoJugador& inputIA);
-    void accionHuir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA);
+    
 };
