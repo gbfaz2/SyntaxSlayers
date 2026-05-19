@@ -288,14 +288,33 @@ void GestorInput::teclaArena(unsigned char key)
     if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
         bool ganaP1 = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
 
-        Pieza* perdedora = ganaP1 ? _coordinador->_pDefensoraCombate
-            : _coordinador->_pAtacanteCombate;
+        /*Pieza* perdedora = ganaP1 ? _coordinador->_pDefensoraCombate
+            : _coordinador->_pAtacanteCombate;*/
 
-        if (perdedora && _coordinador->pTablero) {
-            int fila = perdedora->getFila();
-            int col = perdedora->getColumna();
-            Casilla& c = _coordinador->pTablero->getCasilla(fila, col);
-            if (c.obj == perdedora) {
+        if (ganaP1) {
+            Pieza* atacante = _coordinador->_pAtacanteCombate;
+            Pieza* defensora = _coordinador->_pDefensoraCombate;
+            if (atacante && defensora && _coordinador->pTablero) {
+                int filaAtacante = atacante->getFila();
+                int colAtacante = atacante->getColumna();
+                int filaDefensora = defensora->getFila();
+                int colDefensora = defensora->getColumna();
+
+                Casilla& cDef = _coordinador->pTablero->getCasilla(filaDefensora, colDefensora);
+                delete cDef.obj;
+                cDef.obj = nullptr;
+                cDef.pieza = pieza_nada;
+                cDef.bando = bando_nada;
+
+                _coordinador->pTablero->muevePieza(filaAtacante, colAtacante, filaDefensora, colDefensora);
+            }
+        }
+        else {
+            Pieza* atacante = _coordinador->_pAtacanteCombate;
+            if (atacante && _coordinador->pTablero) {
+                int fila = atacante->getFila();
+                int col = atacante->getColumna();
+                Casilla& c = _coordinador->pTablero->getCasilla(fila, col);
                 delete c.obj;
                 c.obj = nullptr;
                 c.pieza = pieza_nada;
