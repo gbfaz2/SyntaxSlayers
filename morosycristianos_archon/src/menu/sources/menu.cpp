@@ -317,60 +317,6 @@ void MenuPrincipal::dibujarOpcion(const std::string& texto,
             0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
 }
 
-// Input: teclado
-void MenuPrincipal::teclaPulsada(unsigned char tecla) {
-    if (tecla == 27) {  // TECLA ESC
-        if (m_paso > 0) { m_paso--; m_seleccion = 0; }
-        else { m_siguiente = EstadoJuego::INTRO; m_terminado = true; }
-        return;
-    }
-    if (tecla == 13 || tecla == ' ') { confirmar(); return; }
-}
-
-void MenuPrincipal::teclaEspecial(int tecla) {
-    if (tecla == GLUT_KEY_UP)
-        m_seleccion = (m_seleccion - 1 + maxOpciones()) % maxOpciones();
-    if (tecla == GLUT_KEY_DOWN)
-        m_seleccion = (m_seleccion + 1) % maxOpciones();
-    if (tecla == GLUT_KEY_LEFT && m_paso == 1) m_seleccion = 0;
-    if (tecla == GLUT_KEY_RIGHT && m_paso == 1) m_seleccion = 1;
-}
-
-// Input: raton 
-void MenuPrincipal::ratonMovido(int mx, int my, int ancho, int alto) {
-    int gy = alto - my;  // GLUT da y desde arriba, OpenGL desde abajo
-    auto enCaja = [&](float x, float y, float aw, float ah) {
-        return mx >= x && mx <= x + aw && gy >= y && gy <= y + ah;
-        };
-    if (m_paso == 0) {
-        float aw = 280, ah = 44, sep = 14;
-        float sx = ancho / 2.0f - aw / 2.0f, sy = alto / 2.0f + 60;
-        for (int i = 0; i < 4; i++)
-            if (enCaja(sx, sy - i * (ah + sep), aw, ah)) m_seleccion = i;
-    }
-    else if (m_paso == 1) {
-        float aw = 240, ah = 55, sep = 30, sy = alto / 2.0f + 10;
-        if (enCaja(ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) m_seleccion = 0;
-        if (enCaja(ancho / 2.0f + sep / 2.0f, sy, aw, ah)) m_seleccion = 1;
-    }
-    else if (m_paso == 2) {
-        float aw = 340, ah = 48, sep = 12;
-        float sx = ancho / 2.0f - aw / 2.0f, sy = alto / 2.0f + 80;
-        for (int i = 0; i < 4; i++)
-            if (enCaja(sx, sy - i * (ah + sep), aw, ah)) m_seleccion = i;
-    }
-    else if (m_paso == 3) {
-        float aw = 180, ah = 44, sep = 30, cy = alto / 2.0f - 20;
-        if (enCaja(ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) m_seleccion = 0;
-        if (enCaja(ancho / 2.0f + sep / 2.0f, cy, aw, ah)) m_seleccion = 1;
-    }
-}
-
-void MenuPrincipal::ratonPulsado(int mx, int my, int ancho, int alto) {
-    ratonMovido(mx, my, ancho, alto);
-    confirmar();
-}
-
 // Confirmar seleccion y avanzar al siguiente paso o estado
 void MenuPrincipal::confirmar() {
     if (m_paso == 0) {
