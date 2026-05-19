@@ -114,7 +114,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     if (!_tablerogl) return;                           // TABLEROGL NO ASIGNADO
     if (_tablerogl->victoria_ != bando_nada) return;  // PARTIDA TERMINADA
 
-    if (key == 27) { // ESC: DESELECCIONA PIEZA (EL COORDINADOR GESTIONA EL MENU)
+    if (key == 'z' || key == 'Z') { // Z: CANCELA SELECCION P1
         if (_tablerogl->piezaSeleccionada) {
             _tablerogl->piezaSeleccionada = false;
             _tablerogl->fromFila = _tablerogl->fromCol = -1;
@@ -135,7 +135,11 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     }
 
     if (_tablerogl->gestorTurnos.getBandoActual() == bando_rival) {
-        if (key == ' ') _tablerogl->trySelectorMove(bando_rival); // ESPACIO: SELECCIONA O MUEVE RIVAL
+        if (key == '.') _tablerogl->trySelectorMove(bando_rival); // PUNTO: SELECCIONA O MUEVE
+        if (key == ',') { // COMA: CANCELA SELECCION
+            _tablerogl->piezaSeleccionada = false;
+            _tablerogl->fromFila = _tablerogl->fromCol = -1;
+        }
     }
 }
 
