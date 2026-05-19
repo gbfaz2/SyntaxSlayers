@@ -17,6 +17,7 @@ void Coordinador::inicializa()
 	menuPrincipal.reiniciar();
 	ArenaRenderer::configurarVista(anchoVentana, altoVentana); // CONFIGURA CAMARA ARENA
 	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
+	gestorInput.setCoordinador(this); // ASIGNA COORDINADOR AL GESTOR
 }
 
 void Coordinador::dibuja()
@@ -147,25 +148,7 @@ void Coordinador::tecla(unsigned char key)
 		gestorInput.teclaTablero(key, estado); // GESTOR TECLAS TABLERO
 		break;
 	case EstadoJuego::ARENA:
-
-		// CONTROLES P1: WASD + F
-		if (key == 'w' || key == 'W') _input.p1.delante = true;
-		if (key == 's' || key == 'S') _input.p1.atras = true;
-		if (key == 'a' || key == 'A') _input.p1.izquierda = true;
-		if (key == 'd' || key == 'D') _input.p1.derecha = true;
-		if (key == 'f' || key == 'F') _input.p1.atacar = true;
-
-		// CONTROLES P2 (solo en JvJ): flechas + L
-		if (configuracion.modo == ModoJuego::JVJ) {
-			// Las flechas van por tecla_especial, aquí solo el ataque
-			if (key == 'l' || key == 'L') _input.p2.atacar = true;
-		}
-
-		// ENTER o ESC VUELVE AL TABLERO DESDE LA ARENA CUANDO EL COMBATE HAYA TERMINADO (GANE P1, GANE P2 O EMPATE)
-		if ((key == 13 || key == 27) && _arena.resultado() != ResultadoCombate::EnCurso) {
-			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
-			estado = EstadoJuego::TABLERO;
-		}
+		gestorInput.teclaArena(key); // GESTOR TECLAS ARENA
 		break;
 
 	default:
@@ -181,13 +164,8 @@ void Coordinador::tecla(unsigned char key)
 
 void Coordinador::tecla_up(unsigned char key)
 {
-	if (estado == EstadoJuego::ARENA) {
-		// SUELTA TECLAS P1
-		if (key == 'w' || key == 'W') _input.p1.delante = false;
-		if (key == 's' || key == 'S') _input.p1.atras = false;
-		if (key == 'a' || key == 'A') _input.p1.izquierda = false;
-		if (key == 'd' || key == 'D') _input.p1.derecha = false;
-	}
+	if (estado == EstadoJuego::ARENA)
+		gestorInput.teclaUpArena(key); // GESTOR TECLAS UP ARENA
 }
 
 void Coordinador::tecla_especial(int key)
@@ -200,12 +178,7 @@ void Coordinador::tecla_especial(int key)
 		gestorInput.teclaEspecialTablero(key); // GESTOR FLECHAS TABLERO
 		break;
 	case EstadoJuego::ARENA:
-		if (configuracion.modo == ModoJuego::JVJ) {
-			if (key == GLUT_KEY_UP)    _input.p2.delante = true;
-			if (key == GLUT_KEY_DOWN)  _input.p2.atras = true;
-			if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = true;
-			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = true;
-		}
+		gestorInput.teclaEspecialArena(key); // GESTOR FLECHAS ARENA
 		break;
 	default: break;
 	}
@@ -214,12 +187,8 @@ void Coordinador::tecla_especial(int key)
 
 void Coordinador::tecla_especial_up(int key)
 {
-	if (estado == EstadoJuego::ARENA && configuracion.modo == ModoJuego::JVJ) {
-		if (key == GLUT_KEY_UP)    _input.p2.delante = false;
-		if (key == GLUT_KEY_DOWN)  _input.p2.atras = false;
-		if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = false;
-		if (key == GLUT_KEY_RIGHT) _input.p2.derecha = false;
-	}
+	if (estado == EstadoJuego::ARENA)
+		gestorInput.teclaEspecialUpArena(key); // GESTOR FLECHAS UP ARENA
 }
 
 void Coordinador::mueve(double dt)
