@@ -87,6 +87,20 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	glClear(GL_DEPTH_BUFFER_BIT);
 	DibujaCasillas();
 	DibujaSimbolos();
+
+	// PELICULA SEMITRANSPARENTE PARA ATENUAR EL TABLERO
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.35f); // MUY SUAVE // NEGRO AL 25% DE OPACIDAD, AJUSTAR A GUSTO
+	//float mitad = N * ancho / 2.0f;
+	glBegin(GL_QUADS);
+	glVertex3f(0.0f, 0.0f, 0.003f);
+	glVertex3f(N * ancho, 0.0f, 0.003f);
+	glVertex3f(N * ancho, -N * ancho, 0.003f);
+	glVertex3f(0.0f, -N * ancho, 0.003f);
+	glEnd();
+	glDisable(GL_BLEND);
+
 	DibujaCursores();//los cursores del teclado
 	DibujaSeleccion();//la pieza seleccionada
 	DibujaMovimientosValidos();
@@ -176,13 +190,13 @@ void Tablerogl::setCasillaColor(int fila, int col)
 {
 	switch (m_tablero->getCasilla(fila, col).tipo) {
 	case Casilla_local:
-		glColor3f(0.50f, 0.04f, 0.04f);// rojo oscuro 
+		glColor3f(0.75f, 0.15f, 0.15f); // ROJO MAS CLARO 
 		return;
 	case Casilla_rival:
-		glColor3f(0.55f, 0.10f, 0.65f);// morado
+		glColor3f(0.70f, 0.30f, 0.85f); // MORADO MAS CLARO
 		return;
 	case Casilla_dinamica:
-		glColor3f(0.35f, 0.35f, 0.35f); // gris
+		glColor3f(0.50f, 0.50f, 0.50f); // GRIS MAS CLARO
 		return;
 	case Casilla_poder:
 		// El power point usa el color de la zona en que está
