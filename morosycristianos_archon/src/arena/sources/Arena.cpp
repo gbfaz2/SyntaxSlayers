@@ -82,12 +82,10 @@ void Arena::resolverAtaque(Combatiente& atacante, Combatiente& objetivo)
 
 	if (distancia <= atacante.alcanceAtaque() + objetivo.lado() * 0.5f)
 	{
-		// SI EL ATACANTE EMPEZO A LA IZQUIERDA (x<0), SOLO PUEDE GOLPEAR A ALGUIEN QUE ESTE A SU DERECHA (dx>0)
-		// SI EL ATACANTE EMPEZO A LA DERECHA (x>0), SOLO PUEDE GOLPEAR A ALGUIEN QUE ESTE A SU IZQUIERDA (dx<0)
-		bool atacanteEmpezóIzquierda = (atacante.inicioX() < 0);
-		bool objetivoEstaALaDerecha = (dx > 0);
-
-		if (atacanteEmpezóIzquierda == objetivoEstaALaDerecha)
+		// P1 GOLPEA SOLO SI SIGUE A LA IZQUIERDA DE P2
+		// P2 GOLPEA SOLO SI SIGUE A LA DERECHA DE P1
+		bool golpea = (_p1.x() < _p2.x()); // CONDICION UNICA PARA AMBOS
+		if (golpea)
 			objetivo.recibirDano(atacante.danoAtaque());
 	}
 }
