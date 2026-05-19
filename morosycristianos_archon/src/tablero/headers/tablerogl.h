@@ -6,6 +6,7 @@
 #include "tablero.h"
 #include "GestorMovimiento.h"
 #include "GestorTurnos.h"
+#include "Hechicero.h"
 
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -32,11 +33,14 @@ protected:
 	bool controlKey, shiftKey;
 	bool leftButton, rightButton, midButton;
 
-	
 
 	bool _combatePendiente{ false };
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
+
+	bool _modoHechizo{ false };           // HECHIZO PENDIENTE DE SELECCIONAR CASILLA
+	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO
+	BandoPieza _bandoHechizo{ bando_nada }; // BANDO QUE ACTIVO EL HECHIZO
 
 private:
 	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT

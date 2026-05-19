@@ -169,15 +169,17 @@ ResultadoMovimiento GestorMovimiento::comprobarDestino(
     }
 
     // Enemigo en el destino, combate
+    // Enemigo en el destino, combate
     std::cout << "[GestorMovimiento] Enemigo en destino ("
         << toFila << "," << toCol << ") — COMBATE!" << std::endl;
 
-    Pieza* capturada = tablero.muevePieza(fromFila, fromCol, toFila, toCol);
-    pieza->setPosicion(toFila, toCol);
+    // NO MOVEMOS TODAVIA, SOLO GUARDAMOS LAS PIEZAS
     _ultimoAtacante = pieza;
-    _ultimaDefensora = capturada;
+    _ultimaDefensora = tablero.getCasilla(toFila, toCol).obj;
+    _filaAtacante = fromFila;  // GUARDAMOS POSICIONES PARA LUEGO
+    _colAtacante = fromCol;
+    _filaDefensora = toFila;
+    _colDefensora = toCol;
 
-   // tablero.muevePieza(fromFila, fromCol, toFila, toCol);
-   // pieza->setPosicion(toFila, toCol);
     return ResultadoMovimiento::COMBATE;
 }
