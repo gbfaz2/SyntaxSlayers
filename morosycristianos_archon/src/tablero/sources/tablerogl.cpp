@@ -89,6 +89,7 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	DibujaSimbolos();
 	DibujaCursores();//los cursores del teclado
 	DibujaSeleccion();//la pieza seleccionada
+	DibujaMovimientosValidos();
 
 	glEnable(GL_LIGHTING);
 	DibujaPiezas();

@@ -227,7 +227,7 @@ void ArenaRenderer::dibujarHUD(const Arena& arena)
 	float xP2 = _anchoVentana - margen - anchoBarra;
 	dibujarBarraVida(xP2, margen, anchoBarra, altoBarra,
 		fracP2, 0.39f, 0.60f, 0.13f);
-	std::string etiquetaP2 = arena.p2().nombre() + " - IA";
+	std::string etiquetaP2 = arena.p2().nombre() + (arena.iaActiva() ? "- IA" : "- Flechas + L ");
 	dibujarTexto(xP2, margen + altoBarra + 16,
 		etiquetaP2.c_str(), 1.0f, 1.0f, 1.0f);
 
