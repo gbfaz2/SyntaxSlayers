@@ -12,7 +12,7 @@ void IAArena::actualizar(const Combatiente& enemigo, const Combatiente& jugador,
     {
     case Estado::PATRULLAR: accionPatrullar(inputIA, dt);break;
     case Estado::PERSEGUIR: accionPerseguir(enemigo, jugador, inputIA);break;
-    case Estado::ATACAR:    accionAtacar(inputIA);break;
+    case Estado::ATACAR: accionAtacar(enemigo, jugador, inputIA, dt); break;
     case Estado::HUIR:      accionHuir(enemigo, jugador, inputIA);break;
     }
 }
@@ -24,6 +24,12 @@ float IAArena::calcularDistancia(const Combatiente& a, const Combatiente& b) con
     float dz = a.z() - b.z(); // DIFERENCIA EN Z
     return std::sqrt(dx * dx + dz * dz); // DISTANCIA EUCLIDEA
 }
+
+void IAArena::configurar(float alcanceAtaque) {
+    _distanciaAtaque = alcanceAtaque + 0.4f;
+    _distanciaPerseguir = alcanceAtaque + 6.0f; // persigue desde más lejos si tiene más alcance
+}
+
 
 
 void IAArena::actualizarEstado(const Combatiente& enemigo, const Combatiente& jugador, float distancia)
@@ -86,16 +92,39 @@ void IAArena::accionPerseguir(const Combatiente& enemigo, const Combatiente& jug
 }
 
 
-void IAArena::accionAtacar(EstadoJugador& inputIA)
+void IAArena::accionAtacar(const Combatiente& enemigo, const Combatiente& jugador,
+    EstadoJugador& inputIA, float dt)  // ← AÑADIR dt
 {
-    // PARA Y ATACA
-    inputIA.delante = false;
-    inputIA.atras = false;
-    inputIA.izquierda = false;
-    inputIA.derecha = false;
-    inputIA.atacar = true; // DISPARA EL ATAQUE
-}
+    float dx = jugador.x() - enemigo.x();
+    float dz = jugador.z() - enemigo.z();
+    float distancia = calcularDistancia(enemigo, jugador);
 
+    // ACUMULA TIEMPO DESDE EL ULTIMO ATAQUE
+    _tiempoEntreAtaques += dt;
+
+    // SOLO ATACA SI HA PASADO EL COOLDOWN
+    if (_tiempoEntreAtaques >= _cooldownIA)
+    {
+        inputIA.atacar = true;
+        _tiempoEntreAtaques = 0.0f; // RESETEA EL TIMER
+    }
+    else
+    {
+        inputIA.atacar = false;
+    }
+
+    // RECOLOCA LIGERAMENTE SI ESTA MUY PEGADO
+    if (distancia < _distanciaAtaque * 0.5f) {
+        inputIA.delante = (dz > 0);
+        inputIA.atras = (dz < 0);
+        inputIA.izquierda = false;
+        inputIA.derecha = false;
+    }
+    else {
+        inputIA.delante = inputIA.atras = false;
+        inputIA.izquierda = inputIA.derecha = false;
+    }
+}
 
 void IAArena::accionHuir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
 {

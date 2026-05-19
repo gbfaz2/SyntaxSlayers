@@ -64,14 +64,25 @@ class Combatiente
 	// Daño que inflige el ataque
 	float _danoAtaque{ 12.0f };
 
+	// DIRECCION A LA QUE MIRA EL COMBATIENTE (VECTOR NORMALIZADO EN XZ)
+	float _mirandoX{ 1.0f };  // P1 MIRA A LA DERECHA POR DEFECTO
+	float _mirandoZ{ 0.0f };
+
 	// Nombre de la pieza (para mostrarlo en el HUD)
 	std::string _nombre{ "" };
+
+	// POSICION INICIAL EN X (PARA SABER DE QUE LADO EMPEZO)
+	float _inicioX{ 0.0f };
 
 public:
 	// Constructor: crea un combatiente con la posicion y el color dados
 	Combatiente(float x, float y, float z, float r, float g, float b); // y valdra 0 siempre a no ser que metamos voladores
 	// Constructor nuevo: crea un combatiente usando los stats de una Pieza real del tablero de Alba
 	Combatiente(float x, float z, float r, float g, float b, const Pieza& pieza);
+
+	// DIRECCION A LA QUE MIRA (VECTOR NORMALIZADO)
+	float mirandoX() const { return _mirandoX; }
+	float mirandoZ() const { return _mirandoZ; }
 
 	// Añado getters. Los implemento aqui porque son muy cortos (funcion inline), asi si hay que añadir otro getter, solo toco este archivo
 	// Devuelven informacion sobre el combatiente. Son const, porque no modifican el objeto
@@ -113,6 +124,12 @@ public:
 
 	// Devuelve el color del combatiente por referencia
 	void color(float& r, float& g, float& b) const { r = _r;g = _g;b = _b; }
+
+	// SETTER PARA ACTUALIZAR LA DIRECCION DE MIRADA DESDE FUERA
+	void setMirando(float dx, float dz) { _mirandoX = dx; _mirandoZ = dz; }
+
+	// GETTER PARA SABER DE QUE LADO EMPEZO
+	float inicioX() const { return _inicioX; }
 
 	std::string nombre() const { return _nombre; }
 };
