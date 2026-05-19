@@ -3,12 +3,10 @@
 #include <chrono>
 using namespace std::chrono;
 
-// ─────────────────────────────────────────────────────────────
-// Único objeto global: el jefe de todo
-// ─────────────────────────────────────────────────────────────
+
 Coordinador juego;
 
-// ── Prototipos de callbacks ───────────────────────────────────
+
 void OnDraw();
 void OnTimer(int value);
 void OnKeyboardDown(unsigned char key, int x, int y);
@@ -19,7 +17,6 @@ void OnReshape(int ancho, int alto);
 void OnKeyboardUp(unsigned char key, int x, int y);
 void OnSpecialKeyboardUp(int key, int x, int y);
 
-// ─────────────────────────────────────────────────────────────
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
@@ -53,7 +50,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-// ── Callbacks ─────────────────────────────────────────────────
+
 void OnDraw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -67,7 +64,7 @@ void OnDraw()
 
 void OnKeyboardDown(unsigned char key, int /*x*/, int /*y*/)
 {
-    if (key == 27) exit(0);   // ESC siempre cierra
+    if (key == '0') exit(0);   // ESC siempre cierra
     juego.tecla(key);
     glutPostRedisplay();
 }
