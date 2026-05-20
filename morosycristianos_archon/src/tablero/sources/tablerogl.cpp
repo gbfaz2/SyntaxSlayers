@@ -203,10 +203,6 @@ void Tablerogl::DibujaCasilla(int fila, int col)
 	glVertex3f(x0, y1, -0.001f);//inferior izq
 
 	glEnd();
-
-	//_combatePendiente = false;
-	//_pAtacante = nullptr;
-	//_pDefensora = nullptr;
 }
 
 void Tablerogl::DibujaMarco()
