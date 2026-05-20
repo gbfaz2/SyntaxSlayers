@@ -58,7 +58,7 @@ void Tablerogl::init()
 	gluPerspective(40.0, 800 / 600.0f, 0.1, 150);
 
 	//carga textura rey
-	SpriteRey::cargarTextura("imagenes\\IMAGEN_REY_CRISTIANO.png");
+	//SpriteRey::cargarTextura("imagenes\\IMAGEN_REY_CRISTIANO.png");
 }
 
 
