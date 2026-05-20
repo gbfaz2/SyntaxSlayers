@@ -104,6 +104,8 @@ public:
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
 
+
+
 	void setBatalla(int b) { _batallaActual = b; } // SETTER
 
 	static void setVentana(int ancho, int alto) { _anchoVentana = ancho; _altoVentana = alto; }
