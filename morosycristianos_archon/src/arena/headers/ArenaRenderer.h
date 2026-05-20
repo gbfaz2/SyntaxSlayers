@@ -1,5 +1,6 @@
 #pragma once
 #include "Arena.h"
+#include "estadojuego.h"
 
 // Se encarga de dibujar la arena en 3D usando OpenGL y freeglut
 // Es el unico sitio donde va a aparecer OpenGL
@@ -22,10 +23,12 @@ class ArenaRenderer
 	static void dibujarTexto(float x, float y, const char* texto, float r = 1.0f, float g = 1.0f, float b = 1.0f); // Dibuja texto en pantalla usando glutBitmapCharacter
 	static void dibujarBarraVida(float x, float y, float ancho, float alto, float fraccion, float r, float g, float b); // Dibuja una barra de vida con el porcentaje dado
 
+	static void dibujarFondo(Batalla batalla);
+
 public:
 	// Configura la proyeccion 3D, se llama al inicio y en cada cambio de tamaño de ventana
 	static void configurarVista(int anchoVentana, int altoVentana);
 
 	// Dibuja un frame completo (suelo, combatientes, HUD y mensajes de fin)
-	static void dibujar(const Arena& arena);
+	static void dibujar(const Arena& arena, Batalla batalla);
 };

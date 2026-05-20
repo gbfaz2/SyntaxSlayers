@@ -3,6 +3,7 @@
 #include <cstdio> // Para sprintf (formatear texto)
 #include <cstring> // Para strlen (calcular longitud de texto)
 #include <string>
+#include "ETSIDI.h"
 
 // Inicializacion de variables estaticas
 int ArenaRenderer::_anchoVentana = 900;
@@ -264,12 +265,57 @@ void ArenaRenderer::dibujarHUD(const Arena& arena)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void ArenaRenderer::dibujar(const Arena& arena)
+void ArenaRenderer::dibujarFondo(Batalla batalla)
+{
+	const char* ruta = "";
+	switch (batalla) {
+	case Batalla::GUADALETE:    ruta = "imagenes/fondo_guadalete.png"; break;
+	case Batalla::ALARCOS:      ruta = "imagenes/fondo_alarcos.png";   break;
+	case Batalla::NAVAS_TOLOSA: ruta = "imagenes/fondo_navas.png";    break;
+	case Batalla::GRANADA:      ruta = "imagenes/fondo_granada.png";   break;
+	}
+
+	auto tex = ETSIDI::getTexture(ruta);
+	if (tex.id == 0) return;
+
+	// Cambio a 2D para cubrir toda la pantalla
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0, 1, 0, 1);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, tex.id);
+	glColor3f(1, 1, 1);
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 1); glVertex2f(0, 0);
+	glTexCoord2f(1, 1); glVertex2f(1, 0);
+	glTexCoord2f(1, 0); glVertex2f(1, 1);
+	glTexCoord2f(0, 0); glVertex2f(0, 1);
+	glEnd();
+
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+}
+
+void ArenaRenderer::dibujar(const Arena& arena, Batalla batalla)
 {
 	// Fondo (azul cielo)
 	glClearColor(0.55f, 0.65f, 0.75f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 	glLoadIdentity();
 
 	// Camara aerea-oblicua: elevada e inclinada mirando al centro
@@ -278,6 +324,8 @@ void ArenaRenderer::dibujar(const Arena& arena)
 		0.0, 0.0, 0.0,  // punto al que mira (centro de la arena)
 		0.0, 1.0, 0.0   // vector "arriba" del mundo
 	);
+
+	dibujarFondo(batalla);
 
 	configurarLuz();
 	dibujarSuelo(arena.ancho(), arena.profundo());

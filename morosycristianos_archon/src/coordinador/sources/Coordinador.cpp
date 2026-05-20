@@ -116,7 +116,7 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::ARENA:
-		ArenaRenderer::dibujar(_arena);
+		ArenaRenderer::dibujar(_arena, configuracion.batalla);
 			// SOLO VOLVER AL TABLERO CUANDO EL JUGADOR TOQUE UNA TECLA, PARA DAR TIEMPO A VER EL RESULTADO DEL COMBATE
 			// NO HACER NADA AQUÍ, SOLO ESPERAR A QUE EL JUGADOR PULSE UNA TECLA PARA VOLVER AL TABLERO
 		break;
