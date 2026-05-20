@@ -11,9 +11,7 @@
 #include "ETSIDI.h"
 #include <cmath>
 #include <cstdio>
-#include "menu.h"
-#include "menu.h"
-#include"coordinador.h"
+#include "coordinador.h"
 
 int Tablerogl::_anchoVentana = 1024;
 int Tablerogl::_altoVentana = 768;

@@ -8,6 +8,8 @@
 #include "GestorTurnos.h"
 #include "Hechicero.h"
 #include "SpriteRey.h"
+#include "menu.h"
+//#include"coordinador.h"
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
 enum { MOUSE_LEFT_BUTTON, MOUSE_MIDDLE_BUTTON, MOUSE_RIGHT_BUTTON };
@@ -42,8 +44,8 @@ protected:
 	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO
 	BandoPieza _bandoHechizo{ bando_nada }; // BANDO QUE ACTIVO EL HECHIZO
 
-	int _anchoVentana{ 800 };  
-	int _altoVentana{ 600 };   
+	int anchoVentana{ 800 };  
+	int altoVentana{ 600 };   
 
 private:
 	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
