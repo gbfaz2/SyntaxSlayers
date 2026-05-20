@@ -15,7 +15,7 @@ void Coordinador::inicializa()
 	srand((unsigned)time(nullptr));
 	pantallaIntro.reiniciar();
 	menuPrincipal.reiniciar();
-	ArenaRenderer::configurarVista(anchoVentana, altoVentana); // CONFIGURA CAMARA ARENA
+	ArenaRenderer::configurarVista(_anchoVentana, _altoVentana); // CONFIGURA CAMARA ARENA
 	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
 }
 
@@ -26,8 +26,8 @@ void Coordinador::dibuja()
 	switch (estado) {
 
 	case EstadoJuego::INTRO:
-		entrar2D(anchoVentana, altoVentana);
-		pantallaIntro.dibujar(anchoVentana, altoVentana);
+		entrar2D(_anchoVentana, _altoVentana);
+		pantallaIntro.dibujar(_anchoVentana, _altoVentana);
 		salir2D();
 
 		if (pantallaIntro.terminado()) {
@@ -38,8 +38,8 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::MENU:
-		entrar2D(anchoVentana, altoVentana);
-		menuPrincipal.dibujar(anchoVentana, altoVentana);
+		entrar2D(_anchoVentana, _altoVentana);
+		menuPrincipal.dibujar(_anchoVentana, _altoVentana);
 		salir2D();
 
 		if (menuPrincipal.terminado()) {
@@ -66,8 +66,8 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::DESTINO:
-		entrar2D(anchoVentana, altoVentana);
-		pantallaDestino.dibujar(anchoVentana, altoVentana);
+		entrar2D(_anchoVentana, _altoVentana);
+		pantallaDestino.dibujar(_anchoVentana, _altoVentana);
 		salir2D();
 
 		if (pantallaDestino.terminado()) {
@@ -85,7 +85,7 @@ void Coordinador::dibuja()
 
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(40.0, (float)anchoVentana / (float)altoVentana, 0.1, 150.0);
+			gluPerspective(40.0, (float)_anchoVentana / (float)_altoVentana, 0.1, 150.0);
 
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -101,7 +101,7 @@ void Coordinador::dibuja()
 
 				ETSIDI::stopMusica(); //colision: deja de sonar musica tablero
 				ETSIDI::play("sonido_combate_fight.wav");
-				ArenaRenderer::configurarVista(anchoVentana, altoVentana);
+				ArenaRenderer::configurarVista(_anchoVentana, _altoVentana);
 				pTablerogl->limpiarCombate();
 				estado = EstadoJuego::ARENA;
 			}
@@ -230,6 +230,13 @@ void Coordinador::mueve(double dt)
 			estado = EstadoJuego::FINAL;
 		}
 	}
+
+	//update de la imagen del rey
+	_spriteReyLocal.update(dt);
+
+	//update estado rey tras morir
+	if (_spriteReyLocal.animacionTerminada() && _spriteReyLocal.getEstado() != EstadoRey::DEATH)
+		 _spriteReyLocal.setEstado(EstadoRey::IDLE);
 	
 	if (estado == EstadoJuego::ARENA)
 		_arena.actualizar((float)dt, _input); // AVANZA LA LOGICA DE LA ARENA
@@ -249,7 +256,7 @@ void Coordinador::raton(int boton, int state, int x, int y)
 		break;
 	case EstadoJuego::MENU:
 		if (boton == GLUT_LEFT_BUTTON)
-			menuPrincipal.ratonPulsado(x, y, anchoVentana, altoVentana);
+			menuPrincipal.ratonPulsado(x, y, _anchoVentana, _altoVentana);
 		break;
 	case EstadoJuego::TABLERO:
 		if (pTablerogl) {
@@ -273,13 +280,17 @@ void Coordinador::raton(int boton, int state, int x, int y)
 void Coordinador::ratonMovido(int x, int y)
 {
 	if (estado == EstadoJuego::MENU)
-		menuPrincipal.ratonMovido(x, y, anchoVentana, altoVentana);
+		menuPrincipal.ratonMovido(x, y, _anchoVentana, _altoVentana);
 	glutPostRedisplay();
 }
 
 void Coordinador::redimensionar(int ancho, int alto)
 {
-	anchoVentana = ancho;
-	altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
-	glViewport(0, 0, anchoVentana, altoVentana);
+	_anchoVentana = ancho;
+	_altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
+	glViewport(0, 0, _anchoVentana, _altoVentana);
+
+	if (pTablerogl)
+		pTablerogl->redimensionar(ancho, alto); 
 }
+

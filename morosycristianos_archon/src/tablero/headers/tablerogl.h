@@ -6,6 +6,7 @@
 #include "tablero.h"
 #include "GestorMovimiento.h"
 #include "GestorTurnos.h"
+#include "SpriteRey.h"
 
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -38,13 +39,19 @@ protected:
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
 
+	int _anchoVentana{ 800 };  
+	int _altoVentana{ 600 };   
+
 private:
 	GestorMovimiento gestorMovimiento;
 	GestorTurnos     gestorTurnos;
+	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
+	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
+		
 
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
-	virtual ~Tablerogl() {}//destructor virtual
+	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey
 
 	void init(); //Luces más perspectiva desde donde lo vamos a ver
 
@@ -74,6 +81,8 @@ public:
 	void KeyDown(unsigned char key);
 	void SpecialKey(int key);
 	void MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
+
+	void redimensionar(int ancho, int alto);
 
 	//conversores de coordenadas cogidas del repositorio de Pablo
 	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);

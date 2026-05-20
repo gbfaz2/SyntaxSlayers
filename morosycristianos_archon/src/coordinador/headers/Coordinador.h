@@ -11,13 +11,13 @@
 #include "GestorTurnos.h"
 #include "GestorVictoria.h"
 #include "GestorHechizos.h"
+#include "SpriteRey.h"
 
 class Coordinador
 {
 	EstadoJuego     estado{ EstadoJuego::INTRO }; // ESTADO INICIAL
 
-	int             anchoVentana{ 800 };
-	int             altoVentana{ 600 };
+	
 
 	PantallaIntro   pantallaIntro;
 	MenuPrincipal   menuPrincipal;
@@ -34,10 +34,14 @@ class Coordinador
 	GestorTurnos     gestorTurnos;
 	GestorVictoria   gestorVictoria;
 	GestorHechizos* pGestorHechizos{ nullptr };
+	SpriteRey _spriteReyLocal;
 
 public:
 	Coordinador() = default;
 	~Coordinador();
+    
+	int      _anchoVentana{ 800 };
+	int      _altoVentana{ 600 };
 
 	void inicializa();
 	void dibuja();
