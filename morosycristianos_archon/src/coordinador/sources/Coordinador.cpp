@@ -261,10 +261,10 @@ void Coordinador::ratonMovido(int x, int y)
 
 void Coordinador::redimensionar(int ancho, int alto)
 {
-	anchoVentana = ancho;
-	altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
-	glViewport(0, 0, anchoVentana, altoVentana);
-	Tablerogl::setVentana(anchoVentana, altoVentana); // ACTUALIZA TAMAÑO VENTANA EN TABLERO
+	_anchoVentana = ancho;
+	_altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
+	glViewport(0, 0, _anchoVentana, _altoVentana);
+	Tablerogl::setVentana(_anchoVentana, _altoVentana); // ACTUALIZA TAMAÑO VENTANA EN TABLERO
 }
 
 void Coordinador::reiniciarTablero()
