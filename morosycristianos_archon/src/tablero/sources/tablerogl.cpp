@@ -204,9 +204,9 @@ void Tablerogl::DibujaCasilla(int fila, int col)
 
 	glEnd();
 
-	_combatePendiente = false;
-	_pAtacante = nullptr;
-	_pDefensora = nullptr;
+	//_combatePendiente = false;
+	//_pAtacante = nullptr;
+	//_pDefensora = nullptr;
 }
 
 void Tablerogl::DibujaMarco()
