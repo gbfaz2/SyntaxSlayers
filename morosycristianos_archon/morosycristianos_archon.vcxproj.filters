@@ -168,16 +168,19 @@
     <ClInclude Include="src\tablero\headers\tablerogl.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="GestorHechizos.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\GestorInput.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="src\tablero\headers\GestorMovimiento.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>tablero\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\tablero\headers\GestorTurnos.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>tablero\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\tablero\headers\GestorVictoria.h">
-      <Filter>Archivos de encabezado</Filter>
-    </ClInclude>
-    <ClInclude Include="GestorHechizos.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\piezas\headers\SpriteRey.h">
@@ -283,16 +286,19 @@
     <ClCompile Include="src\tablero\sources\tablerogl.cpp">
       <Filter>tablero\Sources</Filter>
     </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorHechizos.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\GestorInput.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
     <ClCompile Include="src\tablero\sources\GestorMovimiento.cpp">
-      <Filter>Archivos de origen</Filter>
+      <Filter>tablero\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\tablero\sources\GestorTurnos.cpp">
-      <Filter>Archivos de origen</Filter>
+      <Filter>tablero\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\tablero\sources\GestorVictoria.cpp">
-      <Filter>Archivos de origen</Filter>
-    </ClCompile>
-    <ClCompile Include="src\tablero\sources\GestorHechizos.cpp">
       <Filter>tablero\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\piezas\sources\SpriteRey.cpp">

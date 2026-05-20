@@ -92,6 +92,20 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	glClear(GL_DEPTH_BUFFER_BIT);
 	DibujaCasillas();
 	DibujaSimbolos();
+
+	// PELICULA SEMITRANSPARENTE PARA ATENUAR EL TABLERO
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glColor4f(0.0f, 0.0f, 0.0f, 0.35f); // NEGRO AL 35% DE OPACIDAD, AJUSTAR A GUSTO
+	//float mitad = N * ancho / 2.0f;
+	glBegin(GL_QUADS);
+	glVertex3f(0.0f, 0.0f, 0.003f);
+	glVertex3f(N * ancho, 0.0f, 0.003f);
+	glVertex3f(N * ancho, -N * ancho, 0.003f);
+	glVertex3f(0.0f, -N * ancho, 0.003f);
+	glEnd();
+	glDisable(GL_BLEND);
+
 	DibujaCursores();//los cursores del teclado
 	DibujaSeleccion();//la pieza seleccionada
 	DibujaMovimientosValidos();
@@ -181,13 +195,13 @@ void Tablerogl::setCasillaColor(int fila, int col)
 {
 	switch (m_tablero->getCasilla(fila, col).tipo) {
 	case Casilla_local:
-		glColor3f(0.50f, 0.04f, 0.04f);// rojo oscuro 
+		glColor3f(0.75f, 0.15f, 0.15f); // ROJO MAS CLARO 
 		return;
 	case Casilla_rival:
-		glColor3f(0.55f, 0.10f, 0.65f);// morado
+		glColor3f(0.70f, 0.30f, 0.85f); // MORADO MAS CLARO
 		return;
 	case Casilla_dinamica:
-		glColor3f(0.35f, 0.35f, 0.35f); // gris
+		glColor3f(0.50f, 0.50f, 0.50f); // GRIS MAS CLARO
 		return;
 	case Casilla_poder:
 		// El power point usa el color de la zona en que está
@@ -601,119 +615,6 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 		}
 		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
 		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
-	}
-}
-
-void Tablerogl::KeyDown(unsigned char key)
-{
-	if (victoria_ != bando_nada)return;
-	if (key == 27) {
-		if (piezaSeleccionada) { piezaSeleccionada = false; fromFila = fromCol = -1; }
-		else exit(0);
-		return;
-	}
-	if (key == 'q' || key == 'Q') { exit(0); return; }
-
-	
-	if (gestorTurnos.getBandoActual() == bando_local) {
-		int& rL = Filacursor[0]; int& cL = Colcursor[0];
-		if (key == 'w' || key == 'W') { if (rL > 0)   rL--; }
-		if (key == 's' || key == 'S') { if (rL < N - 1) rL++; }
-		if (key == 'a' || key == 'A') { if (cL > 0)   cL--; }
-		if (key == 'd' || key == 'D') { if (cL < N - 1) cL++; }
-
-		if (key == ' ')  trySelectorMove(bando_local);
-	}
-
-	if (gestorTurnos.getBandoActual() == bando_rival) {
-		if (key == 13)   trySelectorMove(bando_rival); // Enter
-	}
-}
-
-void Tablerogl::SpecialKey(int key)
-{
-	if (victoria_ != bando_nada) return;
-
-	if (gestorTurnos.getBandoActual() == bando_rival) {
-		int& rR = Filacursor[1]; int& cR = Colcursor[1];
-		if (key == GLUT_KEY_UP && rR > 0)   rR--;
-		if (key == GLUT_KEY_DOWN && rR < N - 1) rR++;
-		if (key == GLUT_KEY_LEFT && cR > 0)   cR--;
-		if (key == GLUT_KEY_RIGHT && cR < N - 1) cR++;
-	}
-}
-
-void Tablerogl::MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey)//convierte el clic del ratón en coordenadas de casilla
-{
-	if (victoria_ != bando_nada) return;
-	//leemos las matrices actuales de opengl
-	GLint viewport[4];
-	GLdouble modelview[16];
-	GLdouble projection[16];
-	GLfloat winX, winY, winZ;
-	GLdouble posX, posY, posZ;
-
-	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
-	glGetDoublev(GL_PROJECTION_MATRIX, projection);
-	glGetIntegerv(GL_VIEWPORT, viewport);
-
-	//en opengl y=0 está abajo; en la ventana arriba por lo que lo invertimos
-	winX = (float)x;
-	winY = (float)viewport[3] - (float)y;
-
-	//leemos la profundidad del píxel bajo el cursor
-	glReadPixels(x, (int)winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
-
-	//proyeccion inversa: pixel->coordenadas 3D del mundo
-	gluUnProject(winX, winY, winZ,
-		modelview, projection, viewport,
-		&posX, &posY, &posZ);
-
-	int clickFila, clickCol;
-	//coordenadas mundo->casilla(fila, columna)
-	world2cell(posX, posY, clickFila, clickCol);
-
-	// Actualizamos casilla bajo el cursor
-	xcasilla_sel = clickFila;
-	ycasilla_sel = clickCol;
-
-	//Estado de botones y teclas modificadoras
-	if (down) { controlKey = ctrlKey; this->shiftKey = shiftKey; }
-	else { controlKey = this->shiftKey = false; }
-
-	if (button == MOUSE_LEFT_BUTTON)leftButton = down;
-	if (button == MOUSE_RIGHT_BUTTON)rightButton = down;
-	if (button == MOUSE_MIDDLE_BUTTON)midButton = down;
-
-	// Solo procesamos el momento de pulsar (down), no el de soltar
-	if (!down) return;
-
-	// Clic derecho: cancela selección
-	if (button == MOUSE_RIGHT_BUTTON) {
-		piezaSeleccionada = false;
-		fromFila = fromCol = -1;
-		return;
-	}
-
-	// Solo procesamos clic izquierdo a partir de aquí
-	if (button != MOUSE_LEFT_BUTTON) return;
-
-	// Fuera del tablero: ignoramos
-	if (clickFila < 0 || clickFila >= N || clickCol < 0 || clickCol >= N) return;
-
-	const Casilla& clicked = m_tablero->getCasilla(clickFila, clickCol);
-
-	if (!piezaSeleccionada) {
-		if (clicked.pieza != pieza_nada) {
-			int idx = (clicked.bando == bando_local) ? 0 : 1;
-			Filacursor[idx] = clickFila; Colcursor[idx] = clickCol;
-			trySelectorMove(clicked.bando);
-		}
-	}
-	else {
-		int idx = (fromBando == bando_local) ? 0 : 1;
-		Filacursor[idx] = clickFila; Colcursor[idx] = clickCol;
-		trySelectorMove(fromBando);
 	}
 }
 

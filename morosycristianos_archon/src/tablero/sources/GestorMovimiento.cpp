@@ -111,15 +111,20 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
                 std::cout << "[GestorMovimiento] Enemigo en el camino en ("
                     << fila << "," << col << ") — COMBATE!" << std::endl;
               
-                //mueve pieza a la casilla escaneada
-                tablero.muevePieza(fromFila, fromCol, fila, col);
+                // NO MOVEMOS TODAVIA, igual que en comprobarDestino
+                _ultimoAtacante = pieza;
+                _ultimaDefensora = tablero.getCasilla(fila, col).obj;
+                _filaAtacante = fromFila;
+                _colAtacante = fromCol;
+                _filaDefensora = fila;
+                _colDefensora = col;
 
-                //pone la posicion de la pieza actual a su casilla actual
-                pieza->setPosicion(fila, col);
 
+                //retorna combate, como resultado del movimiento
                 _ultimoAtacante = pieza;
                 _ultimaDefensora = tablero.getCasilla(fila, col).obj; // ya está en destino
                
+                //retorna combate, como resultado del movimiento
                 return ResultadoMovimiento::COMBATE;
             }
         }
@@ -173,15 +178,17 @@ ResultadoMovimiento GestorMovimiento::comprobarDestino(
     }
 
     // Enemigo en el destino, combate
+    // Enemigo en el destino, combate
     std::cout << "[GestorMovimiento] Enemigo en destino ("
         << toFila << "," << toCol << ") — COMBATE!" << std::endl;
 
-    Pieza* capturada = tablero.muevePieza(fromFila, fromCol, toFila, toCol);
-    pieza->setPosicion(toFila, toCol);
+    // NO MOVEMOS TODAVIA, SOLO GUARDAMOS LAS PIEZAS
     _ultimoAtacante = pieza;
-    _ultimaDefensora = capturada;
+    _ultimaDefensora = tablero.getCasilla(toFila, toCol).obj;
+    _filaAtacante = fromFila;  // GUARDAMOS POSICIONES PARA LUEGO
+    _colAtacante = fromCol;
+    _filaDefensora = toFila;
+    _colDefensora = toCol;
 
-   // tablero.muevePieza(fromFila, fromCol, toFila, toCol);
-   // pieza->setPosicion(toFila, toCol);
     return ResultadoMovimiento::COMBATE;
 }

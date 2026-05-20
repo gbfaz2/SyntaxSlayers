@@ -52,4 +52,5 @@ public:
 	ResultadoCombate resultado() const { return _resultado; }
 	void resolverColision(); // EVITA QUE LOS COMBATIENTES SE SOLAPEN
 	
+	bool iaActiva() const { return _modo == ModoJuego::JVIA; }
 };
