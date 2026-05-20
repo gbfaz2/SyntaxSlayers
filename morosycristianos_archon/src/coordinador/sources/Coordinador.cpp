@@ -17,6 +17,7 @@ void Coordinador::inicializa()
 	menuPrincipal.reiniciar();
 	ArenaRenderer::configurarVista(_anchoVentana, _altoVentana); // CONFIGURA CAMARA ARENA
 	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
+	gestorInput.setCoordinador(this); // ASIGNA COORDINADOR AL GESTOR
 }
 
 void Coordinador::dibuja()
@@ -54,6 +55,7 @@ void Coordinador::dibuja()
 					pTablero = new Tablero();
 					pTablerogl = new Tablerogl(pTablero);
 					pTablerogl->init();
+					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
@@ -95,6 +97,10 @@ void Coordinador::dibuja()
 			// TODO: CUANDO MARIA IMPLEMENTE huboColision()
 			if (pTablerogl->huboColision()) 
 			{
+				// Guardamos las piezas ANTES de limpiar
+				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
+				_pDefensoraCombate = pTablerogl->getPiezaDefensora();
+
 				_arena.iniciarCombate(*pTablerogl->getPiezaAtacante(),
 					*pTablerogl->getPiezaDefensora(),
 					configuracion.modo); // INICIA COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU Y EL MODO DE JUEGO (JVJ O JVIA)
@@ -128,78 +134,55 @@ void Coordinador::tecla(unsigned char key)
 {
 	switch (estado) {
 	case EstadoJuego::INTRO:
-		pantallaIntro.saltar();
+		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR INTRO
 		break;
 	case EstadoJuego::MENU:
-		menuPrincipal.teclaPulsada(key);
+		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR MENU
 		break;
 	case EstadoJuego::DESTINO:
-		pantallaDestino.avanzar();
+		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR DESTINO
 		break;
 	case EstadoJuego::TABLERO:
-		if (key == 27) { 
-			ETSIDI::stopMusica(); 
-			menuPrincipal.reiniciar(); 
-			estado = EstadoJuego::MENU; break; 
+		if (key == 27) {
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
+			break;
 		}
-		if (pTablerogl) pTablerogl->KeyDown(key);
+		gestorInput.teclaTablero(key, estado); // GESTOR TECLAS TABLERO
 		break;
 	case EstadoJuego::ARENA:
-
-		// CONTROLES P1: WASD + F
-		if (key == 'w' || key == 'W') _input.p1.delante = true;
-		if (key == 's' || key == 'S') _input.p1.atras = true;
-		if (key == 'a' || key == 'A') _input.p1.izquierda = true;
-		if (key == 'd' || key == 'D') _input.p1.derecha = true;
-		if (key == 'f' || key == 'F') _input.p1.atacar = true;
-
-		// CONTROLES P2 (solo en JvJ): flechas + L
-		if (configuracion.modo == ModoJuego::JVJ) {
-			// Las flechas van por tecla_especial, aquí solo el ataque
-			if (key == 'l' || key == 'L') _input.p2.atacar = true;
-		}
-
-		// ENTER o ESC VUELVE AL TABLERO DESDE LA ARENA CUANDO EL COMBATE HAYA TERMINADO (GANE P1, GANE P2 O EMPATE)
-		if ((key == 13 || key == 27) && _arena.resultado() != ResultadoCombate::EnCurso) {
-			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
-			estado = EstadoJuego::TABLERO;
-		}
+		gestorInput.teclaArena(key); // GESTOR TECLAS ARENA
 		break;
 
 	default:
-		if (key == 27) { ETSIDI::stopMusica(); menuPrincipal.reiniciar(); estado = EstadoJuego::MENU; }
-		break;
+		if (key == 27) {
+			ETSIDI::stopMusica();
+			menuPrincipal.reiniciar();
+			reiniciarTablero(); // REINICIA TABLERO AL VOLVER AL MENU
+		}
+			estado = EstadoJuego::MENU; break;
 	}
 	glutPostRedisplay();
 }
 
 void Coordinador::tecla_up(unsigned char key)
 {
-	if (estado == EstadoJuego::ARENA) {
-		// SUELTA TECLAS P1
-		if (key == 'w' || key == 'W') _input.p1.delante = false;
-		if (key == 's' || key == 'S') _input.p1.atras = false;
-		if (key == 'a' || key == 'A') _input.p1.izquierda = false;
-		if (key == 'd' || key == 'D') _input.p1.derecha = false;
-	}
+	if (estado == EstadoJuego::ARENA)
+		gestorInput.teclaUpArena(key); // GESTOR TECLAS UP ARENA
 }
 
 void Coordinador::tecla_especial(int key)
 {
 	switch (estado) {
 	case EstadoJuego::MENU:
-		menuPrincipal.teclaEspecial(key);
+		gestorInput.teclaEspecialMenu(key, estado, menuPrincipal); // GESTOR FLECHAS MENU
 		break;
 	case EstadoJuego::TABLERO:
-		if (pTablerogl) pTablerogl->SpecialKey(key);
+		gestorInput.teclaEspecialTablero(key); // GESTOR FLECHAS TABLERO
 		break;
 	case EstadoJuego::ARENA:
-		if (configuracion.modo == ModoJuego::JVJ) {
-			if (key == GLUT_KEY_UP)    _input.p2.delante = true;
-			if (key == GLUT_KEY_DOWN)  _input.p2.atras = true;
-			if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = true;
-			if (key == GLUT_KEY_RIGHT) _input.p2.derecha = true;
-		}
+		gestorInput.teclaEspecialArena(key); // GESTOR FLECHAS ARENA
 		break;
 	default: break;
 	}
@@ -208,12 +191,8 @@ void Coordinador::tecla_especial(int key)
 
 void Coordinador::tecla_especial_up(int key)
 {
-	if (estado == EstadoJuego::ARENA && configuracion.modo == ModoJuego::JVJ) {
-		if (key == GLUT_KEY_UP)    _input.p2.delante = false;
-		if (key == GLUT_KEY_DOWN)  _input.p2.atras = false;
-		if (key == GLUT_KEY_LEFT)  _input.p2.izquierda = false;
-		if (key == GLUT_KEY_RIGHT) _input.p2.derecha = false;
-	}
+	if (estado == EstadoJuego::ARENA)
+		gestorInput.teclaEspecialUpArena(key); // GESTOR FLECHAS UP ARENA
 }
 
 void Coordinador::mueve(double dt)
@@ -249,29 +228,24 @@ void Coordinador::raton(int boton, int state, int x, int y)
 
 	switch (estado) {
 	case EstadoJuego::INTRO:
-		pantallaIntro.saltar();
-		break;
 	case EstadoJuego::DESTINO:
-		pantallaDestino.avanzar();
-		break;
 	case EstadoJuego::MENU:
-		if (boton == GLUT_LEFT_BUTTON)
-			menuPrincipal.ratonPulsado(x, y, _anchoVentana, _altoVentana);
+		gestorInput.ratonMenu(boton, state, x, y, estado, pantallaIntro, menuPrincipal, pantallaDestino); // GESTOR RATON
 		break;
 	case EstadoJuego::TABLERO:
-		if (pTablerogl) {
-			int button;
-			if (boton == GLUT_LEFT_BUTTON)       button = MOUSE_LEFT_BUTTON;
-			else if (boton == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
-			else                                 button = MOUSE_MIDDLE_BUTTON;
+	{
+		int button;
+		if (boton == GLUT_LEFT_BUTTON)       button = MOUSE_LEFT_BUTTON;
+		else if (boton == GLUT_RIGHT_BUTTON) button = MOUSE_RIGHT_BUTTON;
+		else                                 button = MOUSE_MIDDLE_BUTTON;
 
-			int specialKey = glutGetModifiers();
-			bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
-			bool shiftKey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
+		int specialKey = glutGetModifiers();
+		bool ctrlKey = (specialKey & GLUT_ACTIVE_CTRL) ? true : false;
+		bool shiftKey = (specialKey & GLUT_ACTIVE_SHIFT) ? true : false;
 
-			pTablerogl->MouseButton(x, y, button, true, shiftKey, ctrlKey);
-		}
-		break;
+		gestorInput.ratonTablero(x, y, button, (state == GLUT_DOWN), shiftKey, ctrlKey); // GESTOR RATON TABLERO
+	}
+	break;
 	default: break;
 	}
 	glutPostRedisplay();
@@ -279,8 +253,8 @@ void Coordinador::raton(int boton, int state, int x, int y)
 
 void Coordinador::ratonMovido(int x, int y)
 {
-	if (estado == EstadoJuego::MENU)
-		menuPrincipal.ratonMovido(x, y, _anchoVentana, _altoVentana);
+	gestorInput.setVentana(_anchoVentana, _altoVentana); // ACTUALIZA TAMAÑO
+	gestorInput.ratonMovidoMenu(x, y, estado, menuPrincipal); // GESTOR HOVER
 	glutPostRedisplay();
 }
 
@@ -291,6 +265,14 @@ void Coordinador::redimensionar(int ancho, int alto)
 	glViewport(0, 0, _anchoVentana, _altoVentana);
 
 	if (pTablerogl)
-		pTablerogl->redimensionar(ancho, alto); 
+		pTablerogl->redimensionar(ancho, alto);
 }
 
+void Coordinador::reiniciarTablero()
+{
+	delete pTablerogl; // DESTRUYE TABLEROGL
+	delete pTablero;   // DESTRUYE TABLERO
+	pTablero = nullptr;   // RESETEA PUNTERO
+	pTablerogl = nullptr; // RESETEA PUNTERO
+	menuPrincipal.reiniciar(); // RESETEA EL MENU TAMBIEN
+}

@@ -2,44 +2,37 @@
 #include "Combatiente.h"
 #include "InputState.h"
 
-
-// CONTROLA AL ENEMIGO EN LA ARENA MEDIANTE UNA MAQUINA DE ESTADOS
-
 class IAArena
 {
-    // ESTADOS POSIBLES DE LA IA
     enum class Estado {
-        PATRULLAR,  // SE MUEVE SIN OBJETIVO FIJO
-        PERSEGUIR,  // VA HACIA EL JUGADOR
-        ATACAR,     // ESTA EN RANGO, ATACA
-        HUIR        // VIDA BAJA, SE ALEJA
+        PATRULLAR,  // MOVIMIENTO PROVISIONAL ALEATORIO
+        PERSEGUIR,  // EN BUSCA DEL JUGADOR
+        ATACAR,     // ENEMIGO EN RANGO
+        HUIR        // RETIRADA POR VIDA BAJA
     };
 
-    Estado _estado{ Estado::PATRULLAR }; // ESTADO INICIAL
+    Estado _estado{ Estado::PATRULLAR }; // ESTADO INICIAL IA
 
-    // UMBRALES QUE DISPARAN LOS CAMBIOS DE ESTADO
-    float _distanciaAtaque{ 2.0f };    // DISTANCIA PARA ATACAR
-    float _distanciaPerseguir{ 7.0f }; // MITAD DE LA ARENA
-    float _umbralHuida{ 0.25f };       // % DE VIDA PARA HUIR (25%)
-    float _tiempoPatrulla{ 0.0f };      // ACUMULA TIEMPO EN PATRULLA
-    float _duracionPatrulla{ 0.5f };    // SEGUNDOS ANTES DE CAMBIAR DIRECCION
-    bool _patrullaArriba{ true };       // DIRECCION ACTUAL DE PATRULLA
-    float _tiempoEntreAtaques{ 0.0f };   // ACUMULA TIEMPO ENTRE ATAQUES
-    float _cooldownIA{ 1.2f };           // SEGUNDOS ENTRE CADA ATAQUE DE LA IA
+    float _distanciaAtaque{ 2.0f };    // RANGO GOLPEO INDIVIDUAL
+    float _distanciaPerseguir{ 7.0f }; // RANGO AVISTAMIENTO ENEMIGO
+    float _umbralHuida{ 0.25f };       // PORCENTAJE AGUANTE CRITICO
+    float _tiempoPatrulla{ 0.0f };      // CRONOMETRO CAMBIO RUTA
+    float _duracionPatrulla{ 0.5f };    // INTERVALO GIRO PATRULLA
+    bool _patrullaArriba{ true };       // BANDERA SENTIDO MOVIMIENTO
+    float _tiempoEntreAtaques{ 0.0f };   // CRONOMETRO CONTROL RITMO
+    float _cooldownIA{ 1.2f };           // RETARDO GOLPEO FIJO
 
-    float calcularDistancia(const Combatiente& a, const Combatiente& b) const;
-    void  actualizarEstado(const Combatiente& enemigo, const Combatiente& jugador, float distancia);
-    void  accionPatrullar(EstadoJugador& inputIA, float dt);
-    void  accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA);
-    void  accionAtacar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt);
-    void  accionHuir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA);
+    float calcularDistancia(const Combatiente& a, const Combatiente& b) const; // METRICA SEPARACION FIJO
+    void  actualizarEstado(const Combatiente& enemigo, const Combatiente& jugador, float distancia); // MAQUINA CAMBIO ESTADOS
+    void  accionPatrullar(EstadoJugador& inputIA, float dt); // LOGICA MOVIMIENTO ALEATORIO
+    void  accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA); // LOGICA ACERCAMIENTO JUGADOR
+    void  accionAtacar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt); // LOGICA GOLPEO RANGO
+    void  accionHuir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA); // LOGICA DISTANCIAMIENTO JUGADOR
 
 public:
-    IAArena() = default;
+    IAArena() = default; // CONSTRUCTOR DEFECTO
 
-	void configurar(float alcanceAtaque); // SIRVE PARA CONFIGURAR LOS UMBRALES DE LA FSM SEGUN EL ALCANCE DE ATAQUE DEL ENEMIGO, PARA QUE SE ADAPTE A CUALQUIER PIEZA
+    void configurar(float alcanceAtaque); // ADAPTACION RANGO PIEZA
 
-    // RELLENA EL EstadoJugador DE _p2 SEGUN LA LOGICA DE LA FSM
-    void actualizar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt);
-    
+    void actualizar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt); // DISPARADOR FISICAS MAQUINA
 };

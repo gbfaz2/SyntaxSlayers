@@ -6,6 +6,7 @@
 #include "tablero.h"
 #include "GestorMovimiento.h"
 #include "GestorTurnos.h"
+#include "Hechicero.h"
 #include "SpriteRey.h"
 
 
@@ -33,16 +34,20 @@ protected:
 	bool controlKey, shiftKey;
 	bool leftButton, rightButton, midButton;
 
-	
 
 	bool _combatePendiente{ false };
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
 
+	bool _modoHechizo{ false };           // HECHIZO PENDIENTE DE SELECCIONAR CASILLA
+	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO
+	BandoPieza _bandoHechizo{ bando_nada }; // BANDO QUE ACTIVO EL HECHIZO
+
 	int _anchoVentana{ 800 };  
 	int _altoVentana{ 600 };   
 
 private:
+	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
 	GestorMovimiento gestorMovimiento;
 	GestorTurnos     gestorTurnos;
 	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
@@ -78,9 +83,6 @@ public:
 
 	void trySelectorMove(BandoPieza bando);
 
-	void KeyDown(unsigned char key);
-	void SpecialKey(int key);
-	void MouseButton(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
 
 	void redimensionar(int ancho, int alto);
 
