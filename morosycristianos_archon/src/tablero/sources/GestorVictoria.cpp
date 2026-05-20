@@ -6,6 +6,7 @@
 // Comprueba las 3 condiciones en orden de prioridad
 ResultadoVictoria GestorVictoria::comprobarVictoria(const Tablero& tablero) const
 {
+
     ResultadoVictoria resultado = comprobarDominio(tablero); //comprueba el dominio lo primero
 
     //Si hay ganador (!=SIN_GANADOR) por dominio, devuelve el resultado 

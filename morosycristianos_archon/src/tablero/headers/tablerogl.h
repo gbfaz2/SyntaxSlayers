@@ -104,7 +104,7 @@ public:
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
 
-
+	void setVictoria(BandoPieza ganador) { victoria_ = ganador; }
 
 	void setBatalla(int b) { _batallaActual = b; } // SETTER
 
