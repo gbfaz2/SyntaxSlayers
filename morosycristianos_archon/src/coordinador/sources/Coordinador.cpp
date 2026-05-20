@@ -55,6 +55,7 @@ void Coordinador::dibuja()
 					pTablero = new Tablero();
 					pTablerogl = new Tablerogl(pTablero);
 					pTablerogl->init();
+					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
@@ -260,12 +261,10 @@ void Coordinador::ratonMovido(int x, int y)
 
 void Coordinador::redimensionar(int ancho, int alto)
 {
-	_anchoVentana = ancho;
-	_altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
-	glViewport(0, 0, _anchoVentana, _altoVentana);
-
-	if (pTablerogl)
-		pTablerogl->redimensionar(ancho, alto);
+	anchoVentana = ancho;
+	altoVentana = (alto == 0) ? 1 : alto; // EVITA DIVISION POR CERO
+	glViewport(0, 0, anchoVentana, altoVentana);
+	Tablerogl::setVentana(anchoVentana, altoVentana); // ACTUALIZA TAMAÑO VENTANA EN TABLERO
 }
 
 void Coordinador::reiniciarTablero()

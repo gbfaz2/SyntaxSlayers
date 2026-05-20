@@ -9,7 +9,6 @@
 #include "Hechicero.h"
 #include "SpriteRey.h"
 
-
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
 enum { MOUSE_LEFT_BUTTON, MOUSE_MIDDLE_BUTTON, MOUSE_RIGHT_BUTTON };
 enum { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT };
@@ -54,6 +53,12 @@ private:
 	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
 		
 
+	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
+
+	static int _anchoVentana;
+	static int _altoVentana;
+
+
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey
@@ -63,6 +68,7 @@ public:
 	void DibujaFondo();
 
 	void Dibuja();//casillas y cuadrícula
+	void DibujaMarco(); // DIBUJA EL MARCO Y LAS LETRAS DEL TABLERO
 	void DibujaCasillas();//recorre 9x9 y pinta cada casilla
 	void DibujaCasilla(int fila, int col); //Dibuja un quad de relleno
 	//void DibujaCuadricula();
@@ -95,6 +101,11 @@ public:
 	Pieza* getPiezaDefensora() const { return _pDefensora; }
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
+
+	void setBatalla(int b) { _batallaActual = b; } // SETTER
+
+	static void setVentana(int ancho, int alto) { _anchoVentana = ancho; _altoVentana = alto; }
+
 };
 
 
