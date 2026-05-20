@@ -10,6 +10,11 @@
 #include "freeglut.h"
 #include "ETSIDI.h"
 #include <cmath>
+#include <cstdio>
+#include "menu.h"
+
+int Tablerogl::_anchoVentana = 1024;
+int Tablerogl::_altoVentana = 768;
 
 using namespace std;
 
@@ -17,8 +22,8 @@ static const int SEGS = 24;//numero de segmentos para dibujar los circulos(usado
 Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
 {
 	N = pb->getSize();//Siempre va a ser nueve, pero para asegurarnos mejor leerlo directamente de nuestra clase tablero
-	ancho = 0.13f;//ancho de una casilla en unidades Opengl
-	dist = 1.8;//distancia que hay de la cámara al tablero
+	ancho = 0.12f;//ancho de una casilla en unidades Opengl
+	dist = 2.0f;//distancia que hay de la cámara al tablero
 	//el centro del tablero es donde va a apuntar la cámara
 	//x positivo crece hacia la derecha, y negativo crece hacia abajo
 	centro_x = N * ancho / 2.0;
@@ -86,6 +91,8 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	DibujaFondo();//fondo png detrás de todo
 	glClear(GL_DEPTH_BUFFER_BIT);
 	DibujaCasillas();
+	DibujaMarco(); // MARCO Y LETRAS
+
 	DibujaSimbolos();
 
 	// PELICULA SEMITRANSPARENTE PARA ATENUAR EL TABLERO
@@ -129,9 +136,17 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 
 void Tablerogl::DibujaFondo()
 {
-	//intentamos cargar la textura y si no existiera el archivo, ETSIDI devuelve id=0 y no pasa nada
-	auto tex = ETSIDI::getTexture("imagenes/fondo.png");
-	if (tex.id == 0)return;
+	// SELECCIONA FONDO SEGUN BATALLA
+	const char* ruta = "imagenes/fondo.png";
+	switch (_batallaActual) {
+	case 0: ruta = "imagenes/fondo_guadalete.png"; break;
+	case 1: ruta = "imagenes/fondo_alarcos.png";   break;
+	case 2: ruta = "imagenes/fondo_navas.png";     break;
+	case 3: ruta = "imagenes/fondo_granada.png";   break;
+	}
+
+	auto tex = ETSIDI::getTexture(ruta);
+	if (tex.id == 0) return;
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex.id);
@@ -144,10 +159,10 @@ void Tablerogl::DibujaFondo()
 	float medio = 2.5f;
 
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(cx - medio, cy - medio, -0.5f);
-	glTexCoord2f(1, 0); glVertex3f(cx + medio, cy - medio, -0.5f);
-	glTexCoord2f(1, 1); glVertex3f(cx + medio, cy + medio, -0.5f);
-	glTexCoord2f(0, 1); glVertex3f(cx - medio, cy + medio, -0.5f);
+	glTexCoord2f(0, 1); glVertex3f(cx - medio, cy - medio, -0.5f); // INVERTIDO
+	glTexCoord2f(1, 1); glVertex3f(cx + medio, cy - medio, -0.5f); // INVERTIDO
+	glTexCoord2f(1, 0); glVertex3f(cx + medio, cy + medio, -0.5f); // INVERTIDO
+	glTexCoord2f(0, 0); glVertex3f(cx - medio, cy + medio, -0.5f); // INVERTIDO
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
@@ -586,4 +601,117 @@ void Tablerogl::limpiarCombate()
 	_combatePendiente = false;
 	_pAtacante = nullptr;
 	_pDefensora = nullptr; 
+}
+
+void Tablerogl::DibujaMarco()
+{
+	glDisable(GL_LIGHTING);
+
+	float margen = 0.06f;  // GROSOR DEL MARCO
+	float x0 = -margen;
+	float x1 = N * ancho + margen;
+	float y0 = margen;
+	float y1 = -(N * ancho) - margen;
+	float z = 0.007f;
+
+	// CARGA TEXTURA DE MADERA
+	auto texMarco = ETSIDI::getTexture("imagenes/marco_tablero.png");
+	bool tieneTextura = (texMarco.id != 0);
+
+	if (tieneTextura) {
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texMarco.id);
+		glColor3f(1, 1, 1); // SIN TINTE
+	}
+	else {
+		glColor3f(0.45f, 0.22f, 0.08f); // CAOBA DE FALLBACK
+	}
+
+	// LADO SUPERIOR CON TEXTURA
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(x0, y0, z);
+	glTexCoord2f(1, 0); glVertex3f(x1, y0, z);
+	glTexCoord2f(1, 1); glVertex3f(x1, 0.0f, z);
+	glTexCoord2f(0, 1); glVertex3f(x0, 0.0f, z);
+	glEnd();
+
+	// LADO INFERIOR CON TEXTURA
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(x0, -(N * ancho), z);
+	glTexCoord2f(1, 0); glVertex3f(x1, -(N * ancho), z);
+	glTexCoord2f(1, 1); glVertex3f(x1, y1, z);
+	glTexCoord2f(0, 1); glVertex3f(x0, y1, z);
+	glEnd();
+
+	// LADO IZQUIERDO CON TEXTURA
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(x0, y0, z);
+	glTexCoord2f(1, 0); glVertex3f(0.0f, y0, z);
+	glTexCoord2f(1, 1); glVertex3f(0.0f, y1, z);
+	glTexCoord2f(0, 1); glVertex3f(x0, y1, z);
+	glEnd();
+
+	// LADO DERECHO CON TEXTURA
+	glBegin(GL_QUADS);
+	glTexCoord2f(0, 0); glVertex3f(N * ancho, y0, z);
+	glTexCoord2f(1, 0); glVertex3f(x1, y0, z);
+	glTexCoord2f(1, 1); glVertex3f(x1, y1, z);
+	glTexCoord2f(0, 1); glVertex3f(N * ancho, y1, z);
+	glEnd();
+
+	if (tieneTextura) glDisable(GL_TEXTURE_2D); // DESACTIVA TEXTURA
+
+	// SUBBORDE EXTERIOR OSCURO
+	glColor3f(0.15f, 0.07f, 0.02f);
+	glLineWidth(3.0f);
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(x0, y0, z + 0.001f); glVertex3f(x1, y0, z + 0.001f);
+	glVertex3f(x1, y1, z + 0.001f); glVertex3f(x0, y1, z + 0.001f);
+	glEnd();
+
+	// SUBBORDE INTERIOR OSCURO
+	glBegin(GL_LINE_LOOP);
+	glVertex3f(0.0f, 0.0f, z + 0.001f); glVertex3f(N * ancho, 0.0f, z + 0.001f);
+	glVertex3f(N * ancho, -(N * ancho), z + 0.001f); glVertex3f(0.0f, -(N * ancho), z + 0.001f);
+	glEnd();
+	glLineWidth(1.0f);
+
+	// LEE LAS MATRICES 3D ANTES DE CAMBIAR A MODO 2D
+	GLdouble modelview[16], projection[16];
+	GLint viewport[4];
+	glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX, projection);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+
+	// CAMBIA A MODO 2D PARA LAS LETRAS
+	entrar2D(_anchoVentana, _altoVentana);
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 14);
+	ETSIDI::setTextColor(0.90f, 0.85f, 0.70f, 1.0f);
+
+	// LETRAS COLUMNAS (A-I) EN MARCO SUPERIOR
+	for (int col = 0; col < N; col++) {
+		float cx, cy;
+		cell2center(0, col, cx, cy);
+		GLdouble sx, sy, sz;
+		gluProject(cx, y0 * 0.3f, z, modelview, projection, viewport, &sx, &sy, &sz);
+		char letra[2] = { (char)('A' + col), '\0' };
+		ETSIDI::printxy(letra, (int)sx, (int)sy); // COORDENADAS REALES DE PANTALLA
+	}
+
+	// NUMEROS FILAS (1-9) EN MARCO IZQUIERDO
+	for (int fila = 0; fila < N; fila++) {
+		float cx, cy;
+		cell2center(fila, 0, cx, cy);
+		GLdouble sx, sy, sz;
+		gluProject(x0 * 0.6f, cy, z, modelview, projection, viewport, &sx, &sy, &sz);
+		char numero[3];
+		sprintf_s(numero, "%d", fila + 1);
+		ETSIDI::printxy(numero, (int)sx, (int)sy); // COORDENADAS REALES DE PANTALLA
+	}
+
+	// VUELVE A MODO 3D
+	salir2D();
+	
+
+	glEnable(GL_LIGHTING);
 }
