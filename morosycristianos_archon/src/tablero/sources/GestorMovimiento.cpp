@@ -34,10 +34,15 @@ ResultadoMovimiento GestorMovimiento::resolverMovimiento(
     case TipoMovimiento::VOLADOR:
     case TipoMovimiento::TELEPORTE:
         // saltan todo el camino, solo miran el destino
-        return comprobarDestino(pieza, tablero, toFila, toCol);
-    }
+       
+    _ultimoResultado = comprobarDestino(pieza, tablero, toFila, toCol); 
+    return _ultimoResultado;
 
-    return ResultadoMovimiento::MOVIMIENTO_INVALIDO; // por seguridad
+     }
+
+    _ultimoResultado = ResultadoMovimiento::MOVIMIENTO_INVALIDO;
+    return _ultimoResultado; // por seguridad
+   
 }
 
 
@@ -114,12 +119,11 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
 
                 _ultimoAtacante = pieza;
                 _ultimaDefensora = tablero.getCasilla(fila, col).obj; // ya está en destino
-
-                //retorna combate, como resultado del movimiento
+               
                 return ResultadoMovimiento::COMBATE;
             }
         }
-
+        
         // Casilla libre, seguimos avanzando y repitiendo el bucle hasta destino
         fila += dirFila;
         col += dirCol;

@@ -10,6 +10,8 @@
 #include "freeglut.h"
 #include "ETSIDI.h"
 #include <cmath>
+#include "menu.h"
+#include"coordinador.h"
 
 using namespace std;
 
@@ -50,6 +52,9 @@ void Tablerogl::init()
 
 	glMatrixMode(GL_PROJECTION);//matriz de proyección
 	gluPerspective(40.0, 800 / 600.0f, 0.1, 150);
+
+	//carga textura rey
+	SpriteRey::cargarTextura("imagenes\\IMAGEN_REY_CRISTIANO.png");
 }
 
 
@@ -414,11 +419,40 @@ void Tablerogl::DibujaPieza(int fil, int col)
 
 	switch (casilla.pieza) {
 
-	case pieza_esfera:
-		// Esfera grande: el líder (Rey / Emir)
-		glutSolidSphere(escala * 1.0f, 16, 16);
-		break;
+	case pieza_esfera: {
+		glPopMatrix();
 
+		if (casilla.bando != bando_local) {
+			return;  // el rival no se dibuja todavía
+		}
+			//_spriteReyLocal;
+		//SpriteRey& sprite = (casilla.bando == bando_local) _spriteReyLocal;
+
+		float tableroAncho = N * ancho;
+		float tableroAlto = N * ancho;
+
+		// Porcentaje de posición dentro del tablero (0 a 1)
+		float nx = cx / tableroAncho;
+		float ny = (-cy) / tableroAlto;
+
+		// Convertir a píxeles teniendo en cuenta el margen
+		// El tablero ocupa aproximadamente el 60% del ancho de ventana centrado
+		float margenX = _anchoVentana * 0.18f;  // margen izquierdo aproximado
+		float margenY = _altoVentana * 0.08f;  // margen superior aproximado
+		float anchoTablero = _anchoVentana * 0.60f;
+		float altoTablero = _altoVentana * 0.80f;
+
+		float px = margenX + nx * anchoTablero;
+		float py = _altoVentana - (margenY + ny * altoTablero);
+
+		float size = (anchoTablero / N) * 1.3f;  // tamaño de una casilla
+
+		entrar2D(_anchoVentana, _altoVentana);
+		glDisable(GL_LIGHTING);
+		_spriteReyLocal.dibujar(px, py, size);
+		salir2D();
+		return;
+	}
 	case pieza_dodecaedro:
 		// Dodecaedro: Infiltrado / Asesino de Élite
 		// glutSolidDodecahedron tiene radio ~1, escalamos
@@ -516,7 +550,16 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 	// Si YA HAY pieza seleccionada, estamos en FASE DE MOVIMIENTO
 	else {
+
 		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
+
+		//error pero como gestionar? ayuda
+		if (gestorTurnos.getBandoActual() == bando_local) {
+			Pieza* p = m_tablero->getCasilla(currentFila, currentCol).obj;
+			if (p && (p->getNombre() == "Rey" || p->getNombre() == "Emir"))
+				_spriteReyLocal.setEstado(EstadoRey::WALK);
+		}
+
 		if (!pieza) {
 			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
 			return;
@@ -541,6 +584,12 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			// Avisamos al coordinador de que hay combate pendiente
 			Pieza* atacante = gestorMovimiento.getUltimoAtacante();
 			Pieza* defensora = gestorMovimiento.getUltimaDefensora();
+
+			if (m_tablero->getCasilla(fromFila, fromCol).bando == bando_local)
+				_spriteReyLocal.setEstado(EstadoRey::ATTACK);
+			//else
+				//_spriteReyRival.setEstado(EstadoRey::ATTACK);
+
 
 			if (atacante && defensora) {
 				_pAtacante = atacante;
@@ -685,4 +734,12 @@ void Tablerogl::limpiarCombate()
 	_combatePendiente = false;
 	_pAtacante = nullptr;
 	_pDefensora = nullptr; 
+
+}
+
+void Tablerogl::redimensionar(int ancho, int alto) {
+	_anchoVentana = ancho;
+	_altoVentana = (alto == 0) ? 1 : alto;
+
+	return;
 }

@@ -177,6 +177,7 @@
     <ClInclude Include="src\piezas\headers\PiezaTerrestre.h" />
     <ClInclude Include="src\piezas\headers\PiezaVoladora.h" />
     <ClInclude Include="src\piezas\headers\Rey.h" />
+    <ClInclude Include="src\piezas\headers\SpriteRey.h" />
     <ClInclude Include="src\tablero\headers\GestorMovimiento.h" />
     <ClInclude Include="src\tablero\headers\GestorTurnos.h" />
     <ClInclude Include="src\tablero\headers\GestorVictoria.h" />
@@ -222,6 +223,7 @@
     <ClCompile Include="src\piezas\sources\PiezaTerrestre.cpp" />
     <ClCompile Include="src\piezas\sources\PiezaVoladora.cpp" />
     <ClCompile Include="src\piezas\sources\Rey.cpp" />
+    <ClCompile Include="src\piezas\sources\SpriteRey.cpp" />
     <ClCompile Include="src\tablero\sources\GestorHechizos.cpp" />
     <ClCompile Include="src\tablero\sources\GestorMovimiento.cpp" />
     <ClCompile Include="src\tablero\sources\GestorTurnos.cpp" />

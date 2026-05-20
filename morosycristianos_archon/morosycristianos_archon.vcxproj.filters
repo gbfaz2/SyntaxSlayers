@@ -180,6 +180,9 @@
     <ClInclude Include="GestorHechizos.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\piezas\headers\SpriteRey.h">
+      <Filter>piezas\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -291,6 +294,9 @@
     </ClCompile>
     <ClCompile Include="src\tablero\sources\GestorHechizos.cpp">
       <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\sources\SpriteRey.cpp">
+      <Filter>piezas\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

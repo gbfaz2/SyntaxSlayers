@@ -26,13 +26,16 @@ public:
         int toFila, int toCol
     );
 
-    Pieza* getUltimoAtacante()  const { return _ultimoAtacante; }
-    Pieza* getUltimaDefensora() const { return _ultimaDefensora; }
+    //getters publicos
+    ResultadoMovimiento getUltimoResultado()  const { return _ultimoResultado; }
+    Pieza* getUltimoAtacante()               const { return _ultimoAtacante; }
+    Pieza* getUltimaDefensora()              const { return _ultimaDefensora; }
 
 private:
 
-    //métodos privados internos:
-
+    //métodos privados internos para getter: guarda en la memoria lo utlimo recibido
+    ResultadoMovimiento _ultimoResultado{ ResultadoMovimiento::MOVIMIENTO_INVALIDO };
+  
     // Escanea casilla a casilla para terrestres
     //devuelve el tipo de "bloqueo"
     //recibe tablero, destino y origen
