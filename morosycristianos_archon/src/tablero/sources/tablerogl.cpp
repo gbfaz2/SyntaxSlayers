@@ -10,8 +10,13 @@
 #include "freeglut.h"
 #include "ETSIDI.h"
 #include <cmath>
+#include <cstdio>
+#include "menu.h"
 #include "menu.h"
 #include"coordinador.h"
+
+int Tablerogl::_anchoVentana = 1024;
+int Tablerogl::_altoVentana = 768;
 
 using namespace std;
 
@@ -19,8 +24,8 @@ static const int SEGS = 24;//numero de segmentos para dibujar los circulos(usado
 Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
 {
 	N = pb->getSize();//Siempre va a ser nueve, pero para asegurarnos mejor leerlo directamente de nuestra clase tablero
-	ancho = 0.13f;//ancho de una casilla en unidades Opengl
-	dist = 1.8;//distancia que hay de la cámara al tablero
+	ancho = 0.12f;//ancho de una casilla en unidades Opengl
+	dist = 2.0f;//distancia que hay de la cámara al tablero
 	//el centro del tablero es donde va a apuntar la cámara
 	//x positivo crece hacia la derecha, y negativo crece hacia abajo
 	centro_x = N * ancho / 2.0;
@@ -91,6 +96,8 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	DibujaFondo();//fondo png detrás de todo
 	glClear(GL_DEPTH_BUFFER_BIT);
 	DibujaCasillas();
+	DibujaMarco(); // MARCO Y LETRAS
+
 	DibujaSimbolos();
 
 	// PELICULA SEMITRANSPARENTE PARA ATENUAR EL TABLERO
@@ -134,9 +141,17 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 
 void Tablerogl::DibujaFondo()
 {
-	//intentamos cargar la textura y si no existiera el archivo, ETSIDI devuelve id=0 y no pasa nada
-	auto tex = ETSIDI::getTexture("imagenes/fondo.png");
-	if (tex.id == 0)return;
+	// SELECCIONA FONDO SEGUN BATALLA
+	const char* ruta = "imagenes/fondo.png";
+	switch (_batallaActual) {
+	case 0: ruta = "imagenes/fondo_guadalete.png"; break;
+	case 1: ruta = "imagenes/fondo_alarcos.png";   break;
+	case 2: ruta = "imagenes/fondo_navas.png";     break;
+	case 3: ruta = "imagenes/fondo_granada.png";   break;
+	}
+
+	auto tex = ETSIDI::getTexture(ruta);
+	if (tex.id == 0) return;
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, tex.id);
@@ -149,10 +164,10 @@ void Tablerogl::DibujaFondo()
 	float medio = 2.5f;
 
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); glVertex3f(cx - medio, cy - medio, -0.5f);
-	glTexCoord2f(1, 0); glVertex3f(cx + medio, cy - medio, -0.5f);
-	glTexCoord2f(1, 1); glVertex3f(cx + medio, cy + medio, -0.5f);
-	glTexCoord2f(0, 1); glVertex3f(cx - medio, cy + medio, -0.5f);
+	glTexCoord2f(0, 1); glVertex3f(cx - medio, cy - medio, -0.5f); // INVERTIDO
+	glTexCoord2f(1, 1); glVertex3f(cx + medio, cy - medio, -0.5f); // INVERTIDO
+	glTexCoord2f(1, 0); glVertex3f(cx + medio, cy + medio, -0.5f); // INVERTIDO
+	glTexCoord2f(0, 0); glVertex3f(cx - medio, cy + medio, -0.5f); // INVERTIDO
 	glEnd();
 
 	glDisable(GL_TEXTURE_2D);
