@@ -125,6 +125,14 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::FINAL:
+		if (pTablerogl) {
+			// Dibuja el tablero con el cartel de victoria encima
+			pTablerogl->Dibuja();
+			entrar2D(_anchoVentana, _altoVentana);
+			pTablerogl->DibujaVictoria();
+			salir2D();
+		}
+		
 		break;
 
 	default: break;
@@ -198,15 +206,24 @@ void Coordinador::tecla_especial_up(int key)
 
 void Coordinador::mueve(double dt)
 {
+	//ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 	//actualiza gestor turnos por dt
 	if (estado == EstadoJuego::TABLERO && pTablero) {
 		// Actualiza el cronómetro del turno
 		gestorTurnos.update(dt);
 
-		// Comprueba si alguien ha ganado
+		// Doble comprobacion por seguridad
+		if (pTablero == nullptr) return;
+
 		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 		if (rv != ResultadoVictoria::SIN_GANADOR) {
 			ETSIDI::stopMusica();
+			if (pTablerogl) {
+				if (rv == ResultadoVictoria::GANA_LOCAL)
+					pTablerogl->setVictoria(bando_local);
+				else if (rv == ResultadoVictoria::GANA_RIVAL)
+					pTablerogl->setVictoria(bando_rival);
+			}
 			estado = EstadoJuego::FINAL;
 		}
 	}
