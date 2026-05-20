@@ -1,5 +1,6 @@
 #include "SpriteRey.h"
 // SpriteRey.cpp
+// DIBUJAR CON DRAW DE ETSIDI
 // Implementación del sistema de animación por spritesheet para el Rey Cristiano.
 
 #include "ETSIDI.h"   // getTexture — misma API que usa pantallabatalla.cpp
