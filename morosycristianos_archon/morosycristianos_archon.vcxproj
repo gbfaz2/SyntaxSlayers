@@ -154,6 +154,10 @@
     <ClInclude Include="src\arena\headers\Combatiente.h" />
     <ClInclude Include="src\arena\headers\InputState.h" />
     <ClInclude Include="src\coordinador\headers\Coordinador.h" />
+    <ClInclude Include="src\coordinador\headers\dibuja.h" />
+    <ClInclude Include="src\coordinador\headers\dibujaarena.h" />
+    <ClInclude Include="src\coordinador\headers\dibujamenu.h" />
+    <ClInclude Include="src\coordinador\headers\dibujatablero.h" />
     <ClInclude Include="src\coordinador\headers\GestorInput.h" />
     <ClInclude Include="src\ia\headers\IAArena.h" />
     <ClInclude Include="src\ia\headers\MinimaxTablero.h" />
@@ -201,6 +205,10 @@
     <ClCompile Include="src\arena\sources\ArenaRenderer.cpp" />
     <ClCompile Include="src\arena\sources\Combatiente.cpp" />
     <ClCompile Include="src\coordinador\sources\Coordinador.cpp" />
+    <ClCompile Include="src\coordinador\sources\dibuja.cpp" />
+    <ClCompile Include="src\coordinador\sources\dibujaarena.cpp" />
+    <ClCompile Include="src\coordinador\sources\dibujamenu.cpp" />
+    <ClCompile Include="src\coordinador\sources\dibujatablero.cpp" />
     <ClCompile Include="src\coordinador\sources\GestorInput.cpp" />
     <ClCompile Include="src\ia\sources\IAArena.cpp" />
     <ClCompile Include="src\ia\sources\MinimaxTablero.cpp" />

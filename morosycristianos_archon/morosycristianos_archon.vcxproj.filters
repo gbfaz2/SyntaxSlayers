@@ -186,6 +186,18 @@
     <ClInclude Include="src\piezas\headers\SpriteRey.h">
       <Filter>piezas\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujaarena.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujamenu.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujatablero.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibuja.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -303,6 +315,18 @@
     </ClCompile>
     <ClCompile Include="src\piezas\sources\SpriteRey.cpp">
       <Filter>piezas\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujaarena.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujamenu.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujatablero.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibuja.cpp">
+      <Filter>coordinador\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -3,6 +3,7 @@
 #include "menu.h"
 #include "tablerogl.h"
 #include "Coordinador.h" // INCLUDE COMPLETO SOLO EN EL CPP
+#include "ETSIDI.h"
 
 // =============================================================
 // MENU

@@ -49,6 +49,8 @@ protected:
 
 private:
 	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
+	friend class DibujaTablero;
+
 	GestorMovimiento gestorMovimiento;
 	GestorTurnos     gestorTurnos;
 	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
@@ -65,32 +67,7 @@ public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey
 
-	void init(); //Luces más perspectiva desde donde lo vamos a ver
-
-	void DibujaFondo();
-
-	void Dibuja();//casillas y cuadrícula
-	void DibujaMarco(); // DIBUJA EL MARCO Y LAS LETRAS DEL TABLERO
-	void DibujaCasillas();//recorre 9x9 y pinta cada casilla
-	void DibujaCasilla(int fila, int col); //Dibuja un quad de relleno
-	//void DibujaCuadricula();
-	void setCasillaColor(int fila, int col);//Elige el color que tiene que tener la casilla correspondiente
-	void DibujaSimbolos();//dibuja encima de cada casilla su simbolo correspondiente, ahora si casilla local(cristianos) cruz blanca, si no (media luna blanca)
-	void DibujaCruz(float cx, float cy, float size);//dibuja la cruz de los cristianos centrada
-	void DibujaLuna(float cx, float cy, float size);//dibuja la media luna de los musulmanes centrada
-	void DibujaPuntoPoder(float cx, float cy, float size);//dibuja el círculo amarillo en las casillas de punto de poder
-	void DibujaCasSelec(int fila, int col, float r, float g, float b, float lw, float z);
-	void DibujaCursores();
-	void DibujaSeleccion();
-
-	void DibujaMovimientosValidos();//se llama cuando hay una pieza seleccionada para resaltar las casillas a las que puede moverse
-	void DibujaVictoria();//dibuja el cartel de victoria si alguien ha ganado 
-
-	void DibujaPiezas();
-	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
-
 	void trySelectorMove(BandoPieza bando);
-
 
 	void redimensionar(int ancho, int alto);
 
