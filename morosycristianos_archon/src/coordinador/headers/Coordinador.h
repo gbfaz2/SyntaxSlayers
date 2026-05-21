@@ -5,7 +5,6 @@
 #include "tablero.h"
 #include "tablerogl.h"
 #include "Arena.h"
-#include "ArenaRenderer.h"
 #include "InputState.h"
 #include "GestorMovimiento.h"
 #include "GestorTurnos.h"

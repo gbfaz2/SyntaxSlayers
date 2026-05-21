@@ -2,6 +2,7 @@
 #include "dibuja.h"
 #include "dibujamenu.h"
 #include "dibujatablero.h"
+#include "dibujaarena.h"
 #include "ETSIDI.h"
 #include "freeglut.h"
 #include <ctime>
@@ -20,7 +21,7 @@ void Coordinador::inicializa()
 	srand((unsigned)time(nullptr));
 	pantallaIntro.reiniciar();
 	menuPrincipal.reiniciar();
-	ArenaRenderer::configurarVista(_anchoVentana, _altoVentana); // CONFIGURA CAMARA ARENA
+	DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana); // CONFIGURA CAMARA ARENA
 	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
 	gestorInput.setCoordinador(this); // ASIGNA COORDINADOR AL GESTOR
 }
@@ -108,7 +109,7 @@ void Coordinador::dibuja()
 
 				ETSIDI::stopMusica(); // DEJA DE SONAR MUSICA TABLERO
 				ETSIDI::play("sonido_combate_fight.wav");
-				ArenaRenderer::configurarVista(_anchoVentana, _altoVentana);
+				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				pTablerogl->limpiarCombate();
 				estado = EstadoJuego::ARENA;
 			}
@@ -116,7 +117,7 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::ARENA:
-		ArenaRenderer::dibujar(_arena, configuracion.batalla);
+		DibujaArena::arena_dibujar(_arena, configuracion.batalla);
 		break;
 
 	case EstadoJuego::RANKING:

@@ -135,9 +135,6 @@
     <ClInclude Include="src\arena\headers\Arena.h">
       <Filter>arena\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\headers\ArenaRenderer.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\arena\headers\Combatiente.h">
       <Filter>arena\Headers</Filter>
     </ClInclude>
@@ -269,9 +266,6 @@
       <Filter>piezas\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\arena\sources\Arena.cpp">
-      <Filter>arena\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp">
       <Filter>arena\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\arena\sources\Combatiente.cpp">

@@ -150,7 +150,6 @@
     <ClInclude Include="lib\freeglut.h" />
     <ClInclude Include="lib\glut.h" />
     <ClInclude Include="src\arena\headers\Arena.h" />
-    <ClInclude Include="src\arena\headers\ArenaRenderer.h" />
     <ClInclude Include="src\arena\headers\Combatiente.h" />
     <ClInclude Include="src\arena\headers\InputState.h" />
     <ClInclude Include="src\coordinador\headers\Coordinador.h" />
@@ -202,7 +201,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\arena\sources\Arena.cpp" />
-    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp" />
     <ClCompile Include="src\arena\sources\Combatiente.cpp" />
     <ClCompile Include="src\coordinador\sources\Coordinador.cpp" />
     <ClCompile Include="src\coordinador\sources\dibuja.cpp" />

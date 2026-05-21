@@ -1,6 +1,9 @@
 #include "dibuja.h"
 #include "freeglut.h"
 
+int Dibuja::_anchoVentana = 1024; // O el tamaño por defecto que prefieras
+int Dibuja::_altoVentana = 768;
+
 // UTILIDADES OPENGL
 
 void Dibuja::util_entrar2D(int ancho, int alto) {
