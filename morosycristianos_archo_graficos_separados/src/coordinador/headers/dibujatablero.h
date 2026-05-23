@@ -28,6 +28,9 @@ class DibujaTablero : public Dibuja {
     // RENDERIZADO 3D DE LAS PIEZAS 
     static void tablero_piezas(Tablerogl& t);
     static void tablero_pieza_individual(Tablerogl& t, int fil, int col);
+    //CONTADORES DE TIEMPO Y CARTEL DE MOVIMIENTO INVALIDO
+    static void tablero_contadores(const Tablerogl& t);
+    static void tablero_mensaje_invalido(const Tablerogl& t);
 
 public:
     // INICIALIZACIÓN DE OPENGL PARA EL TABLERO

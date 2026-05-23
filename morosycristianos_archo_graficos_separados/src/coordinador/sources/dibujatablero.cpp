@@ -89,6 +89,12 @@ void DibujaTablero::tablero_dibujar(Tablerogl& t) {
     glRectf(-mitad, mitad, mitad, -mitad);
     glPopMatrix();
     glDisable(GL_BLEND);
+
+    //CONTADORES Y CARTEL INVÁLIDO
+    glDisable(GL_DEPTH_TEST);
+    tablero_contadores(t);
+    tablero_mensaje_invalido(t);
+    glEnable(GL_DEPTH_TEST);
 }
 
 // CAPAS BASE DEL TABLERO E IMÁGENES
@@ -427,28 +433,27 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     switch (casilla.pieza) {
     case pieza_esfera: {
+        glutSolidSphere(escala, 18, 18);
         glPopMatrix();
         if (casilla.bando != bando_local) return; // RIVAL AÚN NO SE DIBUJA
-
-        float tableroAncho = t.N * t.ancho;
-        float tableroAlto = t.N * t.ancho;
-        float nx = cx / tableroAncho;
-        float ny = (-cy) / tableroAlto;
-
-        float margenX = Tablerogl::_anchoVentana * 0.18f;
-        float margenY = Tablerogl::_altoVentana * 0.08f;
-        float anchoTablero = Tablerogl::_anchoVentana * 0.60f;
-        float altoTablero = Tablerogl::_altoVentana * 0.80f;
-
-        float px = margenX + nx * anchoTablero;
-        float py = Tablerogl::_altoVentana - (margenY + ny * altoTablero);
-        float size = (anchoTablero / t.N) * 1.3f;
-
-        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
-        glDisable(GL_LIGHTING);
-        // LLAMADA AL SPRITE DEL REY PARA QUE SE DIBUJE A SÍ MISMO
-        t._spriteReyLocal.dibujar(px, py, size);
-        util_salir2D();
+        if (casilla.bando == bando_local) {
+            // Sprite del rey cristiano superpuesto
+            float tableroAncho = t.N * t.ancho;
+            float tableroAlto = t.N * t.ancho;
+            float nx = cx / tableroAncho;
+            float ny = (-cy) / tableroAlto;
+            float margenX = Tablerogl::_anchoVentana * 0.18f;
+            float margenY = Tablerogl::_altoVentana * 0.08f;
+            float anchoTab = Tablerogl::_anchoVentana * 0.60f;
+            float altoTab = Tablerogl::_altoVentana * 0.80f;
+            float px = margenX + nx * anchoTab;
+            float py = Tablerogl::_altoVentana - (margenY + ny * altoTab);
+            float size = (anchoTab / t.N) * 1.3f;
+            util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+            glDisable(GL_LIGHTING);
+            t._spriteReyLocal.dibujar(px, py, size);
+            util_salir2D();
+        }
         return;
     }
     case pieza_dodecaedro:
@@ -494,7 +499,6 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     }
     glPopMatrix();
 }
-
 // PANTALLA FINAL DE VICTORIA
 
 void DibujaTablero::tablero_victoria(const Tablerogl& t) {
@@ -530,4 +534,72 @@ void DibujaTablero::tablero_victoria(const Tablerogl& t) {
     ETSIDI::printxy("Pulsa ESC para volver al menu", 310, 360);
 
     glEnable(GL_DEPTH_TEST);
+}
+
+//CONTADORES Y MENSAJE INVÁLIDO
+
+void DibujaTablero::tablero_contadores(const Tablerogl& t)
+{
+    int av = Tablerogl::_altoVentana;
+    int aw = Tablerogl::_anchoVentana;
+
+    float tiempo = t.gestorTurnos.getTiempoRestante();
+    int   seg = (int)tiempo;
+    int   turno = t.gestorTurnos.getNumeroTurno();
+    bool  esLocal = (t.gestorTurnos.getBandoActual() == bando_local);
+
+    char bufLocal[64], bufRival[64], bufTurno[32];
+
+    // LOCAL (izquierda): amarillo vivo si es su turno, apagado si espera
+    if (esLocal) {
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+        sprintf_s(bufLocal, "CRISTIANO  %02d s", seg);
+    }
+    else {
+        ETSIDI::setTextColor(0.5f, 0.5f, 0.2f, 1.0f);
+        sprintf_s(bufLocal, "CRISTIANO  --");
+    }
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 20);
+    ETSIDI::printxy(bufLocal, 20, av - 40);
+
+    // RIVAL (derecha): cian vivo si es su turno, apagado si espera
+    if (!esLocal) {
+        ETSIDI::setTextColor(0.0f, 1.0f, 1.0f, 1.0f);
+        sprintf_s(bufRival, "%02d s  AL-ANDALUS", seg);
+    }
+    else {
+        ETSIDI::setTextColor(0.2f, 0.5f, 0.5f, 1.0f);
+        sprintf_s(bufRival, "--  AL-ANDALUS");
+    }
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 20);
+    ETSIDI::printxy(bufRival, aw - 210, av - 40);
+}
+
+void DibujaTablero::tablero_mensaje_invalido(const Tablerogl& t)
+{
+    if (t._tiempoMensajeInvalido <= 0.0f) return;
+    if (t._mensajeInvalido.empty()) return;
+
+    int av = Tablerogl::_altoVentana;
+    int aw = Tablerogl::_anchoVentana;
+
+    // Fondo rojo semitransparente centrado en pantalla
+    util_entrar2D(aw, av);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.55f, 0.0f, 0.0f, 0.80f);
+    float mx = aw * 0.25f, my = av * 0.48f;
+    float mw = aw * 0.50f, mh = av * 0.06f;
+    glBegin(GL_QUADS);
+    glVertex2f(mx, my);    glVertex2f(mx + mw, my);
+    glVertex2f(mx + mw, my + mh); glVertex2f(mx, my + mh);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    // Texto del cartel
+    ETSIDI::setTextColor(1.0f, 0.35f, 0.35f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 22);
+    ETSIDI::printxy(t._mensajeInvalido.c_str(),
+        (int)(mx + 20), (int)(my + mh * 0.35f));
+    util_salir2D();
 }
