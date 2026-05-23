@@ -9,14 +9,11 @@
 // comprobar que al intentar mover una pieza estas moviendo la de tu bando
 
 
-constexpr float TIEMPO_LIMITE_TURNO = 60.0f; //constante tiempo limite / turno (seg)
+constexpr float TIEMPO_LIMITE_TURNO = 90.0f; //constante tiempo limite / turno (seg)
 
 
 class GestorTurnos
 {
-
-//variables privadas para que no se pueda acceder a ellas
-private:
     BandoPieza           _turnoActual;       // variable tipo bando que almacena de quién es el turno ahora
     float           _tiempoRestante;    // segundos que le quedan al jugador actual
     int             _numeroTurno;       // contador de turnos totales jugados
@@ -45,11 +42,13 @@ public:
 
     // Getters para que tablerogl pueda mostrar info en pantalla
     BandoPieza getBandoActual()      const { return _turnoActual; }
+    //vamos a permitir al coordinador fijar que bando empieza según la batalla seleccionada
+    void setBandoInicial(BandoPieza bando) { 
+        _turnoActual = bando;
+        _tiempoRestante = TIEMPO_LIMITE_TURNO;
+    }
     float getTiempoRestante()   const { return _tiempoRestante; }
     int   getNumeroTurno()      const { return _numeroTurno; }
-
-
-
 };
 
 
