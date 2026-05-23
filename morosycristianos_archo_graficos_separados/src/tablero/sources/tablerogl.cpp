@@ -1,0 +1,150 @@
+
+//Autor: María Heredero
+
+//aquí se va a dibujar el tablero. 
+//Se recorren las 81 casillas del tablero y por cada una decide si es clara(par) u oscura (impar), según el tipo de casillas elige el par de colores concreto y luego dibuja un rectángulo relleno con el color
+//Por último se dibuja la cuadrícula negra encima
+
+#include "tablerogl.h"
+#include <iostream>
+#include <cmath>
+#include <cstdio>
+#include "menu.h"
+
+int Tablerogl::_anchoVentana = 1024;
+int Tablerogl::_altoVentana = 768;
+
+
+using namespace std;
+
+Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
+{
+	N = pb->getSize();//Siempre va a ser nueve, pero para asegurarnos mejor leerlo directamente de nuestra clase tablero
+	ancho = 0.12f;//ancho de una casilla en unidades Opengl
+	dist = 2.0f;//distancia que hay de la cámara al tablero
+	//el centro del tablero es donde va a apuntar la cámara
+	//x positivo crece hacia la derecha, y negativo crece hacia abajo
+	centro_x = N * ancho / 2.0;
+	centro_y = -N * ancho / 2.0;
+	centro_z = 0.0;
+
+	Filacursor[0] = 0; Colcursor[0] = 1; //Cursor local
+	Filacursor[1] = 0; Colcursor[1] = 7;//Cursor rival
+
+	xcasilla_sel = -1;//todavía no hay casilla seleccionada
+	ycasilla_sel = -1;
+
+	fromFila = fromCol = -1;
+	fromBando = bando_nada;
+	piezaSeleccionada = false;//no hay pieza seleccionada
+
+	victoria_ = bando_nada;//la partida sigue en curso, nadie a ganado
+
+	leftButton = rightButton = midButton = false;
+	controlKey = shiftKey = false;
+}
+
+void Tablerogl::trySelectorMove(BandoPieza bando)
+{
+	//Obtenemos las coordenadas a las que apunta el cursor o el ratón en este momento
+	int idx = (bando == bando_local) ? 0 : 1;
+	int currentFila = Filacursor[idx];
+	int currentCol = Colcursor[idx];
+
+	// Si NO hay pieza seleccionada, estamos en FASE DE SELECCIÓN
+	if (!piezaSeleccionada) {
+
+		// Comprobamos si la pieza en esa casilla pertenece al bando que tiene el turno
+		if (gestorTurnos.esDelBandoActual(*m_tablero, currentFila, currentCol)) {
+			// Es válida. Guardamos el origen y marcamos como seleccionada
+			fromFila = currentFila;
+			fromCol = currentCol;
+			fromBando = bando;
+			piezaSeleccionada = true;
+		}
+		// Si no es su turno o la casilla está vacía, no hace nada y sale
+		return;
+	}
+
+	// Si YA HAY pieza seleccionada, estamos en FASE DE MOVIMIENTO
+	else {
+
+		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
+
+		//error pero como gestionar? ayuda
+		if (gestorTurnos.getBandoActual() == bando_local) {
+			Pieza* p = m_tablero->getCasilla(currentFila, currentCol).obj;
+			if (p && (p->getNombre() == "Rey" || p->getNombre() == "Emir"))
+				_spriteReyLocal.setEstado(EstadoRey::WALK);
+		}
+
+		if (!pieza) {
+			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
+			return;
+		}
+
+		// Intentamos mover la pieza desde el origen al destino (currentFila, currentCol)
+		ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
+			pieza, *m_tablero, currentFila, currentCol
+		);
+
+		if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1; // Reseteamos el origen
+
+			// ¡IMPORTANTE! Aquí debes avisar al gestor de turnos de que el turno ha terminado
+			gestorTurnos.terminarTurno();
+		}
+		else if (resultado == ResultadoMovimiento::COMBATE) {
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
+			
+			// Avisamos al coordinador de que hay combate pendiente
+			Pieza* atacante = gestorMovimiento.getUltimoAtacante();
+			Pieza* defensora = gestorMovimiento.getUltimaDefensora();
+
+			if (m_tablero->getCasilla(fromFila, fromCol).bando == bando_local)
+				_spriteReyLocal.setEstado(EstadoRey::ATTACK);
+			//else
+				//_spriteReyRival.setEstado(EstadoRey::ATTACK);
+
+
+			if (atacante && defensora) {
+				_pAtacante = atacante;
+				_pDefensora = defensora;
+				_combatePendiente = true;
+			}
+
+			gestorTurnos.terminarTurno();
+		}
+		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
+		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
+	}
+}
+
+void Tablerogl::cell2center(int casilla_x, int casilla_y, float& glx, float& gly)
+{
+	glx = casilla_y * ancho + ancho / 2.0f;
+	gly = -casilla_x * ancho - ancho / 2.0f;
+}
+
+void Tablerogl::world2cell(double x, double y, int& casilla_x, int& casilla_y)
+{
+	casilla_x = (int)(fabs(y / ancho));
+	casilla_y = (int)(x / ancho);
+}
+
+void Tablerogl::limpiarCombate()
+{
+	_combatePendiente = false;
+	_pAtacante = nullptr;
+	_pDefensora = nullptr; 
+
+}
+
+void Tablerogl::redimensionar(int ancho, int alto) {
+	_anchoVentana = ancho;
+	_altoVentana = (alto == 0) ? 1 : alto;
+
+	return;
+}
