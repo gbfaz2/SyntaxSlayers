@@ -343,7 +343,7 @@ void Tablerogl::setCasillaColor(int fila, int col)
 	case Casilla_rival:
 		glColor3f(0.70f, 0.30f, 0.85f); // MORADO MAS CLARO
 		return;
-	case Casilla_dinamica:
+	case Casilla_neutra:
 		glColor3f(0.50f, 0.50f, 0.50f); // GRIS MAS CLARO
 		return;
 	case Casilla_poder:
