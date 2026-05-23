@@ -820,6 +820,34 @@ void Tablerogl::DibujaContadores()
 
 void Tablerogl::DibujaMensajeInvalido()
 {
+	if (_tiempoMensajeInvalido <= 0.0f) return;
+	if (_mensajeInvalido.empty()) return;
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	// Fondo semitransparente rojo oscuro centrado
+	// Dibujamos en coordenadas mundo, en el centro del tablero
+	float cx = (float)centro_x;
+	float cy = (float)centro_y;
+	float hx = N * ancho * 0.40f;
+	float hy = N * ancho * 0.08f;
+	glColor4f(0.5f, 0.0f, 0.0f, 0.80f);
+	glBegin(GL_QUADS);
+	glVertex3f(cx - hx, cy + hy, 0.0f);
+	glVertex3f(cx + hx, cy + hy, 0.0f);
+	glVertex3f(cx + hx, cy - hy, 0.0f);
+	glVertex3f(cx - hx, cy - hy, 0.0f);
+	glEnd();
+	glDisable(GL_BLEND);
+
+	// Texto centrado (coordenadas en píxeles)
+	ETSIDI::setTextColor(1.0f, 0.3f, 0.3f, 1.0f);
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 24);
+	ETSIDI::printxy(_mensajeInvalido.c_str(),_anchoVentana / 2 - 160,_altoVentana / 2 + 10);
+
+	glEnable(GL_DEPTH_TEST);
 }
 void Tablerogl::aplicarCambiosDinamicos()
 {
