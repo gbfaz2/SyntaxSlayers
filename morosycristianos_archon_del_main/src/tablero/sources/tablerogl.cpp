@@ -544,17 +544,6 @@ void Tablerogl::DibujaVictoria()
 
 	glEnable(GL_DEPTH_TEST);
 }
-
-void Tablerogl::DibujaContadores()
-{
-}
-
-void Tablerogl::DibujaMensajeInvalido()
-{
-}
-
-
-
 void Tablerogl::DibujaPiezas()//va a recorrer todo el tablero y dibuja la pieza de la casilla que corresponda
 {
 	for (int fila = 0; fila < N; fila++) {
@@ -585,6 +574,7 @@ void Tablerogl::DibujaPieza(int fil, int col)
 	switch (casilla.pieza) {
 
 	case pieza_esfera: {
+		glutSolidSphere(escala, 18, 18);
 		glPopMatrix();
 
 		if (casilla.bando != bando_local) {
@@ -592,30 +582,31 @@ void Tablerogl::DibujaPieza(int fil, int col)
 		}
 			//_spriteReyLocal;
 		//SpriteRey& sprite = (casilla.bando == bando_local) _spriteReyLocal;
+		if (casilla.bando == bando_local) {
+			float tableroAncho = N * ancho;
+			float tableroAlto = N * ancho;
 
-		float tableroAncho = N * ancho;
-		float tableroAlto = N * ancho;
+			// Porcentaje de posición dentro del tablero (0 a 1)
+			float nx = cx / tableroAncho;
+			float ny = (-cy) / tableroAlto;
 
-		// Porcentaje de posición dentro del tablero (0 a 1)
-		float nx = cx / tableroAncho;
-		float ny = (-cy) / tableroAlto;
+			// Convertir a píxeles teniendo en cuenta el margen
+			// El tablero ocupa aproximadamente el 60% del ancho de ventana centrado
+			float margenX = _anchoVentana * 0.18f;  // margen izquierdo aproximado
+			float margenY = _altoVentana * 0.08f;  // margen superior aproximado
+			float anchoTablero = _anchoVentana * 0.60f;
+			float altoTablero = _altoVentana * 0.80f;
 
-		// Convertir a píxeles teniendo en cuenta el margen
-		// El tablero ocupa aproximadamente el 60% del ancho de ventana centrado
-		float margenX = _anchoVentana * 0.18f;  // margen izquierdo aproximado
-		float margenY = _altoVentana * 0.08f;  // margen superior aproximado
-		float anchoTablero = _anchoVentana * 0.60f;
-		float altoTablero = _altoVentana * 0.80f;
+			float px = margenX + nx * anchoTablero;
+			float py = _altoVentana - (margenY + ny * altoTablero);
 
-		float px = margenX + nx * anchoTablero;
-		float py = _altoVentana - (margenY + ny * altoTablero);
+			float size = (anchoTablero / N) * 1.3f;  // tamaño de una casilla
 
-		float size = (anchoTablero / N) * 1.3f;  // tamaño de una casilla
-
-		entrar2D(_anchoVentana, _altoVentana);
-		glDisable(GL_LIGHTING);
-		_spriteReyLocal.dibujar(px, py, size);
-		salir2D();
+			entrar2D(_anchoVentana, _altoVentana);
+			glDisable(GL_LIGHTING);
+			_spriteReyLocal.dibujar(px, py, size);
+			salir2D();
+		}
 		return;
 	}
 	case pieza_dodecaedro:
@@ -677,20 +668,6 @@ void Tablerogl::DibujaPieza(int fil, int col)
 	glPopMatrix();
 }
 
-/*void Tablerogl::DibujaCuadricula()
-{
-	glColor3f(0, 0, 0);
-	float total = N * ancho;
-	for (int i = 0; i <= N; i++) {
-		glLineWidth(i % N == 0 ? 4.0f : 1.0f);
-		glBegin(GL_LINES);
-		glVertex3f(i * ancho, 0, 0); glVertex3f(i * ancho, -total, 0);
-		glVertex3f(0, -i * ancho, 0); glVertex3f(total, -i * ancho, 0);
-		glEnd();
-	}
-	glLineWidth(1.0f);
-}*/
-
 void Tablerogl::trySelectorMove(BandoPieza bando)
 {
 	//Obtenemos las coordenadas a las que apunta el cursor o el ratón en este momento
@@ -739,7 +716,7 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1; // Reseteamos el origen
 
-			// ¡IMPORTANTE! Aquí debes avisar al gestor de turnos de que el turno ha terminado
+			// se avisa al gestor de turnos de que el turno ha terminado
 			gestorTurnos.terminarTurno();
 		}
 		else if (resultado == ResultadoMovimiento::COMBATE) {
@@ -764,13 +741,16 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 			gestorTurnos.terminarTurno();
 		}
+		//ocurre un movimiento invalido o bloqueado: aparece el cartel temporal
+		else {
+			if (resultado == ResultadoMovimiento::BLOQUEADO_ALIADO)
+				mostrarMensajeInvalido("Casilla bloqueada por aliado");
+			else
+				mostrarMensajeInvalido("Movimiento invalido");
+		}
 		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
 		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
 	}
-}
-
-void Tablerogl::aplicarCambiosDinamicos()
-{
 }
 
 void Tablerogl::cell2center(int casilla_x, int casilla_y, float& glx, float& gly)
@@ -798,4 +778,49 @@ void Tablerogl::redimensionar(int ancho, int alto) {
 	_altoVentana = (alto == 0) ? 1 : alto;
 
 	return;
+}
+
+void Tablerogl::DibujaContadores()
+{
+	glDisable(GL_DEPTH_TEST);
+
+	float tiempo = gestorTurnos.getTiempoRestante();
+	int seg = (int)tiempo;
+	//int turno = gestorTurnos.getNumeroTurno();
+
+	char bufLocal[64], bufRival[64];
+
+	//turno actual: que bando está jugando
+	bool esLocal = (gestorTurnos.getBandoActual() == bando_local);
+	//si es local se muestra a la izquierda el temporizador
+	if (esLocal) {
+		ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+		sprintf_s(bufLocal, "CRISTIANO %02d s", seg);
+	}
+	else {
+		ETSIDI::setTextColor(0.6f, 0.6f, 0.3f, 1.0f);
+		sprintf_s(bufLocal, "CRISTIANO --");
+	}
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 12);
+	ETSIDI::printxy(bufLocal, 20, _altoVentana - 40);
+
+	//si es rival se muestra a la derecha el temporizador
+	if (!esLocal) {
+		ETSIDI::setTextColor(0.0f, 1.0f, 1.0f, 1.0f);
+		sprintf_s(bufRival, "%02d s AL-ANDALUS", seg);
+	}
+	else {
+		ETSIDI::setTextColor(0.3f, 0.6f, 0.6f, 1.0f);
+		sprintf_s(bufRival, "-- AL-ANDALUS");
+	}
+	ETSIDI::setFont("fuentes/nuevafuente.ttf", 12);
+	ETSIDI::printxy(bufRival, _anchoVentana-210, _altoVentana - 40);
+
+}
+
+void Tablerogl::DibujaMensajeInvalido()
+{
+}
+void Tablerogl::aplicarCambiosDinamicos()
+{
 }
