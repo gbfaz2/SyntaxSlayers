@@ -849,6 +849,18 @@ void Tablerogl::DibujaMensajeInvalido()
 
 	glEnable(GL_DEPTH_TEST);
 }
-void Tablerogl::aplicarCambiosDinamicos()
+void Tablerogl::aplicarCambiosDinamicos()//cada 4 turnos las casillas locales pasan a ser rivales
 {
+	for (int fila = 0; fila < N; fila++) {
+		for (int col = 0; col < N; col++) {
+			Casilla& cas = m_tablero->getCasilla(fila, col);
+			//las casillas que tengan pieza no cambiar (la presencia de tropas "fija" el terreno temporal)
+			if (cas.pieza == pieza_nada) {
+				if (cas.tipo == Casilla_local)
+					cas.tipo = Casilla_rival;
+				else if (cas.tipo == Casilla_rival)
+					cas.tipo = Casilla_local;
+			}
+		}
+	}
 }
