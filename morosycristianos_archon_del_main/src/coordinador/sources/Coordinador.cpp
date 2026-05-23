@@ -56,6 +56,9 @@ void Coordinador::dibuja()
 					pTablerogl = new Tablerogl(pTablero);
 					pTablerogl->init();
 					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
+					//Fijamos quién empieza según la batalla seleccionada
+					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN) ? bando_rival : bando_local;
+					pTablerogl->gestorTurnos.setBandoInicial(bandoInicial);
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
@@ -211,6 +214,15 @@ void Coordinador::mueve(double dt)
 	if (estado == EstadoJuego::TABLERO && pTablero) {
 		// Actualiza el cronómetro del turno
 		gestorTurnos.update(dt);
+		if (pTablerogl) pTablerogl->updateMensaje(dt);
+		//casillas dinámicas
+		if (pTablerogl) {
+			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
+			if (turnoActual != pTablerogl->_turnosJugados && turnoActual % Tablerogl::TUNOS_DINAMICAS == 0) {
+				pTablerogl->_turnosJugados = turnoActual;
+				pTablerogl->aplicarCambiosDinamicos();
+			}
+		}
 
 		// Doble comprobacion por seguridad
 		if (pTablero == nullptr) return;
