@@ -90,6 +90,7 @@ public:
 		if (_tiempoMensajeInvalido > 0.0f)
 			_tiempoMensajeInvalido -= (float)dt;
 	}
+	//fija el bando que empieza según la batalla elegida en el menu 
 	void setBandoInicial(BandoPieza bando) {
 		gestorTurnos.setBandoInicial(bando);
 	}
