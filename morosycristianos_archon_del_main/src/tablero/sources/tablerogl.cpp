@@ -6,6 +6,7 @@
 //Por último se dibuja la cuadrícula negra encima
 
 #include "tablerogl.h"
+#include "GestorVictoria.h"
 #include <iostream>
 #include "freeglut.h"
 #include "ETSIDI.h"
@@ -120,8 +121,6 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 	DibujaPiezas();
 	glDisable(GL_LIGHTING);
 
-	//DibujaCuadricula();
-
 	//hacemos un rectángulo transparente para captura del ratón, para garantizar que siempre hay algo en z=0 bajo el cursor.
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -135,6 +134,23 @@ void Tablerogl::Dibuja()//se llama cada frame desde Ondraw(). Orden: fondo-casil
 
 	glDisable(GL_BLEND);
 	//glEnable(GL_LIGHTING);//lo restauramos para las piezas 3D
+
+	//comprobamos victoria en cada frame
+	if (victoria_ == bando_nada) {
+		GestorVictoria gestorVic;
+		ResultadoVictoria rv = gestorVic.comprobarVictoria(*m_tablero);
+		if (rv == ResultadoVictoria::GANA_LOCAL) victoria_ = bando_local;
+		else if (rv == ResultadoVictoria::GANA_RIVAL)victoria_ = bando_rival;
+	}
+	//dibujo los contadores
+	DibujaContadores();
+
+	//dibujo cartel de movimiento invalido (temporal de 2segs)
+	DibujaMensajeInvalido();
+
+	//cartel de victoria si la partida termina
+	if (victoria_ != bando_nada)
+		DibujaVictoria();
 
 }
 
@@ -529,6 +545,14 @@ void Tablerogl::DibujaVictoria()
 	glEnable(GL_DEPTH_TEST);
 }
 
+void Tablerogl::DibujaContadores()
+{
+}
+
+void Tablerogl::DibujaMensajeInvalido()
+{
+}
+
 
 
 void Tablerogl::DibujaPiezas()//va a recorrer todo el tablero y dibuja la pieza de la casilla que corresponda
@@ -743,6 +767,10 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
 		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
 	}
+}
+
+void Tablerogl::aplicarCambiosDinamicos()
+{
 }
 
 void Tablerogl::cell2center(int casilla_x, int casilla_y, float& glx, float& gly)
