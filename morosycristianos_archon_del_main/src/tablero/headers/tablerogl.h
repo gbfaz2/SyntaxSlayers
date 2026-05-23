@@ -11,12 +11,24 @@
 #include "menu.h"
 //#include"coordinador.h"
 
-//creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
+//creo las enumeraciones con las variables del raton y de las teclas especiales para asignarles el mismo valor que tenemos en el freeglut.h
 enum { MOUSE_LEFT_BUTTON, MOUSE_MIDDLE_BUTTON, MOUSE_RIGHT_BUTTON };
 enum { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT };
 
 class Tablerogl
 {
+	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
+	friend class Coordinador; //ACCESO PARA GESTOR DE DINAMICAS Y BANDO INICIAL
+	GestorMovimiento gestorMovimiento;
+	GestorTurnos     gestorTurnos;
+	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
+	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
+
+
+	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
+
+	static int _anchoVentana;
+	static int _altoVentana;
 protected:
 	float ancho;
 	int N;
@@ -37,6 +49,12 @@ protected:
 
 
 	bool _combatePendiente{ false };
+
+	float _tiempoMensajeInvalido{ 0.0f };//los segundos que va a quedar visible el cartel de esto
+	std::string _mensajeInvalido;//texto del cartel de movimiento invalido
+	int _turnosJugados{ 0 };//contados de turnos para casillas dinámicas
+	static const int TUNOS_DINAMICAS = 4;//cada cuantos turnos van a cambiar las casillas de bando
+
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
 
@@ -46,20 +64,6 @@ protected:
 
 	int anchoVentana{ 800 };  
 	int altoVentana{ 600 };   
-
-private:
-	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
-	GestorMovimiento gestorMovimiento;
-	GestorTurnos     gestorTurnos;
-	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
-	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
-		
-
-	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
-
-	static int _anchoVentana;
-	static int _altoVentana;
-
 
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
@@ -73,7 +77,6 @@ public:
 	void DibujaMarco(); // DIBUJA EL MARCO Y LAS LETRAS DEL TABLERO
 	void DibujaCasillas();//recorre 9x9 y pinta cada casilla
 	void DibujaCasilla(int fila, int col); //Dibuja un quad de relleno
-	//void DibujaCuadricula();
 	void setCasillaColor(int fila, int col);//Elige el color que tiene que tener la casilla correspondiente
 	void DibujaSimbolos();//dibuja encima de cada casilla su simbolo correspondiente, ahora si casilla local(cristianos) cruz blanca, si no (media luna blanca)
 	void DibujaCruz(float cx, float cy, float size);//dibuja la cruz de los cristianos centrada
@@ -85,6 +88,8 @@ public:
 
 	void DibujaMovimientosValidos();//se llama cuando hay una pieza seleccionada para resaltar las casillas a las que puede moverse
 	void DibujaVictoria();//dibuja el cartel de victoria si alguien ha ganado 
+	void DibujaContadores();//cronometros de cada bando (arriba izq y derecha)
+	void DibujaMensajeInvalido();//cartel temporal que indica que el movimiento es invalido
 
 	void DibujaPiezas();
 	void DibujaPieza(int fil, int col);//dibuja la pieza de esa casilla
@@ -93,6 +98,18 @@ public:
 
 
 	void redimensionar(int ancho, int alto);
+
+	//hacemos aquí el método del cartel de movimiento invalido durante 2 segundos
+	void mostrarMensajeInvalido(const std::string& mensaje) {
+		_mensajeInvalido = mensaje;
+		_tiempoMensajeInvalido = 2.0f;
+	}
+	//actualizamos el tiempo del mensaje
+	void updateMensaje(double dt) {
+		if (_tiempoMensajeInvalido > 0.0f)_tiempoMensajeInvalido -= (float)dt;
+	}
+	//aplicamos el intercambio de casillas dinamicas
+	void aplicarCambiosDinamicos();
 
 	//conversores de coordenadas cogidas del repositorio de Pablo
 	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);
