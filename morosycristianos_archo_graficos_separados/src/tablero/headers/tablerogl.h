@@ -17,6 +17,21 @@ enum { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT };
 
 class Tablerogl
 {
+	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
+	friend class Coordinador;//ACCESO PARA BANDO INICIAL Y CASILLAS DINAMICAS
+	friend class DibujaTablero;//ACCESO PARA DIBUJO
+
+	GestorMovimiento gestorMovimiento;
+	GestorTurnos     gestorTurnos;
+	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
+	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
+
+
+	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
+
+	static int _anchoVentana;
+	static int _altoVentana;
+
 protected:
 	float ancho;
 	int N;
@@ -37,6 +52,9 @@ protected:
 
 
 	bool _combatePendiente{ false };
+	float _tiempoMensajeInvalido{ 0.0f };
+	std::string _mensajeInvalido;
+	int _turnosJugados{ 0 };
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
 
@@ -46,23 +64,6 @@ protected:
 
 	int anchoVentana{ 800 };  
 	int altoVentana{ 600 };   
-
-private:
-	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
-	friend class DibujaTablero;
-
-	GestorMovimiento gestorMovimiento;
-	GestorTurnos     gestorTurnos;
-	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
-	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
-		
-
-	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
-
-	static int _anchoVentana;
-	static int _altoVentana;
-
-
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey
@@ -80,6 +81,21 @@ public:
 	Pieza* getPiezaDefensora() const { return _pDefensora; }
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
+	void mostrarMensajeInvalido(const std::string& mensaje) {
+		_mensajeInvalido = mensaje;
+		_tiempoMensajeInvalido = 2.0f;
+	}
+	//descuenta el temporizador del cartel 
+	void updateMensaje(double dt){
+		if (_tiempoMensajeInvalido > 0.0f)
+			_tiempoMensajeInvalido -= (float)dt;
+	}
+	void setBandoInicial(BandoPieza bando) {
+		gestorTurnos.setBandoInicial(bando);
+	}
+	//aplicar intercambio de casillas dinámicas
+	void aplicarCambiosDinámicos();
+	static const int TURNOS_DINAMICOS = 4;//cada cuatro turnos se intercamnian local por rival
 
 	void setVictoria(BandoPieza ganador) { victoria_ = ganador; }
 
