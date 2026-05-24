@@ -42,4 +42,6 @@ public:
     // ORQUESTADORES PRINCIPALES 
     static void tablero_dibujar(Tablerogl& t); // DIBUJA EL TABLERO COMPLETO DURANTE LA PARTIDA
     static void tablero_victoria(const Tablerogl& t); // DIBUJA LA PANTALLA FINAL DE GANADOR
+
+    static void tablero_guardando(Tablerogl& t, int ancho, int alto, float tiempoRestante);
 };

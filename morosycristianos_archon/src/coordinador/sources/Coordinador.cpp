@@ -125,50 +125,8 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::GUARDANDO:
-
-		// Dibuja el tablero de fondo
-		if (pTablerogl) {
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_LIGHTING);
-			glEnable(GL_LIGHT0);
-			glEnable(GL_COLOR_MATERIAL);
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-			gluPerspective(40.0, (float)_anchoVentana / (float)_altoVentana, 0.1, 150.0);
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			DibujaTablero::tablero_dibujar(*pTablerogl);
-		}
-
-		// Mensaje encima en 2D
-		Dibuja::util_entrar2D(_anchoVentana, _altoVentana);
-
-		// Fondo semitransparente
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
-		glBegin(GL_QUADS);
-		glVertex2f(150, 300); glVertex2f(_anchoVentana - 150, 300);
-		glVertex2f(_anchoVentana - 150, 430); glVertex2f(150, 430);
-		glEnd();
-
-		// Texto
-		ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
-		ETSIDI::setFont("fuentes/nuevafuente.ttf", 24);
-		ETSIDI::printxy("Pulsa G para guardar la partida", 280, 360);
-		ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
-		ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
-		ETSIDI::printxy("Pulsa ESC para volver al tablero", 285, 395);
-
-		// Cronometro
-		{
-			char buf[64];
-			sprintf_s(buf, "Tiempo restante: %.0f segundos", _tiempoGuardado);
-			ETSIDI::setTextColor(1.0f, 0.4f, 0.4f, 1.0f);
-			ETSIDI::printxy(buf, 320, 420);
-		}
-
-		Dibuja::util_salir2D();
+		if (pTablerogl)
+			DibujaTablero::tablero_guardando(*pTablerogl, _anchoVentana, _altoVentana, _tiempoGuardado);
 		break;
 
 	case EstadoJuego::CARGANDO:
@@ -235,7 +193,7 @@ void Coordinador::tecla(unsigned char key)
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
 		}
-		if (key == 27) { // ESC cancela y vuelve al tablero
+		if (key == 27) {
 			estado = EstadoJuego::TABLERO;
 		}
 		break;
