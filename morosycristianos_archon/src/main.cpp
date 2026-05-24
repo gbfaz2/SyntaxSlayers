@@ -23,7 +23,8 @@ int main(int argc, char* argv[])
     glutInit(&argc, argv);
     glutInitWindowSize(1024, 768);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutCreateWindow("Moros y Cristianos");
+    glutCreateWindow("Moros y Cristianos");   // primero crea la ventana
+    glutSetWindowTitle("Moros y Cristianos"); // luego pone el título
 
     
     /*glEnable(GL_LIGHT0);

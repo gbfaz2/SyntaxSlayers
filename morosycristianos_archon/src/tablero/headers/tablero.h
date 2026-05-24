@@ -83,7 +83,7 @@ public:
 	//añado método para ver si se puede mover la pieza 
 	bool puedeMover(int fr, int fc, int tr, int tc)const;
 	//añado método para ver si va a haber combate o no, false si no hay combate y true si hay combate
-	bool muevePieza(int fr, int fc, int tr, int tc);
+	Pieza* muevePieza(int fr, int fc, int tr, int tc);
 	//añado un método que devuelve el radio de movimiento de la pieza
 	int getRadioMovimiento(int fila, int col)const;
 
