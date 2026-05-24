@@ -1,11 +1,12 @@
 #include "Combatiente.h"
 #include <algorithm> // para std::max (asegurar que la vida no es nunca negativa)
 #include <cmath>
+#include "Arma.h"
 
 Combatiente::Combatiente(float x, float y, float z, float r, float g, float b)
 	: _x{ x }, _y{ y }, _z{ z }, _r{ r }, _g{ g }, _b{ b }
 {
-
+	_inicioX = x; // GUARDA EL LADO EN EL QUE EMPEZO
 }
 
 void Combatiente::posicion(float x, float y, float z)
@@ -34,10 +35,9 @@ void Combatiente::pedirMovimiento(Direccion d)
 
 void Combatiente::actualizar(float dt) 
 {
-	// Aplico el movimiento pedido por el jugador
-	if (_dxPedido != 0.0f || _dzPedido != 0.0f) 
+	if (_dxPedido != 0.0f || _dzPedido != 0.0f)
 	{
-		// Normalizamos el movimiento para que no sea mas rapido en diagonal
+		// NORMALIZA EL MOVIMIENTO PARA QUE NO SEA MAS RAPIDO EN DIAGONAL
 		float longitud = std::sqrt(_dxPedido * _dxPedido + _dzPedido * _dzPedido);
 		float nx = _dxPedido / longitud;
 		float nz = _dzPedido / longitud;
@@ -78,15 +78,26 @@ Combatiente::Combatiente(float x, float z, float r, float g, float b, const Piez
 {
 	// Usamos los stats reales de la pieza del tablero
 	// La vida de Pieza es int (0-100), la convertimos a float
-	_vida = static_cast<float>(pieza.getVida());  // no existe aun, lo añadimos luego
+	_vida = static_cast<float>(pieza.getVida()) * 1.0f;
 	_vidaMax = static_cast<float>(pieza.getVidaMax()); // tampoco existe aun
 
 	// La fuerza de Pieza se convierte en daño del combatiente
-	_danoAtaque = static_cast<float>(pieza.getFuerza());
+	//_danoAtaque = static_cast<float>(pieza.getFuerza());
+	_danoAtaque = static_cast<float>(pieza.getFuerza()) * 0.15f;
 
-	// La recarga de Pieza se convierte en cooldown (normalizamos de 0-100 a 0-2 segundos)
-	// recarga 20 (baja) -> cooldown 0.2s (ataca rapido)
-	// recarga 90 (alta) -> cooldown 0.9s (ataca lento)
-	_cooldownAtaque = pieza.getRecarga() / 100.0f;
+	// Combinamos recarga y velAtaque para el cooldown real recarga alta = tarda en recargar, velAtaque alta = ataca mas rapido
+	float recargaNorm = pieza.getRecarga() / 100.0f;
+	float velNorm = pieza.getVelAtaque() / 200.0f;
+	_cooldownAtaque = std::max(0.1f, recargaNorm - velNorm);
+
+	// RadioMov → velocidad en la arena
+	// radioMov 2 -> velocidad 3.6 u/s (lento)
+	// radioMov 5 -> velocidad 6.0 u/s (rapido)
+	_velocidad = 2.0f + pieza.getRadioMov() * 0.8f;
+
+	// Alcance segun tipo de arma (dynamic_cast de Pieza a Arma)
+	_alcanceAtaque = 1.5f; // por defecto cuerpo a cuerpo
+	const Arma* arma = dynamic_cast<const Arma*>(&pieza);
+	if (arma && arma->getTipoAtaque() == TipoAtaque::DISTANCIA)
+		_alcanceAtaque = 3.5f;
 }
-

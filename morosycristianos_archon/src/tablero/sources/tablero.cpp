@@ -34,7 +34,7 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 {
 	const TipoCasilla L = Casilla_local;
 	const TipoCasilla R = Casilla_rival;
-	const TipoCasilla D = Casilla_dinamica;
+	const TipoCasilla D = Casilla_neutra;
 
 	TipoCasilla patron[9][9] = {
 		//   c0  c1  c2  c3  c4  c5  c6  c7  c8
@@ -124,12 +124,13 @@ bool Tablero::puedeMover(int fr, int fc, int tr, int tc) const
 	return true;
 }
 
-bool Tablero::muevePieza(int fr, int fc, int tr, int tc)
+Pieza* Tablero::muevePieza(int fr, int fc, int tr, int tc)
 {
 	bool batalla = (tablero[tr][tc].pieza != pieza_nada && tablero[tr][tc].bando != tablero[fr][fc].bando);
-	// Si hay combate, eliminamos la pieza destino
+	// Si hay combate, extraemos la pieza defensora en vez de que hace
+	Pieza* capturada = nullptr;
 	if (batalla) {
-		delete tablero[tr][tc].obj;
+		capturada= tablero[tr][tc].obj;
 		tablero[tr][tc].obj = nullptr;
 	}
 	//Movemos la pieza al destino
@@ -148,7 +149,7 @@ bool Tablero::muevePieza(int fr, int fc, int tr, int tc)
 		cout << "[Tablero] COMBATE en (" << tr << "," << tc << ")!" << endl;
 	else
 		cout << "[Tablero] Movido: (" << fr << "," << fc << ") → (" << tr << "," << tc << ")" << endl;
-	return batalla;
+	return capturada;
 }
 
 int Tablero::getRadioMovimiento(int fila, int col) const
@@ -228,4 +229,40 @@ BandoPieza Tablero::checkVicoria() const
 
 	return bando_nada; // nadie ha ganado todavía
 	return BandoPieza();
+}
+
+Pieza* Tablero::buscarPieza(TipoPieza tipo, BandoPieza bando) const
+{
+	for (int f = 0; f < N; f++)
+		for (int c = 0; c < N; c++)
+			if (tablero[f][c].pieza == tipo && tablero[f][c].bando == bando)
+				return tablero[f][c].obj;
+	return nullptr;
+}
+
+void Tablero::limpiarPiezas()
+{
+	for (int f = 0; f < N; f++)
+		for (int c = 0; c < N; c++) {
+			delete tablero[f][c].obj;
+			tablero[f][c].obj = nullptr;
+			tablero[f][c].pieza = pieza_nada;
+			tablero[f][c].bando = bando_nada;
+		}
+}
+
+Pieza* Tablero::crearPieza(TipoPieza tipo, BandoPieza bando)
+{
+	Bando b = (bando == bando_local) ? Bando::CRISTIANO : Bando::ANDALUSI;
+	switch (tipo) {
+	case pieza_esfera:      return new Rey(b);
+	case pieza_dodecaedro:  return new Infiltrado(b);
+	case pieza_icosaedro:   return new Almogavar(b);
+	case pieza_tetraedro:   return new CaballeriaLigera(b);
+	case pieza_cubog:       return new Infanteria(b);
+	case pieza_cono:        return new CaballeriaPesada(b);
+	case pieza_cilindro:    return new Ballestero(b);
+	case pieza_cubo_p:      return new Miliciano(b);
+	default:                return nullptr;
+	}
 }
