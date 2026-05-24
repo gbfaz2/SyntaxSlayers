@@ -135,9 +135,6 @@
     <ClInclude Include="src\arena\headers\Arena.h">
       <Filter>arena\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\headers\ArenaRenderer.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\arena\headers\Combatiente.h">
       <Filter>arena\Headers</Filter>
     </ClInclude>
@@ -166,6 +163,39 @@
       <Filter>tablero\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\tablero\headers\tablerogl.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GestorHechizos.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\GestorInput.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorMovimiento.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorTurnos.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorVictoria.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\piezas\headers\SpriteRey.h">
+      <Filter>piezas\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujaarena.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujamenu.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujatablero.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibuja.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GestorPartida.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -241,9 +271,6 @@
     <ClCompile Include="src\arena\sources\Arena.cpp">
       <Filter>arena\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp">
-      <Filter>arena\Sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\arena\sources\Combatiente.cpp">
       <Filter>arena\Sources</Filter>
     </ClCompile>
@@ -266,6 +293,39 @@
       <Filter>tablero\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\tablero\sources\tablerogl.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorHechizos.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\GestorInput.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorMovimiento.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorTurnos.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorVictoria.cpp">
+      <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\piezas\sources\SpriteRey.cpp">
+      <Filter>piezas\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujaarena.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujamenu.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujatablero.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibuja.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorPartida.cpp">
       <Filter>tablero\Sources</Filter>
     </ClCompile>
   </ItemGroup>

@@ -3,12 +3,10 @@
 #include <chrono>
 using namespace std::chrono;
 
-// ─────────────────────────────────────────────────────────────
-// Único objeto global: el jefe de todo
-// ─────────────────────────────────────────────────────────────
+
 Coordinador juego;
 
-// ── Prototipos de callbacks ───────────────────────────────────
+
 void OnDraw();
 void OnTimer(int value);
 void OnKeyboardDown(unsigned char key, int x, int y);
@@ -16,15 +14,17 @@ void OnSpecialKeyboardDown(int key, int x, int y);
 void OnMouseClick(int button, int state, int x, int y);
 void OnPassiveMotion(int x, int y);
 void OnReshape(int ancho, int alto);
+void OnKeyboardUp(unsigned char key, int x, int y);
+void OnSpecialKeyboardUp(int key, int x, int y);
 
-// ─────────────────────────────────────────────────────────────
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
     glutInitWindowSize(1024, 768);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutCreateWindow("Moros y Cristianos");   // primero crea la ventana
-    glutSetWindowTitle("Moros y Cristianos"); // luego pone el título
+    glutCreateWindow("Moros y Cristianos");
+    glutFullScreen(); // PANTALLA COMPLETA
+    glutSetWindowTitle("Moros y Cristianos");
 
     
     /*glEnable(GL_LIGHT0);
@@ -44,13 +44,14 @@ int main(int argc, char* argv[])
     glutMouseFunc(OnMouseClick);
     glutPassiveMotionFunc(OnPassiveMotion);
     glutReshapeFunc(OnReshape);
-
+    glutKeyboardUpFunc(OnKeyboardUp);
+    glutSpecialUpFunc(OnSpecialKeyboardUp); 
 
     glutMainLoop();
     return 0;
 }
 
-// ── Callbacks ─────────────────────────────────────────────────
+
 void OnDraw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -64,7 +65,7 @@ void OnDraw()
 
 void OnKeyboardDown(unsigned char key, int /*x*/, int /*y*/)
 {
-    if (key == 27) exit(0);   // ESC siempre cierra
+    if (key == '0') exit(0);   // ESC siempre cierra
     juego.tecla(key);
     glutPostRedisplay();
 }
@@ -103,3 +104,15 @@ void OnTimer(int /*VALUE*/)
     glutPostRedisplay();
     glutTimerFunc(25, OnTimer, 0);
 } 
+
+void OnKeyboardUp(unsigned char key, int /*x*/, int /*y*/)
+{
+    juego.tecla_up(key);
+    glutPostRedisplay();
+}
+
+void OnSpecialKeyboardUp(int key, int /*x*/, int /*y*/)
+{
+    juego.tecla_especial_up(key);
+    glutPostRedisplay();
+}
