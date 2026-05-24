@@ -1,12 +1,12 @@
-
 // Autor: Ines Alcérreca Sánchez
-// Pantalla DESTINO: fondo animado + contexto historico de la batalla sorteada
+// Pantalla DESTINO (SOLO LÓGICA, CERO GRÁFICOS, CERO TEXTURAS)
 
 #pragma once
 #include "estadojuego.h"
 #include <vector>
 #include <string>
-#include "ETSIDI.h"
+
+class DibujaMenu; // DECLARACION ANTICIPADA PARA LA AMISTAD CON EL MOTOR GRAFICO
 
 struct Particula {
     float x, y, vx, vy;
@@ -23,26 +23,20 @@ class PantallaDestino {
     std::vector<Particula>   m_particulas;
     std::vector<std::string> m_lineas;
 
-    void actualizar(int ancho, int alto);
-    void emitir(int ancho, int alto);
-    void dibujarFondo(int ancho, int alto);
-    void dibujarEfectos(int ancho, int alto);
-    void dibujarParticulas();
-    void dibujarTextos(int ancho, int alto);
-    void dibujarContinuar(int ancho, int alto);
+    void emitir(int ancho, int alto); // CALCULA NACIMIENTO DE PARTICULAS
+    void colorParticula(float& r, float& g, float& b, float variacion) const; // ASIGNA RGB LOGICO
 
-    void  coloresFondo(float& r1, float& g1, float& b1,
-        float& r2, float& g2, float& b2) const;
-    void  colorParticula(float& r, float& g, float& b, float variacion) const;
     float alfaEntrada() const;
     bool  textoCompleto() const;
 
-    ETSIDI::GLTexture m_textura = { 0, 0, 0 }; //para el fondo animado 
-
 public:
     PantallaDestino() = default;
+
     void reiniciar(const ConfigPartida& cfg);
-    void dibujar(int ancho, int alto);
+    void actualizar(int ancho, int alto); // GESTIONA LA LOGICA POR FRAME
     void avanzar();
+
     bool terminado() const { return m_terminado; }
+
+    friend class DibujaMenu; // PERMITE A DIBUJAMENU LEER LA INFO PRIVADA
 };

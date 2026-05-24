@@ -34,7 +34,7 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 {
 	const TipoCasilla L = Casilla_local;
 	const TipoCasilla R = Casilla_rival;
-	const TipoCasilla D = Casilla_dinamica;
+	const TipoCasilla D = Casilla_neutra;
 
 	TipoCasilla patron[9][9] = {
 		//   c0  c1  c2  c3  c4  c5  c6  c7  c8
