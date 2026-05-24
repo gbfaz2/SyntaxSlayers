@@ -63,7 +63,12 @@ protected:
 	BandoPieza _bandoHechizo{ bando_nada }; // BANDO QUE ACTIVO EL HECHIZO
 
 	//int anchoVentana{ 800 };  
-	//int altoVentana{ 600 };   
+	//int altoVentana{ 600 }; 
+	
+	bool _esperandoDestino{ false };  // ESPERANDO SEGUNDA CASILLA PARA HECHIZO DE 2 PASOS
+	int  _hechizoFilaOrigen{ -1 };   // FILA ORIGEN DEL HECHIZO
+	int  _hechizoColOrigen{ -1 };    // COL ORIGEN DEL HECHIZO
+
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey
@@ -82,6 +87,8 @@ public:
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
 	void mostrarMensajeInvalido(const std::string& mensaje) {
+		// NO PROCESAR SI ESTAMOS EN MODO HECHIZO
+		if (_modoHechizo) return;
 		_mensajeInvalido = mensaje;
 		_tiempoMensajeInvalido = 2.0f;
 	}
