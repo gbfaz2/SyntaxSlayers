@@ -50,6 +50,3 @@ public:
         _tiempoRestante = TIEMPO_LIMITE_TURNO;
     }
 };
-
-
-

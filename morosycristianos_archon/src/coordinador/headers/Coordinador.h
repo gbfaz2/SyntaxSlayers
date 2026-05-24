@@ -12,6 +12,7 @@
 #include "GestorHechizos.h"
 #include "GestorInput.h"
 #include "SpriteRey.h"
+#include "GestorPartida.h"
 
 class Coordinador
 {
@@ -48,6 +49,8 @@ public:
     
 	int      _anchoVentana{ 800 };
 	int      _altoVentana{ 600 };
+	
+	float _tiempoGuardado{ 0.0f };
 
 	void inicializa();
 	void dibuja();

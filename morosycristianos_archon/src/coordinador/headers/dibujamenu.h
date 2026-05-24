@@ -4,6 +4,7 @@
 #pragma once
 #include "dibuja.h"
 #include "menu.h"
+#include "GestorPartida.h"
 #include <string>
 
 // DECLARACIÓN ANTICIPADA

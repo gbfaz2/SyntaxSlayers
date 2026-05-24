@@ -195,6 +195,9 @@
     <ClInclude Include="src\coordinador\headers\dibuja.h">
       <Filter>coordinador\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="GestorPartida.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -321,6 +324,9 @@
     </ClCompile>
     <ClCompile Include="src\coordinador\sources\dibuja.cpp">
       <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorPartida.cpp">
+      <Filter>tablero\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
