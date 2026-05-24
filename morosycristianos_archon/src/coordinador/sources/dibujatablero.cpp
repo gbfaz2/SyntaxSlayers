@@ -376,9 +376,14 @@ void DibujaTablero::tablero_seleccion(const Tablerogl& t) {
 }
 
 void DibujaTablero::tablero_movimientos_validos(const Tablerogl& t) {
-    if (!t.piezaSeleccionada || t.fromFila < 0) return;
+    if (!t.piezaSeleccionada || t.fromFila < 0) return;  // NO HAY PIEZA SELECCIONADA
+    if (t._modoHechizo) return;                           // MODO HECHIZO ACTIVO
 
-    auto validas = t.m_tablero->casillasValidas(t.fromFila, t.fromCol);
+    BandoPieza bandoActual = t.gestorTurnos.getBandoActual(); // BANDO CON TURNO
+    const Casilla& cas = t.m_tablero->getCasilla(t.fromFila, t.fromCol);
+    if (cas.bando != bandoActual) return;                 // PIEZA NO ES DEL TURNO ACTUAL
+
+    auto validas = t.m_tablero->casillasValidas(t.fromFila, t.fromCol); // CASILLAS VÁLIDAS
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

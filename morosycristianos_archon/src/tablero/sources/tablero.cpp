@@ -148,7 +148,7 @@ Pieza* Tablero::muevePieza(int fr, int fc, int tr, int tc)
 	if (batalla)
 		cout << "[Tablero] COMBATE en (" << tr << "," << tc << ")!" << endl;
 	else
-		cout << "[Tablero] Movido: (" << fr << "," << fc << ") → (" << tr << "," << tc << ")" << endl;
+		cout << "[Tablero] Movido: (" << fr << "," << fc << ") -> (" << tr << "," << tc << ")" << endl;
 	return capturada;
 }
 
