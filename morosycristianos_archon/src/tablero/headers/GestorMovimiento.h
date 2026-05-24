@@ -15,6 +15,23 @@ enum class ResultadoMovimiento {
 };
 
 class GestorMovimiento {
+    //métodos privados internos para getter: guarda en la memoria lo utlimo recibido
+    ResultadoMovimiento _ultimoResultado{ ResultadoMovimiento::MOVIMIENTO_INVALIDO };
+
+    // Escanea casilla a casilla para terrestres
+    //devuelve el tipo de "bloqueo"
+    //recibe tablero, destino y origen
+    ResultadoMovimiento escanearCaminoTerrestre(Pieza* pieza, Tablero& tablero, int toFila, int toCol);
+
+    // Solo mira el destino (voladoras y teleporte)
+    ResultadoMovimiento comprobarDestino(Pieza* pieza, Tablero& tablero, int toFila, int toCol);
+
+    Pieza* _ultimoAtacante{ nullptr };
+    Pieza* _ultimaDefensora{ nullptr };
+    int _filaAtacante{ -1 };  // FILA DE LA ATACANTE ANTES DEL COMBATE
+    int _colAtacante{ -1 };   // COLUMNA DE LA ATACANTE ANTES DEL COMBATE
+    int _filaDefensora{ -1 }; // FILA DE LA DEFENSORA
+    int _colDefensora{ -1 };  // COLUMNA DE LA DEFENSORA
 public:
 
     //no es necesario constructor para este caso (no hay inicializaciones)
@@ -35,33 +52,4 @@ public:
     int getColAtacante()   const { return _colAtacante; }
     int getFilaDefensora() const { return _filaDefensora; }
     int getColDefensora()  const { return _colDefensora; }
-
-
-private:
-
-    //métodos privados internos para getter: guarda en la memoria lo utlimo recibido
-    ResultadoMovimiento _ultimoResultado{ ResultadoMovimiento::MOVIMIENTO_INVALIDO };
-  
-    // Escanea casilla a casilla para terrestres
-    //devuelve el tipo de "bloqueo"
-    //recibe tablero, destino y origen
-    ResultadoMovimiento escanearCaminoTerrestre(
-        Pieza* pieza,
-        Tablero& tablero,
-        int toFila, int toCol
-    );
-    
-    // Solo mira el destino (voladoras y teleporte)
-    ResultadoMovimiento comprobarDestino(
-        Pieza* pieza,
-        Tablero& tablero,
-        int toFila, int toCol
-    );
-
-    Pieza* _ultimoAtacante{ nullptr };
-    Pieza* _ultimaDefensora{ nullptr };
-    int _filaAtacante{ -1 };  // FILA DE LA ATACANTE ANTES DEL COMBATE
-    int _colAtacante{ -1 };   // COLUMNA DE LA ATACANTE ANTES DEL COMBATE
-    int _filaDefensora{ -1 }; // FILA DE LA DEFENSORA
-    int _colDefensora{ -1 };  // COLUMNA DE LA DEFENSORA
 };

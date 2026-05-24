@@ -135,9 +135,6 @@
     <ClInclude Include="src\arena\headers\Arena.h">
       <Filter>arena\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\arena\headers\ArenaRenderer.h">
-      <Filter>arena\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\arena\headers\Combatiente.h">
       <Filter>arena\Headers</Filter>
     </ClInclude>
@@ -185,6 +182,18 @@
     </ClInclude>
     <ClInclude Include="src\piezas\headers\SpriteRey.h">
       <Filter>piezas\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujaarena.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujamenu.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujatablero.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibuja.h">
+      <Filter>coordinador\Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -259,9 +268,6 @@
     <ClCompile Include="src\arena\sources\Arena.cpp">
       <Filter>arena\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\arena\sources\ArenaRenderer.cpp">
-      <Filter>arena\Sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\arena\sources\Combatiente.cpp">
       <Filter>arena\Sources</Filter>
     </ClCompile>
@@ -303,6 +309,18 @@
     </ClCompile>
     <ClCompile Include="src\piezas\sources\SpriteRey.cpp">
       <Filter>piezas\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujaarena.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujamenu.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujatablero.cpp">
+      <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibuja.cpp">
+      <Filter>coordinador\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

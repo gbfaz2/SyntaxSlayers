@@ -3,6 +3,7 @@
 #include "menu.h"
 #include "tablerogl.h"
 #include "Coordinador.h" // INCLUDE COMPLETO SOLO EN EL CPP
+#include "ETSIDI.h"
 
 // =============================================================
 // MENU
@@ -331,7 +332,7 @@ void GestorInput::teclaArena(unsigned char key)
         _coordinador->_pAtacanteCombate = nullptr;
         _coordinador->_pDefensoraCombate = nullptr;
 
-        ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+        ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
         _coordinador->estado = EstadoJuego::TABLERO;
     }
 }
