@@ -109,6 +109,11 @@ public:
 
 	// Resta vida al combatiente. Si la vida llega a 0, el combatiente muere, no puede bajar de 0(se marca como tal, pero no se borra del vector de combatientes)
 	void recibirDano(float cantidad);
+	// Aplica un bonus multiplicativo a la vida actual y máxima.
+	void aplicarBonus(float bonus) {
+		_vida *= (1.0f + bonus);
+		_vidaMax *= (1.0f + bonus);
+	}
 	bool vivo() const { return _vida > 0.0f; } // Devuelve true si el combatiente sigue vivo (vida > 0), false si ha muerto (vida <= 0)
 
 	// Indica al combatiente que se mueva en una direccion concreta (delante, atras, izquierda, derecha)

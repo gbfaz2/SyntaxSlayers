@@ -1,4 +1,5 @@
 #pragma once
+#include "tablero.h"
 #include "Combatiente.h"
 #include "InputState.h"
 #include "IAArena.h"
@@ -44,6 +45,12 @@ public:
 	void iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo); // INCIA UN COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU
 																						// Y EL MODO DE JUEGO (JVJ O JVIA)
 	
+	
+	// Como iniciarCombate pero aplica bonus de vida según el terreno de la casilla
+	// donde ocurrió la colisión. Llamar desde Coordinador en lugar de iniciarCombate.
+	void iniciarCombateConTerreno(const Pieza& atacante, const Pieza& defensora,ModoJuego modo, TipoCasilla terreno);
+	// Porcentaje de bonus de vida por terreno propio (0.15 = +15%)
+	static constexpr float BONUS_TERRENO = 0.15f; // INCIA UN COMBATE CON LAS PIEZAS SELECCIONADAS 
 	// Getters (informacion para el renderer)
 	const Combatiente& p1() const { return _p1; } // const, de esta manera el renderer puede leer el combatiente pero no modificarlo
 	const Combatiente& p2() const { return _p2; } // & (referencia), devuelve el objeto sin copiarlo

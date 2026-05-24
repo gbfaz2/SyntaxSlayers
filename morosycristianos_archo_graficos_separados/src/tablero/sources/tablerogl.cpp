@@ -40,7 +40,7 @@ Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
 	piezaSeleccionada = false;//no hay pieza seleccionada
 
 	victoria_ = bando_nada;//la partida sigue en curso, nadie a ganado
-
+	_casillaColision = Casilla_neutra;
 	leftButton = rightButton = midButton = false;
 	controlKey = shiftKey = false;
 }
@@ -114,6 +114,8 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 				_pAtacante = atacante;
 				_pDefensora = defensora;
 				_combatePendiente = true;
+				// Guardamos el tipo de casilla del combate para el bonus de terreno
+				_casillaColision = m_tablero->getCasilla(currentFila, currentCol).tipo;
 			}
 
 			gestorTurnos.terminarTurno();

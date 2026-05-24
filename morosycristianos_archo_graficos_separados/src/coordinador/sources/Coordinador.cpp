@@ -109,6 +109,10 @@ void Coordinador::dibuja()
 				_arena.iniciarCombate(*pTablerogl->getPiezaAtacante(),
 					*pTablerogl->getPiezaDefensora(),
 					configuracion.modo);
+				_arena.iniciarCombateConTerreno(*pTablerogl->getPiezaAtacante(),
+					*pTablerogl->getPiezaDefensora(),
+					configuracion.modo,
+					pTablerogl->getCasillaColision());
 
 				ETSIDI::stopMusica(); // DEJA DE SONAR MUSICA TABLERO
 				ETSIDI::play("sonidos/sonido_combate_fight.wav");
@@ -218,20 +222,6 @@ void Coordinador::mueve(double dt)
 				pTablerogl->aplicarCambiosDinamicos();
 			}
 		}
-		//gestorTurnos.update(dt);
-
-		//ACTUALIZACIÓN DEL TEMPORIZADOR DE MOVIMIENTO INVÁLIDO
-		//if (pTablerogl)pTablerogl->updateMensaje(dt);
-		//CASILLAS DINÁMICAS
-		/*if (pTablerogl) {
-			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
-			if (turnoActual != pTablerogl->_turnosJugados &&
-				turnoActual > 1 &&
-				turnoActual % Tablerogl::TURNOS_DINAMICOS == 0) {
-				pTablerogl->_turnosJugados = turnoActual;
-				pTablerogl->aplicarCambiosDinamicos();
-			}
-		}*/
 
 		if (pTablero == nullptr) return;
 

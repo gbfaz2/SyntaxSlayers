@@ -55,6 +55,7 @@ protected:
 	float _tiempoMensajeInvalido{ 0.0f };
 	std::string _mensajeInvalido;
 	int _turnosJugados{ 0 };
+	TipoCasilla _casillaColision;
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
 
@@ -78,6 +79,7 @@ public:
 
 	bool huboColision() const { return _combatePendiente; }
 	Pieza* getPiezaAtacante() const { return _pAtacante; }
+	TipoCasilla getCasillaColision() const { return _casillaColision; }
 	Pieza* getPiezaDefensora() const { return _pDefensora; }
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags

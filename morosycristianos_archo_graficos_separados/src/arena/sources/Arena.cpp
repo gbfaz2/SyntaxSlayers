@@ -166,3 +166,37 @@ void Arena::resolverColision()
 		_p2.posicion(_p2.x() + nx * overlap, _p2.y(), _p2.z() + nz * overlap);
 	}
 }
+void Arena::iniciarCombateConTerreno(const Pieza& atacante, const Pieza& defensora, ModoJuego modo, TipoCasilla terreno)
+{
+	// Primero creamos los combatientes normalmente
+	iniciarCombate(atacante, defensora, modo);
+
+	// Calculamos qué bando tiene ventaja de terreno
+	// Casilla_local = zona cristiana (roja en el tablero)
+	// Casilla_rival = zona musulmana (morada en el tablero)
+	bool ventajaCristiano = (terreno == Casilla_local);
+	bool ventajaMusulman = (terreno == Casilla_rival);
+
+	if (!ventajaCristiano && !ventajaMusulman) return; // terreno neutro
+
+	// Aplicamos el bonus al Combatiente correcto
+	// _p1 = atacante, _p2 = defensora
+	if (ventajaCristiano) {
+		// Bonus para el cristiano (sea atacante o defensor)
+		if (atacante.getBando() == Bando::CRISTIANO)
+			_p1.aplicarBonus(BONUS_TERRENO);
+		else
+			_p2.aplicarBonus(BONUS_TERRENO);
+		std::cout << "[Arena] Bonus terreno: +15% vida al CRISTIANO (casilla local)\n";
+	}
+	else {
+		// Bonus para el musulmán
+		if (atacante.getBando() == Bando::ANDALUSI)
+			_p1.aplicarBonus(BONUS_TERRENO);
+		else
+			_p2.aplicarBonus(BONUS_TERRENO);
+		std::cout << "[Arena] Bonus terreno: +15% vida al MUSULMAN (casilla rival)\n";
+	}
+	std::cout << "[Arena] vida p1 tras bonus: " << _p1.vida()
+		<< " vida p2 tras bonus: " << _p2.vida() << "\n";
+}
