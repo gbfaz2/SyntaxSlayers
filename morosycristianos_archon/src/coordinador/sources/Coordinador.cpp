@@ -7,6 +7,7 @@
 #include "freeglut.h"
 #include <ctime>
 #include <cstdlib>
+#include "GestorPartida.h"
 
 
 Coordinador::~Coordinador()
@@ -123,6 +124,71 @@ void Coordinador::dibuja()
 		DibujaArena::arena_dibujar(_arena, configuracion.batalla);
 		break;
 
+	case EstadoJuego::GUARDANDO:
+
+		// Dibuja el tablero de fondo
+		if (pTablerogl) {
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
+			glEnable(GL_LIGHT0);
+			glEnable(GL_COLOR_MATERIAL);
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			gluPerspective(40.0, (float)_anchoVentana / (float)_altoVentana, 0.1, 150.0);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			DibujaTablero::tablero_dibujar(*pTablerogl);
+		}
+
+		// Mensaje encima en 2D
+		Dibuja::util_entrar2D(_anchoVentana, _altoVentana);
+
+		// Fondo semitransparente
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+		glBegin(GL_QUADS);
+		glVertex2f(150, 300); glVertex2f(_anchoVentana - 150, 300);
+		glVertex2f(_anchoVentana - 150, 430); glVertex2f(150, 430);
+		glEnd();
+
+		// Texto
+		ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+		ETSIDI::setFont("fuentes/nuevafuente.ttf", 24);
+		ETSIDI::printxy("Pulsa G para guardar la partida", 280, 360);
+		ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
+		ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
+		ETSIDI::printxy("Pulsa ESC para volver al tablero", 285, 395);
+
+		// Cronometro
+		{
+			char buf[64];
+			sprintf_s(buf, "Tiempo restante: %.0f segundos", _tiempoGuardado);
+			ETSIDI::setTextColor(1.0f, 0.4f, 0.4f, 1.0f);
+			ETSIDI::printxy(buf, 320, 420);
+		}
+
+		Dibuja::util_salir2D();
+		break;
+
+	case EstadoJuego::CARGANDO:
+		// Cargamos la partida y volvemos al tablero
+		if (!pTablero) {
+			pTablero = new Tablero();
+			pTablerogl = new Tablerogl(pTablero);
+			DibujaTablero::tablero_init();
+			gestorInput.setTablerogl(pTablerogl);
+			pGestorHechizos = new GestorHechizos(*pTablero,
+				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
+				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+		}
+
+		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
+		pTablerogl->setBatalla((int)configuracion.batalla);
+		ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
+		estado = EstadoJuego::TABLERO;
+		break;
+
 	case EstadoJuego::RANKING:
 		break;
 
@@ -153,13 +219,27 @@ void Coordinador::tecla(unsigned char key)
 		break;
 	case EstadoJuego::TABLERO:
 		if (key == 27) {
-			ETSIDI::stopMusica();
-			reiniciarTablero();
-			estado = EstadoJuego::MENU;
+			_tiempoGuardado = 10.0f; // 10 segundos para decidir
+			estado = EstadoJuego::GUARDANDO;
+			//ETSIDI::stopMusica();
+			//reiniciarTablero();
 			break;
 		}
 		gestorInput.teclaTablero(key, estado);
 		break;
+
+	case EstadoJuego::GUARDANDO:
+		if (key == 'g' || key == 'G') {
+			GestorPartida::guardar(*pTablero, pTablerogl->gestorTurnos, configuracion);
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
+		}
+		if (key == 27) { // ESC cancela y vuelve al tablero
+			estado = EstadoJuego::TABLERO;
+		}
+		break;
+
 	case EstadoJuego::ARENA:
 		gestorInput.teclaArena(key);
 		break;
@@ -245,6 +325,16 @@ void Coordinador::mueve(double dt)
 					pTablerogl->setVictoria(bando_rival);
 			}
 			estado = EstadoJuego::FINAL;
+		}
+	}
+
+	if (estado == EstadoJuego::GUARDANDO) 
+	{
+		_tiempoGuardado -= (float)dt;
+		if (_tiempoGuardado <= 0.0f) {
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
 		}
 	}
 

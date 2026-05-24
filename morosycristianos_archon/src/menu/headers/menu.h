@@ -7,6 +7,7 @@
 #include "estadojuego.h"
 #include <string>
 #include "dibuja.h"
+#include "GestorPartida.h"
 
 class DibujaMenu; // DECLARACION ANTICIPADA PARA LA AMISTAD
 
@@ -39,7 +40,7 @@ class MenuPrincipal {
     ConfigPartida m_cfg;
 
     void confirmar();
-    int maxOpciones() const { return (m_paso == 1) ? 2 : 4; }
+    int maxOpciones() const { return (m_paso == 1) ? 2 : 5; }
 public:
     MenuPrincipal();
 

@@ -55,6 +55,7 @@ struct Casilla {
 	BandoPieza bando{ bando_nada };
 	Pieza* obj{ nullptr };   // puntero al objeto real de la pieza (nullptr = casilla vacía)
 };
+
 struct CasillaPos { int fila, col; };//Par fila, columna para las casillas válidas de movimiento
 //con la clase tablero voy a gestionar la cuadrícula lógica de 9x9. Para ello un array estático donde vamos a fijar el tamaño N=9
 //añado un método que avanza el ciclo  de luz, recibe el tiempo transcurrido desde el ultimo frame y actualiza la fase de cada casilla dinámica
@@ -94,4 +95,7 @@ public:
 	BandoPieza checkVicoria()const;
 
 	Pieza* buscarPieza(TipoPieza tipo, BandoPieza bando) const;
+
+	void limpiarPiezas();
+	Pieza* crearPieza(TipoPieza tipo, BandoPieza bando);
 };

@@ -239,3 +239,30 @@ Pieza* Tablero::buscarPieza(TipoPieza tipo, BandoPieza bando) const
 				return tablero[f][c].obj;
 	return nullptr;
 }
+
+void Tablero::limpiarPiezas()
+{
+	for (int f = 0; f < N; f++)
+		for (int c = 0; c < N; c++) {
+			delete tablero[f][c].obj;
+			tablero[f][c].obj = nullptr;
+			tablero[f][c].pieza = pieza_nada;
+			tablero[f][c].bando = bando_nada;
+		}
+}
+
+Pieza* Tablero::crearPieza(TipoPieza tipo, BandoPieza bando)
+{
+	Bando b = (bando == bando_local) ? Bando::CRISTIANO : Bando::ANDALUSI;
+	switch (tipo) {
+	case pieza_esfera:      return new Rey(b);
+	case pieza_dodecaedro:  return new Infiltrado(b);
+	case pieza_icosaedro:   return new Almogavar(b);
+	case pieza_tetraedro:   return new CaballeriaLigera(b);
+	case pieza_cubog:       return new Infanteria(b);
+	case pieza_cono:        return new CaballeriaPesada(b);
+	case pieza_cilindro:    return new Ballestero(b);
+	case pieza_cubo_p:      return new Miliciano(b);
+	default:                return nullptr;
+	}
+}
