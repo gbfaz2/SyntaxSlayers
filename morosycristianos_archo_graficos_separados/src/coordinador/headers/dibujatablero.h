@@ -31,6 +31,9 @@ class DibujaTablero : public Dibuja {
     //CONTADORES DE TIEMPO Y CARTEL DE MOVIMIENTO INVALIDO
     static void tablero_contadores(const Tablerogl& t);
     static void tablero_mensaje_invalido(const Tablerogl& t);
+    //PANEL DE CARACTERÍSTICAS DE LAS PIEZAS
+    static void tablero_panel_pieza(const Tablerogl& t);
+    static void tablero_barra(int x, int y, int ancho, int alto, float valor, float maximo, float r, float g, float b);
 
 public:
     // INICIALIZACIÓN DE OPENGL PARA EL TABLERO

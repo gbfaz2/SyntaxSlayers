@@ -156,7 +156,7 @@ void Tablerogl::redimensionar(int ancho, int alto) {
 	return;
 }
 
-void Tablerogl::aplicarCambiosDinámicos()
+void Tablerogl::aplicarCambiosDinamicos()
 {
 	for (int fila = 0; fila < N; fila++) {
 		for (int col = 0; col < N; col++) {

@@ -60,6 +60,9 @@ void Coordinador::dibuja()
 					pTablerogl = new Tablerogl(pTablero);
 					DibujaTablero::tablero_init();
 					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
+					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN)? bando_rival : bando_local;//FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
+					pTablerogl->setBandoInicial(bandoInicial);
+
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
@@ -77,7 +80,7 @@ void Coordinador::dibuja()
 
 		if (pantallaDestino.terminado()) {
 			estado = EstadoJuego::TABLERO;
-			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+			ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
 		}
 		break;
 
@@ -108,7 +111,7 @@ void Coordinador::dibuja()
 					configuracion.modo);
 
 				ETSIDI::stopMusica(); // DEJA DE SONAR MUSICA TABLERO
-				ETSIDI::play("sonido_combate_fight.wav");
+				ETSIDI::play("sonidos/sonido_combate_fight.wav");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				pTablerogl->limpiarCombate();
 				estado = EstadoJuego::ARENA;
@@ -204,7 +207,31 @@ void Coordinador::tecla_especial_up(int key)
 void Coordinador::mueve(double dt)
 {
 	if (estado == EstadoJuego::TABLERO && pTablero) {
-		gestorTurnos.update(dt);
+		//USAMOS EL GESTORTURNOS DENTRO DE PTABLEROGL
+		if (pTablerogl) {
+			pTablerogl->gestorTurnos.update(dt);
+			pTablerogl->updateMensaje(dt);
+			int turno = pTablerogl->gestorTurnos.getNumeroTurno();
+			if (turno != pTablerogl->_turnosJugados &&
+				turno > 1 && turno % Tablerogl::TURNOS_DINAMICOS == 0) {
+				pTablerogl->_turnosJugados = turno;
+				pTablerogl->aplicarCambiosDinamicos();
+			}
+		}
+		//gestorTurnos.update(dt);
+
+		//ACTUALIZACIÓN DEL TEMPORIZADOR DE MOVIMIENTO INVÁLIDO
+		//if (pTablerogl)pTablerogl->updateMensaje(dt);
+		//CASILLAS DINÁMICAS
+		/*if (pTablerogl) {
+			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
+			if (turnoActual != pTablerogl->_turnosJugados &&
+				turnoActual > 1 &&
+				turnoActual % Tablerogl::TURNOS_DINAMICOS == 0) {
+				pTablerogl->_turnosJugados = turnoActual;
+				pTablerogl->aplicarCambiosDinamicos();
+			}
+		}*/
 
 		if (pTablero == nullptr) return;
 

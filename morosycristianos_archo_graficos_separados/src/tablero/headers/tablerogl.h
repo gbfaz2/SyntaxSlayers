@@ -62,8 +62,8 @@ protected:
 	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO
 	BandoPieza _bandoHechizo{ bando_nada }; // BANDO QUE ACTIVO EL HECHIZO
 
-	int anchoVentana{ 800 };  
-	int altoVentana{ 600 };   
+	//int anchoVentana{ 800 };  
+	//int altoVentana{ 600 };   
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey
@@ -95,7 +95,7 @@ public:
 		gestorTurnos.setBandoInicial(bando);
 	}
 	//aplicar intercambio de casillas dinámicas
-	void aplicarCambiosDinámicos();
+	void aplicarCambiosDinamicos();
 	static const int TURNOS_DINAMICOS = 4;//cada cuatro turnos se intercamnian local por rival
 
 	void setVictoria(BandoPieza ganador) { victoria_ = ganador; }

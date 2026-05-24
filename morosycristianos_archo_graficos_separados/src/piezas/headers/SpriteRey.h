@@ -30,34 +30,6 @@ struct FrameUV {
 
 
 class SpriteRey {
-public:
-    //constructor principal
-    SpriteRey();
-
-    // Carga/libera la textura compartida (llamar una sola vez por partida)
-    static void cargarTextura(const std::string& ruta);
-    static void liberarTextura();
-
-    // Cambia el estado de animación.
-    // Si el estado nuevo es distinto al actual, reinicia el frame dpeendiendo del estado.
-    void setEstado(EstadoRey nuevoEstado);
-
-    //lee el estado actual del rey (getter)
-    EstadoRey getEstado() const { return _estado; }
-
-    // Avanza la animación (llamar cada frame con dt en segundos)
-    //en el mueve(double dt) para actualizar
-    void update(double dt);
-
-    // Dibuja el sprite centrado en (cx, cy) con tamaño 'size' en coords OpenGL.
-    // Llama esto dentro de un contexto 2D ortográfico (entrar2D/salir2D).
-    void dibujar(float cx, float cy, float size) const;
-
-    // ¿Ha terminado una animación de una sola pasada? (HURT, ATTACK, DEATH)
-    //comrpueba
-    bool animacionTerminada() const { return _terminada; }
-
-private:
     //Textura compartida por todas las instancias
     static GLuint   s_texID;
     static bool     s_cargada;
@@ -91,4 +63,30 @@ private:
     const FrameUV* framesActuales() const;
     int            totalFrames()    const;
     double         segsPerFrame()   const;
+public:
+    //constructor principal
+    SpriteRey();
+
+    // Carga/libera la textura compartida (llamar una sola vez por partida)
+    static void cargarTextura(const std::string& ruta);
+    static void liberarTextura();
+
+    // Cambia el estado de animación.
+    // Si el estado nuevo es distinto al actual, reinicia el frame dpeendiendo del estado.
+    void setEstado(EstadoRey nuevoEstado);
+
+    //lee el estado actual del rey (getter)
+    EstadoRey getEstado() const { return _estado; }
+
+    // Avanza la animación (llamar cada frame con dt en segundos)
+    //en el mueve(double dt) para actualizar
+    void update(double dt);
+
+    // Dibuja el sprite centrado en (cx, cy) con tamaño 'size' en coords OpenGL.
+    // Llama esto dentro de un contexto 2D ortográfico (entrar2D/salir2D).
+    void dibujar(float cx, float cy, float size) const;
+
+    // ¿Ha terminado una animación de una sola pasada? (HURT, ATTACK, DEATH)
+    //comrpueba
+    bool animacionTerminada() const { return _terminada; }
 };

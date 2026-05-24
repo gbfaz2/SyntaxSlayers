@@ -19,7 +19,7 @@
 enum TipoCasilla {
 	Casilla_local, //columnas 0-2
 	Casilla_rival,//columnas 6-8
-	Casilla_dinamica,//columnas 3-5
+	Casilla_neutra,//columnas 3-5
 	Casilla_poder//uno de los 5 puntos estratégicos del tablero
 };
 
@@ -49,7 +49,7 @@ enum TipoPieza {
 //añado un campo fase para que el valor oscile continuamente en el tiempo
 //añado que piza hay y a que bando pertenece 
 struct Casilla {
-	TipoCasilla tipo{ Casilla_dinamica };//Inicializamos aquí en la declaración
+	TipoCasilla tipo{ Casilla_neutra };//Inicializamos aquí en la declaración
 	//float fase{ 0.0f };//0-local, 0.5-neutral, 1-rival
 	TipoPieza pieza{ pieza_nada };
 	BandoPieza bando{ bando_nada };
