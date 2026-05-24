@@ -1,10 +1,10 @@
 modo 1
-batalla 0
+batalla 2
 turno 1
-tiempo 86.7401
-numturno 4
+tiempo 88.2656
+numturno 3
 0 0 4 1 50
-0 3 7 2 2
+0 4 7 1 2
 0 8 4 2 50
 1 0 5 1 100
 1 1 8 1 30

@@ -740,3 +740,34 @@ void DibujaTablero::tablero_barra(int x, int y, int ancho, int alto,
     glEnd();
     glDisable(GL_BLEND);
 }
+
+void DibujaTablero::tablero_guardando(Tablerogl& t, int ancho, int alto, float tiempoRestante)
+{
+    // Dibuja el tablero de fondo
+    tablero_dibujar(t);
+
+    // Mensaje encima en 2D
+    util_entrar2D(ancho, alto);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+    glBegin(GL_QUADS);
+    glVertex2f(150, 300); glVertex2f(ancho - 150, 300);
+    glVertex2f(ancho - 150, 430); glVertex2f(150, 430);
+    glEnd();
+
+    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+    ETSIDI::setFont("fuentes/nuevafuente.ttf", 24);
+    ETSIDI::printxy("Pulsa G para guardar la partida", 280, 360);
+    ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
+    ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
+    ETSIDI::printxy("Pulsa ESC para volver al tablero", 285, 395);
+
+    char buf[64];
+    sprintf_s(buf, "Tiempo restante: %.0f segundos", tiempoRestante);
+    ETSIDI::setTextColor(1.0f, 0.4f, 0.4f, 1.0f);
+    ETSIDI::printxy(buf, 320, 420);
+
+    util_salir2D();
+}
