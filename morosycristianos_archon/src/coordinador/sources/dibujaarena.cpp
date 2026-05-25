@@ -7,9 +7,12 @@
 #include <cstring> 
 #include <string>
 
+dibujapersonajes DibujaArena::_personajes;
+
 // ORQUESTADORES PRINCIPALES
 
-void DibujaArena::arena_configurar_vista(int anchoVentana, int altoVentana) {
+void DibujaArena::arena_configurar_vista(int anchoVentana, int altoVentana) 
+{
     _anchoVentana = anchoVentana;
     _altoVentana = (altoVentana > 0) ? altoVentana : 1; // EVITAR DIVISIÓN POR CERO
 
@@ -57,13 +60,60 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     arena.p1().color(r, g, b);
     if (arena.p1().atacando())
         arena_hitbox(arena.p1().x() + arena.p1().lado() * 0.5f, arena.p1().z(), 1.0f, arena.p1().alcanceAtaque());
-    arena_cubo3d(arena.p1().x(), arena.p1().y(), arena.p1().z(), arena.p1().lado(), r, g, b);
+
+    if (arena.p1().nombre() == "Miliciano") 
+    {
+        // Proyectamos posicion 3D a coordenadas de pantalla
+        GLdouble winX, winY, winZ;
+        GLdouble model[16], proj[16];
+        GLint view[4];
+        glGetDoublev(GL_MODELVIEW_MATRIX, model);
+        glGetDoublev(GL_PROJECTION_MATRIX, proj);
+        glGetIntegerv(GL_VIEWPORT, view);
+        gluProject(arena.p1().x(), arena.p1().y(), arena.p1().z(),
+            model, proj, view, &winX, &winY, &winZ);
+
+        EstadoPersonaje estado = arena.p1().atacando() ? EstadoPersonaje::ATTACK : EstadoPersonaje::IDLE;
+        bool moviendose = arena.p1().enMovimiento();
+        float size = _anchoVentana * 0.15f;
+
+        util_entrar2D(_anchoVentana, _altoVentana);
+        glDisable(GL_LIGHTING);
+        _personajes.miliciano((float)winX, (float)winY, size, estado, 0, moviendose);
+        util_salir2D();
+    }
+    else {
+        arena_cubo3d(arena.p1().x(), arena.p1().y(), arena.p1().z(), arena.p1().lado(), r, g, b);
+    }
 
     // P2
     arena.p2().color(r, g, b);
     if (arena.p2().atacando())
         arena_hitbox(arena.p2().x() - arena.p2().lado() * 0.5f, arena.p2().z(), -1.0f, arena.p2().alcanceAtaque());
-    arena_cubo3d(arena.p2().x(), arena.p2().y(), arena.p2().z(), arena.p2().lado(), r, g, b);
+    
+    if (arena.p2().nombre() == "Miliciano") 
+    {
+        GLdouble winX, winY, winZ;
+        GLdouble model[16], proj[16];
+        GLint view[4];
+        glGetDoublev(GL_MODELVIEW_MATRIX, model);
+        glGetDoublev(GL_PROJECTION_MATRIX, proj);
+        glGetIntegerv(GL_VIEWPORT, view);
+        gluProject(arena.p2().x(), arena.p2().y(), arena.p2().z(),
+            model, proj, view, &winX, &winY, &winZ);
+
+        EstadoPersonaje estado = arena.p2().atacando() ? EstadoPersonaje::ATTACK : EstadoPersonaje::IDLE;
+        bool moviendose = arena.p2().enMovimiento();
+        float size = _anchoVentana * 0.15f;
+
+        util_entrar2D(_anchoVentana, _altoVentana);
+        glDisable(GL_LIGHTING);
+        _personajes.miliciano((float)winX, (float)winY, size, estado, 1, moviendose);
+        util_salir2D();
+    }
+    else {
+        arena_cubo3d(arena.p2().x(), arena.p2().y(), arena.p2().z(), arena.p2().lado(), r, g, b);
+    }
 
     // HUD ENCIMA DE TODO
     arena_hud(arena);
@@ -312,4 +362,14 @@ void DibujaArena::arena_hud(const Arena& arena) {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
+}
+
+void DibujaArena::arena_init() 
+{
+    _personajes.init();
+}
+
+void DibujaArena::arena_update(float dt) 
+{
+    _personajes.update();
 }

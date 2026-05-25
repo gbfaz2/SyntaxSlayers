@@ -46,6 +46,8 @@ void Combatiente::actualizar(float dt)
 		_z += nz * _velocidad * dt;
 	}
 
+	_enMovimiento = (_dxPedido != 0.0f || _dzPedido != 0.0f); // Si hay movimiento pedido, estamos en movimiento
+
 	// Reseteamos el movimiento pedido para el siguiente frame
 	_dxPedido = 0.0f;
 	_dzPedido = 0.0f;
