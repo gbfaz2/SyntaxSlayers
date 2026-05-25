@@ -39,6 +39,8 @@ protected: //solo pueden acceder clase Y (sus hijas)
     bool           viva;  
     bool           enPuntoDePoder;  //para casillas especiales con curaciones etc especiales
 
+    int id_animacion; // Este será su "DNI" para el array de _milicianos
+
 public:
     // Constructor con las carcaterítsicas necesarias para las piezas para inicializar
     Pieza(std::string nombre, Bando bando,
@@ -49,6 +51,15 @@ public:
     virtual ~Pieza() {}
 
     //MÉTODOS:
+    
+    Pieza() {
+        id_animacion = -1; // -1 significa que no tiene ID asignado por defecto
+    }
+
+    // Funciones para guardar y leer el ID
+    void setIdAnimacion(int id) { id_animacion = id; }
+    int getIdAnimacion() { return id_animacion; }
+
     // Métodos virtuales puros(=0): cambian para cada pieza (los implementa a su manera)
     virtual TipoMovimiento getTipoMovimiento() const = 0; //devuelve terrestre, voladora, teleport...
     virtual bool puedeMoverse(int filaDestino, int colDestino) const = 0;  //comprueba si una ficha puede moverse o no a donde desea, y devuelve 1 o 0

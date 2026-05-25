@@ -269,6 +269,8 @@ void Coordinador::mueve(double dt)
 		if (pTablerogl) {
 			pTablerogl->gestorTurnos.update(dt);
 			pTablerogl->updateMensaje(dt);
+			pTablerogl->update(dt);
+
 			int turno = pTablerogl->gestorTurnos.getNumeroTurno();
 			if (turno != pTablerogl->_turnosJugados &&
 				turno > 1 && turno % Tablerogl::TURNOS_DINAMICOS == 0) {

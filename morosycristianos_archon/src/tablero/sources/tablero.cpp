@@ -82,8 +82,17 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	poner(6, 0, pieza_cono, bando_local, new CaballeriaPesada(Bando::CRISTIANO));
 	poner(0, 1, pieza_cilindro, bando_local, new Ballestero(Bando::CRISTIANO));
 	poner(8, 1, pieza_cilindro, bando_local, new Ballestero(Bando::CRISTIANO));
-	for (int fila = 1; fila <= 7; fila++)
-		poner(fila, 1, pieza_cubo_p, bando_local, new Miliciano(Bando::CRISTIANO));
+	//for (int fila = 1; fila <= 7; fila++)
+		//poner(fila, 1, pieza_cubo_p, bando_local, new Miliciano(Bando::CRISTIANO));
+
+	int idMiliciano = 0;
+
+	for (int fila = 1; fila <= 7; fila++) {
+		Pieza* mLocal = new Miliciano(Bando::CRISTIANO);
+		mLocal->setIdAnimacion(idMiliciano); // Le damos ID 0, 1, 2...
+		idMiliciano++;
+		poner(fila, 1, pieza_cubo_p, bando_local, mLocal);
+	}
 
 	// BANDO RIVAL (andalusí) — columnas 7 y 8
 	poner(4, 8, pieza_esfera, bando_rival, new Rey(Bando::ANDALUSI));
@@ -97,8 +106,17 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	poner(6, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
 	poner(0, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
 	poner(8, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
-	for (int fila = 1; fila <= 7; fila++)
-		poner(fila, 7, pieza_cubo_p, bando_rival, new Miliciano(Bando::ANDALUSI));
+	//for (int fila = 1; fila <= 7; fila++)
+		//poner(fila, 7, pieza_cubo_p, bando_rival, new Miliciano(Bando::ANDALUSI));
+
+	for (int fila = 1; fila <= 7; fila++) {
+		Pieza* mRival = new Miliciano(Bando::ANDALUSI);
+		mRival->setIdAnimacion(idMiliciano); // Continúa con 7, 8, 9...
+		idMiliciano++;
+		poner(fila, 7, pieza_cubo_p, bando_rival, mRival);
+	}
+
+
 }
 
 bool Tablero::esPuntoPoder(int fila, int col) const
