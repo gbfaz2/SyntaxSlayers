@@ -70,4 +70,10 @@ public:
 	void ratonMovido(int x, int y);
 	void redimensionar(int ancho, int alto);
 	void reiniciarTablero(); // REINICIA EL TABLERO AL ESTADO INICIAL
+
+	std::string _rankingGanador{ "" };
+	std::string _rankingBatalla{ "" };
+	int _rankingTurnos{ 0 };
+	int _rankingPiezasLocal{ 0 };
+	int _rankingPiezasRival{ 0 };
 };
