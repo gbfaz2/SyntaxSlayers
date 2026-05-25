@@ -10,6 +10,7 @@
 #include "SpriteRey.h"
 #include "dibujatablero.h"
 #include "menu.h"
+#include<ETSIDI.h>
 //#include"coordinador.h"
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -107,6 +108,9 @@ public:
 		if (_modoHechizo) return;
 		_mensajeInvalido = mensaje;
 		_tiempoMensajeInvalido = 2.0f;
+
+		//musica MEEEEH error
+		ETSIDI::playMusica("sonidos/error_tablero.mp3");
 	}
 	//descuenta el temporizador del cartel 
 	void updateMensaje(double dt){
