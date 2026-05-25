@@ -35,6 +35,20 @@ void dibujapersonajes::miliciano(float x, float y, float size, EstadoPersonaje e
     int currentFrame = _milicianos[indice]->getState();
     int baseFrame = static_cast<int>(estado);
 
+
+    // 1. Asegurarnos de que estamos en la fila correcta de la animación
+    if (currentFrame < baseFrame || currentFrame >= baseFrame + 4) {
+        _milicianos[indice]->setState(baseFrame, false); // Nos movemos a la fila correcta
+    }
+
+    // 2. Controlar la reproducción según si se mueve o no
+    if (enMovimiento) {
+        _milicianos[indice]->pause(false); // ¡Que mueva las piernas!
+    }
+    else {
+        _milicianos[indice]->setState(baseFrame, true); // Lo clavamos en su primer frame y pausamos
+    }
+    /*
     // Si el frame actual se sale de la fila correspondiente a esta animación
     // (es menor que el inicio de la fila o se ha pasado de la 4ª columna)
     // LÓGICA DE LA PRIMERA FILA (IDLE / ANDAR)
@@ -58,10 +72,10 @@ void dibujapersonajes::miliciano(float x, float y, float size, EstadoPersonaje e
         if (currentFrame < baseFrame || currentFrame >= baseFrame + 4) {
             _milicianos[indice]->setState(baseFrame, false);
         }
-    }
+    }*/
 
     //_milicianos[indice]->loop();
-    std::cout << "Frame actual: " << _milicianos[indice]->getState() << std::endl;
+    //std::cout << "Frame actual: " << _milicianos[indice]->getState() << std::endl;
 
     _milicianos[indice]->draw();
 }

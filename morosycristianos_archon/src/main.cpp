@@ -47,6 +47,8 @@ int main(int argc, char* argv[])
     glutKeyboardUpFunc(OnKeyboardUp);
     glutSpecialUpFunc(OnSpecialKeyboardUp); 
 
+
+    glutFullScreen();
     glutMainLoop();
     return 0;
 }

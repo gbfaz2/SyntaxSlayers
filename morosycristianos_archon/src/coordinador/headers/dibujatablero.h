@@ -9,7 +9,9 @@
 
 class DibujaTablero : public Dibuja {
    
+    friend class Tablerogl;
     static dibujapersonajes _dibujador;
+
 
     // CAPAS BASE DEL TABLERO
     static void tablero_fondo(const Tablerogl& t);
@@ -39,12 +41,13 @@ class DibujaTablero : public Dibuja {
     static void tablero_panel_pieza(const Tablerogl& t);
     static void tablero_barra(int x, int y, int ancho, int alto, float valor, float maximo, float r, float g, float b);
 
-    
+    int  _contadorMiliciano{ 0 };
+
 
 public:
     // INICIALIZACIÓN DE OPENGL PARA EL TABLERO
     static void tablero_init();
-
+    
     // ORQUESTADORES PRINCIPALES 
     static void tablero_dibujar(Tablerogl& t); // DIBUJA EL TABLERO COMPLETO DURANTE LA PARTIDA
     static void tablero_victoria(const Tablerogl& t); // DIBUJA LA PANTALLA FINAL DE GANADOR

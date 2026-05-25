@@ -8,6 +8,9 @@
 
 static const int SEGS = 24; // NUMERO DE SEGMENTOS PARA DIBUJAR LOS CIRCULOS
 
+dibujapersonajes DibujaTablero::_dibujador; //definir como variable estática
+
+
 // INICIALIZACIÓN DE LUCES Y PERSPECTIVA
 
 void DibujaTablero::tablero_init() {
@@ -18,11 +21,15 @@ void DibujaTablero::tablero_init() {
 
     glMatrixMode(GL_PROJECTION); // MATRIZ DE PROYECCIÓN
     gluPerspective(40.0, 800.0 / 600.0, 0.1, 150.0);
+
+    _dibujador.init(); //inicializa los personajes dibujados
 }
 
 // ORQUESTADOR PRINCIPAL: DIBUJA TODO EL FRAME DEL TABLERO
 
 void DibujaTablero::tablero_dibujar(Tablerogl& t) {
+    _dibujador.update(); //para que se vaya actualizando los personajes
+
     glEnable(GL_DEPTH_TEST);    // QUE LAS PIEZAS NO SE SOLAPEN MAL
     glEnable(GL_LIGHTING);      // ENCENDER LAS LUCES
     glEnable(GL_LIGHT0);
@@ -429,6 +436,18 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     float cx, cy;
     t.cell2center(fil, col, cx, cy);
 
+    if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+        cx = t._animMov.origenX + (t._animMov.destinoX - t._animMov.origenX) * t._animMov.t;
+        cy = t._animMov.origenY + (t._animMov.destinoY - t._animMov.origenY) * t._animMov.t;
+    }
+
+    GLdouble model[16], proj[16];
+    GLint view[4];
+    glGetDoublev(GL_MODELVIEW_MATRIX, model);
+    glGetDoublev(GL_PROJECTION_MATRIX, proj);
+    glGetIntegerv(GL_VIEWPORT, view);
+
+
     // COLOR BASE DEL BANDO
     if (casilla.bando == bando_local) glColor3f(1.00f, 0.95f, 0.85f);
     else                              glColor3f(0.90f, 0.55f, 0.15f);
@@ -436,48 +455,35 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     float escala = t.ancho * 0.30f;
 
     glPushMatrix();
-    glTranslatef(cx, cy, escala + 0.01f);
+    glTranslatef(cx, cy, escala + 0.03f); //elevamos sobre el tablero
 
     switch (casilla.pieza) {
-    case pieza_esfera: {
-        glutSolidSphere(escala, 18, 18);
-        glPopMatrix();
-        if (casilla.bando != bando_local) return; // RIVAL AÚN NO SE DIBUJA
-        if (casilla.bando == bando_local) {
-            // Sprite del rey cristiano superpuesto
-            float tableroAncho = t.N * t.ancho;
-            float tableroAlto = t.N * t.ancho;
-            float nx = cx / tableroAncho;
-            float ny = (-cy) / tableroAlto;
-            float margenX = Tablerogl::_anchoVentana * 0.18f;
-            float margenY = Tablerogl::_altoVentana * 0.08f;
-            float anchoTab = Tablerogl::_anchoVentana * 0.60f;
-            float altoTab = Tablerogl::_altoVentana * 0.80f;
-            float px = margenX + nx * anchoTab;
-            float py = Tablerogl::_altoVentana - (margenY + ny * altoTab);
-            float size = (anchoTab / t.N) * 1.3f;
-            util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
-            glDisable(GL_LIGHTING);
-            t._spriteReyLocal.dibujar(px, py, size);
-            util_salir2D();
-        }
-        return;
-    }
+
+    case pieza_esfera: 
+        //dodecaedro de momento, pero es el rey /emir
+        glScalef(escala * 0.55f, escala * 0.55f, escala * 0.55f);
+        glutSolidDodecahedron();
+        break;
+    
     case pieza_dodecaedro:
         glScalef(escala * 0.55f, escala * 0.55f, escala * 0.55f);
         glutSolidDodecahedron();
         break;
+
     case pieza_icosaedro:
         glScalef(escala * 0.65f, escala * 0.65f, escala * 0.65f);
         glutSolidIcosahedron();
         break;
+
     case pieza_tetraedro:
         glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
         glutSolidTetrahedron();
         break;
+
     case pieza_cubog:
         glutSolidCube(escala * 1.1f);
         break;
+
     case pieza_cono:
     {
         GLUquadric* q = gluNewQuadric();
@@ -488,6 +494,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         gluDeleteQuadric(q);
     }
     break;
+
     case pieza_cilindro:
     {
         GLUquadric* q = gluNewQuadric();
@@ -499,12 +506,56 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         gluDeleteQuadric(q);
     }
     break;
+
+
     case pieza_cubo_p:
-        glutSolidCube(escala * 0.75f);
-        break;
-    default: break;
+    {
+        // Solo dibujamos para el bando cristiano
+        if (casilla.bando != bando_local) {
+            glutSolidCube(escala * 0.75f);
+            glPopMatrix();
+            return;
+        }
+
+
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+        
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY + size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+        EstadoPersonaje estadoMiliciano = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoMiliciano = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        int idDeEstaPieza = casilla.obj->getIdAnimacion();
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.miliciano(px, py, size, estadoMiliciano, idDeEstaPieza, moviendo);
+        util_salir2D();
+        return;
     }
-    glPopMatrix();
+    break;
+    
+
+}
+glPopMatrix();
+
 }
 // PANTALLA FINAL DE VICTORIA
 
