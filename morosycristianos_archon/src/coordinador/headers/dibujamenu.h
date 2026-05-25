@@ -52,6 +52,7 @@ class DibujaMenu : public Dibuja {
     static void destino_particulas(const PantallaDestino& p);
     static void destino_textos(const PantallaDestino& p, int ancho, int alto);
     static void destino_continuar(const PantallaDestino& p, int ancho, int alto);
+
 public:
     // ── PANTALLA INTRO
     static void intro_dibujar(PantallaIntro& p, int ancho, int alto);
@@ -61,4 +62,7 @@ public:
 
     // ── PANTALLA DESTINO
     static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
+
+    // Para el ranking
+    static void ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasEliminadasLocal, int piezasEliminadasRival);
 };
