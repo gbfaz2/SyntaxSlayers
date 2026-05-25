@@ -6,6 +6,7 @@
 //Por último se dibuja la cuadrícula negra encima
 
 #include "tablerogl.h"
+#include <string>
 #include <iostream>
 #include <cmath>
 #include <cstdio>
@@ -28,8 +29,8 @@ Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
 	centro_y = -N * ancho / 2.0;
 	centro_z = 0.0;
 
-	Filacursor[0] = 0; Colcursor[0] = 1; //Cursor local
-	Filacursor[1] = 0; Colcursor[1] = 7;//Cursor rival
+	Filacursor[0] = 4; Colcursor[0] = 1; //Cursor local
+	Filacursor[1] = 4; Colcursor[1] = 7;//Cursor rival
 
 	xcasilla_sel = -1;//todavía no hay casilla seleccionada
 	ycasilla_sel = -1;
@@ -71,17 +72,15 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
 
-		//error pero como gestionar? ayuda
-		if (gestorTurnos.getBandoActual() == bando_local) {
-			Pieza* p = m_tablero->getCasilla(currentFila, currentCol).obj;
-			if (p && (p->getNombre() == "Rey" || p->getNombre() == "Emir"))
-				_spriteReyLocal.setEstado(EstadoRey::WALK);
-		}
 
 		if (!pieza) {
 			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
 			return;
 		}
+
+		//guardamos el origen ANTES
+		int origenFila = fromFila;
+		int origenCol = fromCol;
 
 		// Intentamos mover la pieza desde el origen al destino (currentFila, currentCol)
 		ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
@@ -89,12 +88,27 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 		);
 
 		if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
-			piezaSeleccionada = false;
-			fromFila = fromCol = -1; // Reseteamos el origen
+			// Origen: donde estaba ANTES del movimiento
+			float ox, oy;
+			cell2center(origenFila, origenCol, ox, oy);
 
-			// ¡IMPORTANTE! Aquí debes avisar al gestor de turnos de que el turno ha terminado
+			// Destino: donde está AHORA lógicamente
+			float dx, dy;
+			cell2center(currentFila, currentCol, dx, dy);
+
+			_animMov.pieza = pieza;
+			_animMov.origenX = ox;  _animMov.origenY = oy;
+			_animMov.destinoX = dx;  _animMov.destinoY = dy;
+			_animMov.t = 0.0f;
+			_animMov.activa = true;
+
+
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
 			gestorTurnos.terminarTurno();
 		}
+
+
 		else if (resultado == ResultadoMovimiento::COMBATE) {
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
@@ -102,12 +116,6 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			// Avisamos al coordinador de que hay combate pendiente
 			Pieza* atacante = gestorMovimiento.getUltimoAtacante();
 			Pieza* defensora = gestorMovimiento.getUltimaDefensora();
-
-			if (m_tablero->getCasilla(fromFila, fromCol).bando == bando_local)
-				_spriteReyLocal.setEstado(EstadoRey::ATTACK);
-			//else
-				//_spriteReyRival.setEstado(EstadoRey::ATTACK);
-
 
 			if (atacante && defensora) {
 				_pAtacante = atacante;
@@ -119,6 +127,12 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 		}
 		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
 		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
+		else {
+			if (resultado == ResultadoMovimiento::BLOQUEADO_ALIADO)
+				mostrarMensajeInvalido("Casilla bloqueada por aliado");
+			else
+				mostrarMensajeInvalido("Movimiento invalido");
+		}
 	}
 }
 
@@ -147,4 +161,33 @@ void Tablerogl::redimensionar(int ancho, int alto) {
 	_altoVentana = (alto == 0) ? 1 : alto;
 
 	return;
+}
+
+void Tablerogl::aplicarCambiosDinamicos()
+{
+	for (int fila = 0; fila < N; fila++) {
+		for (int col = 0; col < N; col++) {
+			Casilla& cas = m_tablero->getCasilla(fila, col);
+			if (cas.tipo == Casilla_local) {
+				cas.tipo = Casilla_rival;
+			}
+			else if (cas.tipo == Casilla_rival) {
+				cas.tipo = Casilla_local;
+			}
+		}
+	}
+}
+
+//update para la interpolación en el tablero
+void Tablerogl::update(double dt)
+{
+
+
+	if (_animMov.activa) {
+		_animMov.t += (float)dt * 2.0f; // velocidad: 2 
+		if (_animMov.t >= 1.0f) {
+			_animMov.t = 1.0f;
+			_animMov.activa = false;
+		}
+	}
 }

@@ -7,6 +7,8 @@
 #include "freeglut.h"
 #include <ctime>
 #include <cstdlib>
+#include "GestorPartida.h"
+#include "tablerogl.h"
 
 
 Coordinador::~Coordinador()
@@ -24,6 +26,7 @@ void Coordinador::inicializa()
 	DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana); // CONFIGURA CAMARA ARENA
 	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
 	gestorInput.setCoordinador(this); // ASIGNA COORDINADOR AL GESTOR
+	DibujaArena::arena_init(); // Inicializa recursos gráficos de la arena (texturas, personajes, etc.)
 }
 
 void Coordinador::dibuja()
@@ -60,6 +63,9 @@ void Coordinador::dibuja()
 					pTablerogl = new Tablerogl(pTablero);
 					DibujaTablero::tablero_init();
 					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
+					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN)? bando_rival : bando_local;//FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
+					pTablerogl->setBandoInicial(bandoInicial);
+
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
@@ -77,7 +83,7 @@ void Coordinador::dibuja()
 
 		if (pantallaDestino.terminado()) {
 			estado = EstadoJuego::TABLERO;
-			ETSIDI::playMusica("sonido_fondo_tablero.wav", true);
+			ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
 		}
 		break;
 
@@ -100,6 +106,8 @@ void Coordinador::dibuja()
 
 			if (pTablerogl->huboColision())
 			{
+				std::cout << "[DEBUG] Colision detectada, entrando a arena\n"; // DEBUG
+				
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
 				_pDefensoraCombate = pTablerogl->getPiezaDefensora();
 
@@ -108,7 +116,7 @@ void Coordinador::dibuja()
 					configuracion.modo);
 
 				ETSIDI::stopMusica(); // DEJA DE SONAR MUSICA TABLERO
-				ETSIDI::play("sonido_combate_fight.wav");
+				ETSIDI::play("sonidos/sonido_combate_fight.wav");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				pTablerogl->limpiarCombate();
 				estado = EstadoJuego::ARENA;
@@ -118,6 +126,29 @@ void Coordinador::dibuja()
 
 	case EstadoJuego::ARENA:
 		DibujaArena::arena_dibujar(_arena, configuracion.batalla);
+		break;
+
+	case EstadoJuego::GUARDANDO:
+		if (pTablerogl)
+			DibujaTablero::tablero_guardando(*pTablerogl, _anchoVentana, _altoVentana, _tiempoGuardado);
+		break;
+
+	case EstadoJuego::CARGANDO:
+		// Cargamos la partida y volvemos al tablero
+		if (!pTablero) {
+			pTablero = new Tablero();
+			pTablerogl = new Tablerogl(pTablero);
+			DibujaTablero::tablero_init();
+			gestorInput.setTablerogl(pTablerogl);
+			pGestorHechizos = new GestorHechizos(*pTablero,
+				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
+				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+		}
+
+		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
+		pTablerogl->setBatalla((int)configuracion.batalla);
+		ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
+		estado = EstadoJuego::TABLERO;
 		break;
 
 	case EstadoJuego::RANKING:
@@ -150,13 +181,44 @@ void Coordinador::tecla(unsigned char key)
 		break;
 	case EstadoJuego::TABLERO:
 		if (key == 27) {
-			ETSIDI::stopMusica();
-			reiniciarTablero();
-			estado = EstadoJuego::MENU;
+			if (pTablerogl->_conjuroElegido) {                // NIVEL 1: CANCELA CONJURO ELEGIDO
+				pTablerogl->_conjuroElegido = false;
+				pTablerogl->_esperandoDestino = false;
+				pTablerogl->_mensajeInvalido = "";
+				pTablerogl->_tiempoMensajeInvalido = 0.0f;
+				std::cout << "[Hechizos] Conjuro cancelado. Elige otro 1-7.\n";
+			}
+			else if (pTablerogl->_modoHechizo) {            // NIVEL 2: CANCELA MODO HECHIZO
+				pTablerogl->_modoHechizo = false;
+				pTablerogl->_mensajeInvalido = "";
+				pTablerogl->_tiempoMensajeInvalido = 0.0f;
+				std::cout << "[Hechizos] Modo hechizo cancelado.\n";
+			}
+			else if (pTablerogl->piezaSeleccionada) {       // NIVEL 3: DESELECCIONA PIEZA
+				pTablerogl->piezaSeleccionada = false;
+				pTablerogl->fromFila = pTablerogl->fromCol = -1;
+			}
+			else {                                          // NIVEL 4: ABRE MENU PAUSA
+				_tiempoGuardado = 10.0f;
+				estado = EstadoJuego::GUARDANDO;
+			}
 			break;
 		}
 		gestorInput.teclaTablero(key, estado);
 		break;
+
+	case EstadoJuego::GUARDANDO:
+		if (key == 'g' || key == 'G') {
+			GestorPartida::guardar(*pTablero, pTablerogl->gestorTurnos, configuracion);
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
+		}
+		if (key == 27) {
+			estado = EstadoJuego::TABLERO;
+		}
+		break;
+
 	case EstadoJuego::ARENA:
 		gestorInput.teclaArena(key);
 		break;
@@ -204,40 +266,6 @@ void Coordinador::tecla_especial_up(int key)
 void Coordinador::mueve(double dt)
 {
 	if (estado == EstadoJuego::TABLERO && pTablero) {
-<<<<<<< Updated upstream
-		gestorTurnos.update(dt);
-=======
-
-		// IA: SI ES TURNO RIVAL Y MODO JVIA, CALCULA Y EJECUTA MOVIMIENTO
-		if (pTablerogl &&
-			configuracion.modo == ModoJuego::JVIA &&
-			pTablerogl->gestorTurnos.getBandoActual() == bando_rival &&
-			!pTablerogl->huboColision() &&
-			!_iaCalculando) {
-
-			_iaCalculando = true;                              // BLOQUEA PARA NO REPETIR
-
-			MovimientoIA mov = _minimax.calcularMejorMovimiento(*pTablero); // CALCULA
-
-			if (mov.filaOrigen >= 0) {                         // HAY MOVIMIENTO VÁLIDO
-				Pieza* pieza = pTablero->getCasilla(mov.filaOrigen, mov.colOrigen).obj;
-				if (pieza) {
-					// MUEVE EL CURSOR RIVAL AL DESTINO VISUALMENTE
-					pTablerogl->Filacursor[1] = mov.filaDestino;
-					pTablerogl->Colcursor[1] = mov.colDestino;
-
-					// SELECCIONA Y MUEVE
-					pTablerogl->fromFila = mov.filaOrigen;
-					pTablerogl->fromCol = mov.colOrigen;
-					pTablerogl->fromBando = bando_rival;
-					pTablerogl->piezaSeleccionada = true;
-					pTablerogl->trySelectorMove(bando_rival);  // EJECUTA EL MOVIMIENTO
-				}
-			}
-
-			_iaCalculando = false;                             // DESBLOQUEA
-		}
-		
 		//USAMOS EL GESTORTURNOS DENTRO DE PTABLEROGL
 		if (pTablerogl) {
 			pTablerogl->gestorTurnos.update(dt);
@@ -251,7 +279,20 @@ void Coordinador::mueve(double dt)
 				pTablerogl->aplicarCambiosDinamicos();
 			}
 		}
->>>>>>> Stashed changes
+		//gestorTurnos.update(dt);
+
+		//ACTUALIZACIÓN DEL TEMPORIZADOR DE MOVIMIENTO INVÁLIDO
+		//if (pTablerogl)pTablerogl->updateMensaje(dt);
+		//CASILLAS DINÁMICAS
+		/*if (pTablerogl) {
+			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
+			if (turnoActual != pTablerogl->_turnosJugados &&
+				turnoActual > 1 &&
+				turnoActual % Tablerogl::TURNOS_DINAMICOS == 0) {
+				pTablerogl->_turnosJugados = turnoActual;
+				pTablerogl->aplicarCambiosDinamicos();
+			}
+		}*/
 
 		if (pTablero == nullptr) return;
 
@@ -268,9 +309,6 @@ void Coordinador::mueve(double dt)
 		}
 	}
 
-<<<<<<< Updated upstream
-=======
-	// CONTADOR DE TIEMPO PARA GUARDAR PARTIDA
 	if (estado == EstadoJuego::GUARDANDO) 
 	{
 		_tiempoGuardado -= (float)dt;
@@ -281,14 +319,16 @@ void Coordinador::mueve(double dt)
 		}
 	}
 
->>>>>>> Stashed changes
 	_spriteReyLocal.update(dt);
 
 	if (_spriteReyLocal.animacionTerminada() && _spriteReyLocal.getEstado() != EstadoRey::DEATH)
 		_spriteReyLocal.setEstado(EstadoRey::IDLE);
 
-	if (estado == EstadoJuego::ARENA)
+	if (estado == EstadoJuego::ARENA) 
+	{
 		_arena.actualizar((float)dt, _input);
+		DibujaArena::arena_update((float)dt); // Animaciones y efectos gráficos de la arena
+	}
 }
 
 void Coordinador::raton(int boton, int state, int x, int y)

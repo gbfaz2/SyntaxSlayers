@@ -24,18 +24,7 @@ struct MovimientoIA {
 <<<<<<< Updated upstream
     Bando _bandoIA;        // BANDO QUE CONTROLA LA IA
     Bando _bandoJugador;   // BANDO DEL JUGADOR HUMANO
-
-public:
-    // RECIBE EL BANDO QUE JUEGA LA IA
-    MinimaxTablero(Bando bandoIA);
-
-    // DEVUELVE EL MEJOR MOVIMIENTO POSIBLE DADO EL TABLERO ACTUAL
-    Movimiento obtenerMejorMovimiento(Pieza** tablero, int tamanio) const;
-
-    // DEVUELVE EL MEJOR MOVIMIENTO PARA EL JUGADOR (USADO POR SugerenciasTablero)
-    Movimiento obtenerMejorMovimientoJugador(Pieza** tablero, int tamanio) const;
-
-private:
+    private://ELIMINAR 
     // ALGORITMO MINIMAX CON PODA ALFA-BETA
     int minimax(Pieza** tablero, int tamanio, int profundidad,
                 int alfa, int beta, bool esMaximizador) const;
@@ -60,6 +49,16 @@ class MinimaxTablero {
 <<<<<<< Updated upstream
     // VALOR DE CADA PIEZA PARA LA HEURISTICA
     int valorPieza(const Pieza& pieza) const;
+
+public:
+    // RECIBE EL BANDO QUE JUEGA LA IA
+    MinimaxTablero(Bando bandoIA);
+
+    // DEVUELVE EL MEJOR MOVIMIENTO POSIBLE DADO EL TABLERO ACTUAL
+    Movimiento obtenerMejorMovimiento(Pieza** tablero, int tamanio) const;
+
+    // DEVUELVE EL MEJOR MOVIMIENTO PARA EL JUGADOR (USADO POR SugerenciasTablero)
+    Movimiento obtenerMejorMovimientoJugador(Pieza** tablero, int tamanio) const;
 };
 */
 =======

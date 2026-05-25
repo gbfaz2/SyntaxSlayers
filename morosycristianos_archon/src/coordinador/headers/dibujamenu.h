@@ -4,22 +4,13 @@
 #pragma once
 #include "dibuja.h"
 #include "menu.h"
+#include "GestorPartida.h"
 #include <string>
 
 // DECLARACIÓN ANTICIPADA
 class PantallaDestino;
 
 class DibujaMenu : public Dibuja {
-public:
-    // ── PANTALLA INTRO
-    static void intro_dibujar(PantallaIntro& p, int ancho, int alto);
-
-    // ── MENÚ PRINCIPAL
-    static void menu_dibujar(MenuPrincipal& m, int ancho, int alto);
-
-    // ── PANTALLA DESTINO
-    static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
-private:
     // SECCIONES DEL MENÚ
     static void menu_fondo(int ancho, int alto);
     static void menu_titulo(MenuPrincipal& m, int ancho, int alto);
@@ -61,4 +52,13 @@ private:
     static void destino_particulas(const PantallaDestino& p);
     static void destino_textos(const PantallaDestino& p, int ancho, int alto);
     static void destino_continuar(const PantallaDestino& p, int ancho, int alto);
+public:
+    // ── PANTALLA INTRO
+    static void intro_dibujar(PantallaIntro& p, int ancho, int alto);
+
+    // ── MENÚ PRINCIPAL
+    static void menu_dibujar(MenuPrincipal& m, int ancho, int alto);
+
+    // ── PANTALLA DESTINO
+    static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
 };

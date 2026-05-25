@@ -8,7 +8,9 @@
 #include "GestorTurnos.h"
 #include "Hechicero.h"
 #include "SpriteRey.h"
+#include "dibujatablero.h"
 #include "menu.h"
+#include<ETSIDI.h>
 //#include"coordinador.h"
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -17,6 +19,31 @@ enum { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT };
 
 class Tablerogl
 {
+	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
+	friend class Coordinador;//ACCESO PARA BANDO INICIAL Y CASILLAS DINAMICAS
+	friend class DibujaTablero;//ACCESO PARA DIBUJO
+
+	GestorMovimiento gestorMovimiento;
+	GestorTurnos     gestorTurnos;
+	//SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
+	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
+
+	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
+
+	static int _anchoVentana;
+	static int _altoVentana;
+
+	//para movimiento interpolado
+	struct AnimMovimiento {
+		Pieza* pieza;       // qué pieza se está moviendo
+		float  origenX, origenY;   // posición GL de origen
+		float  destinoX, destinoY; // posición GL de destino
+		float  t;           // progreso 0.0 → 1.0
+		bool   activa{ false };
+	};
+	AnimMovimiento _animMov;
+
+
 protected:
 	float ancho;
 	int N;
@@ -37,6 +64,9 @@ protected:
 
 
 	bool _combatePendiente{ false };
+	float _tiempoMensajeInvalido{ 0.0f };
+	std::string _mensajeInvalido;
+	int _turnosJugados{ 0 };
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
 
@@ -44,24 +74,13 @@ protected:
 	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO
 	BandoPieza _bandoHechizo{ bando_nada }; // BANDO QUE ACTIVO EL HECHIZO
 
-	int anchoVentana{ 800 };  
-	int altoVentana{ 600 };   
-
-private:
-	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
-	friend class DibujaTablero;
-
-	GestorMovimiento gestorMovimiento;
-	GestorTurnos     gestorTurnos;
-	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
-	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
-		
-
-	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
-
-	static int _anchoVentana;
-	static int _altoVentana;
-
+	//int anchoVentana{ 800 };  
+	//int altoVentana{ 600 }; 
+	
+	bool _esperandoDestino{ false };  // ESPERANDO SEGUNDA CASILLA PARA HECHIZO DE 2 PASOS
+	int  _hechizoFilaOrigen{ -1 };   // FILA ORIGEN DEL HECHIZO
+	int  _hechizoColOrigen{ -1 };    // COL ORIGEN DEL HECHIZO
+	bool _conjuroElegido{ false }; // EL JUGADOR YA ELIGIÓ UN NÚMERO
 
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
@@ -70,6 +89,10 @@ public:
 	void trySelectorMove(BandoPieza bando);
 
 	void redimensionar(int ancho, int alto);
+
+
+	//para actualizar el dt para la interpolacion
+	void update(double dt);
 
 	//conversores de coordenadas cogidas del repositorio de Pablo
 	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);
@@ -80,6 +103,27 @@ public:
 	Pieza* getPiezaDefensora() const { return _pDefensora; }
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
+	void mostrarMensajeInvalido(const std::string& mensaje) {
+		// NO PROCESAR SI ESTAMOS EN MODO HECHIZO
+		if (_modoHechizo) return;
+		_mensajeInvalido = mensaje;
+		_tiempoMensajeInvalido = 2.0f;
+
+		//musica MEEEEH error
+		ETSIDI::playMusica("sonidos/error_tablero.mp3");
+	}
+	//descuenta el temporizador del cartel 
+	void updateMensaje(double dt){
+		if (_tiempoMensajeInvalido > 0.0f)
+			_tiempoMensajeInvalido -= (float)dt;
+	}
+	//fija el bando que empieza según la batalla elegida en el menu 
+	void setBandoInicial(BandoPieza bando) {
+		gestorTurnos.setBandoInicial(bando);
+	}
+	//aplicar intercambio de casillas dinámicas
+	void aplicarCambiosDinamicos();
+	static const int TURNOS_DINAMICOS = 4;//cada cuatro turnos se intercamnian local por rival
 
 	void setVictoria(BandoPieza ganador) { victoria_ = ganador; }
 

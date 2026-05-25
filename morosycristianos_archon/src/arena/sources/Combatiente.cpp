@@ -46,6 +46,8 @@ void Combatiente::actualizar(float dt)
 		_z += nz * _velocidad * dt;
 	}
 
+	_enMovimiento = (_dxPedido != 0.0f || _dzPedido != 0.0f); // Si hay movimiento pedido, estamos en movimiento
+
 	// Reseteamos el movimiento pedido para el siguiente frame
 	_dxPedido = 0.0f;
 	_dzPedido = 0.0f;
@@ -96,8 +98,8 @@ Combatiente::Combatiente(float x, float z, float r, float g, float b, const Piez
 	_velocidad = 2.0f + pieza.getRadioMov() * 0.8f;
 
 	// Alcance segun tipo de arma (dynamic_cast de Pieza a Arma)
-	_alcanceAtaque = 1.5f; // por defecto cuerpo a cuerpo
+	_alcanceAtaque = 3.0f; // por defecto cuerpo a cuerpo
 	const Arma* arma = dynamic_cast<const Arma*>(&pieza);
 	if (arma && arma->getTipoAtaque() == TipoAtaque::DISTANCIA)
-		_alcanceAtaque = 3.5f;
+		_alcanceAtaque = 5.0f;
 }

@@ -3,9 +3,13 @@
 #include "ETSIDI.h"
 #include <cmath>
 #include <cstdio>
+#include <string>
 #include <iostream>
 
 static const int SEGS = 24; // NUMERO DE SEGMENTOS PARA DIBUJAR LOS CIRCULOS
+
+dibujapersonajes DibujaTablero::_dibujador; //definir como variable estática
+
 
 // INICIALIZACIÓN DE LUCES Y PERSPECTIVA
 
@@ -17,11 +21,15 @@ void DibujaTablero::tablero_init() {
 
     glMatrixMode(GL_PROJECTION); // MATRIZ DE PROYECCIÓN
     gluPerspective(40.0, 800.0 / 600.0, 0.1, 150.0);
+
+    _dibujador.init(); //inicializa los personajes dibujados
 }
 
 // ORQUESTADOR PRINCIPAL: DIBUJA TODO EL FRAME DEL TABLERO
 
 void DibujaTablero::tablero_dibujar(Tablerogl& t) {
+    _dibujador.update(); //para que se vaya actualizando los personajes
+
     glEnable(GL_DEPTH_TEST);    // QUE LAS PIEZAS NO SE SOLAPEN MAL
     glEnable(GL_LIGHTING);      // ENCENDER LAS LUCES
     glEnable(GL_LIGHT0);
@@ -89,6 +97,13 @@ void DibujaTablero::tablero_dibujar(Tablerogl& t) {
     glRectf(-mitad, mitad, mitad, -mitad);
     glPopMatrix();
     glDisable(GL_BLEND);
+    
+    //CONTADORES, MENSAJE MOVIMIENTO INVÁLIDO Y MENÚ DE PIEZA
+    util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+    tablero_contadores(t);
+    tablero_panel_pieza(t);
+    tablero_mensaje_invalido(t);
+    util_salir2D();
 }
 
 // CAPAS BASE DEL TABLERO E IMÁGENES
@@ -143,7 +158,7 @@ void DibujaTablero::tablero_color_casilla(const Tablerogl& t, int fila, int col)
     case Casilla_rival:
         glColor3f(0.70f, 0.30f, 0.85f); // MORADO MAS CLARO
         return;
-    case Casilla_dinamica:
+    case Casilla_neutra:
         glColor3f(0.50f, 0.50f, 0.50f); // GRIS MAS CLARO
         return;
     case Casilla_poder:
@@ -247,7 +262,7 @@ void DibujaTablero::tablero_marco(const Tablerogl& t) {
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 14);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
     ETSIDI::setTextColor(0.90f, 0.85f, 0.70f, 1.0f);
 
     // LETRAS COLUMNAS (A-I) EN MARCO SUPERIOR
@@ -368,9 +383,14 @@ void DibujaTablero::tablero_seleccion(const Tablerogl& t) {
 }
 
 void DibujaTablero::tablero_movimientos_validos(const Tablerogl& t) {
-    if (!t.piezaSeleccionada || t.fromFila < 0) return;
+    if (!t.piezaSeleccionada || t.fromFila < 0) return;  // NO HAY PIEZA SELECCIONADA
+    if (t._modoHechizo) return;                           // MODO HECHIZO ACTIVO
 
-    auto validas = t.m_tablero->casillasValidas(t.fromFila, t.fromCol);
+    BandoPieza bandoActual = t.gestorTurnos.getBandoActual(); // BANDO CON TURNO
+    const Casilla& cas = t.m_tablero->getCasilla(t.fromFila, t.fromCol);
+    if (cas.bando != bandoActual) return;                 // PIEZA NO ES DEL TURNO ACTUAL
+
+    auto validas = t.m_tablero->casillasValidas(t.fromFila, t.fromCol); // CASILLAS VÁLIDAS
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -416,6 +436,18 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     float cx, cy;
     t.cell2center(fil, col, cx, cy);
 
+    if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+        cx = t._animMov.origenX + (t._animMov.destinoX - t._animMov.origenX) * t._animMov.t;
+        cy = t._animMov.origenY + (t._animMov.destinoY - t._animMov.origenY) * t._animMov.t;
+    }
+
+    GLdouble model[16], proj[16];
+    GLint view[4];
+    glGetDoublev(GL_MODELVIEW_MATRIX, model);
+    glGetDoublev(GL_PROJECTION_MATRIX, proj);
+    glGetIntegerv(GL_VIEWPORT, view);
+
+
     // COLOR BASE DEL BANDO
     if (casilla.bando == bando_local) glColor3f(1.00f, 0.95f, 0.85f);
     else                              glColor3f(0.90f, 0.55f, 0.15f);
@@ -423,49 +455,35 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     float escala = t.ancho * 0.30f;
 
     glPushMatrix();
-    glTranslatef(cx, cy, escala + 0.01f);
+    glTranslatef(cx, cy, escala + 0.03f); //elevamos sobre el tablero
 
     switch (casilla.pieza) {
-    case pieza_esfera: {
-        glPopMatrix();
-        if (casilla.bando != bando_local) return; // RIVAL AÚN NO SE DIBUJA
 
-        float tableroAncho = t.N * t.ancho;
-        float tableroAlto = t.N * t.ancho;
-        float nx = cx / tableroAncho;
-        float ny = (-cy) / tableroAlto;
-
-        float margenX = Tablerogl::_anchoVentana * 0.18f;
-        float margenY = Tablerogl::_altoVentana * 0.08f;
-        float anchoTablero = Tablerogl::_anchoVentana * 0.60f;
-        float altoTablero = Tablerogl::_altoVentana * 0.80f;
-
-        float px = margenX + nx * anchoTablero;
-        float py = Tablerogl::_altoVentana - (margenY + ny * altoTablero);
-        float size = (anchoTablero / t.N) * 1.3f;
-
-        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
-        glDisable(GL_LIGHTING);
-        // LLAMADA AL SPRITE DEL REY PARA QUE SE DIBUJE A SÍ MISMO
-        t._spriteReyLocal.dibujar(px, py, size);
-        util_salir2D();
-        return;
-    }
+    case pieza_esfera: 
+        //dodecaedro de momento, pero es el rey /emir
+        glScalef(escala * 0.55f, escala * 0.55f, escala * 0.55f);
+        glutSolidDodecahedron();
+        break;
+    
     case pieza_dodecaedro:
         glScalef(escala * 0.55f, escala * 0.55f, escala * 0.55f);
         glutSolidDodecahedron();
         break;
+
     case pieza_icosaedro:
         glScalef(escala * 0.65f, escala * 0.65f, escala * 0.65f);
         glutSolidIcosahedron();
         break;
+
     case pieza_tetraedro:
         glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
         glutSolidTetrahedron();
         break;
+
     case pieza_cubog:
         glutSolidCube(escala * 1.1f);
         break;
+
     case pieza_cono:
     {
         GLUquadric* q = gluNewQuadric();
@@ -476,6 +494,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         gluDeleteQuadric(q);
     }
     break;
+
     case pieza_cilindro:
     {
         GLUquadric* q = gluNewQuadric();
@@ -487,14 +506,57 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         gluDeleteQuadric(q);
     }
     break;
-    case pieza_cubo_p:
-        glutSolidCube(escala * 0.75f);
-        break;
-    default: break;
-    }
-    glPopMatrix();
-}
 
+
+    case pieza_cubo_p:
+    {
+        // Solo dibujamos para el bando cristiano
+        if (casilla.bando != bando_local) {
+            glutSolidCube(escala * 0.75f);
+            glPopMatrix();
+            return;
+        }
+
+
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+        
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY + size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+        EstadoPersonaje estadoMiliciano = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoMiliciano = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        int idDeEstaPieza = casilla.obj->getIdAnimacion();
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.miliciano(px, py, size, estadoMiliciano, idDeEstaPieza, moviendo);
+        util_salir2D();
+        return;
+    }
+    break;
+    
+
+}
+glPopMatrix();
+
+}
 // PANTALLA FINAL DE VICTORIA
 
 void DibujaTablero::tablero_victoria(const Tablerogl& t) {
@@ -516,18 +578,250 @@ void DibujaTablero::tablero_victoria(const Tablerogl& t) {
 
     if (t.victoria_ == bando_local) {
         ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f);
-        ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 36);
         ETSIDI::printxy("VICTORIA CRISTIANA", 300, 400);
     }
     else {
         ETSIDI::setTextColor(0.75f, 0.20f, 0.90f, 1.0f);
-        ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 36);
         ETSIDI::printxy("VICTORIA AL-ANDALUS", 280, 400);
     }
 
     ETSIDI::setTextColor(0.80f, 0.80f, 0.80f, 1.0f);
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
     ETSIDI::printxy("Pulsa ESC para volver al menu", 310, 360);
 
     glEnable(GL_DEPTH_TEST);
+}
+
+//CONTADORES Y MENSAJE INVÁLIDO
+
+void DibujaTablero::tablero_contadores(const Tablerogl& t)
+{
+    int av = Tablerogl::_altoVentana;
+    int aw = Tablerogl::_anchoVentana;
+
+    float tiempo = t.gestorTurnos.getTiempoRestante();
+    int   seg = (int)tiempo;
+    bool  esLocal = (t.gestorTurnos.getBandoActual() == bando_local);
+
+    // TÍTULO CENTRADO ARRIBA
+    ETSIDI::setTextColor(0.85f, 0.70f, 0.30f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 22);
+    ETSIDI::printxy("MOROS Y CRISTIANOS", aw / 2 - 130, av - 35);
+
+    // CRISTIANO (izquierda)
+    if (esLocal) ETSIDI::setTextColor(1.0f, 0.20f, 0.20f, 1.0f);  // ROJO VIVO SI ES SU TURNO
+    else         ETSIDI::setTextColor(0.5f, 0.10f, 0.10f, 1.0f);  // ROJO APAGADO SI ESPERA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+    ETSIDI::printxy("CRISTIANO", 20, av - 35);
+
+    // TIEMPO (centro)
+    char bufTiempo[16];
+    if (esLocal) ETSIDI::setTextColor(1.0f, 0.20f, 0.20f, 1.0f);  // ROJO SI ES TURNO LOCAL
+    else         ETSIDI::setTextColor(0.85f, 0.10f, 1.0f, 1.0f);  // MORADO SI ES TURNO RIVAL
+    sprintf_s(bufTiempo, "%02d s", seg);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+    ETSIDI::printxy(bufTiempo, aw / 2 - 10, av - 55);
+
+    // AL ANDALUS (derecha)
+    if (!esLocal) ETSIDI::setTextColor(0.85f, 0.10f, 1.0f, 1.0f); // MORADO VIVO SI ES SU TURNO
+    else          ETSIDI::setTextColor(0.35f, 0.10f, 0.45f, 1.0f); // MORADO APAGADO SI ESPERA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+    ETSIDI::printxy("AL ANDALUS", aw - 150, av - 35);
+}
+
+void DibujaTablero::tablero_mensaje_invalido(const Tablerogl& t)
+{
+    if (t._tiempoMensajeInvalido <= 0.0f) return;
+    if (t._mensajeInvalido.empty()) return;
+
+    int av = Tablerogl::_altoVentana;
+    int aw = Tablerogl::_anchoVentana;
+
+    // Fondo rojo semitransparente centrado en pantalla
+    //util_entrar2D(aw, av);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.55f, 0.0f, 0.0f, 0.80f);
+    float mx = aw * 0.25f, my = av * 0.48f;
+    float mw = aw * 0.50f, mh = av * 0.06f;
+    glBegin(GL_QUADS);
+    glVertex2f(mx, my);    glVertex2f(mx + mw, my);
+    glVertex2f(mx + mw, my + mh); glVertex2f(mx, my + mh);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    // Texto del cartel
+    ETSIDI::setTextColor(1.0f, 0.35f, 0.35f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 22);
+    ETSIDI::printxy(t._mensajeInvalido.c_str(),
+        (int)(mx + 20), (int)(my + mh * 0.35f));
+    util_salir2D();
+}
+void DibujaTablero::tablero_panel_pieza(const Tablerogl& t) {
+    // Solo mostramos el panel si hay pieza seleccionada
+    if (!t.piezaSeleccionada || t.fromFila < 0 || t.fromCol < 0) return;
+
+    const Casilla& cas = t.m_tablero->getCasilla(t.fromFila, t.fromCol);
+    if (cas.pieza == pieza_nada || cas.obj == nullptr) return;
+
+    Pieza* p = cas.obj;
+
+    int av = Tablerogl::_altoVentana;
+    int aw = Tablerogl::_anchoVentana;
+
+    // Tamaño del panel
+    const int PW = 180; // ancho del panel en píxeles
+    const int PH = 170; // alto del panel
+    const int PY = 60;  // separación desde el borde inferior
+
+    // Posición X según bando: izquierda para local, derecha para rival
+    int px, py;
+    if (cas.bando == bando_local) {
+        px = 10;               // pegado al borde izquierdo
+    }
+    else {
+        px = aw - PW - 10;     // pegado al borde derecho
+    }
+    py = PY; // borde inferior
+
+    // ── Fondo del panel ──────────────────────────────────────
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Fondo: morado oscuro para locales, rojo oscuro para rivales
+    if (cas.bando == bando_local)
+        glColor4f(0.20f, 0.05f, 0.30f, 0.88f);
+    else
+        glColor4f(0.30f, 0.03f, 0.03f, 0.88f);
+    glBegin(GL_QUADS);
+    glVertex2i(px, py);     glVertex2i(px + PW, py);
+    glVertex2i(px + PW, py + PH); glVertex2i(px, py + PH);
+    glEnd();
+
+    // Borde del panel
+    if (cas.bando == bando_local)
+        glColor4f(0.65f, 0.20f, 0.85f, 1.0f); // morado
+    else
+        glColor4f(0.85f, 0.15f, 0.15f, 1.0f); // rojo
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(px, py);     glVertex2i(px + PW, py);
+    glVertex2i(px + PW, py + PH); glVertex2i(px, py + PH);
+    glEnd();
+    glLineWidth(1.0f);
+    glDisable(GL_BLEND);
+
+    // ── Nombre de la pieza ───────────────────────────────────
+    ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 16);
+    ETSIDI::printxy(p->getNombre().c_str(), px + 8, py + PH - 22);
+
+    // Separador
+    glColor3f(0.6f, 0.6f, 0.6f);
+    glBegin(GL_LINES);
+    glVertex2i(px + 5, py + PH - 30);
+    glVertex2i(px + PW - 5, py + PH - 30);
+    glEnd();
+
+    // ── Barras de estadísticas ───────────────────────────────
+    // Cada barra tiene: etiqueta, y_posicion, valor, maximo, color
+    int barX = px + 8;
+    int barW = PW - 16;
+    int barH = 12;
+    int lineH = 28; // separación entre barras
+
+    // Vida (verde)
+    ETSIDI::setTextColor(0.70f, 1.0f, 0.70f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+    char buf[64];
+    sprintf_s(buf, "Vida: %d", p->getVida());
+    int yVida = py + PH - 55;
+    ETSIDI::printxy(buf, barX, yVida + 3);
+    tablero_barra(barX, yVida - 14, barW, barH,
+        (float)p->getVida(), 100.0f,
+        0.15f, 0.85f, 0.15f);
+
+    // Fuerza (rojo anaranjado)
+    ETSIDI::setTextColor(1.0f, 0.60f, 0.40f, 1.0f);
+    sprintf_s(buf, "Fuerza: %d", p->getFuerza());
+    int yFuerza = yVida - lineH;
+    ETSIDI::printxy(buf, barX, yFuerza + 3);
+    tablero_barra(barX, yFuerza - 14, barW, barH,
+        (float)p->getFuerza(), 100.0f,
+        0.90f, 0.35f, 0.10f);
+
+    // Velocidad de ataque (azul)
+    ETSIDI::setTextColor(0.50f, 0.75f, 1.0f, 1.0f);
+    sprintf_s(buf, "Vel.Atk: %d", p->getVelAtaque());
+    int yVel = yFuerza - lineH;
+    ETSIDI::printxy(buf, barX, yVel + 3);
+    tablero_barra(barX, yVel - 14, barW, barH,
+        (float)p->getVelAtaque(), 100.0f,
+        0.20f, 0.50f, 0.95f);
+
+    // Radio de movimiento (texto simple, no barra)
+    ETSIDI::setTextColor(0.90f, 0.90f, 0.60f, 1.0f);
+    sprintf_s(buf, "Radio mov: %d", p->getRadioMov());
+    ETSIDI::printxy(buf, barX, py + 8);
+}
+void DibujaTablero::tablero_barra(int x, int y, int ancho, int alto,
+    float valor, float maximo,
+    float r, float g, float b) {
+    float fraccion = (maximo > 0.0f) ? (valor / maximo) : 0.0f;
+    if (fraccion < 0.0f) fraccion = 0.0f;
+    if (fraccion > 1.0f) fraccion = 1.0f;
+
+    // Fondo gris oscuro de la barra
+    glColor4f(0.15f, 0.15f, 0.15f, 0.90f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_QUADS);
+    glVertex2i(x, y);
+    glVertex2i(x + ancho, y);
+    glVertex2i(x + ancho, y + alto);
+    glVertex2i(x, y + alto);
+    glEnd();
+
+    // Relleno de color según el valor
+    int relleno = (int)(ancho * fraccion);
+    glColor4f(r, g, b, 0.95f);
+    glBegin(GL_QUADS);
+    glVertex2i(x, y);
+    glVertex2i(x + relleno, y);
+    glVertex2i(x + relleno, y + alto);
+    glVertex2i(x, y + alto);
+    glEnd();
+    glDisable(GL_BLEND);
+}
+
+void DibujaTablero::tablero_guardando(Tablerogl& t, int ancho, int alto, float tiempoRestante)
+{
+    // Dibuja el tablero de fondo
+    tablero_dibujar(t);
+
+    // Mensaje encima en 2D
+    util_entrar2D(ancho, alto);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+    glBegin(GL_QUADS);
+    glVertex2f(150, 300); glVertex2f(ancho - 150, 300);
+    glVertex2f(ancho - 150, 430); glVertex2f(150, 430);
+    glEnd();
+
+    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 24);
+    ETSIDI::printxy("Pulsa G para guardar la partida", 280, 360);
+    ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
+    ETSIDI::printxy("Pulsa ESC para volver al tablero", 285, 395);
+
+    char buf[64];
+    sprintf_s(buf, "Tiempo restante: %.0f segundos", tiempoRestante);
+    ETSIDI::setTextColor(1.0f, 0.4f, 0.4f, 1.0f);
+    ETSIDI::printxy(buf, 320, 420);
+
+    util_salir2D();
 }

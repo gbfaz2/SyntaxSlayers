@@ -15,9 +15,12 @@ enum class EstadoJuego {
     DESTINO,        // Pantalla "Destino Historico": muestra la batalla sorteada
     TABLERO,        // Fase de tablero 9x9 (turnos)
     ARENA,          // Combate en arena 1vs1
+    GUARDANDO,      // Guardar partida
+    CARGANDO,       // Para que cargue la partida guardada
     RANKING,        // Pantalla de ranking
     FINAL,          // Pantalla de fin de partida
     PAUSA           // Pausa
+ 
 };
 
 // Modo de juego

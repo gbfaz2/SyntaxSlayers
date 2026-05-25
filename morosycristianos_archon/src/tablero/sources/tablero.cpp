@@ -34,7 +34,7 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 {
 	const TipoCasilla L = Casilla_local;
 	const TipoCasilla R = Casilla_rival;
-	const TipoCasilla D = Casilla_dinamica;
+	const TipoCasilla D = Casilla_neutra;
 
 	TipoCasilla patron[9][9] = {
 		//   c0  c1  c2  c3  c4  c5  c6  c7  c8
@@ -82,8 +82,17 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	poner(6, 0, pieza_cono, bando_local, new CaballeriaPesada(Bando::CRISTIANO));
 	poner(0, 1, pieza_cilindro, bando_local, new Ballestero(Bando::CRISTIANO));
 	poner(8, 1, pieza_cilindro, bando_local, new Ballestero(Bando::CRISTIANO));
-	for (int fila = 1; fila <= 7; fila++)
-		poner(fila, 1, pieza_cubo_p, bando_local, new Miliciano(Bando::CRISTIANO));
+	//for (int fila = 1; fila <= 7; fila++)
+		//poner(fila, 1, pieza_cubo_p, bando_local, new Miliciano(Bando::CRISTIANO));
+
+	int idMiliciano = 0;
+
+	for (int fila = 1; fila <= 7; fila++) {
+		Pieza* mLocal = new Miliciano(Bando::CRISTIANO);
+		mLocal->setIdAnimacion(idMiliciano); // Le damos ID 0, 1, 2...
+		idMiliciano++;
+		poner(fila, 1, pieza_cubo_p, bando_local, mLocal);
+	}
 
 	// BANDO RIVAL (andalusí) — columnas 7 y 8
 	poner(4, 8, pieza_esfera, bando_rival, new Rey(Bando::ANDALUSI));
@@ -97,8 +106,17 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	poner(6, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
 	poner(0, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
 	poner(8, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
-	for (int fila = 1; fila <= 7; fila++)
-		poner(fila, 7, pieza_cubo_p, bando_rival, new Miliciano(Bando::ANDALUSI));
+	//for (int fila = 1; fila <= 7; fila++)
+		//poner(fila, 7, pieza_cubo_p, bando_rival, new Miliciano(Bando::ANDALUSI));
+
+	for (int fila = 1; fila <= 7; fila++) {
+		Pieza* mRival = new Miliciano(Bando::ANDALUSI);
+		mRival->setIdAnimacion(idMiliciano); // Continúa con 7, 8, 9...
+		idMiliciano++;
+		poner(fila, 7, pieza_cubo_p, bando_rival, mRival);
+	}
+
+
 }
 
 bool Tablero::esPuntoPoder(int fila, int col) const
@@ -148,7 +166,7 @@ Pieza* Tablero::muevePieza(int fr, int fc, int tr, int tc)
 	if (batalla)
 		cout << "[Tablero] COMBATE en (" << tr << "," << tc << ")!" << endl;
 	else
-		cout << "[Tablero] Movido: (" << fr << "," << fc << ") → (" << tr << "," << tc << ")" << endl;
+		cout << "[Tablero] Movido: (" << fr << "," << fc << ") -> (" << tr << "," << tc << ")" << endl;
 	return capturada;
 }
 
@@ -180,6 +198,7 @@ std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
 	if (tablero[fila][col].pieza == pieza_nada) return resultado;
 
 	const Casilla& origen = tablero[fila][col];
+	Pieza* pObj = origen.obj;
 
 	for (int tf = 0; tf < N; tf++) {
 		for (int tc = 0; tc < N; tc++) {
@@ -189,11 +208,55 @@ std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
 			//   PiezaTerrestre → sin diagonal, max radioMov casillas
 			//   PiezaVoladora  → con diagonal, max radioMov casillas
 			//   PiezaTeleporte → cualquier casilla del tablero
-			bool moviendose = (origen.obj != nullptr)? origen.obj->puedeMoverse(tf, tc): true; // fallback: sin restricción
+
+			//devuelve si puede o no ejecturar el movimiento teniendo en cuenta el destnio
+			bool moviendose = (pObj != nullptr)? pObj->puedeMoverse(tf, tc): true; // fallback: sin restricción
 
 			// puedeMover() del tablero comprueba que no hay aliado
-			if (moviendose && puedeMover(fila, col, tf, tc))
-				resultado.push_back({ tf, tc });
+			if (moviendose && puedeMover(fila, col, tf, tc)) {
+
+				//declara variable que indica camino despejado true or false
+				bool caminoDespejado = true;
+
+				//solo para piezas terrestres:
+				if (pObj != nullptr && pObj->getTipoMovimiento() == TipoMovimiento::TERRESTRE) {
+					
+					//calcula la dif de destino con la fila/columna actual
+					int difFila = tf - fila;
+					int difCol = tc - col;
+
+					//solo trazamos el camino si es un movimiento en línea recta o diagonal perfecta
+					if (difFila == 0 || difCol == 0 || abs(difFila) == abs(difCol)) {
+
+						// Calculamos la dirección del paso (-1, 0, o 1)
+						int dirFila = (difFila > 0) ? 1 : ((difFila < 0) ? -1 : 0);
+						int dirCol = (difCol > 0) ? 1 : ((difCol < 0) ? -1 : 0);
+
+						//calculamos la fila más la dirección
+						int fAct = fila + dirFila;
+						int cAct = col + dirCol;
+
+						//avanzamos por el tablero hasta llegar justo 1 casilla antes del destino
+						while (fAct != tf || cAct != tc) {
+							//si nos chocamos con CUALQUIER pieza en medio del camino, está bloqueado
+							if (tablero[fAct][cAct].pieza != pieza_nada) {
+								caminoDespejado = false;
+								break;
+							}
+
+							//suma y actualización para fila y columna
+							fAct += dirFila;
+							cAct += dirCol;
+						}
+					}
+				}
+				// Si el camino está limpio (o es voladora/teleport), lo añadimos a las iluminadas
+				if (caminoDespejado) {
+					resultado.push_back({ tf, tc });
+			    }
+			
+			}
+				
 		}
 	}
 	return resultado;
@@ -238,4 +301,31 @@ Pieza* Tablero::buscarPieza(TipoPieza tipo, BandoPieza bando) const
 			if (tablero[f][c].pieza == tipo && tablero[f][c].bando == bando)
 				return tablero[f][c].obj;
 	return nullptr;
+}
+
+void Tablero::limpiarPiezas()
+{
+	for (int f = 0; f < N; f++)
+		for (int c = 0; c < N; c++) {
+			delete tablero[f][c].obj;
+			tablero[f][c].obj = nullptr;
+			tablero[f][c].pieza = pieza_nada;
+			tablero[f][c].bando = bando_nada;
+		}
+}
+
+Pieza* Tablero::crearPieza(TipoPieza tipo, BandoPieza bando)
+{
+	Bando b = (bando == bando_local) ? Bando::CRISTIANO : Bando::ANDALUSI;
+	switch (tipo) {
+	case pieza_esfera:      return new Rey(b);
+	case pieza_dodecaedro:  return new Infiltrado(b);
+	case pieza_icosaedro:   return new Almogavar(b);
+	case pieza_tetraedro:   return new CaballeriaLigera(b);
+	case pieza_cubog:       return new Infanteria(b);
+	case pieza_cono:        return new CaballeriaPesada(b);
+	case pieza_cilindro:    return new Ballestero(b);
+	case pieza_cubo_p:      return new Miliciano(b);
+	default:                return nullptr;
+	}
 }
