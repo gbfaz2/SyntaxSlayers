@@ -152,6 +152,14 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::RANKING:
+		DibujaMenu::ranking_dibujar(
+			_anchoVentana, _altoVentana,
+			_rankingGanador,
+			_rankingBatalla,
+			_rankingTurnos,
+			_rankingPiezasLocal,
+			_rankingPiezasRival
+		);
 		break;
 
 	case EstadoJuego::FINAL:
@@ -230,7 +238,15 @@ void Coordinador::tecla(unsigned char key)
 			reiniciarTablero();
 		}
 		estado = EstadoJuego::MENU; break;
+	case EstadoJuego::RANKING:
+		if (key == 27) {
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
+		}
+		break;
 	}
+
 	glutPostRedisplay();
 }
 
@@ -299,13 +315,24 @@ void Coordinador::mueve(double dt)
 		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 		if (rv != ResultadoVictoria::SIN_GANADOR) {
 			ETSIDI::stopMusica();
-			if (pTablerogl) {
+
+			// Ranking
+			_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? "Cristiano" :
+				(rv == ResultadoVictoria::GANA_RIVAL) ? "Andalusi" : "Empate";
+			_rankingBatalla = nombreBatalla(configuracion.batalla);
+			_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
+			_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
+			_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
+
+			estado = EstadoJuego::RANKING;
+
+			/*if (pTablerogl) {
 				if (rv == ResultadoVictoria::GANA_LOCAL)
 					pTablerogl->setVictoria(bando_local);
 				else if (rv == ResultadoVictoria::GANA_RIVAL)
 					pTablerogl->setVictoria(bando_rival);
 			}
-			estado = EstadoJuego::FINAL;
+			estado = EstadoJuego::FINAL;*/
 		}
 	}
 
