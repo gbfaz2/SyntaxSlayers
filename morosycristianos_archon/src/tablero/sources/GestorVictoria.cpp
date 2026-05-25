@@ -38,32 +38,21 @@ ResultadoVictoria GestorVictoria::comprobarVictoria(const Tablero& tablero) cons
 // y cuenta cuántas tiene cada bando
 ResultadoVictoria GestorVictoria::comprobarDominio(const Tablero& tablero) const
 {
-    //inicializacion puntos de cada bando
-    int puntosLocal = 0;
-    int puntosRival = 0;
+    int puntosLocal = 0, puntosRival = 0;
 
-    //bucle para recorrer todo el tablero
     for (int fila = 0; fila < Tablero::N; fila++) {
         for (int col = 0; col < Tablero::N; col++) {
-
-            //si casilla distitna a la de poder, pasa de ella y sigue el bucle
-            if (tablero.getCasilla(fila, col).tipo != Casilla_poder)
-                continue;
-
-            //Si casilla=casilla poder, escanea la casilla
+            if (tablero.getCasilla(fila, col).tipo != Casilla_poder) continue;
+            
             BandoPieza bando = tablero.getCasilla(fila, col).bando;
-
-            //anota puntos segun bando recibido
+            
             if (bando == bando_local) puntosLocal++;
             if (bando == bando_rival) puntosRival++;
         }
     }
-
-    //cuando uno de los dos bandos llegue a 5, ganador
+    
     if (puntosLocal == 5) return ResultadoVictoria::GANA_LOCAL;
     if (puntosRival == 5) return ResultadoVictoria::GANA_RIVAL;
-
-    //por seguridad, devuelve siempre sin ganador 
     return ResultadoVictoria::SIN_GANADOR;
 }
 
