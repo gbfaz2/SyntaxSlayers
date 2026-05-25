@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Archivos de recursos">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="menu">
       <UniqueIdentifier>{0ae4d12d-6eb8-4716-b2e1-a3c298365faa}</UniqueIdentifier>
     </Filter>
@@ -66,6 +62,10 @@
     </Filter>
     <Filter Include="piezas\Sources">
       <UniqueIdentifier>{e35e07a1-7417-463e-b431-83f0b94c078f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\Archivos de recursos">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +198,9 @@
     <ClInclude Include="src\tablero\headers\GestorHechizos.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\coordinador\headers\dibujapersonajes.h">
+      <Filter>coordinador\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -327,6 +330,9 @@
     </ClCompile>
     <ClCompile Include="src\tablero\sources\GestorPartida.cpp">
       <Filter>tablero\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\coordinador\sources\dibujapersonajes.cpp">
+      <Filter>coordinador\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
