@@ -360,44 +360,54 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
     GLfloat winX, winY, winZ;
     GLdouble posX, posY, posZ;
 
-    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);   // LEE MATRIZ MODELVIEW
-    glGetDoublev(GL_PROJECTION_MATRIX, projection); // LEE MATRIZ PROYECCION
-    glGetIntegerv(GL_VIEWPORT, viewport);            // LEE VIEWPORT
+    glGetDoublev(GL_MODELVIEW_MATRIX, modelview);      // LEE MATRIZ MODELVIEW
+    glGetDoublev(GL_PROJECTION_MATRIX, projection);    // LEE MATRIZ PROYECCION
+    glGetIntegerv(GL_VIEWPORT, viewport);              // LEE VIEWPORT
 
     winX = (float)x;
-    winY = (float)viewport[3] - (float)y;           // INVIERTE Y
+    winY = (float)viewport[3] - (float)y;             // INVIERTE Y
     glReadPixels(x, (int)winY, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ); // LEE PROFUNDIDAD
     gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ); // PIXEL A MUNDO
 
     int clickFila, clickCol;
     _tablerogl->world2cell(posX, posY, clickFila, clickCol); // MUNDO A CASILLA
 
-    _tablerogl->xcasilla_sel = clickFila; // ACTUALIZA CASILLA BAJO CURSOR
+    _tablerogl->xcasilla_sel = clickFila;              // ACTUALIZA CASILLA BAJO CURSOR
     _tablerogl->ycasilla_sel = clickCol;
 
     if (down) { _tablerogl->controlKey = ctrlKey; _tablerogl->shiftKey = shiftKey; }
     else { _tablerogl->controlKey = _tablerogl->shiftKey = false; }
 
-    if (button == MOUSE_LEFT_BUTTON)   _tablerogl->leftButton = down;   // ACTUALIZA BOTON IZQ
+    if (button == MOUSE_LEFT_BUTTON)   _tablerogl->leftButton = down;  // ACTUALIZA BOTON IZQ
     if (button == MOUSE_RIGHT_BUTTON)  _tablerogl->rightButton = down;  // ACTUALIZA BOTON DER
-    if (button == MOUSE_MIDDLE_BUTTON) _tablerogl->midButton = down;    // ACTUALIZA BOTON MED
+    if (button == MOUSE_MIDDLE_BUTTON) _tablerogl->midButton = down;  // ACTUALIZA BOTON MED
 
-    if (!down) return; // SOLO PROCESAMOS AL PULSAR
+    if (!down) return;                                 // SOLO PROCESAMOS AL PULSAR
 
-    if (button == MOUSE_RIGHT_BUTTON) { // CLIC DERECHO: CANCELA SELECCION
+    if (button == MOUSE_RIGHT_BUTTON) {                // CLIC DERECHO: CANCELA SELECCION
         _tablerogl->piezaSeleccionada = false;
         _tablerogl->fromFila = _tablerogl->fromCol = -1;
         return;
     }
 
-    if (button != MOUSE_LEFT_BUTTON) return; // SOLO CLIC IZQUIERDO A PARTIR DE AQUI
+    if (button != MOUSE_LEFT_BUTTON) return;           // SOLO CLIC IZQUIERDO A PARTIR DE AQUI
 
     if (clickFila < 0 || clickFila >= _tablerogl->N ||
         clickCol < 0 || clickCol >= _tablerogl->N) return; // FUERA DEL TABLERO
 
+    // MODO HECHIZO: CLIC IZQUIERDO CONFIRMA EN CASILLA CLICKADA
+    if (_tablerogl->_modoHechizo && _tablerogl->_conjuroElegido) {
+        BandoPieza bando = _tablerogl->_bandoHechizo;  // BANDO QUE HECHIZA
+        int idx = (bando == bando_local) ? 0 : 1;      // ÍNDICE CURSOR
+        _tablerogl->Filacursor[idx] = clickFila;       // MUEVE CURSOR A CASILLA CLICKADA
+        _tablerogl->Colcursor[idx] = clickCol;        // MUEVE CURSOR A CASILLA CLICKADA
+        ejecutarHechizo(bando, clickFila, clickCol);    // EJECUTA HECHIZO
+        return;                                        // NO PROCESA MÁS
+    }
+
     const Casilla& clicked = _tablerogl->m_tablero->getCasilla(clickFila, clickCol);
 
-    if (!_tablerogl->piezaSeleccionada) { // SIN PIEZA SELECCIONADA: SELECCIONA
+    if (!_tablerogl->piezaSeleccionada) {              // SIN PIEZA SELECCIONADA: SELECCIONA
         if (clicked.pieza != pieza_nada) {
             int idx = (clicked.bando == bando_local) ? 0 : 1;
             _tablerogl->Filacursor[idx] = clickFila;
@@ -405,7 +415,7 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
             _tablerogl->trySelectorMove(clicked.bando);
         }
     }
-    else { // CON PIEZA SELECCIONADA: MUEVE
+    else {                                             // CON PIEZA SELECCIONADA: MUEVE
         int idx = (_tablerogl->fromBando == bando_local) ? 0 : 1;
         _tablerogl->Filacursor[idx] = clickFila;
         _tablerogl->Colcursor[idx] = clickCol;
