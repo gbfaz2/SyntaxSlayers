@@ -204,7 +204,54 @@ void Coordinador::tecla_especial_up(int key)
 void Coordinador::mueve(double dt)
 {
 	if (estado == EstadoJuego::TABLERO && pTablero) {
+<<<<<<< Updated upstream
 		gestorTurnos.update(dt);
+=======
+
+		// IA: SI ES TURNO RIVAL Y MODO JVIA, CALCULA Y EJECUTA MOVIMIENTO
+		if (pTablerogl &&
+			configuracion.modo == ModoJuego::JVIA &&
+			pTablerogl->gestorTurnos.getBandoActual() == bando_rival &&
+			!pTablerogl->huboColision() &&
+			!_iaCalculando) {
+
+			_iaCalculando = true;                              // BLOQUEA PARA NO REPETIR
+
+			MovimientoIA mov = _minimax.calcularMejorMovimiento(*pTablero); // CALCULA
+
+			if (mov.filaOrigen >= 0) {                         // HAY MOVIMIENTO VÁLIDO
+				Pieza* pieza = pTablero->getCasilla(mov.filaOrigen, mov.colOrigen).obj;
+				if (pieza) {
+					// MUEVE EL CURSOR RIVAL AL DESTINO VISUALMENTE
+					pTablerogl->Filacursor[1] = mov.filaDestino;
+					pTablerogl->Colcursor[1] = mov.colDestino;
+
+					// SELECCIONA Y MUEVE
+					pTablerogl->fromFila = mov.filaOrigen;
+					pTablerogl->fromCol = mov.colOrigen;
+					pTablerogl->fromBando = bando_rival;
+					pTablerogl->piezaSeleccionada = true;
+					pTablerogl->trySelectorMove(bando_rival);  // EJECUTA EL MOVIMIENTO
+				}
+			}
+
+			_iaCalculando = false;                             // DESBLOQUEA
+		}
+		
+		//USAMOS EL GESTORTURNOS DENTRO DE PTABLEROGL
+		if (pTablerogl) {
+			pTablerogl->gestorTurnos.update(dt);
+			pTablerogl->updateMensaje(dt);
+			pTablerogl->update(dt);
+
+			int turno = pTablerogl->gestorTurnos.getNumeroTurno();
+			if (turno != pTablerogl->_turnosJugados &&
+				turno > 1 && turno % Tablerogl::TURNOS_DINAMICOS == 0) {
+				pTablerogl->_turnosJugados = turno;
+				pTablerogl->aplicarCambiosDinamicos();
+			}
+		}
+>>>>>>> Stashed changes
 
 		if (pTablero == nullptr) return;
 
@@ -221,6 +268,20 @@ void Coordinador::mueve(double dt)
 		}
 	}
 
+<<<<<<< Updated upstream
+=======
+	// CONTADOR DE TIEMPO PARA GUARDAR PARTIDA
+	if (estado == EstadoJuego::GUARDANDO) 
+	{
+		_tiempoGuardado -= (float)dt;
+		if (_tiempoGuardado <= 0.0f) {
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
+		}
+	}
+
+>>>>>>> Stashed changes
 	_spriteReyLocal.update(dt);
 
 	if (_spriteReyLocal.animacionTerminada() && _spriteReyLocal.getEstado() != EstadoRey::DEATH)
