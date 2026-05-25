@@ -255,7 +255,7 @@ void DibujaTablero::tablero_marco(const Tablerogl& t) {
     glGetIntegerv(GL_VIEWPORT, viewport);
 
     util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 14);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
     ETSIDI::setTextColor(0.90f, 0.85f, 0.70f, 1.0f);
 
     // LETRAS COLUMNAS (A-I) EN MARCO SUPERIOR
@@ -527,17 +527,17 @@ void DibujaTablero::tablero_victoria(const Tablerogl& t) {
 
     if (t.victoria_ == bando_local) {
         ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f);
-        ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 36);
         ETSIDI::printxy("VICTORIA CRISTIANA", 300, 400);
     }
     else {
         ETSIDI::setTextColor(0.75f, 0.20f, 0.90f, 1.0f);
-        ETSIDI::setFont("fuentes/nuevafuente.ttf", 36);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 36);
         ETSIDI::printxy("VICTORIA AL-ANDALUS", 280, 400);
     }
 
     ETSIDI::setTextColor(0.80f, 0.80f, 0.80f, 1.0f);
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
     ETSIDI::printxy("Pulsa ESC para volver al menu", 310, 360);
 
     glEnable(GL_DEPTH_TEST);
@@ -552,34 +552,32 @@ void DibujaTablero::tablero_contadores(const Tablerogl& t)
 
     float tiempo = t.gestorTurnos.getTiempoRestante();
     int   seg = (int)tiempo;
-    int   turno = t.gestorTurnos.getNumeroTurno();
     bool  esLocal = (t.gestorTurnos.getBandoActual() == bando_local);
 
-    char bufLocal[64], bufRival[64];
+    // TÍTULO CENTRADO ARRIBA
+    ETSIDI::setTextColor(0.85f, 0.70f, 0.30f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 22);
+    ETSIDI::printxy("MOROS Y CRISTIANOS", aw / 2 - 130, av - 35);
 
-    // LOCAL (izquierda): amarillo vivo si es su turno, apagado si espera
-    if (esLocal) {
-        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
-        sprintf_s(bufLocal, "CRISTIANO  %02d s", seg);
-    }
-    else {
-        ETSIDI::setTextColor(0.5f, 0.5f, 0.2f, 1.0f);
-        sprintf_s(bufLocal, "CRISTIANO  --");
-    }
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 20);
-    ETSIDI::printxy(bufLocal, 20, av - 40);
+    // CRISTIANO (izquierda)
+    if (esLocal) ETSIDI::setTextColor(1.0f, 0.20f, 0.20f, 1.0f);  // ROJO VIVO SI ES SU TURNO
+    else         ETSIDI::setTextColor(0.5f, 0.10f, 0.10f, 1.0f);  // ROJO APAGADO SI ESPERA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+    ETSIDI::printxy("CRISTIANO", 20, av - 35);
 
-    // RIVAL (derecha): cian vivo si es su turno, apagado si espera
-    if (!esLocal) {
-        ETSIDI::setTextColor(0.0f, 1.0f, 1.0f, 1.0f);
-        sprintf_s(bufRival, "%02d s  AL-ANDALUS", seg);
-    }
-    else {
-        ETSIDI::setTextColor(0.2f, 0.5f, 0.5f, 1.0f);
-        sprintf_s(bufRival, "--  AL-ANDALUS");
-    }
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 20);
-    ETSIDI::printxy(bufRival, aw - 400, av - 40);
+    // TIEMPO (centro)
+    char bufTiempo[16];
+    if (esLocal) ETSIDI::setTextColor(1.0f, 0.20f, 0.20f, 1.0f);  // ROJO SI ES TURNO LOCAL
+    else         ETSIDI::setTextColor(0.85f, 0.10f, 1.0f, 1.0f);  // MORADO SI ES TURNO RIVAL
+    sprintf_s(bufTiempo, "%02d s", seg);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+    ETSIDI::printxy(bufTiempo, aw / 2 - 10, av - 55);
+
+    // AL ANDALUS (derecha)
+    if (!esLocal) ETSIDI::setTextColor(0.85f, 0.10f, 1.0f, 1.0f); // MORADO VIVO SI ES SU TURNO
+    else          ETSIDI::setTextColor(0.35f, 0.10f, 0.45f, 1.0f); // MORADO APAGADO SI ESPERA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+    ETSIDI::printxy("AL ANDALUS", aw - 150, av - 35);
 }
 
 void DibujaTablero::tablero_mensaje_invalido(const Tablerogl& t)
@@ -763,10 +761,10 @@ void DibujaTablero::tablero_guardando(Tablerogl& t, int ancho, int alto, float t
     glEnd();
 
     ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 24);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 24);
     ETSIDI::printxy("Pulsa G para guardar la partida", 280, 360);
     ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
-    ETSIDI::setFont("fuentes/nuevafuente.ttf", 18);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
     ETSIDI::printxy("Pulsa ESC para volver al tablero", 285, 395);
 
     char buf[64];
