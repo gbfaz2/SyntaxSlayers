@@ -17,12 +17,14 @@ std::vector<MovimientoIA> MinimaxTablero::generarMovimientos(
     for (int f = 0; f < Tablero::N; f++) {
         for (int c = 0; c < Tablero::N; c++) {
             const Casilla& cas = tablero.getCasilla(f, c);
-            if (cas.bando != bando || cas.obj == nullptr) continue; // SOLO PIEZAS DEL BANDO
+            if (cas.bando != bando || cas.obj == nullptr) continue;
 
-            // CASILLAS VÁLIDAS PARA ESTA PIEZA
             auto validas = tablero.casillasValidas(f, c);
             for (const auto& dest : validas) {
-                movimientos.push_back({ f, c, dest.fila, dest.col }); // AÑADE MOVIMIENTO
+                // SOLO CASILLAS VACÍAS — EVITA CORRUPCIÓN DEL TABLERO
+                if (tablero.getCasilla(dest.fila, dest.col).bando == bando_nada) {
+                    movimientos.push_back({ f, c, dest.fila, dest.col });
+                }
             }
         }
     }
@@ -33,18 +35,28 @@ std::vector<MovimientoIA> MinimaxTablero::generarMovimientos(
 EstadoCasilla MinimaxTablero::aplicarMovimiento(
     Tablero& tablero, const MovimientoIA& mov)
 {
-    // GUARDA ESTADO DE LA CASILLA DESTINO ANTES DE MODIFICARLA
+    // GUARDA ESTADO DESTINO
     EstadoCasilla estadoAnterior;
-    const Casilla& dest = tablero.getCasilla(mov.filaDestino, mov.colDestino);
+    Casilla& dest = tablero.getCasilla(mov.filaDestino, mov.colDestino);
+    Casilla& origen = tablero.getCasilla(mov.filaOrigen, mov.colOrigen);
+
     estadoAnterior.fila = mov.filaDestino;
     estadoAnterior.col = mov.colDestino;
     estadoAnterior.pieza = dest.pieza;
     estadoAnterior.bando = dest.bando;
-    estadoAnterior.obj = dest.obj;    // GUARDA PUNTERO SIN BORRAR
+    estadoAnterior.obj = dest.obj;
 
-    // MUEVE LA PIEZA (muevePieza ya gestiona captura)
-    tablero.muevePieza(mov.filaOrigen, mov.colOrigen,
-        mov.filaDestino, mov.colDestino);
+    // MUEVE DIRECTAMENTE SIN LLAMAR A muevePieza (EVITA EFECTOS SECUNDARIOS)
+    dest.pieza = origen.pieza;             // COPIA TIPO
+    dest.bando = origen.bando;             // COPIA BANDO
+    dest.obj = origen.obj;               // COPIA PUNTERO
+    if (dest.obj) dest.obj->setPosicion(mov.filaDestino, mov.colDestino);
+
+    // LIMPIA ORIGEN
+    origen.pieza = pieza_nada;
+    origen.bando = bando_nada;
+    origen.obj = nullptr;
+
     return estadoAnterior;
 }
 
@@ -170,28 +182,30 @@ int MinimaxTablero::minimax(Tablero& tablero, int profundidad,
 // MÉTODO PRINCIPAL: CALCULA EL MEJOR MOVIMIENTO PARA LA IA
 MovimientoIA MinimaxTablero::calcularMejorMovimiento(Tablero& tablero)
 {
-    MovimientoIA mejorMov;
-    int mejorValor = INT_MIN;                                  // IA BUSCA MÁXIMO
+    // SILENCIA PRINTS DURANTE EL CÁLCULO
+    std::streambuf* bufOriginal = std::cout.rdbuf(nullptr);
 
-    auto movimientos = generarMovimientos(tablero, bando_rival); // MOVIMIENTOS IA
-    std::cout << "[IA] Calculando " << movimientos.size() << " movimientos...\n";
+    MovimientoIA mejorMov;
+    int mejorValor = INT_MIN;
+
+    auto movimientos = generarMovimientos(tablero, bando_rival);
 
     for (const auto& mov : movimientos) {
-        EstadoCasilla estado = aplicarMovimiento(tablero, mov); // APLICA
-        int valor = minimax(tablero, _profundidad - 1, false,  // EVALÚA
-            INT_MIN, INT_MAX);
-        deshacerMovimiento(tablero, mov, estado);              // DESHACE
+        EstadoCasilla estado = aplicarMovimiento(tablero, mov);
+        int valor = minimax(tablero, _profundidad - 1, false, INT_MIN, INT_MAX);
+        deshacerMovimiento(tablero, mov, estado);
 
-        if (valor > mejorValor) {                              // SI ES MEJOR
+        if (valor > mejorValor) {
             mejorValor = valor;
-            mejorMov = mov;                                  // GUARDA MEJOR MOV
+            mejorMov = mov;
         }
     }
 
-    std::cout << "[IA] Mejor movimiento: ("
+    // RESTAURA PRINTS
+    std::cout.rdbuf(bufOriginal);
+    std::cout << "[IA] Movimiento: ("
         << mejorMov.filaOrigen << "," << mejorMov.colOrigen << ") -> ("
-        << mejorMov.filaDestino << "," << mejorMov.colDestino
-        << ") puntuacion=" << mejorValor << "\n";
+        << mejorMov.filaDestino << "," << mejorMov.colDestino << ")\n";
 
     return mejorMov;
 }
