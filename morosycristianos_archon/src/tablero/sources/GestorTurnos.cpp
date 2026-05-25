@@ -7,8 +7,9 @@ GestorTurnos::GestorTurnos()
     _numeroTurno(1)  //empieza contando turnos con 1
 {
     //imprime el tunro, el bando, y el tiempo (proponer hacer un cronometro chulo 
-    std::cout << "[GestorTurnos] Turno 1 — Bando LOCAL. Tiempo: "
-        << TIEMPO_LIMITE_TURNO << "s" << std::endl;
+    std::cout << "[GestorTurnos] Turno " << _numeroTurno << " - "
+        << (_turnoActual == bando_local ? "Bando LOCAL" : "Bando RIVAL")
+        << ". Tiempo: " << TIEMPO_LIMITE_TURNO << "s" << std::endl;
 }
 
 //función para cambiar de turno, 
@@ -28,7 +29,7 @@ void GestorTurnos::cambiarTurno()
     _numeroTurno++;
 
     //informa por pantalla (luego lo de imprimir lo quitaremos??)
-    std::cout << "[GestorTurnos] Turno " << _numeroTurno << " — "
+    std::cout << "[GestorTurnos] Turno " << _numeroTurno << " - "
         << (_turnoActual == bando_local ? "Bando LOCAL" : "Bando RIVAL")
         << ". Tiempo: " << TIEMPO_LIMITE_TURNO << "s" << std::endl;
 }

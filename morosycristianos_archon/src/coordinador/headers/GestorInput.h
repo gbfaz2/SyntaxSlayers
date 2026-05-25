@@ -13,6 +13,8 @@ class GestorInput
     int _alto{ 600 };  // ALTO VENTANA
     Tablerogl* _tablerogl{ nullptr }; // PUNTERO AL TABLERO GL
 
+    bool ejecutarHechizo(BandoPieza bando, int fila, int col); // EJECUTA EL CONJURO ACTIVO
+
 public:
     GestorInput() = default;
 
