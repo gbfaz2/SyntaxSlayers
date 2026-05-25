@@ -145,7 +145,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GestorHechizos.h" />
     <ClInclude Include="GestorPartida.h" />
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
@@ -183,6 +182,7 @@
     <ClInclude Include="src\piezas\headers\PiezaVoladora.h" />
     <ClInclude Include="src\piezas\headers\Rey.h" />
     <ClInclude Include="src\piezas\headers\SpriteRey.h" />
+    <ClInclude Include="src\tablero\headers\GestorHechizos.h" />
     <ClInclude Include="src\tablero\headers\GestorMovimiento.h" />
     <ClInclude Include="src\tablero\headers\GestorTurnos.h" />
     <ClInclude Include="src\tablero\headers\GestorVictoria.h" />
