@@ -8,6 +8,7 @@
 #include <ctime>
 #include <cstdlib>
 #include "GestorPartida.h"
+#include "tablerogl.h"
 
 
 Coordinador::~Coordinador()
@@ -177,10 +178,27 @@ void Coordinador::tecla(unsigned char key)
 		break;
 	case EstadoJuego::TABLERO:
 		if (key == 27) {
-			_tiempoGuardado = 10.0f; // 10 segundos para decidir
-			estado = EstadoJuego::GUARDANDO;
-			//ETSIDI::stopMusica();
-			//reiniciarTablero();
+			if (pTablerogl->_conjuroElegido) {                // NIVEL 1: CANCELA CONJURO ELEGIDO
+				pTablerogl->_conjuroElegido = false;
+				pTablerogl->_esperandoDestino = false;
+				pTablerogl->_mensajeInvalido = "";
+				pTablerogl->_tiempoMensajeInvalido = 0.0f;
+				std::cout << "[Hechizos] Conjuro cancelado. Elige otro 1-7.\n";
+			}
+			else if (pTablerogl->_modoHechizo) {            // NIVEL 2: CANCELA MODO HECHIZO
+				pTablerogl->_modoHechizo = false;
+				pTablerogl->_mensajeInvalido = "";
+				pTablerogl->_tiempoMensajeInvalido = 0.0f;
+				std::cout << "[Hechizos] Modo hechizo cancelado.\n";
+			}
+			else if (pTablerogl->piezaSeleccionada) {       // NIVEL 3: DESELECCIONA PIEZA
+				pTablerogl->piezaSeleccionada = false;
+				pTablerogl->fromFila = pTablerogl->fromCol = -1;
+			}
+			else {                                          // NIVEL 4: ABRE MENU PAUSA
+				_tiempoGuardado = 10.0f;
+				estado = EstadoJuego::GUARDANDO;
+			}
 			break;
 		}
 		gestorInput.teclaTablero(key, estado);

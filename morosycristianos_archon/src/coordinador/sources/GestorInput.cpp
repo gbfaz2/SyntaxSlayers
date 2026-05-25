@@ -110,6 +110,91 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
 // TABLERO
 // =============================================================
 
+bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
+{
+    bool ejecutado = false; // CONTROLA SI SE EJECUTÓ
+
+    switch (_tablerogl->_conjuroActivo) {
+
+    case Conjuro::AVITUALLAMIENTO:             // CURA PIEZA ALIADA EN CASILLA ACTUAL
+        ejecutado = _coordinador->pGestorHechizos->avituallamiento(bando, fila, col);
+        break;
+
+    case Conjuro::RUTAS_SECRETAS:              // TELEPORT: PRIMER CONFIRM=ORIGEN, SEGUNDO=DESTINO
+        if (!_tablerogl->_esperandoDestino) {
+            _tablerogl->_hechizoFilaOrigen = fila; // GUARDA FILA ORIGEN
+            _tablerogl->_hechizoColOrigen = col;  // GUARDA COL ORIGEN
+            _tablerogl->_esperandoDestino = true; // ACTIVA ESPERA DESTINO
+            _tablerogl->_mensajeInvalido = "";     // LIMPIA MENSAJE INVALIDO
+            _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
+            std::cout << "[Hechizos] Origen guardado. Mueve cursor al destino y confirma.\n";
+            return false;                          // ESPERA SEGUNDA CONFIRMACION
+        }
+        else {
+            ejecutado = _coordinador->pGestorHechizos->rutasSecretas(bando,
+                _tablerogl->_hechizoFilaOrigen, _tablerogl->_hechizoColOrigen, fila, col);
+            _tablerogl->_esperandoDestino = false; // RESETEA ESPERA
+        }
+        break;
+
+    case Conjuro::RELEVO_GUARDIA:              // INTERCAMBIA 2 PIEZAS: PRIMER CONFIRM=PIEZA1, SEGUNDO=PIEZA2
+        if (!_tablerogl->_esperandoDestino) {
+            _tablerogl->_hechizoFilaOrigen = fila; // GUARDA FILA PRIMERA PIEZA
+            _tablerogl->_hechizoColOrigen = col;  // GUARDA COL PRIMERA PIEZA
+            _tablerogl->_esperandoDestino = true; // ACTIVA ESPERA SEGUNDA PIEZA
+            _tablerogl->_mensajeInvalido = "";     // LIMPIA MENSAJE INVALIDO
+            _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
+            std::cout << "[Hechizos] Primera pieza guardada. Mueve cursor a la segunda y confirma.\n";
+            return false;                          // ESPERA SEGUNDA CONFIRMACION
+        }
+        else {
+            ejecutado = _coordinador->pGestorHechizos->relevoDeguardia(bando,
+                _tablerogl->_hechizoFilaOrigen, _tablerogl->_hechizoColOrigen, fila, col);
+            _tablerogl->_esperandoDestino = false; // RESETEA ESPERA
+        }
+        break;
+
+    case Conjuro::ASEDIO:                      // BLOQUEA PIEZA ENEMIGA EN CASILLA ACTUAL
+        ejecutado = _coordinador->pGestorHechizos->asedio(bando, fila, col);
+        break;
+
+    case Conjuro::REFUERZOS: {                 // RESUCITA PIEZA JUNTO AL REY/EMIR
+        Pieza* lider = _coordinador->pTablero->buscarPieza(pieza_esfera, bando); // BUSCA LIDER
+        if (lider)
+            ejecutado = _coordinador->pGestorHechizos->refuerzos(
+                bando, lider->getFila(), lider->getColumna());
+        break;
+    }
+
+    case Conjuro::MERCENARIOS:                 // INVOCA MILICIANO EN CASILLA ACTUAL
+        ejecutado = _coordinador->pGestorHechizos->mercenarios(bando, fila, col);
+        break;
+
+    case Conjuro::CONTROL_FRONTERAS:           // INVIERTE CICLO DE CASILLAS DINÁMICAS
+        ejecutado = _coordinador->pGestorHechizos->controlFronteras(bando);
+        break;
+    }
+
+    if (ejecutado) {
+        int idx = (bando == bando_local) ? 0 : 1; // ÍNDICE CURSOR SEGÚN BANDO
+        _tablerogl->_modoHechizo = false;          // DESACTIVA MODO HECHIZO
+        _tablerogl->_esperandoDestino = false;     // RESETEA ESPERA
+        _tablerogl->piezaSeleccionada = false;     // DESELECCIONA PIEZA
+        _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
+        _tablerogl->_mensajeInvalido = "";         // LIMPIA MENSAJE INVALIDO
+        _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
+        Pieza* lider = _coordinador->pTablero->buscarPieza(pieza_esfera, bando); // BUSCA LIDER
+        if (lider) {
+            _tablerogl->Filacursor[idx] = lider->getFila();    // CURSOR VUELVE AL LIDER
+            _tablerogl->Colcursor[idx] = lider->getColumna(); // CURSOR VUELVE AL LIDER
+        }
+        _tablerogl->gestorTurnos.terminarTurno();  // PASA TURNO
+        _tablerogl->_conjuroElegido = false;                      // RESETEA CONJURO ELEGIDO
+    }
+
+    return ejecutado; // DEVUELVE SI SE EJECUTÓ
+}
+
 void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
 {
     if (!_tablerogl) return;                          // TABLEROGL NO ASIGNADO
@@ -117,26 +202,6 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
 
     // Q: CIERRA EL JUEGO
     if (key == 'q' || key == 'Q') { exit(0); return; }
-
-    // ESC: CANCELA MODO HECHIZO Y DESELECCIONA
-    if (key == 27) {
-        if (_tablerogl->_modoHechizo) {
-            _tablerogl->_modoHechizo = false;              // DESACTIVA MODO HECHIZO
-            _tablerogl->_esperandoDestino = false;         // RESETEA ESPERA DESTINO
-            _tablerogl->piezaSeleccionada = false;         // DESELECCIONA PIEZA
-            _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
-            _tablerogl->_mensajeInvalido = "";             // LIMPIA MENSAJE INVALIDO
-            _tablerogl->_tiempoMensajeInvalido = 0.0f;    // RESETEA TEMPORIZADOR
-        }
-        return;
-    }
-
-    // Z: CANCELA SELECCION P1
-    if (key == 'z' || key == 'Z') {
-        _tablerogl->piezaSeleccionada = false;             // DESELECCIONA PIEZA
-        _tablerogl->fromFila = _tablerogl->fromCol = -1;   // RESETEA ORIGEN
-        return;
-    }
 
     // ============================================================
     // H: ACTIVA MODO HECHIZO P1 (SOLO SI EL REY ESTÁ SELECCIONADO)
@@ -147,8 +212,9 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
                 _tablerogl->fromFila, _tablerogl->fromCol);
             if (cas.pieza == pieza_esfera && cas.bando == bando_local) { // ES EL REY LOCAL
                 std::cout << "[Hechizos] Modo hechizo P1 activo. Elige 1-7.\n";
-                _tablerogl->_modoHechizo = true;           // ACTIVA MODO HECHIZO
-                _tablerogl->_bandoHechizo = bando_local;   // MARCA BANDO P1
+                _tablerogl->_modoHechizo = true;       // ACTIVA MODO HECHIZO
+                _tablerogl->_bandoHechizo = bando_local; // MARCA BANDO P1
+                _tablerogl->_conjuroElegido = false;      // RESETEA CONJURO ELEGIDO
                 _tablerogl->_esperandoDestino = false;     // RESETEA ESPERA
                 _tablerogl->piezaSeleccionada = false;     // DESELECCIONA EL REY
                 _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
@@ -174,8 +240,9 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
                 _tablerogl->fromFila, _tablerogl->fromCol);
             if (cas.pieza == pieza_esfera && cas.bando == bando_rival) { // ES EL EMIR RIVAL
                 std::cout << "[Hechizos] Modo hechizo P2 activo. Elige 1-7.\n";
-                _tablerogl->_modoHechizo = true;           // ACTIVA MODO HECHIZO
-                _tablerogl->_bandoHechizo = bando_rival;   // MARCA BANDO P2
+                _tablerogl->_modoHechizo = true;       // ACTIVA MODO HECHIZO
+                _tablerogl->_bandoHechizo = bando_rival; // MARCA BANDO P2
+                _tablerogl->_conjuroElegido = false;      // RESETEA CONJURO ELEGIDO
                 _tablerogl->_esperandoDestino = false;     // RESETEA ESPERA
                 _tablerogl->piezaSeleccionada = false;     // DESELECCIONA EL EMIR
                 _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
@@ -193,43 +260,36 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     }
 
     // ============================================================
-    // NÚMERO: ELIGE HECHIZO (solo en modo hechizo, antes de confirmar)
+    // NÚMERO: ELIGE HECHIZO (solo en modo hechizo, conjuro no elegido aún)
     // ============================================================
-    if (_tablerogl->_modoHechizo && !_tablerogl->_esperandoDestino) {
+    if (_tablerogl->_modoHechizo && !_tablerogl->_conjuroElegido) {
         switch (key) {
-        case '1':
-            _tablerogl->_conjuroActivo = Conjuro::AVITUALLAMIENTO;              // ELIGE AVITUALLAMIENTO
-            std::cout << "[Hechizos] AVITUALLAMIENTO: mueve cursor a tu pieza y confirma.\n";
-            return;
-        case '2':
-            _tablerogl->_conjuroActivo = Conjuro::RUTAS_SECRETAS;               // ELIGE RUTAS SECRETAS
-            std::cout << "[Hechizos] RUTAS SECRETAS: mueve cursor al origen y confirma.\n";
-            return;
-        case '3':
-            _tablerogl->_conjuroActivo = Conjuro::RELEVO_GUARDIA;               // ELIGE RELEVO GUARDIA
-            std::cout << "[Hechizos] RELEVO GUARDIA: mueve cursor a pieza 1 y confirma.\n";
-            return;
-        case '4':
-            _tablerogl->_conjuroActivo = Conjuro::ASEDIO;                       // ELIGE ASEDIO
-            std::cout << "[Hechizos] ASEDIO: mueve cursor al enemigo y confirma.\n";
-            return;
-        case '5':
-            _tablerogl->_conjuroActivo = Conjuro::REFUERZOS;                    // ELIGE REFUERZOS
-            std::cout << "[Hechizos] REFUERZOS: confirma para resucitar junto al Rey.\n";
-            return;
-        case '6':
-            _tablerogl->_conjuroActivo = Conjuro::MERCENARIOS;                  // ELIGE MERCENARIOS
-            std::cout << "[Hechizos] MERCENARIOS: mueve cursor a casilla libre y confirma.\n";
-            return;
-        case '7':
-            _tablerogl->_conjuroActivo = Conjuro::CONTROL_FRONTERAS;            // ELIGE CONTROL FRONTERAS
-            std::cout << "[Hechizos] CONTROL FRONTERAS: confirma para invertir casillas.\n";
-            return;
+        case '1': _tablerogl->_conjuroActivo = Conjuro::AVITUALLAMIENTO;
+            _tablerogl->_conjuroElegido = true;
+            std::cout << "[Hechizos] AVITUALLAMIENTO: mueve cursor a tu pieza y confirma.\n";   return;
+        case '2': _tablerogl->_conjuroActivo = Conjuro::RUTAS_SECRETAS;
+            _tablerogl->_conjuroElegido = true;
+            std::cout << "[Hechizos] RUTAS SECRETAS: mueve cursor al origen y confirma.\n";     return;
+        case '3': _tablerogl->_conjuroActivo = Conjuro::RELEVO_GUARDIA;
+            _tablerogl->_conjuroElegido = true;
+            std::cout << "[Hechizos] RELEVO GUARDIA: mueve cursor a pieza 1 y confirma.\n";     return;
+        case '4': _tablerogl->_conjuroActivo = Conjuro::ASEDIO;
+            _tablerogl->_conjuroElegido = true;
+            std::cout << "[Hechizos] ASEDIO: mueve cursor al enemigo y confirma.\n";            return;
+        case '5': _tablerogl->_conjuroActivo = Conjuro::REFUERZOS;
+            _tablerogl->_conjuroElegido = true;
+            std::cout << "[Hechizos] REFUERZOS: confirma para resucitar junto al Rey.\n";       return;
+        case '6': _tablerogl->_conjuroActivo = Conjuro::MERCENARIOS;
+            _tablerogl->_conjuroElegido = true;
+            std::cout << "[Hechizos] MERCENARIOS: mueve cursor a casilla libre y confirma.\n";  return;
+        case '7': _tablerogl->_conjuroActivo = Conjuro::CONTROL_FRONTERAS;
+            _tablerogl->_conjuroElegido = true;
+            std::cout << "[Hechizos] CONTROL FRONTERAS: confirma para invertir casillas.\n";    return;
         }
     }
 
     // ============================================================
-    // MOVIMIENTO CURSOR P1 CON WASD (disponible en modo hechizo y normal)
+    // MOVIMIENTO CURSOR P1 CON WASD (disponible siempre)
     // ============================================================
     if (_tablerogl->gestorTurnos.getBandoActual() == bando_local ||
         (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_local)) {
@@ -241,196 +301,36 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         if (key == 'd' || key == 'D') { if (cL < _tablerogl->N - 1) cL++; } // CURSOR DERECHA
     }
 
-    // COMA: CANCELA SELECCION P2
-    if (key == ',') {
-        _tablerogl->piezaSeleccionada = false;             // DESELECCIONA PIEZA P2
-        _tablerogl->fromFila = _tablerogl->fromCol = -1;   // RESETEA ORIGEN
-        return;
-    }
-
-    // SI HAY MODO HECHIZO ACTIVO, SOLO PERMITIMOS WASD, FLECHAS, ESPACIO Y PUNTO
+    // SI HAY MODO HECHIZO ACTIVO, SOLO PASAN ESPACIO Y PUNTO
     if (_tablerogl->_modoHechizo) {
-        if (key != ' ' && key != '.') return; // SOLO PASAN ESPACIO Y PUNTO
+        if (key != ' ' && key != '.') return;              // BLOQUEA RESTO DE TECLAS
     }
-
 
     // ============================================================
-    // ESPACIO: CONFIRMA HECHIZO P1 O MUEVE PIEZA P1
+    // ESPACIO: CONFIRMA HECHIZO P1 O SELECCIONA/MUEVE PIEZA P1
     // ============================================================
     if (key == ' ') {
         if (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_local) {
             int fila = _tablerogl->Filacursor[0];          // FILA CURSOR P1
             int col = _tablerogl->Colcursor[0];           // COL CURSOR P1
-            bool ejecutado = false;                        // CONTROLA SI SE EJECUTÓ
-
-            switch (_tablerogl->_conjuroActivo) {
-
-            case Conjuro::AVITUALLAMIENTO:                 // CURA PIEZA ALIADA EN CASILLA ACTUAL
-                ejecutado = _coordinador->pGestorHechizos->avituallamiento(bando_local, fila, col);
-                break;
-
-            case Conjuro::RUTAS_SECRETAS:                  // TELEPORT: PRIMER ESPACIO=ORIGEN, SEGUNDO=DESTINO
-                if (!_tablerogl->_esperandoDestino) {
-                    _tablerogl->_hechizoFilaOrigen = fila; // GUARDA FILA ORIGEN
-                    _tablerogl->_hechizoColOrigen = col;  // GUARDA COL ORIGEN
-                    _tablerogl->_esperandoDestino = true; // ACTIVA ESPERA DESTINO
-                    _tablerogl->_mensajeInvalido = "";     // LIMPIA MENSAJE INVALIDO
-                    _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
-                    std::cout << "[Hechizos] Origen guardado. Mueve cursor al destino y confirma.\n";
-                    return;                                // ESPERA SEGUNDA CONFIRMACION
-                }
-                else {
-                    ejecutado = _coordinador->pGestorHechizos->rutasSecretas(bando_local,
-                        _tablerogl->_hechizoFilaOrigen, _tablerogl->_hechizoColOrigen, fila, col);
-                    _tablerogl->_esperandoDestino = false; // RESETEA ESPERA
-                }
-                break;
-
-            case Conjuro::RELEVO_GUARDIA:                  // INTERCAMBIA 2 PIEZAS: PRIMER ESPACIO=PIEZA1, SEGUNDO=PIEZA2
-                if (!_tablerogl->_esperandoDestino) {
-                    _tablerogl->_hechizoFilaOrigen = fila; // GUARDA FILA PRIMERA PIEZA
-                    _tablerogl->_hechizoColOrigen = col;  // GUARDA COL PRIMERA PIEZA
-                    _tablerogl->_esperandoDestino = true; // ACTIVA ESPERA SEGUNDA PIEZA
-                    _tablerogl->_mensajeInvalido = "";     // LIMPIA MENSAJE INVALIDO
-                    _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
-                    std::cout << "[Hechizos] Primera pieza guardada. Mueve cursor a la segunda y confirma.\n";
-                    return;                                // ESPERA SEGUNDA CONFIRMACION
-                }
-                else {
-                    ejecutado = _coordinador->pGestorHechizos->relevoDeguardia(bando_local,
-                        _tablerogl->_hechizoFilaOrigen, _tablerogl->_hechizoColOrigen, fila, col);
-                    _tablerogl->_esperandoDestino = false; // RESETEA ESPERA
-                }
-                break;
-
-            case Conjuro::ASEDIO:                          // BLOQUEA PIEZA ENEMIGA EN CASILLA ACTUAL
-                ejecutado = _coordinador->pGestorHechizos->asedio(bando_local, fila, col);
-                break;
-
-            case Conjuro::REFUERZOS: {                     // RESUCITA PIEZA JUNTO AL REY
-                Pieza* rey = _coordinador->pTablero->buscarPieza(pieza_esfera, bando_local);
-                if (rey)
-                    ejecutado = _coordinador->pGestorHechizos->refuerzos(
-                        bando_local, rey->getFila(), rey->getColumna());
-                break;
-            }
-
-            case Conjuro::MERCENARIOS:                     // INVOCA MILICIANO EN CASILLA ACTUAL
-                ejecutado = _coordinador->pGestorHechizos->mercenarios(bando_local, fila, col);
-                break;
-
-            case Conjuro::CONTROL_FRONTERAS:               // INVIERTE CICLO DE CASILLAS DINÁMICAS
-                ejecutado = _coordinador->pGestorHechizos->controlFronteras(bando_local);
-                break;
-            }
-
-            if (ejecutado) {
-                _tablerogl->_modoHechizo = false;          // DESACTIVA MODO HECHIZO
-                _tablerogl->_esperandoDestino = false;     // RESETEA ESPERA
-                _tablerogl->piezaSeleccionada = false;     // DESELECCIONA PIEZA
-                _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
-                _tablerogl->_mensajeInvalido = "";         // LIMPIA MENSAJE INVALIDO
-                _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
-                Pieza* rey = _coordinador->pTablero->buscarPieza(pieza_esfera, bando_local);
-                if (rey) {
-                    _tablerogl->Filacursor[0] = rey->getFila();    // CURSOR VUELVE AL REY
-                    _tablerogl->Colcursor[0] = rey->getColumna(); // CURSOR VUELVE AL REY
-                }
-                _tablerogl->gestorTurnos.terminarTurno();  // PASA TURNO
-            }
+            ejecutarHechizo(bando_local, fila, col);       // EJECUTA HECHIZO P1
             return;                                        // NUNCA LLEGA A trySelectorMove
         }
-        _tablerogl->trySelectorMove(bando_local);          // MOVIMIENTO NORMAL P1
+        _tablerogl->trySelectorMove(bando_local);          // SELECCIONA O MUEVE P1
         return;
     }
 
     // ============================================================
-    // PUNTO: CONFIRMA HECHIZO P2 O MUEVE PIEZA P2
+    // PUNTO: CONFIRMA HECHIZO P2 O SELECCIONA/MUEVE PIEZA P2
     // ============================================================
     if (key == '.') {
         if (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_rival) {
             int fila = _tablerogl->Filacursor[1];          // FILA CURSOR P2
             int col = _tablerogl->Colcursor[1];           // COL CURSOR P2
-            bool ejecutado = false;                        // CONTROLA SI SE EJECUTÓ
-
-            switch (_tablerogl->_conjuroActivo) {
-
-            case Conjuro::AVITUALLAMIENTO:                 // CURA PIEZA ALIADA EN CASILLA ACTUAL
-                ejecutado = _coordinador->pGestorHechizos->avituallamiento(bando_rival, fila, col);
-                break;
-
-            case Conjuro::RUTAS_SECRETAS:                  // TELEPORT: PRIMER PUNTO=ORIGEN, SEGUNDO=DESTINO
-                if (!_tablerogl->_esperandoDestino) {
-                    _tablerogl->_hechizoFilaOrigen = fila; // GUARDA FILA ORIGEN
-                    _tablerogl->_hechizoColOrigen = col;  // GUARDA COL ORIGEN
-                    _tablerogl->_esperandoDestino = true; // ACTIVA ESPERA DESTINO
-                    _tablerogl->_mensajeInvalido = "";     // LIMPIA MENSAJE INVALIDO
-                    _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
-                    std::cout << "[Hechizos] Origen guardado. Mueve cursor al destino y confirma.\n";
-                    return;                                // ESPERA SEGUNDA CONFIRMACION
-                }
-                else {
-                    ejecutado = _coordinador->pGestorHechizos->rutasSecretas(bando_rival,
-                        _tablerogl->_hechizoFilaOrigen, _tablerogl->_hechizoColOrigen, fila, col);
-                    _tablerogl->_esperandoDestino = false; // RESETEA ESPERA
-                }
-                break;
-
-            case Conjuro::RELEVO_GUARDIA:                  // INTERCAMBIA 2 PIEZAS: PRIMER PUNTO=PIEZA1, SEGUNDO=PIEZA2
-                if (!_tablerogl->_esperandoDestino) {
-                    _tablerogl->_hechizoFilaOrigen = fila; // GUARDA FILA PRIMERA PIEZA
-                    _tablerogl->_hechizoColOrigen = col;  // GUARDA COL PRIMERA PIEZA
-                    _tablerogl->_esperandoDestino = true; // ACTIVA ESPERA SEGUNDA PIEZA
-                    _tablerogl->_mensajeInvalido = "";     // LIMPIA MENSAJE INVALIDO
-                    _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
-                    std::cout << "[Hechizos] Primera pieza guardada. Mueve cursor a la segunda y confirma.\n";
-                    return;                                // ESPERA SEGUNDA CONFIRMACION
-                }
-                else {
-                    ejecutado = _coordinador->pGestorHechizos->relevoDeguardia(bando_rival,
-                        _tablerogl->_hechizoFilaOrigen, _tablerogl->_hechizoColOrigen, fila, col);
-                    _tablerogl->_esperandoDestino = false; // RESETEA ESPERA
-                }
-                break;
-
-            case Conjuro::ASEDIO:                          // BLOQUEA PIEZA ENEMIGA EN CASILLA ACTUAL
-                ejecutado = _coordinador->pGestorHechizos->asedio(bando_rival, fila, col);
-                break;
-
-            case Conjuro::REFUERZOS: {                     // RESUCITA PIEZA JUNTO AL EMIR
-                Pieza* emir = _coordinador->pTablero->buscarPieza(pieza_esfera, bando_rival);
-                if (emir)
-                    ejecutado = _coordinador->pGestorHechizos->refuerzos(
-                        bando_rival, emir->getFila(), emir->getColumna());
-                break;
-            }
-
-            case Conjuro::MERCENARIOS:                     // INVOCA MILICIANO EN CASILLA ACTUAL
-                ejecutado = _coordinador->pGestorHechizos->mercenarios(bando_rival, fila, col);
-                break;
-
-            case Conjuro::CONTROL_FRONTERAS:               // INVIERTE CICLO DE CASILLAS DINÁMICAS
-                ejecutado = _coordinador->pGestorHechizos->controlFronteras(bando_rival);
-                break;
-            }
-
-            if (ejecutado) {
-                _tablerogl->_modoHechizo = false;          // DESACTIVA MODO HECHIZO
-                _tablerogl->_esperandoDestino = false;     // RESETEA ESPERA
-                _tablerogl->piezaSeleccionada = false;     // DESELECCIONA PIEZA
-                _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
-                _tablerogl->_mensajeInvalido = "";         // LIMPIA MENSAJE INVALIDO
-                _tablerogl->_tiempoMensajeInvalido = 0.0f; // RESETEA TEMPORIZADOR
-                Pieza* emir = _coordinador->pTablero->buscarPieza(pieza_esfera, bando_rival);
-                if (emir) {
-                    _tablerogl->Filacursor[1] = emir->getFila();    // CURSOR VUELVE AL EMIR
-                    _tablerogl->Colcursor[1] = emir->getColumna(); // CURSOR VUELVE AL EMIR
-                }
-                _tablerogl->gestorTurnos.terminarTurno();  // PASA TURNO
-            }
+            ejecutarHechizo(bando_rival, fila, col);       // EJECUTA HECHIZO P2
             return;                                        // NUNCA LLEGA A trySelectorMove
         }
-        _tablerogl->trySelectorMove(bando_rival);          // MOVIMIENTO NORMAL P2
+        _tablerogl->trySelectorMove(bando_rival);          // SELECCIONA O MUEVE P2
         return;
     }
 }

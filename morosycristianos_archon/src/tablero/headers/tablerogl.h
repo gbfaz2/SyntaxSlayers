@@ -68,6 +68,7 @@ protected:
 	bool _esperandoDestino{ false };  // ESPERANDO SEGUNDA CASILLA PARA HECHIZO DE 2 PASOS
 	int  _hechizoFilaOrigen{ -1 };   // FILA ORIGEN DEL HECHIZO
 	int  _hechizoColOrigen{ -1 };    // COL ORIGEN DEL HECHIZO
+	bool _conjuroElegido{ false }; // EL JUGADOR YA ELIGIÓ UN NÚMERO
 
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
