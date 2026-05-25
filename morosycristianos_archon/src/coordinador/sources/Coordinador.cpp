@@ -105,6 +105,8 @@ void Coordinador::dibuja()
 
 			if (pTablerogl->huboColision())
 			{
+				std::cout << "[DEBUG] Colision detectada, entrando a arena\n"; // DEBUG
+				
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
 				_pDefensoraCombate = pTablerogl->getPiezaDefensora();
 
