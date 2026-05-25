@@ -25,8 +25,6 @@ void dibujapersonajes::init() {
     }
 }
 
-
-
 void dibujapersonajes::miliciano(float x, float y, float size, EstadoPersonaje estado, int indice, bool enMovimiento) {
     if (indice < 0 || indice >= MAX_MILICIANOS) return;
     if (!_milicianos[indice]) return;
