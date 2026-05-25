@@ -26,7 +26,6 @@ class Tablerogl
 	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
 	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
 
-
 	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
 
 	static int _anchoVentana;

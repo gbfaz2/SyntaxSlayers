@@ -4,8 +4,12 @@
 #pragma once
 #include "dibuja.h"
 #include "tablerogl.h"
+#include "dibujapersonajes.h"
+
 
 class DibujaTablero : public Dibuja {
+   
+    static dibujapersonajes _dibujador;
 
     // CAPAS BASE DEL TABLERO
     static void tablero_fondo(const Tablerogl& t);
@@ -34,6 +38,8 @@ class DibujaTablero : public Dibuja {
     //PANEL DE CARACTERÍSTICAS DE LAS PIEZAS
     static void tablero_panel_pieza(const Tablerogl& t);
     static void tablero_barra(int x, int y, int ancho, int alto, float valor, float maximo, float r, float g, float b);
+
+    
 
 public:
     // INICIALIZACIÓN DE OPENGL PARA EL TABLERO
