@@ -265,52 +265,83 @@ void Coordinador::tecla_especial_up(int key)
 
 void Coordinador::mueve(double dt)
 {
-	if (estado == EstadoJuego::TABLERO && pTablero) {
-		//USAMOS EL GESTORTURNOS DENTRO DE PTABLEROGL
-		if (pTablerogl) {
-			pTablerogl->gestorTurnos.update(dt);
-			pTablerogl->updateMensaje(dt);
-			pTablerogl->update(dt);
+	if (estado == EstadoJuego::TABLERO && pTablero && pTablerogl) {
 
-			int turno = pTablerogl->gestorTurnos.getNumeroTurno();
-			if (turno != pTablerogl->_turnosJugados &&
-				turno > 1 && turno % Tablerogl::TURNOS_DINAMICOS == 0) {
-				pTablerogl->_turnosJugados = turno;
-				pTablerogl->aplicarCambiosDinamicos();
+		// IA: MUEVE SOLO UNA VEZ POR TURNO
+		if (configuracion.modo == ModoJuego::JVIA &&
+			pTablerogl->gestorTurnos.getBandoActual() == bando_rival &&
+			!pTablerogl->huboColision() &&
+			!_iaYaMovio) {
+
+			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
+			if (turnoActual != _turnoAnteriorIA) {
+				_turnoAnteriorIA = turnoActual;    // MARCA TURNO ACTUAL
+				_tiempoEsperaIA = 3.0f;           // ESPERA 3 SEGUNDOS
+			}
+
+			if (_tiempoEsperaIA > 0.0f) {
+				_tiempoEsperaIA -= (float)dt;      // DESCUENTA TIEMPO
+			}
+			else {
+				_iaYaMovio = true;                 // BLOQUEA PARA NO REPETIR
+
+				MovimientoIA mov = _minimax.calcularMejorMovimiento(*pTablero);
+
+				if (mov.filaOrigen >= 0) {
+					// VERIFICA QUE EL DESTINO ESTÁ VACÍO
+					if (pTablero->getCasilla(mov.filaDestino, mov.colDestino).bando != bando_nada) {
+						std::cout << "[IA] Destino ocupado, cancelando.\n"; // AVISO
+						_iaYaMovio = false;        // PERMITE RECALCULAR
+					}
+					else {
+						Pieza* pieza = pTablero->getCasilla(mov.filaOrigen, mov.colOrigen).obj;
+						if (pieza) {
+							std::cout << "[IA] Moviendo (" << mov.filaOrigen << ","
+								<< mov.colOrigen << ") -> (" << mov.filaDestino << ","
+								<< mov.colDestino << ")\n";                // LOG
+							pTablerogl->Filacursor[1] = mov.filaDestino; // CURSOR A DESTINO
+							pTablerogl->Colcursor[1] = mov.colDestino;
+							pTablerogl->fromFila = mov.filaOrigen;  // ORIGEN
+							pTablerogl->fromCol = mov.colOrigen;
+							pTablerogl->fromBando = bando_rival;
+							pTablerogl->piezaSeleccionada = true;
+							pTablerogl->trySelectorMove(bando_rival);        // EJECUTA
+						}
+					}
+				}
 			}
 		}
-		//gestorTurnos.update(dt);
 
-		//ACTUALIZACIÓN DEL TEMPORIZADOR DE MOVIMIENTO INVÁLIDO
-		//if (pTablerogl)pTablerogl->updateMensaje(dt);
-		//CASILLAS DINÁMICAS
-		/*if (pTablerogl) {
-			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
-			if (turnoActual != pTablerogl->_turnosJugados &&
-				turnoActual > 1 &&
-				turnoActual % Tablerogl::TURNOS_DINAMICOS == 0) {
-				pTablerogl->_turnosJugados = turnoActual;
-				pTablerogl->aplicarCambiosDinamicos();
-			}
-		}*/
+		// RESETEA CUANDO ES TURNO LOCAL
+		if (pTablerogl->gestorTurnos.getBandoActual() == bando_local) {
+			_iaYaMovio = false;                    // PERMITE QUE IA MUEVA EN PRÓXIMO TURNO
+		}
 
-		if (pTablero == nullptr) return;
+		// ACTUALIZA TURNOS Y ANIMACIONES
+		pTablerogl->gestorTurnos.update(dt);
+		pTablerogl->updateMensaje(dt);
+		pTablerogl->update(dt);
 
+		int turno = pTablerogl->gestorTurnos.getNumeroTurno();
+		if (turno != pTablerogl->_turnosJugados &&
+			turno > 1 && turno % Tablerogl::TURNOS_DINAMICOS == 0) {
+			pTablerogl->_turnosJugados = turno;
+			pTablerogl->aplicarCambiosDinamicos();
+		}
+
+		// COMPRUEBA VICTORIA
 		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 		if (rv != ResultadoVictoria::SIN_GANADOR) {
 			ETSIDI::stopMusica();
-			if (pTablerogl) {
-				if (rv == ResultadoVictoria::GANA_LOCAL)
-					pTablerogl->setVictoria(bando_local);
-				else if (rv == ResultadoVictoria::GANA_RIVAL)
-					pTablerogl->setVictoria(bando_rival);
-			}
+			if (rv == ResultadoVictoria::GANA_LOCAL)
+				pTablerogl->setVictoria(bando_local);
+			else if (rv == ResultadoVictoria::GANA_RIVAL)
+				pTablerogl->setVictoria(bando_rival);
 			estado = EstadoJuego::FINAL;
 		}
 	}
 
-	if (estado == EstadoJuego::GUARDANDO) 
-	{
+	if (estado == EstadoJuego::GUARDANDO) {
 		_tiempoGuardado -= (float)dt;
 		if (_tiempoGuardado <= 0.0f) {
 			ETSIDI::stopMusica();
@@ -320,16 +351,15 @@ void Coordinador::mueve(double dt)
 	}
 
 	_spriteReyLocal.update(dt);
-
 	if (_spriteReyLocal.animacionTerminada() && _spriteReyLocal.getEstado() != EstadoRey::DEATH)
 		_spriteReyLocal.setEstado(EstadoRey::IDLE);
 
-	if (estado == EstadoJuego::ARENA) 
-	{
+	if (estado == EstadoJuego::ARENA) {
 		_arena.actualizar((float)dt, _input);
-		DibujaArena::arena_update((float)dt); // Animaciones y efectos gráficos de la arena
+		DibujaArena::arena_update((float)dt);
 	}
 }
+
 
 void Coordinador::raton(int boton, int state, int x, int y)
 {
