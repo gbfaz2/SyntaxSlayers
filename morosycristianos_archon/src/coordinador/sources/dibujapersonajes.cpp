@@ -1,6 +1,7 @@
 #include "dibujapersonajes.h"
 #include <iostream>
 
+using namespace std;
 
 dibujapersonajes::dibujapersonajes() {
     for (int i = 0; i < MAX_MILICIANOS; i++)
