@@ -1,50 +1,59 @@
 #pragma once
-/*
-#include "Pieza.h"
+#include "Tablero.h"
 #include <vector>
+#include <climits>
 
-// DECIDE EL MEJOR MOVIMIENTO PARA LA IA EN EL TABLERO
-
-// REPRESENTA UN MOVIMIENTO EN EL TABLERO
-struct Movimiento {
-    int filaOrigen{-1};
-    int colOrigen{-1};
-    int filaDestino{-1};
-    int colDestino{-1};
+// ============================================================
+// PLANTILLA PARA HISTORIAL DE ESTADOS (REQUISITO OOP)
+// ============================================================
+template<typename T>
+class PilaHistorial {
+    std::vector<T> _pila;
+public:
+    void guardar(const T& estado) { _pila.push_back(estado); }  // GUARDA ESTADO
+    T recuperar() { T t = _pila.back(); _pila.pop_back(); return t; } // RECUPERA Y ELIMINA
+    bool vacia() const { return _pila.empty(); }                // COMPRUEBA SI VACÍA
 };
 
-class MinimaxTablero
-{
-    int _profundidad{ 3 }; // NIVELES QUE MIRA HACIA ADELANTE LA IA
+// MOVIMIENTO POSIBLE PARA LA IA
+struct MovimientoIA {
+    int filaOrigen{ -1 };   // FILA DE LA PIEZA A MOVER
+    int colOrigen{ -1 };    // COL DE LA PIEZA A MOVER
+    int filaDestino{ -1 };  // FILA DESTINO
+    int colDestino{ -1 };   // COL DESTINO
+};
 
-    Bando _bandoIA;        // BANDO QUE CONTROLA LA IA
-    Bando _bandoJugador;   // BANDO DEL JUGADOR HUMANO
-    private://ELIMINAR 
-    // ALGORITMO MINIMAX CON PODA ALFA-BETA
-    int minimax(Pieza** tablero, int tamanio, int profundidad,
-                int alfa, int beta, bool esMaximizador) const;
+// ESTADO GUARDADO PARA DESHACER UN MOVIMIENTO
+struct EstadoCasilla {
+    int fila{ -1 };                  // FILA DE LA CASILLA
+    int col{ -1 };                   // COL DE LA CASILLA
+    TipoPieza  pieza{ pieza_nada };  // TIPO DE PIEZA
+    BandoPieza bando{ bando_nada };  // BANDO
+    Pieza* obj{ nullptr };           // PUNTERO AL OBJETO
+};
 
-    // EVALUA LO BUENO QUE ES UN ESTADO DEL TABLERO PARA LA IA
-    int evaluar(Pieza** tablero, int tamanio) const;
+class MinimaxTablero {
 
-    // GENERA TODOS LOS MOVIMIENTOS LEGALES DE UN BANDO
-    std::vector<Movimiento> generarMovimientos(Pieza** tablero, int tamanio, Bando bando) const;
+    int _profundidad;                // PROFUNDIDAD DE BÚSQUEDA
 
-    // APLICA UN MOVIMIENTO AL TABLERO (SIN MODIFICAR EL ORIGINAL)
-    void aplicarMovimiento(Pieza** tablero, const Movimiento& mov) const;
-    void deshacerMovimiento(Pieza** tablero, const Movimiento& mov, Pieza* piezaCapturada) const;
+    int minimax(Tablero& tablero, int profundidad, bool maximizar,
+        int alpha, int beta);                          // MINIMAX CON ALPHA-BETA
 
-    // VALOR DE CADA PIEZA PARA LA HEURISTICA
-    int valorPieza(const Pieza& pieza) const;
+    int evaluar(const Tablero& tablero) const;                 // EVALÚA LA POSICIÓN
+
+    std::vector<MovimientoIA> generarMovimientos(
+        const Tablero& tablero, BandoPieza bando) const;       // GENERA MOVIMIENTOS
+
+    EstadoCasilla aplicarMovimiento(
+        Tablero& tablero, const MovimientoIA& mov);            // APLICA MOVIMIENTO
+
+    void deshacerMovimiento(Tablero& tablero, const MovimientoIA& mov,
+        const EstadoCasilla& estadoAnterior); // DESHACE MOVIMIENTO
+
+    bool hayVictoria(const Tablero& tablero) const;            // COMPRUEBA VICTORIA
 
 public:
-    // RECIBE EL BANDO QUE JUEGA LA IA
-    MinimaxTablero(Bando bandoIA);
+    MinimaxTablero(int profundidad = 2);                       // CONSTRUCTOR
 
-    // DEVUELVE EL MEJOR MOVIMIENTO POSIBLE DADO EL TABLERO ACTUAL
-    Movimiento obtenerMejorMovimiento(Pieza** tablero, int tamanio) const;
-
-    // DEVUELVE EL MEJOR MOVIMIENTO PARA EL JUGADOR (USADO POR SugerenciasTablero)
-    Movimiento obtenerMejorMovimientoJugador(Pieza** tablero, int tamanio) const;
+    MovimientoIA calcularMejorMovimiento(Tablero& tablero);    // MÉTODO PRINCIPAL
 };
-*/

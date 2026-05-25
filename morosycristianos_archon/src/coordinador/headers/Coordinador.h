@@ -13,6 +13,7 @@
 #include "GestorInput.h"
 #include "SpriteRey.h"
 #include "GestorPartida.h"
+#include "MinimaxTablero.h"
 
 class Coordinador
 {
@@ -42,6 +43,12 @@ class Coordinador
 
 	Pieza* _pAtacanteCombate{ nullptr };  // pieza atacante del combate actual
 	Pieza* _pDefensoraCombate{ nullptr }; // pieza defensora del combate actual
+
+	MinimaxTablero _minimax{ 3 };          // IA CON PROFUNDIDAD 3
+	bool _iaCalculando{ false };           // EVITA CALCULAR VARIAS VECES POR FRAME
+	bool _iaYaMovio{ false };  // CONTROLA QUE LA IA SOLO MUEVE UNA VEZ POR TURNO
+	int  _turnoAnteriorIA{ -1 }; // TURNO EN EL QUE MOVIÓ LA IA POR ÚLTIMA VEZ
+	float _tiempoEsperaIA{ 0.0f }; // TEMPORIZADOR ANTES DE QUE MUEVA LA IA
 
 public:
 	Coordinador() = default;
