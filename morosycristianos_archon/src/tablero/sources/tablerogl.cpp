@@ -72,17 +72,15 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
 
-		//error pero como gestionar? ayuda
-		if (gestorTurnos.getBandoActual() == bando_local) {
-			Pieza* p = m_tablero->getCasilla(currentFila, currentCol).obj;
-			if (p && (p->getNombre() == "Rey" || p->getNombre() == "Emir"))
-				_spriteReyLocal.setEstado(EstadoRey::WALK);
-		}
 
 		if (!pieza) {
 			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
 			return;
 		}
+
+		//guardamos el origen ANTES
+		int origenFila = fromFila;
+		int origenCol = fromCol;
 
 		// Intentamos mover la pieza desde el origen al destino (currentFila, currentCol)
 		ResultadoMovimiento resultado = gestorMovimiento.resolverMovimiento(
@@ -90,12 +88,27 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 		);
 
 		if (resultado == ResultadoMovimiento::MOVIMIENTO_OK) {
-			piezaSeleccionada = false;
-			fromFila = fromCol = -1; // Reseteamos el origen
+			// Origen: donde estaba ANTES del movimiento
+			float ox, oy;
+			cell2center(origenFila, origenCol, ox, oy);
 
-			// ¡IMPORTANTE! Aquí debes avisar al gestor de turnos de que el turno ha terminado
+			// Destino: donde está AHORA lógicamente
+			float dx, dy;
+			cell2center(currentFila, currentCol, dx, dy);
+
+			_animMov.pieza = pieza;
+			_animMov.origenX = ox;  _animMov.origenY = oy;
+			_animMov.destinoX = dx;  _animMov.destinoY = dy;
+			_animMov.t = 0.0f;
+			_animMov.activa = true;
+
+
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
 			gestorTurnos.terminarTurno();
 		}
+
+
 		else if (resultado == ResultadoMovimiento::COMBATE) {
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
@@ -103,12 +116,6 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			// Avisamos al coordinador de que hay combate pendiente
 			Pieza* atacante = gestorMovimiento.getUltimoAtacante();
 			Pieza* defensora = gestorMovimiento.getUltimaDefensora();
-
-			if (m_tablero->getCasilla(fromFila, fromCol).bando == bando_local)
-				_spriteReyLocal.setEstado(EstadoRey::ATTACK);
-			//else
-				//_spriteReyRival.setEstado(EstadoRey::ATTACK);
-
 
 			if (atacante && defensora) {
 				_pAtacante = atacante;
@@ -167,6 +174,20 @@ void Tablerogl::aplicarCambiosDinamicos()
 			else if (cas.tipo == Casilla_rival) {
 				cas.tipo = Casilla_local;
 			}
+		}
+	}
+}
+
+//update para la interpolación en el tablero
+void Tablerogl::update(double dt)
+{
+
+
+	if (_animMov.activa) {
+		_animMov.t += (float)dt * 2.0f; // velocidad: 2 
+		if (_animMov.t >= 1.0f) {
+			_animMov.t = 1.0f;
+			_animMov.activa = false;
 		}
 	}
 }

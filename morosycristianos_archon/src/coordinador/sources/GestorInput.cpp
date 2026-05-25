@@ -410,7 +410,6 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
 
 void GestorInput::teclaArena(unsigned char key)
 {
-    std::cout << "[DEBUG] teclaArena key=" << (int)key << std::endl; // DEBUG
     if (!_coordinador) return;// COORDINADOR NO ASIGNADO
 
     // CONTROLES P1: WASD + F

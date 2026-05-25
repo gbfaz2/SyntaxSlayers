@@ -7,7 +7,7 @@
 Pieza::Pieza(std::string nombre, Bando bando, int vidaMax, int fuerza, 
     int velAtaque, int recarga, int radioMov): nombre(nombre), bando(bando), vidaMax(vidaMax),
     fuerza(fuerza), vida(vidaMax), velAtaque(velAtaque), recarga(recarga), radioMov(radioMov),
-    fila(0), columna(0), viva(true), enPuntoDePoder(false)  //inicializas estas variables porque sino daria basura, aunque no esten en el constructor
+    fila(0), columna(0), viva(true), enPuntoDePoder(false), id_animacion(-1)  //inicializas estas variables porque sino daria basura, aunque no esten en el constructor
 {
     // cuerpo vacío, todo ya está inicializado arriba
 }
