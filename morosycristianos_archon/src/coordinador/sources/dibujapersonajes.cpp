@@ -85,7 +85,6 @@ void dibujapersonajes::update() {
         // Solo intentamos actualizar si el miliciano existe
         if (_milicianos[i] != nullptr) {
             _milicianos[i]->loop();
-            std::cout << "Miliciano " << i << " time: " << _milicianos[i]->getState() << std::endl;
         }
 
     }
