@@ -356,13 +356,14 @@ void DibujaArena::arena_hud(const Arena& arena) {
         glVertex2f((float)_anchoVentana, (float)_altoVentana); glVertex2f(0, (float)_altoVentana);
         glEnd();
 
-        const char* msg = "";
-        if (arena.resultado() == ResultadoCombate::GanaP1) msg = "Gana el Cristiano!  -  ENTER para volver al tablero";
-        else if (arena.resultado() == ResultadoCombate::GanaP2) msg = "Gana el Andalusi!  -  ENTER para volver al tablero";
-        else msg = "Empate!  -  ENTER para volver al tablero";
+        //const char* msg = "";
+        std::string msgStr = "";
+        if (arena.resultado() == ResultadoCombate::GanaP1) msgStr = "Gana " + arena.p1().nombre() + "!  -  ENTER para volver al tablero";
+        else if (arena.resultado() == ResultadoCombate::GanaP2) msgStr = "Gana " + arena.p2().nombre() + "!- ENTER para volver al tablero";
+        else msgStr = "Empate!  -  ENTER para volver al tablero";
 
-        float xMsg = _anchoVentana * 0.5f - strlen(msg) * 4.5f;
-        arena_texto(xMsg, _altoVentana * 0.5f, msg, 1.0f, 1.0f, 1.0f);
+        float xMsg = _anchoVentana * 0.5f - strlen(msgStr.c_str()) * 4.5f;
+        arena_texto(xMsg, _altoVentana * 0.5f, msgStr.c_str(), 1.0f, 1.0f, 1.0f);
     }
 
     glEnable(GL_DEPTH_TEST);
