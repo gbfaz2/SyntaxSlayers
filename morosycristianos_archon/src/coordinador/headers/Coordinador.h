@@ -12,6 +12,12 @@
 #include "GestorHechizos.h"
 #include "GestorInput.h"
 #include "SpriteRey.h"
+<<<<<<< Updated upstream
+=======
+#include "GestorPartida.h"
+#include "MinimaxTablero.h"
+
+>>>>>>> Stashed changes
 
 class Coordinador
 {
@@ -41,6 +47,9 @@ class Coordinador
 
 	Pieza* _pAtacanteCombate{ nullptr };  // pieza atacante del combate actual
 	Pieza* _pDefensoraCombate{ nullptr }; // pieza defensora del combate actual
+
+	MinimaxTablero _minimax{ 2 }; // IA CON PROFUNDIDAD 2
+	bool _iaCalculando{ false }; // EVITA CALCULAR VARIAS VECES POR FRAME
 
 public:
 	Coordinador() = default;
