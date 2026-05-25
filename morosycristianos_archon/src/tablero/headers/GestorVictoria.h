@@ -31,8 +31,14 @@ class GestorVictoria {
 
     //Método auxiliar para comprobar si pieza en (fila,col) está completamente rodeada de enemigos
     bool estaAcorralada(const Tablero& tablero, int fila, int col) const;
+
 public:
     // Método público al que llamar desde el main al final de cada turno
     // Comprueba las 3 condiciones y devuelve el resultado en forma de ResultadoVictoria
     ResultadoVictoria comprobarVictoria(const Tablero& tablero) const;
+
+    // Para contar las piezas que se han eliminado en el ranking
+    int piezasVivas(const Tablero& tablero, BandoPieza bando) const {
+        return contarPiezas(tablero, bando);
+    }
 };
