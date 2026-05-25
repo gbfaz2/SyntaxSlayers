@@ -26,6 +26,7 @@ void Coordinador::inicializa()
 	DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana); // CONFIGURA CAMARA ARENA
 	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
 	gestorInput.setCoordinador(this); // ASIGNA COORDINADOR AL GESTOR
+	DibujaArena::arena_init(); // Inicializa recursos gráficos de la arena (texturas, personajes, etc.)
 }
 
 void Coordinador::dibuja()
@@ -323,8 +324,11 @@ void Coordinador::mueve(double dt)
 	if (_spriteReyLocal.animacionTerminada() && _spriteReyLocal.getEstado() != EstadoRey::DEATH)
 		_spriteReyLocal.setEstado(EstadoRey::IDLE);
 
-	if (estado == EstadoJuego::ARENA)
+	if (estado == EstadoJuego::ARENA) 
+	{
 		_arena.actualizar((float)dt, _input);
+		DibujaArena::arena_update((float)dt); // Animaciones y efectos gráficos de la arena
+	}
 }
 
 void Coordinador::raton(int boton, int state, int x, int y)

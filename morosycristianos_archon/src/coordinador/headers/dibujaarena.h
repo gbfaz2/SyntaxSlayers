@@ -4,8 +4,11 @@
 #include "dibuja.h"
 #include "Arena.h"
 #include "estadojuego.h"
+#include "dibujapersonajes.h"
 
-class DibujaArena : public Dibuja {
+class DibujaArena : public Dibuja 
+{
+    static dibujapersonajes _personajes;
 
     // CAPAS BASE DE LA ARENA 
     static void arena_configurar_luz();
@@ -25,4 +28,6 @@ public:
     // ORQUESTADORES PRINCIPALES
     static void arena_configurar_vista(int anchoVentana, int altoVentana);
     static void arena_dibujar(const Arena& arena, Batalla batalla);
+    static void arena_init();
+	static void arena_update(float dt);
 };
