@@ -12,7 +12,7 @@ class DibujaArena : public Dibuja
 
     // CAPAS BASE DE LA ARENA 
     static void arena_configurar_luz();
-    static void arena_suelo(float ancho, float profundo);
+    static void arena_suelo(float ancho, float profundo, Batalla batalla);
     static void arena_fondo(Batalla batalla);
 
     // PRIMITIVAS 3D Y DE COMBATE
