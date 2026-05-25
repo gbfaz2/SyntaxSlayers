@@ -12,10 +12,10 @@ enum class EstadoPersonaje {
     HURT = 8, // fila 3
 };
 
-class DibujaPersonajes {
+class dibujapersonajes {
 public:
-    DibujaPersonajes();
-    ~DibujaPersonajes();
+    dibujapersonajes();
+    ~dibujapersonajes();
 
     void init();
     void update();
@@ -23,7 +23,7 @@ public:
     void miliciano(float x, float y, float size,
         EstadoPersonaje estado, int indice, bool enMovimiento = false);
 private:
-    //funcion de libreria etsidi para animación
+    //funcion de libreria etsidi para animaciÃ³n
     static const int MAX_MILICIANOS = 14;
     ETSIDI::SpriteSequence* _milicianos[MAX_MILICIANOS];
 

@@ -198,7 +198,7 @@
     <ClInclude Include="src\tablero\headers\GestorHechizos.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="dibujapersonajes.h">
+    <ClInclude Include="src\coordinador\headers\dibujapersonajes.h">
       <Filter>coordinador\Headers</Filter>
     </ClInclude>
   </ItemGroup>
@@ -331,7 +331,7 @@
     <ClCompile Include="src\tablero\sources\GestorPartida.cpp">
       <Filter>tablero\Sources</Filter>
     </ClCompile>
-    <ClCompile Include="dibujapersonajes.cpp">
+    <ClCompile Include="src\coordinador\sources\dibujapersonajes.cpp">
       <Filter>coordinador\Sources</Filter>
     </ClCompile>
   </ItemGroup>

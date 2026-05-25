@@ -145,7 +145,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="dibujapersonajes.h" />
     <ClInclude Include="GestorPartida.h" />
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
@@ -157,6 +156,7 @@
     <ClInclude Include="src\coordinador\headers\dibuja.h" />
     <ClInclude Include="src\coordinador\headers\dibujaarena.h" />
     <ClInclude Include="src\coordinador\headers\dibujamenu.h" />
+    <ClInclude Include="src\coordinador\headers\dibujapersonajes.h" />
     <ClInclude Include="src\coordinador\headers\dibujatablero.h" />
     <ClInclude Include="src\coordinador\headers\GestorInput.h" />
     <ClInclude Include="src\ia\headers\IAArena.h" />
@@ -202,13 +202,13 @@
     <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dibujapersonajes.cpp" />
     <ClCompile Include="src\arena\sources\Arena.cpp" />
     <ClCompile Include="src\arena\sources\Combatiente.cpp" />
     <ClCompile Include="src\coordinador\sources\Coordinador.cpp" />
     <ClCompile Include="src\coordinador\sources\dibuja.cpp" />
     <ClCompile Include="src\coordinador\sources\dibujaarena.cpp" />
     <ClCompile Include="src\coordinador\sources\dibujamenu.cpp" />
+    <ClCompile Include="src\coordinador\sources\dibujapersonajes.cpp" />
     <ClCompile Include="src\coordinador\sources\dibujatablero.cpp" />
     <ClCompile Include="src\coordinador\sources\GestorInput.cpp" />
     <ClCompile Include="src\ia\sources\IAArena.cpp" />
