@@ -6,10 +6,8 @@ GestorTurnos::GestorTurnos()
     _tiempoRestante(TIEMPO_LIMITE_TURNO),  //ya definico como const (60seg)
     _numeroTurno(1)  //empieza contando turnos con 1
 {
-    //imprime el tunro, el bando, y el tiempo (proponer hacer un cronometro chulo 
-    std::cout << "[GestorTurnos] Turno " << _numeroTurno << " - "
-        << (_turnoActual == bando_local ? "Bando LOCAL" : "Bando RIVAL")
-        << ". Tiempo: " << TIEMPO_LIMITE_TURNO << "s" << std::endl;
+    //imprime el tunro, el bando, y el tiempo
+    std::cout << "Turno 1 - CRISTIANO. Tiempo: " << TIEMPO_LIMITE_TURNO << "s\n";
 }
 
 //función para cambiar de turno, 
@@ -28,10 +26,10 @@ void GestorTurnos::cambiarTurno()
     // Incrementamos el contador de turnos
     _numeroTurno++;
 
-    //informa por pantalla (luego lo de imprimir lo quitaremos??)
-    std::cout << "[GestorTurnos] Turno " << _numeroTurno << " - "
-        << (_turnoActual == bando_local ? "Bando LOCAL" : "Bando RIVAL")
-        << ". Tiempo: " << TIEMPO_LIMITE_TURNO << "s" << std::endl;
+    //informa por pantalla
+    std::cout << "Turno " << _numeroTurno << " - "
+        << (_turnoActual == bando_local ? "CRISTIANO" : "AL ANDALUS")
+        << ". Tiempo: " << TIEMPO_LIMITE_TURNO << "s\n";
 }
 
 //con cada frame del main.cpp del OnTimer se actualiza:

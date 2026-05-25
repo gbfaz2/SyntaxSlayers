@@ -103,36 +103,49 @@ int MinimaxTablero::evaluar(const Tablero& tablero) const
 {
     int puntuacion = 0;
 
-    // VALOR DE CADA TIPO DE PIEZA
     auto valorPieza = [](TipoPieza tipo) -> int {
         switch (tipo) {
-        case pieza_esfera:     return 1000; // REY/EMIR — MUY VALIOSO
-        case pieza_dodecaedro: return  90;  // INFILTRADO
-        case pieza_icosaedro:  return  85;  // ALMOGAVAR
-        case pieza_tetraedro:  return  60;  // CABALLERIA LIGERA
-        case pieza_cubog:      return  70;  // INFANTERIA PESADA
-        case pieza_cono:       return  75;  // CABALLERIA PESADA
-        case pieza_cilindro:   return  60;  // BALLESTERO
-        case pieza_cubo_p:     return  30;  // MILICIANO
-        default:               return   0;
+        case pieza_esfera:     return 1000; // REY/EMIR
+        case pieza_dodecaedro: return   90; // INFILTRADO
+        case pieza_icosaedro:  return   85; // ALMOGAVAR
+        case pieza_tetraedro:  return   60; // CABALLERIA LIGERA
+        case pieza_cubog:      return   70; // INFANTERIA PESADA
+        case pieza_cono:       return   75; // CABALLERIA PESADA
+        case pieza_cilindro:   return   60; // BALLESTERO
+        case pieza_cubo_p:     return   30; // MILICIANO
+        default:               return    0;
         }
         };
+
+    const int poderPos[5][2] = { {0,4},{4,0},{4,4},{4,8},{8,4} }; // PUNTOS DE PODER
 
     for (int f = 0; f < Tablero::N; f++) {
         for (int c = 0; c < Tablero::N; c++) {
             const Casilla& cas = tablero.getCasilla(f, c);
             if (cas.pieza == pieza_nada) continue;
 
-            int val = valorPieza(cas.pieza);
+            int val = valorPieza(cas.pieza);                   // VALOR BASE
 
-            // BONUS POR PUNTO DE PODER
-            if (cas.tipo == Casilla_poder) val += 50;
+            if (cas.tipo == Casilla_poder) val += 50;          // BONUS PUNTO DE PODER
 
-            // POSITIVO PARA RIVAL, NEGATIVO PARA LOCAL
-            if (cas.bando == bando_rival)  puntuacion += val;
-            if (cas.bando == bando_local)  puntuacion -= val;
+            // BONUS POR PROXIMIDAD A PUNTOS DE PODER
+            for (auto& pp : poderPos) {
+                int dist = abs(f - pp[0]) + abs(c - pp[1]);   // DISTANCIA MANHATTAN
+                int bonus = std::max(0, 10 - dist);            // MÁS CERCA = MÁS BONUS
+                if (cas.bando == bando_rival)  puntuacion += bonus; // BUENO PA IA
+                if (cas.bando == bando_local)  puntuacion -= bonus; // MALO PA IA
+            }
+
+            if (cas.bando == bando_rival) {
+                val += (Tablero::N - 1 - c) * 2;              // BONUS POR AVANZAR
+                puntuacion += val;                             // SUMA PARA IA
+            }
+            if (cas.bando == bando_local) {
+                puntuacion -= val;                             // RESTA PARA IA
+            }
         }
     }
+
     return puntuacion;
 }
 

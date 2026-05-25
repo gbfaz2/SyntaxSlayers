@@ -44,7 +44,7 @@ class Coordinador
 	Pieza* _pAtacanteCombate{ nullptr };  // pieza atacante del combate actual
 	Pieza* _pDefensoraCombate{ nullptr }; // pieza defensora del combate actual
 
-	MinimaxTablero _minimax{ 2 };          // IA CON PROFUNDIDAD 2
+	MinimaxTablero _minimax{ 3 };          // IA CON PROFUNDIDAD 3
 	bool _iaCalculando{ false };           // EVITA CALCULAR VARIAS VECES POR FRAME
 	bool _iaYaMovio{ false };  // CONTROLA QUE LA IA SOLO MUEVE UNA VEZ POR TURNO
 	int  _turnoAnteriorIA{ -1 }; // TURNO EN EL QUE MOVIÓ LA IA POR ÚLTIMA VEZ
