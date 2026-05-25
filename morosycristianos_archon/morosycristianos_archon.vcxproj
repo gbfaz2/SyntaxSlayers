@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="dibujapersonajes.h" />
     <ClInclude Include="GestorPartida.h" />
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
@@ -201,6 +202,7 @@
     <None Include="lib\ETSIDI.exp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dibujapersonajes.cpp" />
     <ClCompile Include="src\arena\sources\Arena.cpp" />
     <ClCompile Include="src\arena\sources\Combatiente.cpp" />
     <ClCompile Include="src\coordinador\sources\Coordinador.cpp" />
