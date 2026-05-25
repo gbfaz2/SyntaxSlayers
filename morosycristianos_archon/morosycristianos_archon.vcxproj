@@ -145,7 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GestorHechizos.h" />
+    <ClInclude Include="GestorPartida.h" />
     <ClInclude Include="lib\ETSIDI.h" />
     <ClInclude Include="lib\freeglut.h" />
     <ClInclude Include="lib\glut.h" />
@@ -156,6 +156,7 @@
     <ClInclude Include="src\coordinador\headers\dibuja.h" />
     <ClInclude Include="src\coordinador\headers\dibujaarena.h" />
     <ClInclude Include="src\coordinador\headers\dibujamenu.h" />
+    <ClInclude Include="src\coordinador\headers\dibujapersonajes.h" />
     <ClInclude Include="src\coordinador\headers\dibujatablero.h" />
     <ClInclude Include="src\coordinador\headers\GestorInput.h" />
     <ClInclude Include="src\ia\headers\IAArena.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="src\piezas\headers\PiezaVoladora.h" />
     <ClInclude Include="src\piezas\headers\Rey.h" />
     <ClInclude Include="src\piezas\headers\SpriteRey.h" />
+    <ClInclude Include="src\tablero\headers\GestorHechizos.h" />
     <ClInclude Include="src\tablero\headers\GestorMovimiento.h" />
     <ClInclude Include="src\tablero\headers\GestorTurnos.h" />
     <ClInclude Include="src\tablero\headers\GestorVictoria.h" />
@@ -206,6 +208,7 @@
     <ClCompile Include="src\coordinador\sources\dibuja.cpp" />
     <ClCompile Include="src\coordinador\sources\dibujaarena.cpp" />
     <ClCompile Include="src\coordinador\sources\dibujamenu.cpp" />
+    <ClCompile Include="src\coordinador\sources\dibujapersonajes.cpp" />
     <ClCompile Include="src\coordinador\sources\dibujatablero.cpp" />
     <ClCompile Include="src\coordinador\sources\GestorInput.cpp" />
     <ClCompile Include="src\ia\sources\IAArena.cpp" />
@@ -234,6 +237,7 @@
     <ClCompile Include="src\piezas\sources\SpriteRey.cpp" />
     <ClCompile Include="src\tablero\sources\GestorHechizos.cpp" />
     <ClCompile Include="src\tablero\sources\GestorMovimiento.cpp" />
+    <ClCompile Include="src\tablero\sources\GestorPartida.cpp" />
     <ClCompile Include="src\tablero\sources\GestorTurnos.cpp" />
     <ClCompile Include="src\tablero\sources\GestorVictoria.cpp" />
     <ClCompile Include="src\tablero\sources\tablero.cpp" />

@@ -16,12 +16,6 @@ enum class ResultadoVictoria {
 };
 
 class GestorVictoria {
-public:
-    // Método público al que llamar desde el main al final de cada turno
-    // Comprueba las 3 condiciones y devuelve el resultado en forma de ResultadoVictoria
-    ResultadoVictoria comprobarVictoria(const Tablero& tablero) const;
-
-private:
     //Métodos privados:
     //Comprueba DOMINIO
     ResultadoVictoria comprobarDominio(const Tablero& tablero) const;
@@ -37,4 +31,8 @@ private:
 
     //Método auxiliar para comprobar si pieza en (fila,col) está completamente rodeada de enemigos
     bool estaAcorralada(const Tablero& tablero, int fila, int col) const;
+public:
+    // Método público al que llamar desde el main al final de cada turno
+    // Comprueba las 3 condiciones y devuelve el resultado en forma de ResultadoVictoria
+    ResultadoVictoria comprobarVictoria(const Tablero& tablero) const;
 };

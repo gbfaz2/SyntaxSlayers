@@ -7,9 +7,12 @@
 #include <cstring> 
 #include <string>
 
+dibujapersonajes DibujaArena::_personajes;
+
 // ORQUESTADORES PRINCIPALES
 
-void DibujaArena::arena_configurar_vista(int anchoVentana, int altoVentana) {
+void DibujaArena::arena_configurar_vista(int anchoVentana, int altoVentana) 
+{
     _anchoVentana = anchoVentana;
     _altoVentana = (altoVentana > 0) ? altoVentana : 1; // EVITAR DIVISIÓN POR CERO
 
@@ -48,7 +51,7 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
 
     arena_fondo(batalla);
     arena_configurar_luz();
-    arena_suelo(arena.ancho(), arena.profundo());
+    arena_suelo(arena.ancho(), arena.profundo(), batalla);
 
     // DIBUJAR LOS COMBATIENTES
     float r, g, b;
@@ -57,13 +60,60 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     arena.p1().color(r, g, b);
     if (arena.p1().atacando())
         arena_hitbox(arena.p1().x() + arena.p1().lado() * 0.5f, arena.p1().z(), 1.0f, arena.p1().alcanceAtaque());
-    arena_cubo3d(arena.p1().x(), arena.p1().y(), arena.p1().z(), arena.p1().lado(), r, g, b);
+
+    if (arena.p1().nombre() == "Miliciano") 
+    {
+        // Proyectamos posicion 3D a coordenadas de pantalla
+        GLdouble winX, winY, winZ;
+        GLdouble model[16], proj[16];
+        GLint view[4];
+        glGetDoublev(GL_MODELVIEW_MATRIX, model);
+        glGetDoublev(GL_PROJECTION_MATRIX, proj);
+        glGetIntegerv(GL_VIEWPORT, view);
+        gluProject(arena.p1().x(), arena.p1().y(), arena.p1().z(),
+            model, proj, view, &winX, &winY, &winZ);
+
+        EstadoPersonaje estado = arena.p1().atacando() ? EstadoPersonaje::ATTACK : EstadoPersonaje::IDLE;
+        bool moviendose = arena.p1().enMovimiento();
+        float size = _anchoVentana * 0.15f;
+
+        util_entrar2D(_anchoVentana, _altoVentana);
+        glDisable(GL_LIGHTING);
+        _personajes.miliciano((float)winX, (float)winY, size, estado, 0, moviendose);
+        util_salir2D();
+    }
+    else {
+        arena_cubo3d(arena.p1().x(), arena.p1().y(), arena.p1().z(), arena.p1().lado(), r, g, b);
+    }
 
     // P2
     arena.p2().color(r, g, b);
     if (arena.p2().atacando())
         arena_hitbox(arena.p2().x() - arena.p2().lado() * 0.5f, arena.p2().z(), -1.0f, arena.p2().alcanceAtaque());
-    arena_cubo3d(arena.p2().x(), arena.p2().y(), arena.p2().z(), arena.p2().lado(), r, g, b);
+    
+    if (arena.p2().nombre() == "Miliciano") 
+    {
+        GLdouble winX, winY, winZ;
+        GLdouble model[16], proj[16];
+        GLint view[4];
+        glGetDoublev(GL_MODELVIEW_MATRIX, model);
+        glGetDoublev(GL_PROJECTION_MATRIX, proj);
+        glGetIntegerv(GL_VIEWPORT, view);
+        gluProject(arena.p2().x(), arena.p2().y(), arena.p2().z(),
+            model, proj, view, &winX, &winY, &winZ);
+
+        EstadoPersonaje estado = arena.p2().atacando() ? EstadoPersonaje::ATTACK : EstadoPersonaje::IDLE;
+        bool moviendose = arena.p2().enMovimiento();
+        float size = _anchoVentana * 0.15f;
+
+        util_entrar2D(_anchoVentana, _altoVentana);
+        glDisable(GL_LIGHTING);
+        _personajes.miliciano((float)winX, (float)winY, size, estado, 1, moviendose);
+        util_salir2D();
+    }
+    else {
+        arena_cubo3d(arena.p2().x(), arena.p2().y(), arena.p2().z(), arena.p2().lado(), r, g, b);
+    }
 
     // HUD ENCIMA DE TODO
     arena_hud(arena);
@@ -84,34 +134,43 @@ void DibujaArena::arena_configurar_luz() {
     glLightfv(GL_LIGHT0, GL_DIFFUSE, difusa);
 }
 
-void DibujaArena::arena_suelo(float ancho, float profundo) {
+void DibujaArena::arena_suelo(float ancho, float profundo, Batalla batalla) 
+{
     float halfX = ancho * 0.5f;
     float halfZ = profundo * 0.5f;
 
-    // SUELO
-    glColor3f(0.85f, 0.78f, 0.62f);
+	// SUELO (con diferente textura segun la batalla)
+    const char* ruta = "";
+    switch (batalla) {
+    case Batalla::GUADALETE:    ruta = "imagenes/suelo_guadalete.png"; break;
+    case Batalla::ALARCOS:      ruta = "imagenes/suelo_alarcos.png";   break;
+    case Batalla::NAVAS_TOLOSA: ruta = "imagenes/suelo_navas.png";     break;
+    case Batalla::GRANADA:      ruta = "imagenes/suelo_granada.png";   break;
+    }
+
+    auto tex = ETSIDI::getTexture(ruta);
+
+    glDisable(GL_LIGHTING);
+    if (tex.id != 0) 
+    {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, tex.id);
+        glColor3f(1, 1, 1);
+    }
+    else 
+    {
+        glColor3f(0.85f, 0.78f, 0.62f);
+    }
+
     glBegin(GL_QUADS);
     glNormal3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(-halfX, 0.0f, -halfZ);
-    glVertex3f(halfX, 0.0f, -halfZ);
-    glVertex3f(halfX, 0.0f, halfZ);
-    glVertex3f(-halfX, 0.0f, halfZ);
+    glTexCoord2f(0, 0); glVertex3f(-halfX, 0.0f, -halfZ);
+    glTexCoord2f(4, 0); glVertex3f(halfX, 0.0f, -halfZ);
+    glTexCoord2f(4, 4); glVertex3f(halfX, 0.0f, halfZ);
+    glTexCoord2f(0, 4); glVertex3f(-halfX, 0.0f, halfZ);
     glEnd();
 
-    // CUADRÍCULA
-    glDisable(GL_LIGHTING);
-    glColor3f(0.5f, 0.45f, 0.35f);
-    glLineWidth(1.0f);
-    glBegin(GL_LINES);
-    for (float xi = -halfX; xi <= halfX + 0.001f; xi += 1.0f) {
-        glVertex3f(xi, 0.01f, -halfZ);
-        glVertex3f(xi, 0.01f, halfZ);
-    }
-    for (float zi = -halfZ; zi <= halfZ + 0.001f; zi += 1.0f) {
-        glVertex3f(-halfX, 0.01f, zi);
-        glVertex3f(halfX, 0.01f, zi);
-    }
-    glEnd();
+    if (tex.id != 0) glDisable(GL_TEXTURE_2D);
 
     // BORDE DE LA ARENA
     glColor3f(0.35f, 0.25f, 0.15f);
@@ -312,4 +371,14 @@ void DibujaArena::arena_hud(const Arena& arena) {
     glMatrixMode(GL_PROJECTION);
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
+}
+
+void DibujaArena::arena_init() 
+{
+    _personajes.init();
+}
+
+void DibujaArena::arena_update(float dt) 
+{
+    _personajes.update();
 }

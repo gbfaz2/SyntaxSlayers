@@ -3,6 +3,7 @@
 // Implementación de las pantallas de introducción y menú principal
 
 #include "menu.h"
+#include "GestorPartida.h"
 
 //PANTALLA INTRO 
 PantallaIntro::PantallaIntro() { reiniciar(); }
@@ -37,8 +38,14 @@ void MenuPrincipal::confirmar() {
         switch (m_seleccion) {
         case 0: m_cfg.modo = ModoJuego::JVJ;  m_paso = 1; m_seleccion = 0; break; // modo jugador vs jugador
         case 1: m_cfg.modo = ModoJuego::JVIA; m_paso = 1; m_seleccion = 0; break; // modo jugador vs IA
-        case 2: m_siguiente = EstadoJuego::RANKING; m_terminado = true; break; // modo ranking
-        case 3: m_siguiente = EstadoJuego::FINAL;   m_terminado = true; break; // modo salir 
+        case 2: // Cargar partida
+            if (GestorPartida::hayPartidaGuardada()) {
+                m_siguiente = EstadoJuego::CARGANDO;
+                m_terminado = true;
+            }
+            break;
+        case 3: m_siguiente = EstadoJuego::RANKING; m_terminado = true; break; // modo ranking
+        case 4: m_siguiente = EstadoJuego::FINAL;   m_terminado = true; break; // modo salir 
         }
     }
     else if (m_paso == 1) {

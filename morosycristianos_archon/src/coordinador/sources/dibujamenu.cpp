@@ -120,11 +120,19 @@ void DibujaMenu::menu_paso0(MenuPrincipal& m, int ancho, int alto) {
     const char* opciones[] = {
         "  Jugador vs Jugador",
         "  Jugador vs IA",
+        "  Cargar Partida",
         "  Ranking",
         "  Salir"
     };
     for (int i = 0; i < 4; i++)
         menu_opcion(opciones[i], sx, sy - i * (ah + sep), aw, ah, m.m_seleccion == i);
+
+    // Si no hay partida guardada, se muestra un aviso
+    if (m.m_seleccion == 2 && !GestorPartida::hayPartidaGuardada()) {
+        menu_textoCentrado("No hay partida guardada",
+            ancho / 2.0f, alto / 2.0f - 100,
+            0.9f, 0.3f, 0.3f, GLUT_BITMAP_HELVETICA_12);
+    }
 }
 
 void DibujaMenu::menu_paso1(MenuPrincipal& m, int ancho, int alto) {
