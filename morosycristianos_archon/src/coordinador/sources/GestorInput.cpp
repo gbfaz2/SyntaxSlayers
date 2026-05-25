@@ -19,12 +19,15 @@ void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
         break;
 
     case EstadoJuego::MENU:
-        if (key == 27) { // ESC: RETROCEDE UN PASO O VUELVE A INTRO
-            if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; }
+        if (key == 27) { // ESC: RETROCEDE UN PASO
+            if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; menu.m_nombreActual = ""; }
             else { menu.m_siguiente = EstadoJuego::INTRO; menu.m_terminado = true; }
             return;
         }
-        if (key == 13) menu.confirmar(); // SOLO ENTER CONFIRMA (ESPACIO RESERVADO PARA TABLERO)
+        if (menu.m_paso == 1 || menu.m_paso == 3)
+            menu.teclaTexto(key); // PASOS DE TEXTO: CAPTURA CARACTERES
+        else
+            if (key == 13) menu.confirmar(); // RESTO DE PASOS: SOLO ENTER CONFIRMA
         break;
 
     case EstadoJuego::DESTINO:
@@ -34,18 +37,19 @@ void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
     default:
         break;
     }
-}
+} 
 
 void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal& menu)
 {
     if (estado != EstadoJuego::MENU) return; // SOLO EN MENU
+    if (menu.maxOpciones() == 0) return; 
 
     if (key == GLUT_KEY_UP)
         menu.m_seleccion = (menu.m_seleccion - 1 + menu.maxOpciones()) % menu.maxOpciones(); // SUBE SELECCION
     if (key == GLUT_KEY_DOWN)
         menu.m_seleccion = (menu.m_seleccion + 1) % menu.maxOpciones(); // BAJA SELECCION
-    if (key == GLUT_KEY_LEFT && menu.m_paso == 1) menu.m_seleccion = 0; // SELECCIONA IZQUIERDA
-    if (key == GLUT_KEY_RIGHT && menu.m_paso == 1) menu.m_seleccion = 1; // SELECCIONA DERECHA
+    if (key == GLUT_KEY_LEFT && menu.m_paso == 2) menu.m_seleccion = 0; // SELECCIONA IZQUIERDA
+    if (key == GLUT_KEY_RIGHT && menu.m_paso == 2) menu.m_seleccion = 1; // SELECCIONA DERECHA
 }
 
 void GestorInput::ratonMenu(int boton, int state, int x, int y,
