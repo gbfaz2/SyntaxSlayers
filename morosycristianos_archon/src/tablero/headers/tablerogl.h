@@ -8,7 +8,9 @@
 #include "GestorTurnos.h"
 #include "Hechicero.h"
 #include "SpriteRey.h"
+#include "dibujatablero.h"
 #include "menu.h"
+#include<ETSIDI.h>
 //#include"coordinador.h"
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -23,13 +25,24 @@ class Tablerogl
 
 	GestorMovimiento gestorMovimiento;
 	GestorTurnos     gestorTurnos;
-	SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
+	//SpriteRey   _spriteReyLocal;   // rey del bando local (cristiano)
 	//SpriteRey   _spriteReyRival;   // emir del bando rival (andalusí) — misma textura por ahora
 
 	int _batallaActual{ 0 }; // 0=GUADALETE, 1=ALARCOS, 2=NAVAS_TOLOSA, 3=GRANADA
 
 	static int _anchoVentana;
 	static int _altoVentana;
+
+	//para movimiento interpolado
+	struct AnimMovimiento {
+		Pieza* pieza;       // qué pieza se está moviendo
+		float  origenX, origenY;   // posición GL de origen
+		float  destinoX, destinoY; // posición GL de destino
+		float  t;           // progreso 0.0 → 1.0
+		bool   activa{ false };
+	};
+	AnimMovimiento _animMov;
+
 
 protected:
 	float ancho;
@@ -77,6 +90,10 @@ public:
 
 	void redimensionar(int ancho, int alto);
 
+
+	//para actualizar el dt para la interpolacion
+	void update(double dt);
+
 	//conversores de coordenadas cogidas del repositorio de Pablo
 	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);
 	void world2cell(double x, double y, int& casilla_x, int& casilla_y);//dado un punto (x,y) en coordenadas opengl, devuelve la fila y columna del tablero
@@ -91,6 +108,9 @@ public:
 		if (_modoHechizo) return;
 		_mensajeInvalido = mensaje;
 		_tiempoMensajeInvalido = 2.0f;
+
+		//musica MEEEEH error
+		ETSIDI::playMusica("sonidos/error_tablero.mp3");
 	}
 	//descuenta el temporizador del cartel 
 	void updateMensaje(double dt){
