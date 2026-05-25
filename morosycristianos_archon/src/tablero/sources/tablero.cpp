@@ -198,6 +198,7 @@ std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
 	if (tablero[fila][col].pieza == pieza_nada) return resultado;
 
 	const Casilla& origen = tablero[fila][col];
+	Pieza* pObj = origen.obj;
 
 	for (int tf = 0; tf < N; tf++) {
 		for (int tc = 0; tc < N; tc++) {
@@ -207,11 +208,55 @@ std::vector<CasillaPos> Tablero::casillasValidas(int fila, int col) const
 			//   PiezaTerrestre → sin diagonal, max radioMov casillas
 			//   PiezaVoladora  → con diagonal, max radioMov casillas
 			//   PiezaTeleporte → cualquier casilla del tablero
-			bool moviendose = (origen.obj != nullptr)? origen.obj->puedeMoverse(tf, tc): true; // fallback: sin restricción
+
+			//devuelve si puede o no ejecturar el movimiento teniendo en cuenta el destnio
+			bool moviendose = (pObj != nullptr)? pObj->puedeMoverse(tf, tc): true; // fallback: sin restricción
 
 			// puedeMover() del tablero comprueba que no hay aliado
-			if (moviendose && puedeMover(fila, col, tf, tc))
-				resultado.push_back({ tf, tc });
+			if (moviendose && puedeMover(fila, col, tf, tc)) {
+
+				//declara variable que indica camino despejado true or false
+				bool caminoDespejado = true;
+
+				//solo para piezas terrestres:
+				if (pObj != nullptr && pObj->getTipoMovimiento() == TipoMovimiento::TERRESTRE) {
+					
+					//calcula la dif de destino con la fila/columna actual
+					int difFila = tf - fila;
+					int difCol = tc - col;
+
+					//solo trazamos el camino si es un movimiento en línea recta o diagonal perfecta
+					if (difFila == 0 || difCol == 0 || abs(difFila) == abs(difCol)) {
+
+						// Calculamos la dirección del paso (-1, 0, o 1)
+						int dirFila = (difFila > 0) ? 1 : ((difFila < 0) ? -1 : 0);
+						int dirCol = (difCol > 0) ? 1 : ((difCol < 0) ? -1 : 0);
+
+						//calculamos la fila más la dirección
+						int fAct = fila + dirFila;
+						int cAct = col + dirCol;
+
+						//avanzamos por el tablero hasta llegar justo 1 casilla antes del destino
+						while (fAct != tf || cAct != tc) {
+							//si nos chocamos con CUALQUIER pieza en medio del camino, está bloqueado
+							if (tablero[fAct][cAct].pieza != pieza_nada) {
+								caminoDespejado = false;
+								break;
+							}
+
+							//suma y actualización para fila y columna
+							fAct += dirFila;
+							cAct += dirCol;
+						}
+					}
+				}
+				// Si el camino está limpio (o es voladora/teleport), lo añadimos a las iluminadas
+				if (caminoDespejado) {
+					resultado.push_back({ tf, tc });
+			    }
+			
+			}
+				
 		}
 	}
 	return resultado;
