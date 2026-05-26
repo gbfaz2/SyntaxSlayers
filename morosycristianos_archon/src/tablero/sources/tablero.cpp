@@ -159,7 +159,7 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	//asignar ID para caballero ligero de la fila 0
 	Pieza* Inf = new Infiltrado(Bando::ANDALUSI);
 	Inf->setIdAnimacion(idInfiltrado++);
-	poner(3, 8, pieza_dodecaedro, bando_local, Inf);
+	poner(3, 8, pieza_dodecaedro, bando_rival, Inf);
 
 
 	//faltan soldados ghazi
