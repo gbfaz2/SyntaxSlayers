@@ -80,22 +80,35 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
         // Tipo de personaje según nombre
         //FALTAN PERSONAJES
         //añadir el resto cuando los tengamos
+
+        bool voltear = false; 
         TipoPersonaje tipo = TipoPersonaje::MILICIANO;
         if (c.nombre() == "Miliciano")      tipo = TipoPersonaje::MILICIANO;
         else if (c.nombre() == "Infiltrado")     tipo = TipoPersonaje::INFILTRADO;
-        else if (c.nombre() == "Guardia Negra")  tipo = TipoPersonaje::GUARDIA_NEGRA;
-        else if (c.nombre() == "Jinete Bereber") tipo = TipoPersonaje::JINETE_BEREBER;
-        else if (c.nombre() == "Emir")           tipo = TipoPersonaje::EMIR;
+        else if (c.nombre() == "Guardia Negra") {
+            voltear = true;
+            tipo = TipoPersonaje::GUARDIA_NEGRA;
+        }
+        else if (c.nombre() == "Jinete Bereber") {
+           
+            voltear = true;
+            tipo = TipoPersonaje::JINETE_BEREBER;
 
+        }
+        else if (c.nombre() == "Emir") {
+            voltear = true;
+            tipo = TipoPersonaje::EMIR;
+        }
         float size = _anchoVentana * 0.15f;
 
         //convertir a 2d
         util_entrar2D(_anchoVentana, _altoVentana);
         glDisable(GL_LIGHTING);
 
+
         //dibjar con funcion de dibujappersonajes teniendo en cuenta el nombre del personaje y el estado
         _personajes.dibujar(tipo, (float)winX, (float)winY, size,
-            estado, indice, c.enMovimiento());
+            estado, indice, c.enMovimiento(), voltear);
         util_salir2D();
     };
 
