@@ -201,7 +201,11 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
             const Casilla& cas = _coordinador->pTablero->getCasilla(
                 _tablerogl->fromFila, _tablerogl->fromCol);
             if (cas.pieza == pieza_esfera && cas.bando == bando_local) { // ES EL REY LOCAL
-                std::cout << "[Hechizos] Modo hechizo P1 activo. Elige 1-7.\n";
+                std::cout << "[Hechizos] Modo hechizo P1 activo. Elige 1-4.\n 1. Avituallamiento: Cura una pieza tuya a vida maxima";
+                std::cout << "\n 2. Rutas Secretas: Teleporta una pieza tuya a cualquier casilla vacia del tablero.";
+                std::cout << "\n 3. Relevo de Guardia: Intercambia la posicion de dos piezas tuyas.";
+                std::cout << "\n 4. Asedio: Bloquea una pieza enemiga en su casilla para siempre, no puede moverse.";
+
                 _tablerogl->_modoHechizo = true;       // ACTIVA MODO HECHIZO
                 _tablerogl->_bandoHechizo = bando_local; // MARCA BANDO P1
                 _tablerogl->_conjuroElegido = false;      // RESETEA CONJURO ELEGIDO
@@ -229,7 +233,10 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
             const Casilla& cas = _coordinador->pTablero->getCasilla(
                 _tablerogl->fromFila, _tablerogl->fromCol);
             if (cas.pieza == pieza_esfera && cas.bando == bando_rival) { // ES EL EMIR RIVAL
-                std::cout << "[Hechizos] Modo hechizo P2 activo. Elige 1-7.\n";
+                std::cout << "[Hechizos] Modo hechizo P2 activo. Elige 1-4.\n 1. Avituallamiento: Cura una pieza tuya a vida maxima";
+                std::cout << "\n 2. Rutas Secretas: Teleporta una pieza tuya a cualquier casilla vacia del tablero.";
+                std::cout << "\n 3. Relevo de Guardia: Intercambia la posicion de dos piezas tuyas.";
+                std::cout << "\n 4. Asedio: Bloquea una pieza enemiga en su casilla para siempre, no puede moverse.";
                 _tablerogl->_modoHechizo = true;       // ACTIVA MODO HECHIZO
                 _tablerogl->_bandoHechizo = bando_rival; // MARCA BANDO P2
                 _tablerogl->_conjuroElegido = false;      // RESETEA CONJURO ELEGIDO
