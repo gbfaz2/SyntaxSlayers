@@ -42,7 +42,7 @@ public:
 
     //método para dibujar miliciano
     void dibujar(TipoPersonaje tipo, float x, float y, float size,
-        EstadoPersonaje estado, int indice, bool enMovimiento = false);
+        EstadoPersonaje estado, int indice, bool enMovimiento = false, bool voltear = false);
     
     // Helper: convierte TipoPieza + BandoPieza a TipoPersonaje
     static TipoPersonaje tipoDesdePieza(TipoPieza pieza, BandoPieza bando);

@@ -70,7 +70,7 @@ void dibujapersonajes::init() {
 
 }
 
-void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size, EstadoPersonaje estado, int indice, bool enMovimiento) 
+void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size, EstadoPersonaje estado, int indice, bool enMovimiento, bool voltear)
 {
     int t = (int)tipo;
 
@@ -80,6 +80,21 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
     _sprites[t][indice]->setPos(x, y);
     _sprites[t][indice]->setSize(size, size * 1.3f);
 
+    //comprueba si hay que voltear o no (bando)
+    if (voltear) {
+        glPushMatrix();
+        glTranslatef(x, y, 0.0f);
+        glScalef(-1.0f, 1.0f, 1.0f);
+        glTranslatef(-x, -y, 0.0f);
+        _sprites[t][indice]->draw();
+        glPopMatrix();
+    }
+    else {
+        _sprites[t][indice]->draw();
+    }
+
+    
+    
     int currentFrame = _sprites[t][indice]->getState();
     int baseFrame = (int)estado;
 
@@ -127,7 +142,7 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
     }
     */
 
-    _sprites[t][indice]->draw();
+    //_sprites[t][indice]->draw();
 }
 
 

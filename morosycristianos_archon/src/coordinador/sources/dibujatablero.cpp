@@ -480,9 +480,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
-        float px = (float)winX - size * 0.3f;
-        float py = (float)winY + size * 0.1f;
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
+        float px = (float)winX + size * 0.18f; //- size * 0.07f;
+        float py = (float)winY + size * 0.2f;
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
@@ -502,9 +502,10 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
+        bool voltear = true;
         // Dibujamos el miliciano usando su ID
         _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false);
+            EstadoPersonaje::IDLE, idAnim, false, voltear);
         util_salir2D();
         return;
     }
@@ -544,6 +545,15 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
+        // Solo dibujamos para el bando cristiano
+        if (casilla.bando != bando_local) {
+            bool voltear = false;
+            _dibujador.dibujar(tipo, px, py, size,
+                EstadoPersonaje::IDLE, idAnim, false, voltear);
+            util_salir2D();
+            return;
+        }
+
         // Dibujamos el miliciano usando su ID
         _dibujador.dibujar(tipo, px, py, size,
             EstadoPersonaje::IDLE, idAnim, false);
@@ -577,9 +587,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
-        float px = (float)winX - size * 0.3f;
-        float py = (float)winY + size * 0.1f;
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
+        float px = (float)winX + size * 0.2f;
+        float py = (float)winY + size * 0.10f;
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
@@ -599,9 +609,12 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
+        //voltear =true si casilla es del bando musulman
+        bool voltear = true;
+
         // Dibujamos el miliciano usando su ID
         _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false);
+            EstadoPersonaje::IDLE, idAnim, false, voltear);
         util_salir2D();
         return;
     }
@@ -628,7 +641,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
         float px = (float)winX - size * 0.3f;
         float py = (float)winY + size * 0.1f;
 
