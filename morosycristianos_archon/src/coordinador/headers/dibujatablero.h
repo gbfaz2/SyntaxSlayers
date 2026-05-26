@@ -40,7 +40,8 @@ class DibujaTablero : public Dibuja {
     //PANEL DE CARACTERÍSTICAS DE LAS PIEZAS
     static void tablero_panel_pieza(const Tablerogl& t);
     static void tablero_barra(int x, int y, int ancho, int alto, float valor, float maximo, float r, float g, float b);
-
+    //PANEL DE HECHIZOS (SOLO PARA REYES)
+    static void tablero_panel_hechizos(const Tablerogl& t);
     int  _contadorMiliciano{ 0 };
 
 
