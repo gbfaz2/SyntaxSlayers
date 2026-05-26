@@ -19,6 +19,8 @@ void Combatiente::posicion(float x, float y, float z)
 void Combatiente::recibirDano(float cantidad)
 {
 	_vida = std::max(0.0f, _vida - cantidad); // resto vida, pero no dejo que baje de 0
+	_recibioDanio = true;
+	_tiempoHurt = 0.3f;
 }
 
 void Combatiente::pedirMovimiento(Direccion d) 
@@ -47,6 +49,21 @@ void Combatiente::actualizar(float dt)
 	}
 
 	_enMovimiento = (_dxPedido != 0.0f || _dzPedido != 0.0f); // Si hay movimiento pedido, estamos en movimiento
+
+	//si le han hecho daño
+	if (_tiempoHurt > 0.0f) {
+		_tiempoHurt -= dt;
+
+		//seguridad
+		if (_tiempoHurt <= 0.0f) {
+			//resetea tiempo como seguridad
+			_tiempoHurt = 0.0f;
+
+			//resetea flag de daño
+			_recibioDanio = false;
+		}
+	}
+
 
 	// Reseteamos el movimiento pedido para el siguiente frame
 	_dxPedido = 0.0f;

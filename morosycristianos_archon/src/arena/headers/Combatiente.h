@@ -65,6 +65,8 @@ class Combatiente
 
 	// Daño que inflige el ataque
 	float _danoAtaque{ 12.0f };
+	bool  _recibioDanio{ false }; //recibe si o no daño
+	float _tiempoHurt{ 0.0f };  //tiempo de daño
 
 	// DIRECCION A LA QUE MIRA EL COMBATIENTE (VECTOR NORMALIZADO EN XZ)
 	float _mirandoX{ 1.0f };  // P1 MIRA A LA DERECHA POR DEFECTO
@@ -114,6 +116,7 @@ public:
 	// Resta vida al combatiente. Si la vida llega a 0, el combatiente muere, no puede bajar de 0(se marca como tal, pero no se borra del vector de combatientes)
 	void recibirDano(float cantidad);
 	bool vivo() const { return _vida > 0.0f; } // Devuelve true si el combatiente sigue vivo (vida > 0), false si ha muerto (vida <= 0)
+	bool recibioDanio() const { return _recibioDanio; } //devuelve si o no ha recibido daño
 
 	// Indica al combatiente que se mueva en una direccion concreta (delante, atras, izquierda, derecha)
 	void pedirMovimiento(Direccion d);
