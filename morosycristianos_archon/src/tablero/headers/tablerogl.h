@@ -108,7 +108,7 @@ public:
 		if (_modoHechizo) return;
 		_mensajeInvalido = mensaje;
 		_tiempoMensajeInvalido = 2.0f;
-
+		
 		//musica MEEEEH error
 		ETSIDI::playMusica("sonidos/error_tablero.mp3");
 	}
