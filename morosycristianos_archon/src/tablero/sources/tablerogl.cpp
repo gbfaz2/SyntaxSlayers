@@ -191,13 +191,35 @@ void Tablerogl::aplicarCambiosDinamicos()
 //update para la interpolación en el tablero
 void Tablerogl::update(double dt)
 {
-
-
 	if (_animMov.activa) {
 		_animMov.t += (float)dt * 2.0f; // velocidad: 2 
 		if (_animMov.t >= 1.0f) {
 			_animMov.t = 1.0f;
 			_animMov.activa = false;
+		}
+	}
+
+
+	//CURACIÓN DE LOS PUNTOS DE PODER
+	_tiempoCuracionPoder += (float)dt;
+
+	// Se ejecuta 1 vez cada segundo
+	if (_tiempoCuracionPoder >= 1.0f) {
+		_tiempoCuracionPoder = 0.0f; // Reiniciamos el contador
+
+		// Recorremos todo el tablero buscando piezas en Puntos de Poder
+		for (int fila = 0; fila < N; fila++) {
+			for (int col = 0; col < N; col++) {
+				Casilla& cas = m_tablero->getCasilla(fila, col);
+				// Si la casilla es Punto de Poder y hay una pieza en ella
+				if (cas.tipo == Casilla_poder && cas.obj != nullptr) {
+					// Comprobamos si tiene menos vida de la máxima
+					if (cas.obj->getVida() < cas.obj->getVidaMax()) {
+						// La curamos con 0.20 puntos de vida cada segundo
+						cas.obj->curar(0.2);
+					}
+				}
+			}
 		}
 	}
 }

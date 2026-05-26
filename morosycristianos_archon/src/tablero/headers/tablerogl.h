@@ -53,7 +53,7 @@ protected:
 	double centro_x, centro_y, centro_z;
 	double dist;
 
-	float _tiempoCuracionPoder{ 0.0f };//contador para curar cada 10 segundos a las piezas que estén en los puntos de poder
+	float _tiempoCuracionPoder{ 0.0f };//contador para curar cada segundo a las piezas que estén en los puntos de poder
 
 	int Filacursor[2], Colcursor[2];
 	int fromFila, fromCol;//origen del movimiento en curso
