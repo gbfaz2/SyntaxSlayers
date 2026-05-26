@@ -6,6 +6,7 @@
 #include "menu.h"
 #include "GestorPartida.h"
 #include <string>
+#include "GestorRanking.h"
 
 // DECLARACIÓN ANTICIPADA
 class PantallaDestino;
@@ -19,6 +20,7 @@ class DibujaMenu : public Dibuja {
     static void menu_paso2(MenuPrincipal& m, int ancho, int alto);
     static void menu_paso3(MenuPrincipal& m, int ancho, int alto);
     static void menu_pie(int ancho, int alto);
+    static void menu_paso_nombre(MenuPrincipal& m, int ancho, int alto);
 
     // PRIMITIVAS COMPARTIDAS DEL MENÚ 
     static void menu_texto(const std::string& texto,
@@ -52,6 +54,7 @@ class DibujaMenu : public Dibuja {
     static void destino_particulas(const PantallaDestino& p);
     static void destino_textos(const PantallaDestino& p, int ancho, int alto);
     static void destino_continuar(const PantallaDestino& p, int ancho, int alto);
+
 public:
     // ── PANTALLA INTRO
     static void intro_dibujar(PantallaIntro& p, int ancho, int alto);
@@ -61,4 +64,7 @@ public:
 
     // ── PANTALLA DESTINO
     static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
+
+    // Para el ranking
+    static void ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking);
 };

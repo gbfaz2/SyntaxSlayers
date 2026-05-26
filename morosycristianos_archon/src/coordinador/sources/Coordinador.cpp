@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include "GestorPartida.h"
 #include "tablerogl.h"
+#include "GestorRanking.h"
 
 
 Coordinador::~Coordinador()
@@ -26,6 +27,7 @@ void Coordinador::inicializa()
 	DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana); // CONFIGURA CAMARA ARENA
 	estado = EstadoJuego::INTRO; // ARRANCA EN INTRO
 	gestorInput.setCoordinador(this); // ASIGNA COORDINADOR AL GESTOR
+	DibujaArena::arena_init(); // Inicializa recursos gráficos de la arena (texturas, personajes, etc.)
 }
 
 void Coordinador::dibuja()
@@ -67,10 +69,19 @@ void Coordinador::dibuja()
 
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
+					// NOMBRES DE LOS JUGADORES PARA EL HUD
+					pTablerogl->nombre_j1 = configuracion.nombre_j1;
+					pTablerogl->nombre_j2 = configuracion.nombre_j2;
+
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
 				}
+			}
+			if (siguiente == EstadoJuego::RANKING) 
+			{
+				_rankingTop10 = GestorRanking::cargar();
+				_rankingGanador = ""; // Limpiar para que no muestre resultado anterior
 			}
 			estado = siguiente;
 		}
@@ -146,11 +157,22 @@ void Coordinador::dibuja()
 
 		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
 		pTablerogl->setBatalla((int)configuracion.batalla);
+		pTablerogl->nombre_j1 = configuracion.nombre_j1; // RESTAURA NOMBRES AL CARGAR
+		pTablerogl->nombre_j2 = configuracion.nombre_j2;
 		ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
 		estado = EstadoJuego::TABLERO;
 		break;
 
 	case EstadoJuego::RANKING:
+		DibujaMenu::ranking_dibujar(
+			_anchoVentana, _altoVentana,
+			_rankingGanador,
+			_rankingBatalla,
+			_rankingTurnos,
+			_rankingPiezasLocal,
+			_rankingPiezasRival,
+			_rankingTop10
+		);
 		break;
 
 	case EstadoJuego::FINAL:
@@ -229,7 +251,15 @@ void Coordinador::tecla(unsigned char key)
 			reiniciarTablero();
 		}
 		estado = EstadoJuego::MENU; break;
+	case EstadoJuego::RANKING:
+		if (key == 27) {
+			ETSIDI::stopMusica();
+			reiniciarTablero();
+			estado = EstadoJuego::MENU;
+		}
+		break;
 	}
+
 	glutPostRedisplay();
 }
 
@@ -264,52 +294,103 @@ void Coordinador::tecla_especial_up(int key)
 
 void Coordinador::mueve(double dt)
 {
-	if (estado == EstadoJuego::TABLERO && pTablero) {
-		//USAMOS EL GESTORTURNOS DENTRO DE PTABLEROGL
-		if (pTablerogl) {
-			pTablerogl->gestorTurnos.update(dt);
-			pTablerogl->updateMensaje(dt);
-			pTablerogl->update(dt);
+	if (estado == EstadoJuego::TABLERO && pTablero && pTablerogl) {
 
-			int turno = pTablerogl->gestorTurnos.getNumeroTurno();
-			if (turno != pTablerogl->_turnosJugados &&
-				turno > 1 && turno % Tablerogl::TURNOS_DINAMICOS == 0) {
-				pTablerogl->_turnosJugados = turno;
-				pTablerogl->aplicarCambiosDinamicos();
+		// IA: MUEVE SOLO UNA VEZ POR TURNO
+		if (configuracion.modo == ModoJuego::JVIA &&
+			pTablerogl->gestorTurnos.getBandoActual() == bando_rival &&
+			!pTablerogl->huboColision() &&
+			!_iaYaMovio) {
+
+			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
+			if (turnoActual != _turnoAnteriorIA) {
+				_turnoAnteriorIA = turnoActual;    // MARCA TURNO ACTUAL
+				_tiempoEsperaIA = 3.0f;           // ESPERA 3 SEGUNDOS
+			}
+
+			if (_tiempoEsperaIA > 0.0f) {
+				_tiempoEsperaIA -= (float)dt;      // DESCUENTA TIEMPO
+			}
+			else {
+				_iaYaMovio = true;                 // BLOQUEA PARA NO REPETIR
+
+				MovimientoIA mov = _minimax.calcularMejorMovimiento(*pTablero);
+
+				if (mov.filaOrigen >= 0) {
+					// VERIFICA QUE EL DESTINO ESTÁ VACÍO
+					if (pTablero->getCasilla(mov.filaDestino, mov.colDestino).bando != bando_nada) {
+						std::cout << "[IA] Destino ocupado, cancelando.\n"; // AVISO
+						_iaYaMovio = false;        // PERMITE RECALCULAR
+					}
+					else {
+						Pieza* pieza = pTablero->getCasilla(mov.filaOrigen, mov.colOrigen).obj;
+						if (pieza) {
+							std::cout << "[IA] Moviendo (" << mov.filaOrigen << ","
+								<< mov.colOrigen << ") -> (" << mov.filaDestino << ","
+								<< mov.colDestino << ")\n";                // LOG
+							pTablerogl->Filacursor[1] = mov.filaDestino; // CURSOR A DESTINO
+							pTablerogl->Colcursor[1] = mov.colDestino;
+							pTablerogl->fromFila = mov.filaOrigen;  // ORIGEN
+							pTablerogl->fromCol = mov.colOrigen;
+							pTablerogl->fromBando = bando_rival;
+							pTablerogl->piezaSeleccionada = true;
+							pTablerogl->trySelectorMove(bando_rival);        // EJECUTA
+						}
+					}
+				}
 			}
 		}
-		//gestorTurnos.update(dt);
 
-		//ACTUALIZACIÓN DEL TEMPORIZADOR DE MOVIMIENTO INVÁLIDO
-		//if (pTablerogl)pTablerogl->updateMensaje(dt);
-		//CASILLAS DINÁMICAS
-		/*if (pTablerogl) {
-			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
-			if (turnoActual != pTablerogl->_turnosJugados &&
-				turnoActual > 1 &&
-				turnoActual % Tablerogl::TURNOS_DINAMICOS == 0) {
-				pTablerogl->_turnosJugados = turnoActual;
-				pTablerogl->aplicarCambiosDinamicos();
-			}
-		}*/
+		// RESETEA CUANDO ES TURNO LOCAL
+		if (pTablerogl->gestorTurnos.getBandoActual() == bando_local) {
+			_iaYaMovio = false;                    // PERMITE QUE IA MUEVA EN PRÓXIMO TURNO
+		}
 
-		if (pTablero == nullptr) return;
+		// ACTUALIZA TURNOS Y ANIMACIONES
+		pTablerogl->gestorTurnos.update(dt);
+		pTablerogl->updateMensaje(dt);
+		pTablerogl->update(dt);
 
+		int turno = pTablerogl->gestorTurnos.getNumeroTurno();
+		if (turno != pTablerogl->_turnosJugados &&
+			turno > 1 && turno % Tablerogl::TURNOS_DINAMICOS == 0) {
+			pTablerogl->_turnosJugados = turno;
+			pTablerogl->aplicarCambiosDinamicos();
+		}
+
+		// COMPRUEBA VICTORIA
 		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 		if (rv != ResultadoVictoria::SIN_GANADOR) {
 			ETSIDI::stopMusica();
-			if (pTablerogl) {
-				if (rv == ResultadoVictoria::GANA_LOCAL)
-					pTablerogl->setVictoria(bando_local);
-				else if (rv == ResultadoVictoria::GANA_RIVAL)
-					pTablerogl->setVictoria(bando_rival);
-			}
-			estado = EstadoJuego::FINAL;
+
+			// Ranking
+			_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? "Cristiano" :
+				(rv == ResultadoVictoria::GANA_RIVAL) ? "Andalusi" : "Empate";
+			_rankingBatalla = nombreBatalla(configuracion.batalla);
+			_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
+			_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
+			_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
+
+			// Guardar en el Ranking
+			GestorRanking::guardar(
+				_rankingGanador,
+				_rankingTurnos,
+				_rankingBatalla,
+				_rankingPiezasLocal + _rankingPiezasRival // total piezas eliminadas
+			);
+
+			// VICTORIA EN TABLEROGL (DE GABRI)
+			if (rv == ResultadoVictoria::GANA_LOCAL)
+				pTablerogl->setVictoria(bando_local);
+			else if (rv == ResultadoVictoria::GANA_RIVAL)
+				pTablerogl->setVictoria(bando_rival);
+
+			_rankingTop10 = GestorRanking::cargar();
+			estado = EstadoJuego::RANKING;
 		}
 	}
 
-	if (estado == EstadoJuego::GUARDANDO) 
-	{
+	if (estado == EstadoJuego::GUARDANDO) {
 		_tiempoGuardado -= (float)dt;
 		if (_tiempoGuardado <= 0.0f) {
 			ETSIDI::stopMusica();
@@ -319,13 +400,15 @@ void Coordinador::mueve(double dt)
 	}
 
 	_spriteReyLocal.update(dt);
-
 	if (_spriteReyLocal.animacionTerminada() && _spriteReyLocal.getEstado() != EstadoRey::DEATH)
 		_spriteReyLocal.setEstado(EstadoRey::IDLE);
 
-	if (estado == EstadoJuego::ARENA)
+	if (estado == EstadoJuego::ARENA) {
 		_arena.actualizar((float)dt, _input);
+		DibujaArena::arena_update((float)dt);
+	}
 }
+
 
 void Coordinador::raton(int boton, int state, int x, int y)
 {
