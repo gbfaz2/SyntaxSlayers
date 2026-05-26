@@ -3,90 +3,137 @@
 
 using namespace std;
 
+
+// Rutas de cada spritesheet con un switch case
+const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
+    switch (tipo) {
+    case TipoPersonaje::MILICIANO:     
+        return "imagenes\\MILICIANO_PNG.png";
+    case TipoPersonaje::EMIR:           
+        return "imagenes\\EMIR_DEF.png";
+    case TipoPersonaje::INFILTRADO:     
+        return "imagenes\\ASESINO_DEF.png";
+    case TipoPersonaje::GUARDIA_NEGRA:  
+        return "imagenes\\GUARDIANEGRA.png";
+    case TipoPersonaje::JINETE_BEREBER: 
+        return "imagenes\\JINETE_BEREBER.png";
+    default:                            
+        return "";
+    }
+}
+
+
+//switch case según tipo de personaje y pieza asociada
+//corregir segun vayamos metiendo personajes
+TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando) {
+    switch (pieza) {
+    case pieza_cubo_p:     
+        return TipoPersonaje::MILICIANO;
+    case pieza_dodecaedro:  
+        return TipoPersonaje::INFILTRADO;
+    case pieza_cubog:       
+        return TipoPersonaje::GUARDIA_NEGRA;
+    case pieza_tetraedro:   
+        return TipoPersonaje::JINETE_BEREBER;
+    case pieza_esfera:
+        return (bando == bando_rival) ? TipoPersonaje::EMIR : TipoPersonaje::MILICIANO;
+    default:                return TipoPersonaje::MILICIANO;
+    }
+}
+
 dibujapersonajes::dibujapersonajes() {
-    for (int i = 0; i < MAX_MILICIANOS; i++)
-        _milicianos[i] = nullptr;
+    for (int i = 0; i < (int)TipoPersonaje::TOTAL; i++)
+        for (int j = 0; j < MAX_SPRITES; j++)
+            _sprites[i][j] = nullptr;
 }
 
 dibujapersonajes::~dibujapersonajes() {
-    for (int i = 0; i < MAX_MILICIANOS; i++)
-        delete _milicianos[i];
+    for (int i = 0; i < (int)TipoPersonaje::TOTAL; i++)
+        for (int j = 0; j < MAX_SPRITES; j++)
+            delete _sprites[i][j];
 }
 
 void dibujapersonajes::init() {
-    for (int i = 0; i < MAX_MILICIANOS; i++) {
-        _milicianos[i] = new ETSIDI::SpriteSequence(
-            "imagenes\\MILICIANO_PNG.png",
-            4, 3, 150, true,
-            0, 0, 32, 32
-        );
-        // AÑADE ESTA LÍNEA: Forzamos a que arranque el play en el estado IDLE
-        _milicianos[i]->setState((int)EstadoPersonaje::IDLE, false);
+
+    //bucle para todos segun tipo personaje , ruta etc
+    for (int t = 0; t < (int)TipoPersonaje::TOTAL; t++) {
+        const char* ruta = rutaImagen((TipoPersonaje)t);
+        for (int i = 0; i < MAX_SPRITES; i++) {
+            _sprites[t][i] = new ETSIDI::SpriteSequence(
+                ruta,
+                4, 3, 150, true,  // 4 cols, 3 filas, 150ms por frame
+                0, 0, 32, 32
+            );
+            _sprites[t][i]->setState((int)EstadoPersonaje::IDLE, false);
+        }
     }
+
 }
 
-void dibujapersonajes::miliciano(float x, float y, float size, EstadoPersonaje estado, int indice, bool enMovimiento) {
-    if (indice < 0 || indice >= MAX_MILICIANOS) return;
-    if (!_milicianos[indice]) return;
+void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size, EstadoPersonaje estado, int indice, bool enMovimiento) 
+{
+    int t = (int)tipo;
 
-    _milicianos[indice]->setPos(x, y);
-    _milicianos[indice]->setSize(size, size * 1.3f);
+    if (indice < 0 || indice >= MAX_SPRITES) return;
+    if (!_sprites[indice]) return;
 
-    int currentFrame = _milicianos[indice]->getState();
-    int baseFrame = static_cast<int>(estado);
+    _sprites[t][indice]->setPos(x, y);
+    _sprites[t][indice]->setSize(size, size * 1.3f);
+
+    int currentFrame = _sprites[t][indice]->getState();
+    int baseFrame = (int)estado;
 
 
-    // 1. Asegurarnos de que estamos en la fila correcta de la animación
-    if (currentFrame < baseFrame || currentFrame >= baseFrame + 4) {
-        _milicianos[indice]->setState(baseFrame, false); // Nos movemos a la fila correcta
-    }
-
-    // 2. Controlar la reproducción según si se mueve o no
-    if (enMovimiento) {
-        _milicianos[indice]->pause(false); // ¡Que mueva las piernas!
-    }
-    else {
-        _milicianos[indice]->setState(baseFrame, true); // Lo clavamos en su primer frame y pausamos
-    }
-    /*
-    // Si el frame actual se sale de la fila correspondiente a esta animación
-    // (es menor que el inicio de la fila o se ha pasado de la 4ª columna)
-    // LÓGICA DE LA PRIMERA FILA (IDLE / ANDAR)
     if (estado == EstadoPersonaje::IDLE) {
         if (!enMovimiento) {
-            // 1. Está quieto: lo congelamos en el primer frame (0)
-            if (currentFrame != baseFrame) {
-                _milicianos[indice]->setState(baseFrame, true);
-            }
+            // Congelado en el primer frame
+            if (currentFrame != baseFrame)
+                _sprites[t][indice]->setState(baseFrame, true);
         }
+
         else {
-            // 2. Está andando: bucle entre los frames 0, 1 y 2 (evitamos el 3 vacío)
-            if (currentFrame < baseFrame || currentFrame > baseFrame + 2) {
-                _milicianos[indice]->setState(baseFrame, false);
-            }
+            // Bucle frames 0-2
+
+            if (currentFrame < baseFrame || currentFrame > baseFrame + 2)
+                _sprites[t][indice]->setState(baseFrame, false);
         }
     }
-    // LÓGICA DEL RESTO DE FILAS (ATTACK, HURT...)
     else {
-        // 3. Animaciones completas de 4 frames
-        if (currentFrame < baseFrame || currentFrame >= baseFrame + 4) {
-            _milicianos[indice]->setState(baseFrame, false);
-        }
-    }*/
+        // ATTACK o HURT: 4 frames completos
+        if (currentFrame < baseFrame || currentFrame >= baseFrame + 4)
+            _sprites[t][indice]->setState(baseFrame, false);
+    }
 
-    //_milicianos[indice]->loop();
-    //std::cout << "Frame actual: " << _milicianos[indice]->getState() << std::endl;
 
-    _milicianos[indice]->draw();
+    /*
+    // Definimos cuántos frames tiene esta animación
+    int framesAnimacion = 4; // Por defecto son 4
+    if (estado == EstadoPersonaje::IDLE) {
+        framesAnimacion = 3; // La fila de IDLE (andar) solo tiene 3 dibujos
+    }
+
+
+    // Comprobamos que estamos en la fila correcta, y si no estamos:
+    if (currentFrame < baseFrame || currentFrame >= baseFrame + framesAnimacion) {
+        _milicianos[indice]->setState(baseFrame, false); // nos movemos a la fila correcta
+    }
+
+    // si se mueve la pieza: 
+    if (enMovimiento) {
+        _milicianos[indice]->pause(false); //empieza a andar
+    }
+    else {
+        _milicianos[indice]->setState(baseFrame, true); // Pausamos en el primer frame para que se quede en posicion de reposo
+    }
+    */
+
+    _sprites[t][indice]->draw();
 }
 
-void dibujapersonajes::update() {
-    for (int i = 0; i < MAX_MILICIANOS; i++) {
-        // Solo intentamos actualizar si el miliciano existe
-        if (_milicianos[i] != nullptr) {
-            _milicianos[i]->loop();
-            std::cout << "Miliciano " << i << " time: " << _milicianos[i]->getState() << std::endl;
-        }
 
-    }
+void dibujapersonajes::update() {
+    for (int t = 0; t < (int)TipoPersonaje::TOTAL; t++)
+        for (int i = 0; i < MAX_SPRITES; i++)
+            if (_sprites[t][i])
+                _sprites[t][i]->loop();
 }

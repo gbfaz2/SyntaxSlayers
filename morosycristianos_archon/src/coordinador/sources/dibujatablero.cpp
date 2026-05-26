@@ -459,30 +459,204 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     switch (casilla.pieza) {
 
-    case pieza_esfera: 
-        //dodecaedro de momento, pero es el rey /emir
-        glScalef(escala * 0.55f, escala * 0.55f, escala * 0.55f);
-        glutSolidDodecahedron();
-        break;
-    
-    case pieza_dodecaedro:
-        glScalef(escala * 0.55f, escala * 0.55f, escala * 0.55f);
-        glutSolidDodecahedron();
-        break;
+    case pieza_esfera: {
 
+        // Filtramos el local, si cae en cristiano dibuja figura ( de momento):
+        if (casilla.bando != bando_rival) {
+            glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
+            glutSolidTetrahedron();
+            glPopMatrix();
+            return;
+        }
+
+        //codigo dibujo emir
+
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        // Calculamos posición y tamaño en el plano 2D de la ventana
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY + size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+
+
+        EstadoPersonaje estadoEmir = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoEmir = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.dibujar(tipo, px, py, size,
+            EstadoPersonaje::IDLE, idAnim, false);
+        util_salir2D();
+        return;
+    }
+    break;
+
+    case pieza_dodecaedro:
+    //INFILTRADO
+    {
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        // Calculamos posición y tamaño en el plano 2D de la ventana
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY + size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+
+
+        EstadoPersonaje estadoInfiltrado = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoInfiltrado = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.dibujar(tipo, px, py, size,
+            EstadoPersonaje::IDLE, idAnim, false);
+        util_salir2D();
+        return;
+    }
+    break;
     case pieza_icosaedro:
         glScalef(escala * 0.65f, escala * 0.65f, escala * 0.65f);
         glutSolidIcosahedron();
         break;
 
     case pieza_tetraedro:
-        glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
-        glutSolidTetrahedron();
-        break;
+    {
+        // Filtramos el local, si cae en cristiano dibuja figura ( de momento):
+        if (casilla.bando != bando_rival) {
+            glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
+            glutSolidTetrahedron();
+            glPopMatrix();
+            return;
+        }
+
+        //codigo dibujo jinete bereber
+
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        // Calculamos posición y tamaño en el plano 2D de la ventana
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY + size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+
+
+        EstadoPersonaje estadoJinete = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoJinete = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.dibujar(tipo, px, py, size,
+            EstadoPersonaje::IDLE, idAnim, false);
+        util_salir2D();
+        return;
+    }
+    break;
 
     case pieza_cubog:
-        glutSolidCube(escala * 1.1f);
-        break;
+    {
+        // Filtramos el local, si cae en cristiano dibuja figura ( de momento):
+        if (casilla.bando != bando_rival) {
+            glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
+            glutSolidTetrahedron();
+            glPopMatrix();
+            return;
+        }
+
+        //codigo dibujo guardia negra
+
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        // Calculamos posición y tamaño en el plano 2D de la ventana
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY + size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+
+
+        EstadoPersonaje estadoGuardia = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoGuardia = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.dibujar(tipo, px, py, size,
+            EstadoPersonaje::IDLE, idAnim, false);
+        util_salir2D();
+        return;
+    }
+    break;
 
     case pieza_cono:
     {
@@ -510,6 +684,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     case pieza_cubo_p:
     {
+
+        //dibujo MILICIANO
         // Solo dibujamos para el bando cristiano
         if (casilla.bando != bando_local) {
             glutSolidCube(escala * 0.75f);
@@ -526,12 +702,15 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
         glPopMatrix();
 
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
+        // Calculamos posición y tamaño en el plano 2D de la ventana
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
         float px = (float)winX - size * 0.3f;
         float py = (float)winY + size * 0.1f;
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
+
+        
 
         EstadoPersonaje estadoMiliciano = EstadoPersonaje::IDLE;
         bool moviendo = false;
@@ -543,10 +722,12 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         }
 
         // Le pedimos a la pieza su ID único en lugar de usar un contador global
-        int idDeEstaPieza = casilla.obj->getIdAnimacion();
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
         // Dibujamos el miliciano usando su ID
-        _dibujador.miliciano(px, py, size, estadoMiliciano, idDeEstaPieza, moviendo);
+        _dibujador.dibujar(tipo, px, py, size,
+            EstadoPersonaje::IDLE, idAnim, false);
         util_salir2D();
         return;
     }
