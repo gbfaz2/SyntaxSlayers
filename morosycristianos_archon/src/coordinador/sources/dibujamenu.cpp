@@ -448,7 +448,7 @@ void DibujaMenu::destino_continuar(const PantallaDestino& p, int ancho, int alto
 }
 
 // RANKING
-void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival)
+void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking)
 {
     util_entrar2D(ancho, alto);
     menu_fondo(ancho, alto);
@@ -520,5 +520,31 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador
     menu_textoCentrado("Pulsa ESC para volver al menu",
         ancho / 2.0f, 30,
         0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+
+    // TOP 10
+    //auto ranking = GestorRanking::cargar();
+    menu_textoCentrado("TOP 10", ancho / 2.0f, tablaY - filaAlto * 5 - 20,
+        0.85f, 0.70f, 0.10f, GLUT_BITMAP_HELVETICA_18);
+
+    if (ranking.empty()) {
+        menu_textoCentrado("No hay partidas registradas todavia",
+            ancho / 2.0f, tablaY - filaAlto * 6 - 20,
+            0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_12);
+    }
+    else {
+        for (int i = 0; i < (int)ranking.size(); i++) {
+            float fy = tablaY - filaAlto * 6 - 20 - i * 22;
+            float r = 0.80f, g = 0.80f, b = 0.80f;
+            if (i == 0) { r = 1.0f;  g = 0.85f; b = 0.10f; } // ORO
+            if (i == 1) { r = 0.80f; g = 0.80f; b = 0.80f; } // PLATA
+            if (i == 2) { r = 0.80f; g = 0.50f; b = 0.20f; } // BRONCE
+
+            std::string linea = std::to_string(i + 1) + ". " +
+                ranking[i].ganador + " - " +
+                ranking[i].batalla + " - " +
+                std::to_string(ranking[i].puntuacion) + " pts";
+            menu_textoCentrado(linea, ancho / 2.0f, fy, r, g, b, GLUT_BITMAP_HELVETICA_12);
+        }
+    }
     util_salir2D();
 }

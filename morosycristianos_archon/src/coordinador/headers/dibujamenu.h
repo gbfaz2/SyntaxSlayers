@@ -6,6 +6,7 @@
 #include "menu.h"
 #include "GestorPartida.h"
 #include <string>
+#include "GestorRanking.h"
 
 // DECLARACIÓN ANTICIPADA
 class PantallaDestino;
@@ -64,5 +65,5 @@ public:
     static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
 
     // Para el ranking
-    static void ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasEliminadasLocal, int piezasEliminadasRival);
+    static void ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking);
 };
