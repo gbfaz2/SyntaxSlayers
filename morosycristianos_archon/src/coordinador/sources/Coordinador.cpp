@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include "GestorPartida.h"
 #include "tablerogl.h"
+#include "GestorRanking.h"
 
 
 Coordinador::~Coordinador()
@@ -72,6 +73,11 @@ void Coordinador::dibuja()
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
 				}
+			}
+			if (siguiente == EstadoJuego::RANKING) 
+			{
+				_rankingTop10 = GestorRanking::cargar();
+				_rankingGanador = ""; // Limpiar para que no muestre resultado anterior
 			}
 			estado = siguiente;
 		}
@@ -158,7 +164,8 @@ void Coordinador::dibuja()
 			_rankingBatalla,
 			_rankingTurnos,
 			_rankingPiezasLocal,
-			_rankingPiezasRival
+			_rankingPiezasRival,
+			_rankingTop10
 		);
 		break;
 
@@ -358,12 +365,21 @@ void Coordinador::mueve(double dt)
 			_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
 			_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
 
+			// Guardar en el Ranking
+			GestorRanking::guardar(
+				_rankingGanador,
+				_rankingTurnos,
+				_rankingBatalla,
+				_rankingPiezasLocal + _rankingPiezasRival // total piezas eliminadas
+			);
+
 			// VICTORIA EN TABLEROGL (DE GABRI)
 			if (rv == ResultadoVictoria::GANA_LOCAL)
 				pTablerogl->setVictoria(bando_local);
 			else if (rv == ResultadoVictoria::GANA_RIVAL)
 				pTablerogl->setVictoria(bando_rival);
 
+			_rankingTop10 = GestorRanking::cargar();
 			estado = EstadoJuego::RANKING;
 		}
 	}

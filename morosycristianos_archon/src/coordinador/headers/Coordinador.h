@@ -14,6 +14,7 @@
 #include "SpriteRey.h"
 #include "GestorPartida.h"
 #include "MinimaxTablero.h"
+#include "GestorRanking.h"
 
 class Coordinador
 {
@@ -76,4 +77,6 @@ public:
 	int _rankingTurnos{ 0 };
 	int _rankingPiezasLocal{ 0 };
 	int _rankingPiezasRival{ 0 };
+
+	std::vector<EntradaRanking> _rankingTop10;
 };

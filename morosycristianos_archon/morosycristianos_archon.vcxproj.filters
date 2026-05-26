@@ -201,6 +201,9 @@
     <ClInclude Include="src\coordinador\headers\dibujapersonajes.h">
       <Filter>coordinador\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorRanking.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />
@@ -333,6 +336,9 @@
     </ClCompile>
     <ClCompile Include="src\coordinador\sources\dibujapersonajes.cpp">
       <Filter>coordinador\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tablero\sources\GestorRanking.cpp">
+      <Filter>tablero\Sources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
