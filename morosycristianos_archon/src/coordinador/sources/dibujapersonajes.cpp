@@ -9,6 +9,10 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     switch (tipo) {
     case TipoPersonaje::MILICIANO:     
         return "imagenes\\MILICIANO_PNG.png";
+
+    case TipoPersonaje::REY:
+        return "imagenes\\REY_DEF.png";
+
     case TipoPersonaje::EMIR:           
         return "imagenes\\EMIR_DEF.png";
     case TipoPersonaje::INFILTRADO:     
@@ -36,7 +40,7 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
     case pieza_tetraedro:   
         return TipoPersonaje::JINETE_BEREBER;
     case pieza_esfera:
-        return (bando == bando_rival) ? TipoPersonaje::EMIR : TipoPersonaje::MILICIANO;
+        return (bando == bando_rival) ? TipoPersonaje::EMIR : TipoPersonaje::REY;
     default:                return TipoPersonaje::MILICIANO;
     }
 }
@@ -75,7 +79,7 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
     int t = (int)tipo;
 
     if (indice < 0 || indice >= MAX_SPRITES) return;
-    if (!_sprites[indice]) return;
+    if (!_sprites[t][indice]) return;
 
     _sprites[t][indice]->setPos(x, y);
     _sprites[t][indice]->setSize(size, size * 1.3f);

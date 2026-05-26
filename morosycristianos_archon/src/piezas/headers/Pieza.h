@@ -52,7 +52,7 @@ public:
 
     //MÉTODOS:
     
-    Pieza() {
+    inline Pieza() {
         id_animacion = -1; // -1 significa que no tiene ID asignado por defecto
     }
 

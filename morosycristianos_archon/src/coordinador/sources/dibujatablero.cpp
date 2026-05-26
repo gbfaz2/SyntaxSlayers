@@ -460,16 +460,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     switch (casilla.pieza) {
 
     case pieza_esfera: {
-
-        // Filtramos el local, si cae en cristiano dibuja figura ( de momento):
-        if (casilla.bando != bando_rival) {
-            glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
-            glutSolidTetrahedron();
-            glPopMatrix();
-            return;
-        }
-
-        //codigo dibujo emir
+        //REY / EMIR
 
         // Capturamos matrices ANTES de salir del contexto 3D
         GLdouble winX, winY, winZ;
@@ -480,13 +471,17 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
-        float px = (float)winX + size * 0.18f; //- size * 0.07f;
-        float py = (float)winY + size * 0.2f;
-
+        
+        
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
 
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+       
+        bool voltear = (casilla.bando == bando_rival);
 
 
         EstadoPersonaje estadoEmir = EstadoPersonaje::IDLE;
@@ -496,18 +491,44 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
             moviendo = true;
             estadoEmir = EstadoPersonaje::IDLE;
+            
         }
 
-        // Le pedimos a la pieza su ID único en lugar de usar un contador global
-        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
-        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+        // Para el emir: 
+        if (casilla.bando != bando_local) {
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
+            float px = (float)winX + size * 0.18f; //- size * 0.07f;
+            float py = (float)winY + size * 0.2f;
 
-        bool voltear = true;
-        // Dibujamos el miliciano usando su ID
-        _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false, voltear);
-        util_salir2D();
-        return;
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoEmir = EstadoPersonaje::IDLE;
+
+            }
+
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoEmir, idAnim, false, voltear);
+            util_salir2D();
+            return;
+        }
+        else {
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
+            float px = (float)winX - size * 0.17f; //- size * 0.07f;
+            float py = (float)winY + size * 0.1f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoEmir = EstadoPersonaje::IDLE;
+
+            }
+
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoEmir, idAnim, false, voltear);
+            util_salir2D();
+            return;
+
+        }
+ 
     }
     break;
 
@@ -547,7 +568,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
         // Solo dibujamos para el bando cristiano
         if (casilla.bando != bando_local) {
-            bool voltear = false;
+            bool voltear = true;
             _dibujador.dibujar(tipo, px, py, size,
                 EstadoPersonaje::IDLE, idAnim, false, voltear);
             util_salir2D();

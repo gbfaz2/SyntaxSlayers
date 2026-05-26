@@ -8,6 +8,7 @@
 
 enum class TipoPersonaje {
     MILICIANO,
+    REY,
     EMIR,
     INFILTRADO,
     GUARDIA_NEGRA,

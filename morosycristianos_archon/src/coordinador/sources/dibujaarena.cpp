@@ -84,6 +84,7 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
         bool voltear = false; 
         TipoPersonaje tipo = TipoPersonaje::MILICIANO;
         if (c.nombre() == "Miliciano")      tipo = TipoPersonaje::MILICIANO;
+        else if (c.nombre() == "Rey")     tipo = TipoPersonaje::REY;
         else if (c.nombre() == "Infiltrado")     tipo = TipoPersonaje::INFILTRADO;
         else if (c.nombre() == "Guardia Negra") {
             voltear = true;
