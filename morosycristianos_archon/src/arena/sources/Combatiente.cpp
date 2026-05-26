@@ -71,7 +71,6 @@ void Combatiente::actualizar(float dt)
 		}
 	}
 
-
 	// Reseteamos el movimiento pedido para el siguiente frame
 	_dxPedido = 0.0f;
 	_dzPedido = 0.0f;
@@ -114,7 +113,7 @@ Combatiente::Combatiente(float x, float z, float r, float g, float b, const Piez
 	// Combinamos recarga y velAtaque para el cooldown real recarga alta = tarda en recargar, velAtaque alta = ataca mas rapido
 	float recargaNorm = pieza.getRecarga() / 100.0f;
 	float velNorm = pieza.getVelAtaque() / 200.0f;
-	_cooldownAtaque = std::max(0.1f, recargaNorm - velNorm);
+	_cooldownAtaque = std::max(2.0f, recargaNorm - velNorm);
 
 	// RadioMov → velocidad en la arena
 	// radioMov 2 -> velocidad 3.6 u/s (lento)
