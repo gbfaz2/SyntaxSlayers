@@ -102,6 +102,7 @@ void DibujaTablero::tablero_dibujar(Tablerogl& t) {
     util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
     tablero_contadores(t);
     tablero_panel_pieza(t);
+    tablero_panel_hechizos(t);
     tablero_mensaje_invalido(t);
     util_salir2D();
 }
@@ -1017,6 +1018,110 @@ void DibujaTablero::tablero_barra(int x, int y, int ancho, int alto,
     glVertex2i(x, y + alto);
     glEnd();
     glDisable(GL_BLEND);
+}
+
+void DibujaTablero::tablero_panel_hechizos(const Tablerogl& t)
+{
+    // Solo procedemos si el jugador tiene una pieza seleccionada en el tablero
+    if (!t.piezaSeleccionada || t.fromFila < 0 || t.fromCol < 0) return;
+
+    //Comprobamos si la pieza seleccionada es el REY/EMIR 
+    const Casilla& cas = t.m_tablero->getCasilla(t.fromFila, t.fromCol);
+    if (cas.pieza != pieza_esfera || cas.obj == nullptr) return;
+
+    int av = Tablerogl::_altoVentana;
+    int aw = Tablerogl::_anchoVentana;
+
+    // DIMENSIONES DEL PANEL
+    const int PW = 180;
+    const int PH = 135; // Altura compacta ideal para el título y los 4 hechizos
+    const int PY = 240;
+
+    // Posición: Izquierda para locales, Derecha para rivales
+    int px;
+    if (cas.bando == bando_local) {
+        px = 10;
+    }
+    else {
+        px = aw - PW - 10;
+    }
+
+    //DIBUJAR EL FONDO TRANSLÚCIDO 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    if (cas.bando == bando_local)
+        glColor4f(0.20f, 0.05f, 0.30f, 0.88f); // Morado oscuro translúcido
+    else
+        glColor4f(0.30f, 0.03f, 0.03f, 0.88f); // Rojo oscuro translúcido
+
+    glBegin(GL_QUADS);
+    glVertex2i(px, PY);
+    glVertex2i(px + PW, PY);
+    glVertex2i(px + PW, PY + PH);
+    glVertex2i(px, PY + PH);
+    glEnd();
+
+    // DIBUJAR EL BORDE SÓLIDO 
+    if (cas.bando == bando_local)
+        glColor4f(0.65f, 0.20f, 0.85f, 1.0f); // Borde Morado vivo
+    else
+        glColor4f(0.85f, 0.15f, 0.15f, 1.0f); // Borde Rojo vivo
+
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(px, PY);
+    glVertex2i(px + PW, PY);
+    glVertex2i(px + PW, PY + PH);
+    glVertex2i(px, PY + PH);
+    glEnd();
+    glLineWidth(1.0f);
+    glDisable(GL_BLEND);
+
+    // TEXTO DEL TÍTULO E INDICACIÓN DE TECLA
+    if (t._modoHechizo) {
+        // Si el modo hechizo ya se ha pulsado, alertamos visualmente en verde
+        ETSIDI::setTextColor(0.2f, 1.0f, 0.2f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+        ETSIDI::printxy("CONJURO ACTIVO", px + 8, PY + PH - 22);
+    }
+    else {
+        // Estado de espera normal
+        ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+        ETSIDI::printxy("[H] Lanza Hechizo:", px + 8, PY + PH - 22);
+    }
+
+    // LÍNEA SEPARADORA DE CORTE DE PANEL
+    glColor3f(0.6f, 0.6f, 0.6f);
+    glBegin(GL_LINES);
+    glVertex2i(px + 5, PY + PH - 30);
+    glVertex2i(px + PW - 5, PY + PH - 30);
+    glEnd();
+
+    //LISTADO DE LOS 4 HECHIZOS DISPONIBLES
+    int filaY = PY + PH - 52;
+    int saltoLinea = 20;
+
+    // Lambda interna para imprimir cada línea iluminándola en amarillo si está seleccionada
+    auto printLineaConjuro = [&](const char* texto, bool seleccionado) {
+        if (seleccionado) {
+            ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f); // Amarillo resaltado
+            ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+        }
+        else {
+            ETSIDI::setTextColor(0.90f, 0.90f, 0.90f, 1.0f); // Blanco/Gris suave estático
+            ETSIDI::setFont("fuentes/ARIALNBI.ttf", 12);
+        }
+        ETSIDI::printxy(texto, px + 12, filaY);
+        filaY -= saltoLinea;
+        };
+
+    // Imprimimos controlando con vuestros flags de 'tablerogl' si se están ejecutando numéricamente
+    printLineaConjuro("[1] Avituallamiento", t._modoHechizo && t._conjuroActivo == Conjuro::AVITUALLAMIENTO);
+    printLineaConjuro("[2] Rutas Secretas", t._modoHechizo && t._conjuroActivo == Conjuro::RUTAS_SECRETAS);
+    printLineaConjuro("[3] Relevo Guardia", t._modoHechizo && t._conjuroActivo == Conjuro::RELEVO_GUARDIA);
+    printLineaConjuro("[4] Asedio", t._modoHechizo && t._conjuroActivo == Conjuro::ASEDIO);
 }
 
 void DibujaTablero::tablero_guardando(Tablerogl& t, int ancho, int alto, float tiempoRestante)
