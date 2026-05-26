@@ -128,6 +128,9 @@ public:
 	void setVictoria(BandoPieza ganador) { victoria_ = ganador; }
 
 	void setBatalla(int b) { _batallaActual = b; } // SETTER
+	// GETTER
+	std::string nombre_j1{ "Jugador 1" };
+	std::string nombre_j2{ "Jugador 2" };
 
 	static void setVentana(int ancho, int alto) { _anchoVentana = ancho; _altoVentana = alto; }
 

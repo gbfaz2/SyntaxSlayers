@@ -114,10 +114,13 @@ inline std::vector<std::string> contextoBatalla(Batalla b) {
     }
 }
 
-// Configuracion de la partida actual
+// Configuracion de la partida
 struct ConfigPartida {
-    ModoJuego modo = ModoJuego::NINGUNO;
-    BandoJugador     bando = BandoJugador::NINGUNO;
-    Batalla   batalla = Batalla::GUADALETE;
-    BandoJugador     turno1 = BandoJugador::NINGUNO;   // quien empieza
+    ModoJuego    modo = ModoJuego::NINGUNO;
+    BandoJugador bando = BandoJugador::NINGUNO;
+    Batalla      batalla = Batalla::GUADALETE; //no es q siempre vaya a salir guadalete, es q visual necesita un valor por defecto, luego se sobreescribe.
+    BandoJugador turno1 = BandoJugador::NINGUNO;
+    std::string  nombre_j1 = "Jugador 1";
+    std::string  nombre_j2 = "Jugador 2";
+    BandoJugador bando_j2 = BandoJugador::NINGUNO;
 };

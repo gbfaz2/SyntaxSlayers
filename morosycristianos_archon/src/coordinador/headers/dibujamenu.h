@@ -20,6 +20,7 @@ class DibujaMenu : public Dibuja {
     static void menu_paso2(MenuPrincipal& m, int ancho, int alto);
     static void menu_paso3(MenuPrincipal& m, int ancho, int alto);
     static void menu_pie(int ancho, int alto);
+    static void menu_paso_nombre(MenuPrincipal& m, int ancho, int alto);
 
     // PRIMITIVAS COMPARTIDAS DEL MENÚ 
     static void menu_texto(const std::string& texto,
