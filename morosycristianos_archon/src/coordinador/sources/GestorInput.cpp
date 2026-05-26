@@ -92,18 +92,18 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
         for (int i = 0; i < 4; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
-    else if (menu.m_paso == 1) { // PASO 1: SELECCION BANDO
+    else if (menu.m_paso == 2) { // PASO 1: SELECCION BANDO
         float aw = 240, ah = 55, sep = 30, sy = _alto / 2.0f + 10;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) menu.m_seleccion = 0;
         if (enCaja(_ancho / 2.0f + sep / 2.0f, sy, aw, ah))      menu.m_seleccion = 1;
     }
-    else if (menu.m_paso == 2) { // PASO 2: SELECCION BATALLA
+    else if (menu.m_paso == 4) { // PASO 2: SELECCION BATALLA
         float aw = 340, ah = 48, sep = 12;
         float sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 80;
         for (int i = 0; i < 4; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
-    else if (menu.m_paso == 3) { // PASO 3: CONFIRMACION
+    else if (menu.m_paso == 5) { // PASO 3: CONFIRMACION
         float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 20;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) menu.m_seleccion = 0;
         if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah))      menu.m_seleccion = 1;
@@ -520,4 +520,87 @@ void GestorInput::teclaEspecialUpArena(int key)
     if (key == GLUT_KEY_DOWN)  _coordinador->_input.p2.atras = false;
     if (key == GLUT_KEY_LEFT)  _coordinador->_input.p2.izquierda = false;
     if (key == GLUT_KEY_RIGHT) _coordinador->_input.p2.derecha = false;
+}
+
+// =============================================================
+// MENÚ PAUSA
+// =============================================================
+
+void GestorInput::teclaEspecialGuardando(int key, EstadoJuego& estado)
+{
+    if (key == GLUT_KEY_DOWN)
+        _tablerogl->_pausaSeleccion = (_tablerogl->_pausaSeleccion + 1) % 4; // SUBE
+    if (key == GLUT_KEY_UP)
+        _tablerogl->_pausaSeleccion = (_tablerogl->_pausaSeleccion - 1 + 4) % 4; // BAJA
+}
+
+void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
+{
+    if (key == 13) { // ENTER CONFIRMA
+        switch (_tablerogl->_pausaSeleccion) {
+        case 0:                                            // CONTINUAR
+            estado = EstadoJuego::TABLERO;
+            break;
+        case 1:                                            // GUARDAR
+            GestorPartida::guardar(*_coordinador->pTablero,
+                _tablerogl->gestorTurnos, _coordinador->configuracion);
+            std::cout << "[Pausa] Partida guardada.\n";
+            estado = EstadoJuego::TABLERO;                 // SIGUE JUGANDO
+            break;
+        case 2:                                            // AYUDA — DE MOMENTO NADA
+            break;
+        case 3:                                            // SALIR SIN GUARDAR
+            ETSIDI::stopMusica();
+            _coordinador->reiniciarTablero();
+            estado = EstadoJuego::MENU;
+            break;
+        }
+    }
+    if (key == 27) estado = EstadoJuego::TABLERO;         // ESC SIEMPRE CONTINÚA
+}
+
+void GestorInput::ratonGuardando(int x, int y, bool click, EstadoJuego& estado)
+{
+    float pw = 380, btnW = 300, btnH = 44;
+    float px = (_ancho - pw) / 2.0f;
+    float ph = 320;
+    float py = (_alto - ph) / 2.0f;
+    float btnX = px + (pw - btnW) / 2.0f;
+    float btnYBase = py + ph - 110;
+    float btnSep = 56;
+
+    int gy = _alto - y;                                    // INVIERTE Y
+
+    for (int i = 0; i < 4; i++) {
+        float by = btnYBase - i * btnSep;
+        if (gy >= by && gy <= by + btnH &&
+            x >= btnX && x <= btnX + btnW) {
+            _tablerogl->_pausaSeleccion = i;               // HOVER
+            if (click) {                                   // CLIC
+                unsigned char fakeKey = 13;                // SIMULA ENTER
+                teclaGuardando(fakeKey, estado);
+            }
+        }
+    }
+}
+
+void GestorInput::ratonMovidoGuardando(int x, int y)
+{
+    float pw = 380, btnW = 300, btnH = 44;
+    float px = (_ancho - pw) / 2.0f;
+    float ph = 320;
+    float py = (_alto - ph) / 2.0f;
+    float btnX = px + (pw - btnW) / 2.0f;
+    float btnYBase = py + ph - 110;
+    float btnSep = 56;
+
+    int gy = _alto - y;                                    // INVIERTE Y
+
+    for (int i = 0; i < 4; i++) {
+        float by = btnYBase - i * btnSep;
+        if (gy >= by && gy <= by + btnH &&
+            x >= btnX && x <= btnX + btnW) {
+            _tablerogl->_pausaSeleccion = i;               // ACTUALIZA SELECCIÓN
+        }
+    }
 }

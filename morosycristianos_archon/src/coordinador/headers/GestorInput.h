@@ -15,6 +15,8 @@ class GestorInput
 
     bool ejecutarHechizo(BandoPieza bando, int fila, int col); // EJECUTA EL CONJURO ACTIVO
 
+    float _tiempoGuardado{ 0.0f };
+
 public:
     GestorInput() = default;
 
@@ -28,6 +30,7 @@ public:
         PantallaIntro& intro, MenuPrincipal& menu, PantallaDestino& destino);
     void teclaTablero(unsigned char key, EstadoJuego& estado);
     void teclaArena(unsigned char key);
+    void teclaGuardando(unsigned char key, EstadoJuego& estado);
 
 
     // TECLA ESPECIAL
@@ -36,6 +39,7 @@ public:
     void teclaUpArena(unsigned char key);
     void teclaEspecialArena(int key);
     void teclaEspecialUpArena(int key);
+    void teclaEspecialGuardando(int key, EstadoJuego& estado); // FLECHAS MENÚ PAUSA
 
 
     // RATON
@@ -43,4 +47,6 @@ public:
         PantallaIntro& intro, MenuPrincipal& menu, PantallaDestino& destino);
     void ratonMovidoMenu(int x, int y, EstadoJuego& estado, MenuPrincipal& menu);
     void ratonTablero(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
+    void ratonGuardando(int x, int y, bool click, EstadoJuego& estado); // RATÓN MENÚ PAUSA
+    void ratonMovidoGuardando(int x, int y); // HOVER MENÚ PAUSA
 };

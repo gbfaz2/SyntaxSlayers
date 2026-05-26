@@ -44,6 +44,8 @@ class Tablerogl
 	};
 	AnimMovimiento _animMov;
 
+	int _pausaSeleccion{ 0 }; // OPCIÓN SELECCIONADA EN MENÚ PAUSA (0-3)
+
 
 protected:
 	float ancho;
