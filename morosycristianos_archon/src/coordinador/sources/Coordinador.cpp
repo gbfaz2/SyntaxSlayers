@@ -100,8 +100,9 @@ void Coordinador::dibuja()
 	case EstadoJuego::TABLERO:
 		if (pTablerogl) {
 
-			if (_necesitaRecargarGraficos)
+			if (!_necesitaRecargarGraficos && _framesCargando <= 0)
 			{
+				ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 				DibujaTablero::tablero_init(); // Recarga texturas
 				_necesitaRecargarGraficos = false;
 			}
@@ -119,6 +120,10 @@ void Coordinador::dibuja()
 			glLoadIdentity();
 
 			// LLAMADA CORRECTA AL MOTOR GRÁFICO (SIN FLECHITAS)
+			if (_framesCargando > 0) {
+				_framesCargando--;
+				break;  // no dibuja nada hasta que pasen los frames
+			}
 			DibujaTablero::tablero_dibujar(*pTablerogl);
 
 			if (pTablerogl->huboColision())
@@ -172,6 +177,7 @@ void Coordinador::dibuja()
 		_necesitaRecargarGraficos = true;
 
 		ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
+		_framesCargando = 5;
 		estado = EstadoJuego::TABLERO;
 		break;
 
@@ -305,6 +311,8 @@ void Coordinador::mueve(double dt)
 {
 	if (estado == EstadoJuego::TABLERO && pTablero && pTablerogl) {
 
+		if (_framesCargando > 0) _framesCargando--;
+
 		// IA: MUEVE SOLO UNA VEZ POR TURNO
 		if (configuracion.modo == ModoJuego::JVIA &&
 			pTablerogl->gestorTurnos.getBandoActual() == bando_rival &&
@@ -368,7 +376,7 @@ void Coordinador::mueve(double dt)
 		}
 
 		// COMPRUEBA VICTORIA
-		if (!_necesitaRecargarGraficos) 
+		if (!_necesitaRecargarGraficos && _framesCargando <= 0)
 		{
 			ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 			if (rv != ResultadoVictoria::SIN_GANADOR) {
