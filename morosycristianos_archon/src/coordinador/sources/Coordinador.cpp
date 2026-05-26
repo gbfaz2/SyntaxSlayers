@@ -373,35 +373,38 @@ void Coordinador::mueve(double dt)
 		}
 
 		// COMPRUEBA VICTORIA
-		ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
-		if (rv != ResultadoVictoria::SIN_GANADOR) {
-			ETSIDI::stopMusica();
+		if (!_necesitaRecargarGraficos) 
+		{
+			ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
+			if (rv != ResultadoVictoria::SIN_GANADOR) {
+				ETSIDI::stopMusica();
 
-			// Ranking
-			_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? configuracion.nombre_j1 :
-				(rv == ResultadoVictoria::GANA_RIVAL) ? configuracion.nombre_j2 : "Empate";
-			_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL);
-			_rankingBatalla = nombreBatalla(configuracion.batalla);
-			_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
-			_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
-			_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
+				// Ranking
+				_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? configuracion.nombre_j1 :
+					(rv == ResultadoVictoria::GANA_RIVAL) ? configuracion.nombre_j2 : "Empate";
+				_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL);
+				_rankingBatalla = nombreBatalla(configuracion.batalla);
+				_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
+				_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
+				_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
 
-			// Guardar en el Ranking
-			GestorRanking::guardar(
-				_rankingGanador,
-				_rankingTurnos,
-				_rankingBatalla,
-				_rankingPiezasLocal + _rankingPiezasRival // total piezas eliminadas
-			);
+				// Guardar en el Ranking
+				GestorRanking::guardar(
+					_rankingGanador,
+					_rankingTurnos,
+					_rankingBatalla,
+					_rankingPiezasLocal + _rankingPiezasRival // total piezas eliminadas
+				);
 
-			// VICTORIA EN TABLEROGL (DE GABRI)
-			if (rv == ResultadoVictoria::GANA_LOCAL)
-				pTablerogl->setVictoria(bando_local);
-			else if (rv == ResultadoVictoria::GANA_RIVAL)
-				pTablerogl->setVictoria(bando_rival);
+				// VICTORIA EN TABLEROGL (DE GABRI)
+				if (rv == ResultadoVictoria::GANA_LOCAL)
+					pTablerogl->setVictoria(bando_local);
+				else if (rv == ResultadoVictoria::GANA_RIVAL)
+					pTablerogl->setVictoria(bando_rival);
 
-			_rankingTop10 = GestorRanking::cargar();
-			estado = EstadoJuego::RANKING;
+				_rankingTop10 = GestorRanking::cargar();
+				estado = EstadoJuego::RANKING;
+			}
 		}
 	}
 
