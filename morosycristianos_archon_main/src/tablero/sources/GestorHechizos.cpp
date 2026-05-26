@@ -121,6 +121,12 @@ bool GestorHechizos::asedio(BandoPieza bando, int fila, int col)
         return false;
     }
 
+    //INMUNIDAD DE LOS HECHIZOS EN LOS PUNTOS DE PODER
+    if (cas.tipo == Casilla_poder) {
+        std::cout<< "[Hechizos] Falla: La pieza enemiga esta en un Punto de Poder y es INMUNE.\n";
+        return false; // No aplicamos el hechizo ni lo damos por gastado
+    }
+
     _piezaBloqueada = cas.obj;
 
     hechiceroActual(bando)->usarConjuro(Conjuro::ASEDIO);
