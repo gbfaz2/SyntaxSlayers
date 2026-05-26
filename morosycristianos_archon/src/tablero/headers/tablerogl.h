@@ -11,6 +11,7 @@
 #include "dibujatablero.h"
 #include "menu.h"
 #include<ETSIDI.h>
+#include "Pieza.h"
 //#include"coordinador.h"
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -69,6 +70,8 @@ protected:
 	int _turnosJugados{ 0 };
 	Pieza* _pAtacante{ nullptr };//puntero al obj que sigue en tablero
 	Pieza* _pDefensora{ nullptr };//extraída del tablero
+
+	int getVentajaTerrenoCombate()const;
 
 	bool _modoHechizo{ false };           // HECHIZO PENDIENTE DE SELECCIONAR CASILLA
 	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO

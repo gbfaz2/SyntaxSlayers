@@ -148,6 +148,16 @@ void Tablerogl::world2cell(double x, double y, int& casilla_x, int& casilla_y)
 	casilla_y = (int)(x / ancho);
 }
 
+int Tablerogl::getVentajaTerrenoCombate() const
+{
+	if (_pDefensora) {//combate ocurre en la casilla de la pieza defensora
+		TipoCasilla tipo = m_tablero->getCasilla(_pDefensora->getFila(), _pDefensora->getColumna()).tipo;
+		if (tipo == Casilla_local) return 1;
+		if (tipo == Casilla_rival) return 2;
+	}
+	return 0;
+}
+
 void Tablerogl::limpiarCombate()
 {
 	_combatePendiente = false;
