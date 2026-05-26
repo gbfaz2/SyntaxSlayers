@@ -123,7 +123,8 @@ void Coordinador::dibuja()
 
 				_arena.iniciarCombate(*pTablerogl->getPiezaAtacante(),
 					*pTablerogl->getPiezaDefensora(),
-					configuracion.modo);
+					configuracion.modo,
+					pTablerogl->getVentajaTerrenoCombate());
 
 				ETSIDI::stopMusica(); // DEJA DE SONAR MUSICA TABLERO
 				ETSIDI::play("sonidos/sonido_combate_fight.wav");
@@ -208,7 +209,7 @@ void Coordinador::tecla(unsigned char key)
 				pTablerogl->_esperandoDestino = false;
 				pTablerogl->_mensajeInvalido = "";
 				pTablerogl->_tiempoMensajeInvalido = 0.0f;
-				std::cout << "[Hechizos] Conjuro cancelado. Elige otro 1-7.\n";
+				std::cout << "[Hechizos] Conjuro cancelado. Elige otro 1-4.\n";
 			}
 			else if (pTablerogl->_modoHechizo) {            // NIVEL 2: CANCELA MODO HECHIZO
 				pTablerogl->_modoHechizo = false;

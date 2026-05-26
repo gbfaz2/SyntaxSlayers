@@ -23,7 +23,7 @@ public:
     // Comprueba si el bando puede usar ese conjuro (no lo ha gastado ya)
     bool puedeUsarConjuro(BandoPieza bando, Conjuro c) const;
 
-    // Los 7 conjuros
+    // Los 4 conjuros
     bool rutasSecretas(BandoPieza bando, int filaOrigen, int colOrigen, int filaDest, int colDest);
     bool avituallamiento(BandoPieza bando, int fila, int col);
     bool relevoDeguardia(BandoPieza bando, int fila1, int col1, int fila2, int col2);
