@@ -99,6 +99,13 @@ void Coordinador::dibuja()
 
 	case EstadoJuego::TABLERO:
 		if (pTablerogl) {
+
+			if (_necesitaRecargarGraficos)
+			{
+				DibujaTablero::tablero_init(); // Recarga texturas
+				_necesitaRecargarGraficos = false;
+			}
+
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_LIGHTING);
 			glEnable(GL_LIGHT0);
@@ -160,6 +167,10 @@ void Coordinador::dibuja()
 		pTablerogl->setBatalla((int)configuracion.batalla);
 		pTablerogl->nombre_j1 = configuracion.nombre_j1; // RESTAURA NOMBRES AL CARGAR
 		pTablerogl->nombre_j2 = configuracion.nombre_j2;
+
+		// Recarga texturas después de cargar piezas
+		_necesitaRecargarGraficos = true;
+
 		ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
 		estado = EstadoJuego::TABLERO;
 		break;
@@ -253,6 +264,7 @@ void Coordinador::tecla(unsigned char key)
 			reiniciarTablero();
 		}
 		estado = EstadoJuego::MENU; break;
+
 	case EstadoJuego::RANKING:
 		if (key == 27) {
 			ETSIDI::stopMusica();
