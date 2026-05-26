@@ -215,8 +215,8 @@ void Tablerogl::update(double dt)
 				if (cas.tipo == Casilla_poder && cas.obj != nullptr) {
 					// Comprobamos si tiene menos vida de la máxima
 					if (cas.obj->getVida() < cas.obj->getVidaMax()) {
-						// La curamos con 0.20 puntos de vida cada segundo
-						cas.obj->curar(0.2);
+						// La curamos con 1 punto de vida cada segundo
+						cas.obj->curar(1);
 					}
 				}
 			}
