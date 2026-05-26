@@ -1,4 +1,8 @@
 Empate 4199 1 32 Batalla de Guadalete (711)
+<<<<<<< Updated upstream
+=======
+Empate 4199 1 32 Batalla de Guadalete (711)
+>>>>>>> Stashed changes
 ALBIII 1289 11 3 Batalla de Guadalete (711)
 so 1285 15 3 Batalla de Alarcos (1195)
 Sofia2 586 14 -4 Batalla de Guadalete (711)

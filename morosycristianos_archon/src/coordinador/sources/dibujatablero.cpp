@@ -1124,33 +1124,114 @@ void DibujaTablero::tablero_panel_hechizos(const Tablerogl& t)
     printLineaConjuro("[4] Asedio", t._modoHechizo && t._conjuroActivo == Conjuro::ASEDIO);
 }
 
+
 void DibujaTablero::tablero_guardando(Tablerogl& t, int ancho, int alto, float tiempoRestante)
 {
-    // Dibuja el tablero de fondo
     tablero_dibujar(t);
-
-    // Mensaje encima en 2D
     util_entrar2D(ancho, alto);
 
+    // FONDO OSCURO
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.72f);
     glBegin(GL_QUADS);
-    glVertex2f(150, 300); glVertex2f(ancho - 150, 300);
-    glVertex2f(ancho - 150, 430); glVertex2f(150, 430);
+    glVertex2f(0, 0); glVertex2f(ancho, 0);
+    glVertex2f(ancho, alto); glVertex2f(0, alto);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    // PANEL CENTRAL
+    float pw = 380, ph = 320;
+    float px = (ancho - pw) / 2.0f;
+    float py = (alto - ph) / 2.0f;
+
+    // FONDO PANEL
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.12f, 0.04f, 0.20f, 0.95f);
+    glBegin(GL_QUADS);
+    glVertex2f(px, py); glVertex2f(px + pw, py);
+    glVertex2f(px + pw, py + ph); glVertex2f(px, py + ph);
     glEnd();
 
-    ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 24);
-    ETSIDI::printxy("Pulsa G para guardar la partida", 280, 360);
-    ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
-    ETSIDI::printxy("Pulsa ESC para volver al tablero", 285, 395);
+    // BORDE DORADO
+    glColor4f(0.85f, 0.70f, 0.25f, 1.0f);
+    glLineWidth(2.5f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(px, py); glVertex2f(px + pw, py);
+    glVertex2f(px + pw, py + ph); glVertex2f(px, py + ph);
+    glEnd();
+    glLineWidth(1.0f);
+    glDisable(GL_BLEND);
 
-    char buf[64];
-    sprintf_s(buf, "Tiempo restante: %.0f segundos", tiempoRestante);
-    ETSIDI::setTextColor(1.0f, 0.4f, 0.4f, 1.0f);
-    ETSIDI::printxy(buf, 320, 420);
+    // TÍTULO
+    ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 32);
+    ETSIDI::printxy("PAUSA", (int)(px + pw / 2 - 60), (int)(py + ph - 45));
+
+    // SEPARADOR
+    glColor3f(0.85f, 0.70f, 0.25f);
+    glBegin(GL_LINES);
+    glVertex2f(px + 20, py + ph - 58);
+    glVertex2f(px + pw - 20, py + ph - 58);
+    glEnd();
+
+    // OPCIONES
+    const char* opciones[4] = {
+        "Continuar",
+        "Guardar partida",
+        "Ayuda",
+        "Salir al menu"
+    };
+
+    float btnW = 300, btnH = 44;
+    float btnX = px + (pw - btnW) / 2.0f;
+    float btnYBase = py + ph - 110;
+    float btnSep = 56;
+
+    for (int i = 0; i < 4; i++) {
+        float by = btnYBase - i * btnSep;
+        bool seleccionado = (t._pausaSeleccion == i); // RESALTADO
+
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        if (seleccionado)
+            glColor4f(0.55f, 0.15f, 0.80f, 0.95f); // MORADO VIVO SI SELECCIONADO
+        else
+            glColor4f(0.30f, 0.10f, 0.50f, 0.90f); // MORADO OSCURO
+
+        glBegin(GL_QUADS);
+        glVertex2f(btnX, by); glVertex2f(btnX + btnW, by);
+        glVertex2f(btnX + btnW, by + btnH); glVertex2f(btnX, by + btnH);
+        glEnd();
+
+        // BORDE
+        if (seleccionado)
+            glColor4f(0.85f, 0.70f, 0.25f, 1.0f); // DORADO SI SELECCIONADO
+        else
+            glColor4f(0.65f, 0.20f, 0.85f, 1.0f); // MORADO
+
+        glLineWidth(seleccionado ? 2.5f : 1.5f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(btnX, by); glVertex2f(btnX + btnW, by);
+        glVertex2f(btnX + btnW, by + btnH); glVertex2f(btnX, by + btnH);
+        glEnd();
+        glLineWidth(1.0f);
+        glDisable(GL_BLEND);
+
+        // TEXTO CENTRADO
+        if (seleccionado)
+            ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f); // AMARILLO SI SELECCIONADO
+        else
+            ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f); // BLANCO
+
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+        int texW = strlen(opciones[i]) * 7;
+        // LONGITUDES APROXIMADAS DE CADA OPCIÓN EN PÍXELES
+        int offsets[4] = { 40, 63, 30, 50 }; // CONTINUAR, GUARDAR PARTIDA, AYUDA, SALIR AL MENU
+        ETSIDI::printxy(opciones[i], (int)(btnX + btnW / 2 - offsets[i]), (int)(by + btnH * 0.35f));
+    }
 
     util_salir2D();
 }

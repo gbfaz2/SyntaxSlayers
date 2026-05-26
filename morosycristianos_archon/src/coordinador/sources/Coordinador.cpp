@@ -242,15 +242,7 @@ void Coordinador::tecla(unsigned char key)
 		break;
 
 	case EstadoJuego::GUARDANDO:
-		if (key == 'g' || key == 'G') {
-			GestorPartida::guardar(*pTablero, pTablerogl->gestorTurnos, configuracion);
-			ETSIDI::stopMusica();
-			reiniciarTablero();
-			estado = EstadoJuego::MENU;
-		}
-		if (key == 27) {
-			estado = EstadoJuego::TABLERO;
-		}
+		gestorInput.teclaGuardando(key, estado);
 		break;
 
 	case EstadoJuego::ARENA:
@@ -294,6 +286,9 @@ void Coordinador::tecla_especial(int key)
 		break;
 	case EstadoJuego::ARENA:
 		gestorInput.teclaEspecialArena(key);
+		break;
+	case EstadoJuego::GUARDANDO:
+		gestorInput.teclaEspecialGuardando(key, estado);
 		break;
 	default: break;
 	}
@@ -409,7 +404,7 @@ void Coordinador::mueve(double dt)
 	}
 
 	if (estado == EstadoJuego::GUARDANDO) {
-		_tiempoGuardado -= (float)dt;
+		//_tiempoGuardado -= (float)dt;
 		if (_tiempoGuardado <= 0.0f) {
 			ETSIDI::stopMusica();
 			reiniciarTablero();
@@ -453,6 +448,9 @@ void Coordinador::raton(int boton, int state, int x, int y)
 		gestorInput.ratonTablero(x, y, button, (state == GLUT_DOWN), shiftKey, ctrlKey);
 	}
 	break;
+	case EstadoJuego::GUARDANDO:
+		gestorInput.ratonGuardando(x, y, true, estado);
+		break;
 	default: break;
 	}
 	glutPostRedisplay();
@@ -462,6 +460,8 @@ void Coordinador::ratonMovido(int x, int y)
 {
 	gestorInput.setVentana(_anchoVentana, _altoVentana);
 	gestorInput.ratonMovidoMenu(x, y, estado, menuPrincipal);
+	if (estado == EstadoJuego::GUARDANDO)
+		gestorInput.ratonMovidoGuardando(x, y); // HOVER PAUSA
 	glutPostRedisplay();
 }
 
