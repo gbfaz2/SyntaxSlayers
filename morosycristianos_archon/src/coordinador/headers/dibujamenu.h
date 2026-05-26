@@ -66,5 +66,5 @@ public:
     static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
 
     // Para el ranking
-    static void ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking);
+    static void ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking, bool ganaJ1);
 };

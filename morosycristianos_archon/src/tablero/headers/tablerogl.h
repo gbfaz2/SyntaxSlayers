@@ -135,5 +135,3 @@ public:
 	static void setVentana(int ancho, int alto) { _anchoVentana = ancho; _altoVentana = alto; }
 
 };
-
-

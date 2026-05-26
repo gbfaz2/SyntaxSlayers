@@ -171,7 +171,8 @@ void Coordinador::dibuja()
 			_rankingTurnos,
 			_rankingPiezasLocal,
 			_rankingPiezasRival,
-			_rankingTop10
+			_rankingTop10,
+			_rankingGanaJ1
 		);
 		break;
 
@@ -364,8 +365,9 @@ void Coordinador::mueve(double dt)
 			ETSIDI::stopMusica();
 
 			// Ranking
-			_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? "Cristiano" :
-				(rv == ResultadoVictoria::GANA_RIVAL) ? "Andalusi" : "Empate";
+			_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? configuracion.nombre_j1 :
+				(rv == ResultadoVictoria::GANA_RIVAL) ? configuracion.nombre_j2 : "Empate";
+			_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL);
 			_rankingBatalla = nombreBatalla(configuracion.batalla);
 			_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
 			_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
