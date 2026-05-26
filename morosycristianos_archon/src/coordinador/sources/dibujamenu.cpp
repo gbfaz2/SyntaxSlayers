@@ -575,3 +575,71 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador
     }
     util_salir2D();
 }
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// VICTORIA
+// ══════════════════════════════════════════════════════════════════════════
+
+void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganador,
+    const std::string& batalla, bool ganaJ1, float tiempoRestante)
+{
+    util_entrar2D(ancho, alto);
+
+    // FONDO DE BATALLA
+    const char* ruta = "imagenes/fondo_guadalete.png";
+    if (batalla == "Guadalete") ruta = "imagenes/fondo_guadalete.png";
+    else if (batalla == "Alarcos")   ruta = "imagenes/fondo_alarcos.png";
+    else if (batalla == "Navas")     ruta = "imagenes/fondo_navas.png";
+    else if (batalla == "Granada")   ruta = "imagenes/fondo_granada.png";
+
+    auto tex = ETSIDI::getTexture(ruta);
+    if (tex.id != 0) {
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, tex.id);
+        glColor3f(1, 1, 1);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0); glVertex2f(0, 0);
+        glTexCoord2f(1, 0); glVertex2f(ancho, 0);
+        glTexCoord2f(1, 1); glVertex2f(ancho, alto);
+        glTexCoord2f(0, 1); glVertex2f(0, alto);
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    // OVERLAY OSCURO
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0); glVertex2f(ancho, 0);
+    glVertex2f(ancho, alto); glVertex2f(0, alto);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    // MENSAJE DE VICTORIA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 52);
+    if (ganaJ1) {
+        ETSIDI::setTextColor(0.86f, 0.08f, 0.24f, 1.0f); // CARMESÍ
+        ETSIDI::printxy("VICTORIA CRISTIANA", ancho / 2 - 240, alto / 2 + 60);
+    }
+    else {
+        ETSIDI::setTextColor(0.55f, 0.10f, 0.75f, 1.0f); // PÚRPURA
+        ETSIDI::printxy("VICTORIA AL-ANDALUS", ancho / 2 - 255, alto / 2 + 60);
+    }
+
+    // NOMBRE DEL GANADOR
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 30);
+    ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
+    std::string txt = "Ganador: " + ganador;
+    ETSIDI::printxy(txt.c_str(), ancho / 2 - 120, alto / 2);
+
+    // CONTADOR
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
+    ETSIDI::setTextColor(0.70f, 0.70f, 0.70f, 1.0f);
+    char buf[32];
+    sprintf_s(buf, "Ranking en %d segundos...", (int)tiempoRestante + 1);
+    ETSIDI::printxy(buf, ancho / 2 - 110, alto / 2 - 60);
+
+    util_salir2D();
+}
