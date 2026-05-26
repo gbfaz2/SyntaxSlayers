@@ -192,9 +192,6 @@
     <ClInclude Include="src\coordinador\headers\dibuja.h">
       <Filter>coordinador\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="GestorPartida.h">
-      <Filter>tablero\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\tablero\headers\GestorHechizos.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
@@ -202,6 +199,9 @@
       <Filter>coordinador\Headers</Filter>
     </ClInclude>
     <ClInclude Include="src\tablero\headers\GestorRanking.h">
+      <Filter>tablero\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tablero\headers\GestorPartida.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
   </ItemGroup>

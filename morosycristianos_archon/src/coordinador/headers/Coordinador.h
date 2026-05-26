@@ -51,6 +51,8 @@ class Coordinador
 	int  _turnoAnteriorIA{ -1 }; // TURNO EN EL QUE MOVIÓ LA IA POR ÚLTIMA VEZ
 	float _tiempoEsperaIA{ 0.0f }; // TEMPORIZADOR ANTES DE QUE MUEVA LA IA
 
+	int _framesCargando{ 0 };
+
 public:
 	Coordinador() = default;
 	~Coordinador();
