@@ -475,7 +475,7 @@ void DibujaMenu::destino_continuar(const PantallaDestino& p, int ancho, int alto
 }
 
 // RANKING
-void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking)
+void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking, bool ganaJ1)
 {
     util_entrar2D(ancho, alto);
     menu_fondo(ancho, alto);
@@ -512,12 +512,12 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador
         0.08f, 0.08f, 0.08f, 0.5f);
     menu_texto("Resultado", margen + 10, tablaY - filaAlto * 2 + 12,
         0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
-    menu_texto(ganador == "Cristiano" ? "GANADOR" : "perdedor",
+    menu_texto(ganaJ1 ? "GANADOR" : "perdedor",
         margen + colAncho + 10, tablaY - filaAlto * 2 + 12,
         ganador == "Cristiano" ? 1.0f : 0.5f,
         ganador == "Cristiano" ? 1.0f : 0.5f,
         0.0f, GLUT_BITMAP_HELVETICA_18);
-    menu_texto(ganador == "Andalusi" ? "GANADOR" : "perdedor",
+    menu_texto(!ganaJ1 ? "GANADOR" : "perdedor",
         margen + colAncho * 2 + 10, tablaY - filaAlto * 2 + 12,
         ganador == "Andalusi" ? 1.0f : 0.5f,
         ganador == "Andalusi" ? 1.0f : 0.5f,
