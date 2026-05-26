@@ -41,7 +41,7 @@ public:
 
 	void actualizar(float dt, InputState& input); // avanza la simulacion un frame
 	void reiniciar(); // reinicia el combate, volviendo a las posiciones iniciales y reseteando la vida de los combatientes
-	void iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo); // INCIA UN COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU
+	void iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo, int ventajaTerreno=0); // INCIA UN COMBATE CON LAS PIEZAS SELECCIONADAS EN EL MENU, añado la ventaja depende de la casilla donde se de el combate
 																						// Y EL MODO DE JUEGO (JVJ O JVIA)
 	
 	// Getters (informacion para el renderer)

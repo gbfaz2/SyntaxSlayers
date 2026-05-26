@@ -108,7 +108,7 @@ void Arena::limitarPosicion(Combatiente& c)
 	c.posicion(x, c.y(), z);
 }
 
-void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo)
+void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo, int ventajaTerreno)
 {
 	_modo = modo;
 	std::cout << "[Arena] iniciarCombate llamado!" << std::endl;
@@ -127,6 +127,16 @@ void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJu
 	_p1 = Combatiente(-4.0f, 0.0f, r1, g1, b1, atacante);
 	_p2 = Combatiente(4.0f, 0.0f, r2, g2, b2, defensora);
 
+	//Aplicación de la ventaja de terreno
+	float bonus = 0.20f;//representa un 20% más de vida
+	if (ventajaTerreno == 1) {
+		if (atacante.getBando() == Bando::CRISTIANO)_p1.aplicarBonusVida(bonus);
+		if (defensora.getBando() == Bando::CRISTIANO)_p2.aplicarBonusVida(bonus);
+	}
+	else if (ventajaTerreno == 2) {
+		if (atacante.getBando() == Bando::ANDALUSI)_p1.aplicarBonusVida(bonus);
+		if (defensora.getBando() == Bando::ANDALUSI)_p2.aplicarBonusVida(bonus);
+	}
 	
 	_ia.configurar(_p2.alcanceAtaque());
 

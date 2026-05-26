@@ -16,6 +16,13 @@ void Combatiente::posicion(float x, float y, float z)
 	_z = z;
 }
 
+void Combatiente::aplicarBonusVida(float porcentaje)
+{
+	float extra = _vidaMax * porcentaje;
+	_vidaMax += extra;
+	_vida += extra;
+}
+
 void Combatiente::recibirDano(float cantidad)
 {
 	_vida = std::max(0.0f, _vida - cantidad); // resto vida, pero no dejo que baje de 0

@@ -11,6 +11,7 @@
 #include "dibujatablero.h"
 #include "menu.h"
 #include<ETSIDI.h>
+#include "Pieza.h"
 //#include"coordinador.h"
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -101,6 +102,8 @@ public:
 	bool huboColision() const { return _combatePendiente; }
 	Pieza* getPiezaAtacante() const { return _pAtacante; }
 	Pieza* getPiezaDefensora() const { return _pDefensora; }
+
+	int getVentajaTerrenoCombate()const;
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
 	void mostrarMensajeInvalido(const std::string& mensaje) {
