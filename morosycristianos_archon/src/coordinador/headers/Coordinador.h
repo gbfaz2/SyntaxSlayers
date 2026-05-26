@@ -80,4 +80,6 @@ public:
 
 	std::vector<EntradaRanking> _rankingTop10;
 	bool _rankingGanaJ1{ true };
+
+	bool _necesitaRecargarGraficos{ false };
 };

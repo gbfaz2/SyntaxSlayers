@@ -84,6 +84,21 @@ bool GestorPartida::cargar(Tablero& tablero, GestorTurnos& turnos, ConfigPartida
         }
     }
 
+    // Asignar ID de animación después de cargar
+    int contadores[(int)TipoPieza::pieza_cubo_p + 1] = { 0 };
+    for (int fila = 0; fila < Tablero::N; fila++) 
+    {
+        for (int col = 0; col < Tablero::N; col++) 
+        {
+            Casilla& c = tablero.getCasilla(fila, col);
+            if (c.obj != nullptr) {
+                int tipo = (int)c.pieza;
+                c.obj->setIdAnimacion(contadores[tipo]);
+                contadores[tipo]++;
+            }
+        }
+    }
+
     std::cout << "[GestorPartida] Partida cargada correctamente." << std::endl;
     return true;
 }
