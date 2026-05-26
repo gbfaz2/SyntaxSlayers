@@ -16,7 +16,9 @@
 // integrarse con ella
 
 // Direcciones de movimiento del combtiente en la arena
-enum class Direccion{
+
+enum class Direccion
+{
 	Delante,
 	Atras,
 	Izquierda,
@@ -73,6 +75,8 @@ class Combatiente
 
 	// POSICION INICIAL EN X (PARA SABER DE QUE LADO EMPEZO)
 	float _inicioX{ 0.0f };
+
+	bool _enMovimiento{ false }; // Indica si el combatiente se esta moviendo actualmente (para animaciones)
 
 public:
 	// Constructor: crea un combatiente con la posicion y el color dados
@@ -132,4 +136,6 @@ public:
 	float inicioX() const { return _inicioX; }
 
 	std::string nombre() const { return _nombre; }
+
+	bool enMovimiento() const { return _enMovimiento; } // Getter
 };

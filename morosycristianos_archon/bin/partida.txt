@@ -1,8 +1,8 @@
 modo 1
 batalla 0
-turno 2
-tiempo 86.5211
-numturno 5
+turno 1
+tiempo 87.4817
+numturno 8
 0 0 4 1 50
 0 1 7 1 20
 0 7 7 2 20

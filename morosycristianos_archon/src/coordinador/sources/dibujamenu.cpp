@@ -68,9 +68,11 @@ void DibujaMenu::menu_dibujar(MenuPrincipal& m, int ancho, int alto) {
     menu_titulo(m, ancho, alto);
     switch (m.m_paso) {
     case 0: menu_paso0(m, ancho, alto); break;
-    case 1: menu_paso1(m, ancho, alto); break;
-    case 2: menu_paso2(m, ancho, alto); break;
-    case 3: menu_paso3(m, ancho, alto); break;
+    case 1: menu_paso_nombre(m, ancho, alto); break;
+    case 2: menu_paso1(m, ancho, alto); break;
+    case 3: menu_paso_nombre(m, ancho, alto); break;
+    case 4: menu_paso2(m, ancho, alto); break;
+    case 5: menu_paso3(m, ancho, alto); break;
     }
     menu_pie(ancho, alto);
     util_salir2D();
@@ -208,6 +210,31 @@ void DibujaMenu::menu_pie(int ancho, int alto) {
 // ══════════════════════════════════════════════════════════════════════════
 // PRIMITIVAS COMPARTIDAS DEL MENÚ
 // ══════════════════════════════════════════════════════════════════════════
+
+void DibujaMenu::menu_paso_nombre(MenuPrincipal& m, int ancho, int alto) {
+    bool esJ2 = (m.m_paso == 3);
+    std::string prompt = esJ2
+        ? "Introduce tu nombre, Jugador 2:"
+        : "Introduce tu nombre, Jugador 1:";
+
+    menu_textoCentrado(prompt, ancho / 2.0f, alto / 2.0f + 80,
+        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+
+    float bw = 400, bh = 50;
+    float bx = ancho / 2.0f - bw / 2.0f;
+    float by = alto / 2.0f - bh / 2.0f;
+    menu_rectangulo(bx, by, bw, bh, 0.08f, 0.08f, 0.08f, 0.70f);
+    menu_borde(bx, by, bw, bh, 0.85f, 0.70f, 0.10f, 2.0f);
+
+    std::string texto = m.m_nombreActual;
+    if ((m.m_fotograma / 30) % 2 == 0) texto += "_";
+    menu_texto(texto, bx + 12, by + bh / 2.0f - 6,
+        1.0f, 1.0f, 1.0f, GLUT_BITMAP_HELVETICA_18);
+
+    menu_textoCentrado("Pulsa ENTER para confirmar",
+        ancho / 2.0f, alto / 2.0f - 70,
+        0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+}
 
 void DibujaMenu::menu_texto(const std::string& texto,
     float x, float y,
@@ -445,4 +472,106 @@ void DibujaMenu::destino_continuar(const PantallaDestino& p, int ancho, int alto
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 12);
     ETSIDI::setTextColor(0.80f, 0.78f, 0.65f, 0.35f + parpadeo * 0.65f);
     ETSIDI::printxy("Pulsa cualquier tecla para comenzar la batalla", ancho / 2 - 230, 30);
+}
+
+// RANKING
+void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking)
+{
+    util_entrar2D(ancho, alto);
+    menu_fondo(ancho, alto);
+
+    // Título
+    menu_textoCentrado("RESULTADO FINAL", ancho / 2.0f, alto - 80,
+        0.85f, 0.70f, 0.10f, GLUT_BITMAP_TIMES_ROMAN_24);
+
+    // Batalla y turnos
+    menu_textoCentrado("Batalla: " + batalla, ancho / 2.0f, alto - 130,
+        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+    menu_textoCentrado("Turnos jugados: " + std::to_string(turnos), ancho / 2.0f, alto - 155,
+        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+
+    // Tabla
+    float margen = ancho * 0.15f;
+    float tablaAncho = ancho * 0.70f;
+    float tablaY = alto - 200;
+    float colAncho = tablaAncho / 3.0f;
+    float filaAlto = 40.0f;
+
+    // Cabecera de la tabla
+    menu_rectangulo(margen, tablaY - filaAlto, tablaAncho, filaAlto,
+        0.85f, 0.70f, 0.10f, 0.4f);
+    menu_texto("Estadistica", margen + 10, tablaY - filaAlto + 12,
+        1.0f, 1.0f, 1.0f, GLUT_BITMAP_HELVETICA_18);
+    menu_texto("Cristiano", margen + colAncho + 10, tablaY - filaAlto + 12,
+        1.0f, 1.0f, 1.0f, GLUT_BITMAP_HELVETICA_18);
+    menu_texto("Andalusi", margen + colAncho * 2 + 10, tablaY - filaAlto + 12,
+        1.0f, 1.0f, 1.0f, GLUT_BITMAP_HELVETICA_18);
+
+    // Fila 1: Ganador
+    menu_rectangulo(margen, tablaY - filaAlto * 2, tablaAncho, filaAlto,
+        0.08f, 0.08f, 0.08f, 0.5f);
+    menu_texto("Resultado", margen + 10, tablaY - filaAlto * 2 + 12,
+        0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(ganador == "Cristiano" ? "GANADOR" : "perdedor",
+        margen + colAncho + 10, tablaY - filaAlto * 2 + 12,
+        ganador == "Cristiano" ? 1.0f : 0.5f,
+        ganador == "Cristiano" ? 1.0f : 0.5f,
+        0.0f, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(ganador == "Andalusi" ? "GANADOR" : "perdedor",
+        margen + colAncho * 2 + 10, tablaY - filaAlto * 2 + 12,
+        ganador == "Andalusi" ? 1.0f : 0.5f,
+        ganador == "Andalusi" ? 1.0f : 0.5f,
+        0.0f, GLUT_BITMAP_HELVETICA_18);
+
+    // Fila 2: Piezas eliminadas
+    menu_rectangulo(margen, tablaY - filaAlto * 3, tablaAncho, filaAlto,
+        0.12f, 0.12f, 0.12f, 0.5f);
+    menu_texto("Piezas eliminadas", margen + 10, tablaY - filaAlto * 3 + 12,
+        0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(std::to_string(piezasLocal),
+        margen + colAncho + 10, tablaY - filaAlto * 3 + 12,
+        0.89f, 0.29f, 0.29f, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(std::to_string(piezasRival),
+        margen + colAncho * 2 + 10, tablaY - filaAlto * 3 + 12,
+        0.39f, 0.60f, 0.13f, GLUT_BITMAP_HELVETICA_18);
+
+    // Borde de la tabla
+    menu_borde(margen, tablaY - filaAlto * 3, tablaAncho, filaAlto * 3,
+        0.85f, 0.70f, 0.10f, 2.0f);
+
+    // Ganador destacado
+    menu_textoCentrado("¡VICTORIA " + ganador + "!",
+        ancho / 2.0f, tablaY - filaAlto * 4 - 20,
+        1.0f, 1.0f, 0.4f, GLUT_BITMAP_TIMES_ROMAN_24);
+
+    menu_textoCentrado("Pulsa ESC para volver al menu",
+        ancho / 2.0f, 30,
+        0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+
+    // TOP 10
+    //auto ranking = GestorRanking::cargar();
+    menu_textoCentrado("TOP 10", ancho / 2.0f, tablaY - filaAlto * 5 - 20,
+        0.85f, 0.70f, 0.10f, GLUT_BITMAP_HELVETICA_18);
+
+    if (ranking.empty()) {
+        menu_textoCentrado("No hay partidas registradas todavia",
+            ancho / 2.0f, tablaY - filaAlto * 6 - 20,
+            0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_12);
+    }
+    else {
+        for (int i = 0; i < (int)ranking.size(); i++) {
+            float fy = tablaY - filaAlto * 6 - 20 - i * 22;
+            float r = 0.80f, g = 0.80f, b = 0.80f;
+            if (i == 0) { r = 1.0f;  g = 0.85f; b = 0.10f; } // ORO
+            if (i == 1) { r = 0.80f; g = 0.80f; b = 0.80f; } // PLATA
+            if (i == 2) { r = 0.80f; g = 0.50f; b = 0.20f; } // BRONCE
+
+            std::string linea = std::to_string(i + 1) + ". " +
+                ranking[i].ganador + " - " +
+                ranking[i].batalla + " - " +
+                std::to_string(ranking[i].puntuacion) + " pts";
+            menu_textoCentrado(linea, ancho / 2.0f, fy, r, g, b, GLUT_BITMAP_HELVETICA_12);
+        }
+    }
+    util_salir2D();
 }

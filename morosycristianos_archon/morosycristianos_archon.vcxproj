@@ -185,6 +185,7 @@
     <ClInclude Include="src\piezas\headers\SpriteRey.h" />
     <ClInclude Include="src\tablero\headers\GestorHechizos.h" />
     <ClInclude Include="src\tablero\headers\GestorMovimiento.h" />
+    <ClInclude Include="src\tablero\headers\GestorRanking.h" />
     <ClInclude Include="src\tablero\headers\GestorTurnos.h" />
     <ClInclude Include="src\tablero\headers\GestorVictoria.h" />
     <ClInclude Include="src\tablero\headers\tablero.h" />
@@ -238,6 +239,7 @@
     <ClCompile Include="src\tablero\sources\GestorHechizos.cpp" />
     <ClCompile Include="src\tablero\sources\GestorMovimiento.cpp" />
     <ClCompile Include="src\tablero\sources\GestorPartida.cpp" />
+    <ClCompile Include="src\tablero\sources\GestorRanking.cpp" />
     <ClCompile Include="src\tablero\sources\GestorTurnos.cpp" />
     <ClCompile Include="src\tablero\sources\GestorVictoria.cpp" />
     <ClCompile Include="src\tablero\sources\tablero.cpp" />

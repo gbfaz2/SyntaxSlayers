@@ -13,6 +13,8 @@
 #include "GestorInput.h"
 #include "SpriteRey.h"
 #include "GestorPartida.h"
+#include "MinimaxTablero.h"
+#include "GestorRanking.h"
 
 class Coordinador
 {
@@ -43,6 +45,12 @@ class Coordinador
 	Pieza* _pAtacanteCombate{ nullptr };  // pieza atacante del combate actual
 	Pieza* _pDefensoraCombate{ nullptr }; // pieza defensora del combate actual
 
+	MinimaxTablero _minimax{ 3 };          // IA CON PROFUNDIDAD 3
+	bool _iaCalculando{ false };           // EVITA CALCULAR VARIAS VECES POR FRAME
+	bool _iaYaMovio{ false };  // CONTROLA QUE LA IA SOLO MUEVE UNA VEZ POR TURNO
+	int  _turnoAnteriorIA{ -1 }; // TURNO EN EL QUE MOVIÓ LA IA POR ÚLTIMA VEZ
+	float _tiempoEsperaIA{ 0.0f }; // TEMPORIZADOR ANTES DE QUE MUEVA LA IA
+
 public:
 	Coordinador() = default;
 	~Coordinador();
@@ -63,4 +71,12 @@ public:
 	void ratonMovido(int x, int y);
 	void redimensionar(int ancho, int alto);
 	void reiniciarTablero(); // REINICIA EL TABLERO AL ESTADO INICIAL
+
+	std::string _rankingGanador{ "" };
+	std::string _rankingBatalla{ "" };
+	int _rankingTurnos{ 0 };
+	int _rankingPiezasLocal{ 0 };
+	int _rankingPiezasRival{ 0 };
+
+	std::vector<EntradaRanking> _rankingTop10;
 };
