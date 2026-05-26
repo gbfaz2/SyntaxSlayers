@@ -32,15 +32,25 @@ public:
 
 //  MenuPrincipal  (E_MENU)
 class MenuPrincipal {
-    int           m_paso;       // 0=modo, 1=bando, 2=batalla, 3=confirmar
+    int           m_paso;       // 0=modo, 1=nombreJ1, 2=bando, 3=nombreJ2, 4=batalla, 5=confirmar
     int           m_seleccion;  // opcion resaltada
     int           m_fotograma;
     bool          m_terminado;
     EstadoJuego   m_siguiente;
     ConfigPartida m_cfg;
+    std::string   m_nombreActual;
 
     void confirmar();
-    int maxOpciones() const { return (m_paso == 1) ? 2 : 5; }
+	void teclaTexto(unsigned char key); // para escribir los nombres de los jugadores
+    int maxOpciones() const {
+        switch (m_paso) {
+        case 0: return 5;  // modo
+        case 2: return 2;  // bando
+        case 4: return 4;  // batalla
+        case 5: return 2;  // confirmar
+        default: return 0; // pasos de texto (1 y 3)
+        }
+    }
 public:
     MenuPrincipal();
 

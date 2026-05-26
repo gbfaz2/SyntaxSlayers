@@ -69,6 +69,10 @@ void Coordinador::dibuja()
 
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
+					// NOMBRES DE LOS JUGADORES PARA EL HUD
+					pTablerogl->nombre_j1 = configuracion.nombre_j1;
+					pTablerogl->nombre_j2 = configuracion.nombre_j2;
+
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
@@ -153,6 +157,8 @@ void Coordinador::dibuja()
 
 		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
 		pTablerogl->setBatalla((int)configuracion.batalla);
+		pTablerogl->nombre_j1 = configuracion.nombre_j1; // RESTAURA NOMBRES AL CARGAR
+		pTablerogl->nombre_j2 = configuracion.nombre_j2;
 		ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
 		estado = EstadoJuego::TABLERO;
 		break;

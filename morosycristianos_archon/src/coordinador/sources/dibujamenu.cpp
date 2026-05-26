@@ -68,9 +68,11 @@ void DibujaMenu::menu_dibujar(MenuPrincipal& m, int ancho, int alto) {
     menu_titulo(m, ancho, alto);
     switch (m.m_paso) {
     case 0: menu_paso0(m, ancho, alto); break;
-    case 1: menu_paso1(m, ancho, alto); break;
-    case 2: menu_paso2(m, ancho, alto); break;
-    case 3: menu_paso3(m, ancho, alto); break;
+    case 1: menu_paso_nombre(m, ancho, alto); break;
+    case 2: menu_paso1(m, ancho, alto); break;
+    case 3: menu_paso_nombre(m, ancho, alto); break;
+    case 4: menu_paso2(m, ancho, alto); break;
+    case 5: menu_paso3(m, ancho, alto); break;
     }
     menu_pie(ancho, alto);
     util_salir2D();
@@ -208,6 +210,31 @@ void DibujaMenu::menu_pie(int ancho, int alto) {
 // ══════════════════════════════════════════════════════════════════════════
 // PRIMITIVAS COMPARTIDAS DEL MENÚ
 // ══════════════════════════════════════════════════════════════════════════
+
+void DibujaMenu::menu_paso_nombre(MenuPrincipal& m, int ancho, int alto) {
+    bool esJ2 = (m.m_paso == 3);
+    std::string prompt = esJ2
+        ? "Introduce tu nombre, Jugador 2:"
+        : "Introduce tu nombre, Jugador 1:";
+
+    menu_textoCentrado(prompt, ancho / 2.0f, alto / 2.0f + 80,
+        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+
+    float bw = 400, bh = 50;
+    float bx = ancho / 2.0f - bw / 2.0f;
+    float by = alto / 2.0f - bh / 2.0f;
+    menu_rectangulo(bx, by, bw, bh, 0.08f, 0.08f, 0.08f, 0.70f);
+    menu_borde(bx, by, bw, bh, 0.85f, 0.70f, 0.10f, 2.0f);
+
+    std::string texto = m.m_nombreActual;
+    if ((m.m_fotograma / 30) % 2 == 0) texto += "_";
+    menu_texto(texto, bx + 12, by + bh / 2.0f - 6,
+        1.0f, 1.0f, 1.0f, GLUT_BITMAP_HELVETICA_18);
+
+    menu_textoCentrado("Pulsa ENTER para confirmar",
+        ancho / 2.0f, alto / 2.0f - 70,
+        0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+}
 
 void DibujaMenu::menu_texto(const std::string& texto,
     float x, float y,
