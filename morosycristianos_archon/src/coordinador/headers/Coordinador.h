@@ -79,4 +79,5 @@ public:
 	int _rankingPiezasRival{ 0 };
 
 	std::vector<EntradaRanking> _rankingTop10;
+	bool _rankingGanaJ1{ true };
 };
