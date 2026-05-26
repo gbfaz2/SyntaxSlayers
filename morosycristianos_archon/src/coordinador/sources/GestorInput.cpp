@@ -538,25 +538,27 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
 {
     if (key == 13) { // ENTER CONFIRMA
         switch (_tablerogl->_pausaSeleccion) {
-        case 0:                                            // CONTINUAR
+        case 0:  // CONTINUAR
             estado = EstadoJuego::TABLERO;
             break;
-        case 1:                                            // GUARDAR
+        case 1:  // GUARDAR
             GestorPartida::guardar(*_coordinador->pTablero,
                 _tablerogl->gestorTurnos, _coordinador->configuracion);
             std::cout << "[Pausa] Partida guardada.\n";
-            estado = EstadoJuego::TABLERO;                 // SIGUE JUGANDO
+            ETSIDI::stopMusica();
+            _coordinador->reiniciarTablero();
+            _coordinador->estado = EstadoJuego::MENU;
             break;
-        case 2:                                            // AYUDA — DE MOMENTO NADA
+        case 2:  // AYUDA — DE MOMENTO NADA
             break;
-        case 3:                                            // SALIR SIN GUARDAR
+        case 3: // SALIR SIN GUARDAR
             ETSIDI::stopMusica();
             _coordinador->reiniciarTablero();
             estado = EstadoJuego::MENU;
             break;
         }
     }
-    if (key == 27) estado = EstadoJuego::TABLERO;         // ESC SIEMPRE CONTINÚA
+    if (key == 27) estado = EstadoJuego::TABLERO;  // ESC SIEMPRE CONTINÚA
 }
 
 void GestorInput::ratonGuardando(int x, int y, bool click, EstadoJuego& estado)
