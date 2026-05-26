@@ -610,25 +610,34 @@ void DibujaTablero::tablero_contadores(const Tablerogl& t)
     ETSIDI::setFont("fuentes/ARIALNBI.ttf", 22);
     ETSIDI::printxy("MOROS Y CRISTIANOS", aw / 2 - 130, av - 35);
 
-    // CRISTIANO (izquierda)
-    if (esLocal) ETSIDI::setTextColor(1.0f, 0.20f, 0.20f, 1.0f);  // ROJO VIVO SI ES SU TURNO
-    else         ETSIDI::setTextColor(0.5f, 0.10f, 0.10f, 1.0f);  // ROJO APAGADO SI ESPERA
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
-    ETSIDI::printxy("CRISTIANO", 20, av - 35);
+    // JUGADOR 1 — bando y nombre (izquierda)
+    if (esLocal) ETSIDI::setTextColor(0.86f, 0.08f, 0.24f, 1.0f);  // CARMESÍ VIVO SI ES SU TURNO
+    else         ETSIDI::setTextColor(0.40f, 0.04f, 0.12f, 1.0f);  // CARMESÍ APAGADO SI ESPERA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 21);
+    ETSIDI::printxy("Bando Cristiano:", 15, av - 28);
+    ETSIDI::printxy(t.nombre_j1.c_str(), 15, av - 52);
 
-    // TIEMPO (centro)
+    // TIEMPO (centro) — debajo del título, bien separado
     char bufTiempo[16];
-    if (esLocal) ETSIDI::setTextColor(1.0f, 0.20f, 0.20f, 1.0f);  // ROJO SI ES TURNO LOCAL
-    else         ETSIDI::setTextColor(0.85f, 0.10f, 1.0f, 1.0f);  // MORADO SI ES TURNO RIVAL
+    if (esLocal) ETSIDI::setTextColor(0.86f, 0.08f, 0.24f, 1.0f);  // CARMESÍ SI ES TURNO LOCAL
+    else         ETSIDI::setTextColor(0.45f, 0.0f, 0.60f, 1.0f);   // PÚRPURA SI ES TURNO RIVAL
     sprintf_s(bufTiempo, "%02d s", seg);
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
-    ETSIDI::printxy(bufTiempo, aw / 2 - 10, av - 55);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 21);
+    ETSIDI::printxy(bufTiempo, aw / 2 - 20, av - 62);
 
-    // AL ANDALUS (derecha)
-    if (!esLocal) ETSIDI::setTextColor(0.85f, 0.10f, 1.0f, 1.0f); // MORADO VIVO SI ES SU TURNO
-    else          ETSIDI::setTextColor(0.35f, 0.10f, 0.45f, 1.0f); // MORADO APAGADO SI ESPERA
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
-    ETSIDI::printxy("AL ANDALUS", aw - 150, av - 35);
+    // JUGADOR 2 — bando y nombre (derecha)
+    if (!esLocal) ETSIDI::setTextColor(0.45f, 0.0f, 0.60f, 1.0f);  // PÚRPURA VIVO SI ES SU TURNO
+    else          ETSIDI::setTextColor(0.20f, 0.0f, 0.28f, 1.0f);  // PÚRPURA APAGADO SI ESPERA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 21);
+    ETSIDI::printxy("Bando Andalus\xED:", aw - 190, av - 28);
+    ETSIDI::printxy(t.nombre_j2.c_str(), aw - 190, av - 52);
+
+    // TURNO ACTIVO — centrado debajo del tablero
+    std::string turnoTexto = "Turno de " + (esLocal ? t.nombre_j1 : t.nombre_j2);
+    if (esLocal) ETSIDI::setTextColor(0.86f, 0.08f, 0.24f, 1.0f);  // CARMESÍ
+    else         ETSIDI::setTextColor(0.45f, 0.0f, 0.60f, 1.0f);   // PÚRPURA
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 21);
+    ETSIDI::printxy(turnoTexto.c_str(), aw / 2 - 100, 30);
 }
 
 void DibujaTablero::tablero_mensaje_invalido(const Tablerogl& t)

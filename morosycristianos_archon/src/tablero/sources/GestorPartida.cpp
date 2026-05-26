@@ -21,6 +21,8 @@ bool GestorPartida::guardar(const Tablero& tablero, const GestorTurnos& turnos, 
     f << "turno " << (int)turnos.getBandoActual() << "\n";
     f << "tiempo " << turnos.getTiempoRestante() << "\n";
     f << "numturno " << turnos.getNumeroTurno() << "\n";
+    f << "j1 " << cfg.nombre_j1 << "\n";
+    f << "j2 " << cfg.nombre_j2 << "\n";
 
     // Tablero: fila, col, tipoPieza, bandoPieza, vida
     for (int fila = 0; fila < Tablero::N; fila++) {
@@ -59,6 +61,10 @@ bool GestorPartida::cargar(Tablero& tablero, GestorTurnos& turnos, ConfigPartida
     cfg.modo = (ModoJuego)modo;
     cfg.batalla = (Batalla)batalla;
     turnos.setBandoInicial((BandoPieza)turno);
+
+    std::string j1label, j2label;
+    f >> j1label >> cfg.nombre_j1;
+    f >> j2label >> cfg.nombre_j2;
 
     tablero.limpiarPiezas();
 
