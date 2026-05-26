@@ -73,7 +73,7 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 		};
 
 	// BANDO LOCAL (cristiano) — columnas 0 y 1
-	poner(4, 0, pieza_esfera, bando_local, new Rey(Bando::CRISTIANO));
+	//poner(4, 0, pieza_esfera, bando_local, new Rey(Bando::CRISTIANO));
 	//poner(3, 0, pieza_dodecaedro, bando_local, new Infiltrado(Bando::CRISTIANO));
 	poner(5, 0, pieza_icosaedro, bando_local, new Almogavar(Bando::CRISTIANO));
 	poner(0, 0, pieza_tetraedro, bando_local, new CaballeriaLigera(Bando::CRISTIANO));
@@ -105,6 +105,12 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	poner(3, 0, pieza_dodecaedro, bando_local, Infil);
 
 
+	int idReyy = 0; // Contador de IDs para infiltrado
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* Re = new Rey(Bando::CRISTIANO);
+	Re->setIdAnimacion(idInfiltrado++);
+	poner(4, 0, pieza_esfera, bando_local, Re);
 
 	// BANDO RIVAL (andalusí) — columnas 7 y 8
 	//poner(4, 8, pieza_esfera, bando_rival, new Rey(Bando::ANDALUSI));
