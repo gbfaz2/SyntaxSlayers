@@ -10,7 +10,7 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     case TipoPersonaje::MILICIANO:     
         return "imagenes\\MILICIANO_PNG.png";
     case TipoPersonaje::REY:
-        return "imagenes\\REY_DEF.png";
+        return "imagenes\\REY_PRUEBA.png";
     case TipoPersonaje::EMIR:           
         return "imagenes\\EMIR_DEF.png";
     case TipoPersonaje::ASESINO_DE_ELITE:     
@@ -63,8 +63,8 @@ void dibujapersonajes::init() {
         for (int i = 0; i < MAX_SPRITES; i++) {
             _sprites[t][i] = new ETSIDI::SpriteSequence(
                 ruta,
-                4, 3, 150, true,  // 4 cols, 3 filas, 150ms por frame
-                0, 0, 32, 32
+                4, 4, 150, true,  // 4 cols, 3 filas, 150ms por frame
+                0, 0, 30, 30
             );
             _sprites[t][i]->setState((int)EstadoPersonaje::IDLE, false);
         }
