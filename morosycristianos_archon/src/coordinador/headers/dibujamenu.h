@@ -70,4 +70,7 @@ public:
 
     static void victoria_dibujar(int ancho, int alto, const std::string& ganador,
         const std::string& batalla, bool ganaJ1, float tiempoRestante);
+
+    // Para el menu pausa -> ayuda
+    static void ayuda_dibujar(int seleccion, int seccion, int ancho, int alto);
 };

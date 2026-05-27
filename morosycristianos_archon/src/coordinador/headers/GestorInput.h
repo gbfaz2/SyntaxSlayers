@@ -41,7 +41,6 @@ public:
     void teclaEspecialUpArena(int key);
     void teclaEspecialGuardando(int key, EstadoJuego& estado); // FLECHAS MENÚ PAUSA
 
-
     // RATON
     void ratonMenu(int boton, int state, int x, int y, EstadoJuego& estado,
         PantallaIntro& intro, MenuPrincipal& menu, PantallaDestino& destino);
