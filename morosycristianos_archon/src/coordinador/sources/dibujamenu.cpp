@@ -437,7 +437,11 @@ void DibujaMenu::destino_textos(const PantallaDestino& p, int ancho, int alto) {
     // TÍTULO DE LA BATALLA
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 24);
     ETSIDI::setTextColor((0.85f + brillo) * alfa, (0.70f + brillo * 0.5f) * alfa, 0.10f * alfa, alfa);
-    ETSIDI::printxy(nombreBatalla(p.m_cfg.batalla), ancho / 2 - 150, alto - 85);
+    {
+        const char* tituloBat = nombreBatalla(p.m_cfg.batalla);
+        int tw = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)tituloBat);
+        ETSIDI::printxy(tituloBat, ancho / 2 - (int)(tw * 0.80f), alto - 85);
+    }
 
     // LÍNEA DECORATIVA
     glColor4f(0.85f * alfa, 0.68f * alfa, 0.10f * alfa, 0.65f * alfa);
@@ -458,7 +462,9 @@ void DibujaMenu::destino_textos(const PantallaDestino& p, int ancho, int alto) {
         letrasRestantes -= lineLen;
         std::string visible = p.m_lineas[i].substr(0, mostrar);
         ETSIDI::setTextColor(0.92f, 0.88f, 0.80f, alfa);
-        ETSIDI::printxy(visible.c_str(), 140, alto - 160 - i * 26);
+        // Centrar usando la línea completa para que no se desplace durante el efecto máquina de escribir
+        int lw = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)p.m_lineas[i].c_str());
+        ETSIDI::printxy(visible.c_str(), ancho / 2 - lw / 2, alto - 160 - i * 26);
     }
 
     glDisable(GL_BLEND);
@@ -471,7 +477,11 @@ void DibujaMenu::destino_continuar(const PantallaDestino& p, int ancho, int alto
     float parpadeo = (sinf((float)p.m_fotograma * 0.08f) + 1.0f) * 0.5f;
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 12);
     ETSIDI::setTextColor(0.80f, 0.78f, 0.65f, 0.35f + parpadeo * 0.65f);
-    ETSIDI::printxy("Pulsa cualquier tecla para comenzar la batalla", ancho / 2 - 230, 30);
+    {
+        const char* contTxt = "Pulsa cualquier tecla para comenzar la batalla";
+        int cw = glutBitmapLength(GLUT_BITMAP_HELVETICA_12, (const unsigned char*)contTxt);
+        ETSIDI::printxy(contTxt, ancho / 2 - cw / 2, 30);
+    }
 }
 
 // RANKING
