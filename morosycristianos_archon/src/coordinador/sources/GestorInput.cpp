@@ -278,12 +278,45 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
                 _tablerogl->piezaSeleccionada = false;
                 _tablerogl->fromFila = _tablerogl->fromCol = -1;
 
-                _tablerogl->mostrarMensajeInvalido("Modo Copia: Elige rival", true);
+                _tablerogl->mostrarMensajeInvalido("Modo Copia: Elige rival", true,false);
             }
-            else {
-                _tablerogl->mostrarMensajeInvalido("No tienes la habilidad", true);
-            }
+            else 
+                _tablerogl->mostrarMensajeInvalido("No tienes la habilidad", true, true);
         }
+        return;
+    }
+
+    // ============================================================
+    // ENTER: CONFIRMAR ROBO DE STATS DEL INFILTRADO
+    // ============================================================
+    if (key == 13) {
+        if (_tablerogl->_modoInfiltrado && _tablerogl->piezaSeleccionada) {
+            const Casilla& casEnemigo = _coordinador->pTablero->getCasilla(_tablerogl->fromFila, _tablerogl->fromCol);
+            Infiltrado* inf = dynamic_cast<Infiltrado*>(_coordinador->pTablero->getCasilla(_tablerogl->_infiltradoFila, _tablerogl->_infiltradoCol).obj);
+
+            if (inf && casEnemigo.obj) {
+                inf->copiarStats(*(casEnemigo.obj));
+
+                // Limpiamos los estados
+                _tablerogl->_modoInfiltrado = false;
+                _tablerogl->piezaSeleccionada = false;
+                _tablerogl->fromFila = _tablerogl->fromCol = -1;
+
+                _tablerogl->mostrarMensajeInvalido("Stats copiados", true, false); // Sin sonido
+                _tablerogl->gestorTurnos.terminarTurno();
+            }
+            return;
+        }
+    }
+
+    // ============================================================
+    // Z: CANCELAR MODO INFILTRADO
+    // ============================================================
+    if (key == 'z' && _tablerogl->_modoInfiltrado) {
+        _tablerogl->_modoInfiltrado = false;
+        _tablerogl->piezaSeleccionada = false;
+        _tablerogl->fromFila = _tablerogl->fromCol = -1;
+        _tablerogl->mostrarMensajeInvalido("Habilidad cancelada", true, false);
         return;
     }
 
@@ -334,17 +367,15 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
             int fila = _tablerogl->Filacursor[0];
             int col = _tablerogl->Colcursor[0];
             const Casilla& casEnemigo = _coordinador->pTablero->getCasilla(fila, col);
-            Infiltrado* inf = dynamic_cast<Infiltrado*>(_coordinador->pTablero->getCasilla(_tablerogl->_infiltradoFila, _tablerogl->_infiltradoCol).obj);
 
-            if (inf && casEnemigo.obj && casEnemigo.bando == bando_rival) {
-                inf->copiarStats(*(casEnemigo.obj));
-                _tablerogl->_modoInfiltrado = false;
-                _tablerogl->mostrarMensajeInvalido("¡Stats copiados!", true);
-                _tablerogl->gestorTurnos.terminarTurno();
+            if (casEnemigo.obj && casEnemigo.bando == bando_rival) {
+                _tablerogl->piezaSeleccionada = true;
+                _tablerogl->fromFila = fila;
+                _tablerogl->fromCol = col;
+                _tablerogl->mostrarMensajeInvalido("Pulsa ENTER para robar stats", true, false);
             }
-            else {
-                _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true);
-            }
+            else 
+                _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true, true);
             return;
         }
 
@@ -367,19 +398,18 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
             int fila = _tablerogl->Filacursor[1];
             int col = _tablerogl->Colcursor[1];
             const Casilla& casEnemigo = _coordinador->pTablero->getCasilla(fila, col);
-            Infiltrado* inf = dynamic_cast<Infiltrado*>(_coordinador->pTablero->getCasilla(_tablerogl->_infiltradoFila, _tablerogl->_infiltradoCol).obj);
 
-            if (inf && casEnemigo.obj && casEnemigo.bando == bando_local) {
-                inf->copiarStats(*(casEnemigo.obj));
-                _tablerogl->_modoInfiltrado = false;
-                _tablerogl->mostrarMensajeInvalido("¡Stats copiados!", true);
-                _tablerogl->gestorTurnos.terminarTurno();
+            if (casEnemigo.obj && casEnemigo.bando == bando_local) {
+                _tablerogl->piezaSeleccionada = true;
+                _tablerogl->fromFila = fila;
+                _tablerogl->fromCol = col;
+                _tablerogl->mostrarMensajeInvalido("Pulsa ENTER para robar stats", true, false);
             }
-            else {
-                _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true);
-            }
+            else 
+                _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true, true);
             return;
         }
+
         if (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_rival) {
             int fila = _tablerogl->Filacursor[1];          // FILA CURSOR P2
             int col = _tablerogl->Colcursor[1];           // COL CURSOR P2
@@ -463,23 +493,27 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
 
     const Casilla& clicked = _tablerogl->m_tablero->getCasilla(clickFila, clickCol);
 
-    // MODO INFILTRADO: CLIC IZQUIERDO CONFIRMA COPIA
+    // MODO INFILTRADO: CLIC IZQUIERDO SELECCIONA PARA VER CARACTERÍSTICAS
     if (_tablerogl->_modoInfiltrado) {
         const Casilla& casEnemigo = _tablerogl->m_tablero->getCasilla(clickFila, clickCol);
         Infiltrado* inf = dynamic_cast<Infiltrado*>(_tablerogl->m_tablero->getCasilla(_tablerogl->_infiltradoFila, _tablerogl->_infiltradoCol).obj);
-        // Obtenemos el bando en formato Tablero (bando_local o bando_rival)
+
         BandoPieza miBando = _tablerogl->gestorTurnos.getBandoActual();
 
         if (inf && casEnemigo.obj && casEnemigo.bando != miBando && casEnemigo.bando != bando_nada) {
-            inf->copiarStats(*(casEnemigo.obj));
-            _tablerogl->_modoInfiltrado = false;
-            _tablerogl->mostrarMensajeInvalido("¡Stats copiados!", true);
-            _tablerogl->gestorTurnos.terminarTurno();
+            // Solo seleccionamos la pieza para que aparezca el panel
+            _tablerogl->piezaSeleccionada = true;
+            _tablerogl->fromFila = clickFila;
+            _tablerogl->fromCol = clickCol;
+
+            // Avisamos de cómo confirmar (forzar = true, sonido = false)
+            _tablerogl->mostrarMensajeInvalido("Pulsa ENTER para robar stats", true, false);
         }
         else {
-            _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true);
+            // Error real: sí hace sonido
+            _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true, true);
         }
-        return; // IMPORTANTE: Cortamos aquí para que no mueva la pieza
+        return; // IMPORTANTE: Cortamos aquí
     }
 
     if (!_tablerogl->piezaSeleccionada) {              // SIN PIEZA SELECCIONADA: SELECCIONA
