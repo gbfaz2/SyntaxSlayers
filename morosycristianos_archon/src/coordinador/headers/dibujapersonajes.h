@@ -10,7 +10,7 @@ enum class TipoPersonaje {
     MILICIANO,
     REY,
     EMIR,
-    INFILTRADO,
+    ASESINO_DE_ELITE,
     GUARDIA_NEGRA,
     JINETE_BEREBER,
     TOTAL  // siempre al final, cuenta cuántos hay

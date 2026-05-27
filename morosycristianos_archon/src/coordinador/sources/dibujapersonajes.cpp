@@ -9,13 +9,11 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     switch (tipo) {
     case TipoPersonaje::MILICIANO:     
         return "imagenes\\MILICIANO_PNG.png";
-
     case TipoPersonaje::REY:
         return "imagenes\\REY_DEF.png";
-
     case TipoPersonaje::EMIR:           
         return "imagenes\\EMIR_DEF.png";
-    case TipoPersonaje::INFILTRADO:     
+    case TipoPersonaje::ASESINO_DE_ELITE:     
         return "imagenes\\ASESINO_DEF.png";
     case TipoPersonaje::GUARDIA_NEGRA:  
         return "imagenes\\GUARDIANEGRA.png";
@@ -34,7 +32,7 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
     case pieza_cubo_p:     
         return TipoPersonaje::MILICIANO;
     case pieza_dodecaedro:  
-        return TipoPersonaje::INFILTRADO;
+        return TipoPersonaje::ASESINO_DE_ELITE;
     case pieza_cubog:       
         return TipoPersonaje::GUARDIA_NEGRA;
     case pieza_tetraedro:   
@@ -80,14 +78,45 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
 
     if (indice < 0 || indice >= MAX_SPRITES) return;
     if (!_sprites[t][indice]) return;
+  
 
+    //primero se actualiza el estado del frame
+    int currentFrame = _sprites[t][indice]->getState();
+    int baseFrame = (int)estado;
+
+
+    if (estado == EstadoPersonaje::IDLE) {
+        if (!enMovimiento) {
+            // Congelado en el primer frame
+            //if (currentFrame != baseFrame)
+             _sprites[t][indice]->setState(baseFrame, true);
+        }
+
+        else {
+            // Bucle frames 0-2 para andar
+            if (currentFrame < baseFrame || currentFrame >= baseFrame + 2)
+                _sprites[t][indice]->setState(0, false);
+            else 
+                _sprites[t][indice]->pause(false);//vuelve a animar
+
+        }
+    }
+    else {
+        // ATTACK o HURT: 4 frames completos
+        if (currentFrame < baseFrame || currentFrame >= baseFrame + 4)
+            _sprites[t][indice]->setState(baseFrame, false);
+    }
+
+    //ahora se actualiza la pos y el tamaño
     _sprites[t][indice]->setPos(x, y);
     _sprites[t][indice]->setSize(size, size * 1.3f);
 
-    //comprueba si hay que voltear o no (bando)
+    //comprueba si hay que voltear o no, y dibuja en funcion de voltear
+
     if (voltear) {
         glPushMatrix();
         glTranslatef(x, y, 0.0f);
+        //coordenadas negativas para darles la vuelta como un espejo
         glScalef(-1.0f, 1.0f, 1.0f);
         glTranslatef(-x, -y, 0.0f);
         _sprites[t][indice]->draw();
@@ -97,56 +126,6 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
         _sprites[t][indice]->draw();
     }
 
-    
-    
-    int currentFrame = _sprites[t][indice]->getState();
-    int baseFrame = (int)estado;
-
-
-    if (estado == EstadoPersonaje::IDLE) {
-        if (!enMovimiento) {
-            // Congelado en el primer frame
-            if (currentFrame != baseFrame)
-                _sprites[t][indice]->setState(baseFrame, true);
-        }
-
-        else {
-            // Bucle frames 0-2
-
-            if (currentFrame < baseFrame || currentFrame > baseFrame + 2)
-                _sprites[t][indice]->setState(baseFrame, false);
-        }
-    }
-    else {
-        // ATTACK o HURT: 4 frames completos
-        if (currentFrame < baseFrame || currentFrame >= baseFrame + 4)
-            _sprites[t][indice]->setState(baseFrame, false);
-    }
-
-
-    /*
-    // Definimos cuántos frames tiene esta animación
-    int framesAnimacion = 4; // Por defecto son 4
-    if (estado == EstadoPersonaje::IDLE) {
-        framesAnimacion = 3; // La fila de IDLE (andar) solo tiene 3 dibujos
-    }
-
-
-    // Comprobamos que estamos en la fila correcta, y si no estamos:
-    if (currentFrame < baseFrame || currentFrame >= baseFrame + framesAnimacion) {
-        _milicianos[indice]->setState(baseFrame, false); // nos movemos a la fila correcta
-    }
-
-    // si se mueve la pieza: 
-    if (enMovimiento) {
-        _milicianos[indice]->pause(false); //empieza a andar
-    }
-    else {
-        _milicianos[indice]->setState(baseFrame, true); // Pausamos en el primer frame para que se quede en posicion de reposo
-    }
-    */
-
-    //_sprites[t][indice]->draw();
 }
 
 

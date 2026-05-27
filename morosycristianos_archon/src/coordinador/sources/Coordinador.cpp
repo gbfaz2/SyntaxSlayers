@@ -420,10 +420,6 @@ void Coordinador::mueve(double dt)
 		}
 	}
 
-	_spriteReyLocal.update(dt);
-	if (_spriteReyLocal.animacionTerminada() && _spriteReyLocal.getEstado() != EstadoRey::DEATH)
-		_spriteReyLocal.setEstado(EstadoRey::IDLE);
-
 	if (estado == EstadoJuego::ARENA) {
 		_arena.actualizar((float)dt, _input);
 		DibujaArena::arena_update((float)dt);

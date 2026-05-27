@@ -488,12 +488,6 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         EstadoPersonaje estadoEmir = EstadoPersonaje::IDLE;
         bool moviendo = false;
 
-        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
-        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
-            moviendo = true;
-            estadoEmir = EstadoPersonaje::IDLE;
-            
-        }
 
         // Para el emir: 
         if (casilla.bando != bando_local) {
@@ -508,7 +502,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
             }
 
             _dibujador.dibujar(tipo, px, py, size,
-                estadoEmir, idAnim, false, voltear);
+                estadoEmir, idAnim, moviendo, voltear);
             util_salir2D();
             return;
         }
@@ -524,7 +518,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
             }
 
             _dibujador.dibujar(tipo, px, py, size,
-                estadoEmir, idAnim, false, voltear);
+                estadoEmir, idAnim, moviendo, voltear);
             util_salir2D();
             return;
 
@@ -567,6 +561,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
+        
         // Solo dibujamos para el bando cristiano
         if (casilla.bando != bando_local) {
             bool voltear = true;
@@ -580,6 +575,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         _dibujador.dibujar(tipo, px, py, size,
             EstadoPersonaje::IDLE, idAnim, false);
         util_salir2D();
+
+        
+
         return;
     }
     break;

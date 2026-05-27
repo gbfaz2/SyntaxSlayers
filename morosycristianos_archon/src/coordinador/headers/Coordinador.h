@@ -11,7 +11,6 @@
 #include "GestorVictoria.h"
 #include "GestorHechizos.h"
 #include "GestorInput.h"
-#include "SpriteRey.h"
 #include "GestorPartida.h"
 #include "MinimaxTablero.h"
 #include "GestorRanking.h"
@@ -40,7 +39,6 @@ class Coordinador
 	GestorTurnos     gestorTurnos;
 	GestorVictoria   gestorVictoria;
 	GestorHechizos* pGestorHechizos{ nullptr };
-	SpriteRey _spriteReyLocal;
 
 	Pieza* _pAtacanteCombate{ nullptr };  // pieza atacante del combate actual
 	Pieza* _pDefensoraCombate{ nullptr }; // pieza defensora del combate actual
