@@ -163,6 +163,23 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 
 
 	//faltan soldados ghazi
+	// GENERAMOS LOS SOLDADOS GHAZI (FRONT-LINE RIVAL) TEMPORALMENTE
+	int idGhazi = 0; // CONTADOR DE ID PARA LA ANIMACIÓN RIVAL
+	// RECORREMOS LAS FILAS CENTRALES PARA LA PRIMERA LÍNEA (COLUMNA 7)
+	for (int fila = 1; fila <= 7; fila++) {
+
+		// CREAMOS LA PIEZA COMO MILICIANO PERO DEL BANDO ANDALUSÍ
+		Pieza* mRival = new Miliciano(Bando::ANDALUSI);
+
+		// ASIGNAMOS SU DNI/ID
+		mRival->setIdAnimacion(idGhazi);
+		idGhazi++;
+
+		// COLOCAMOS LA PIEZA: FILA DEL BUCLE, COL 7, TIPO CUBO_P, RIVAL, PUNTERO
+		poner(fila, 7, pieza_cubo_p, bando_rival, mRival);
+	}
+
+
 
 
 }

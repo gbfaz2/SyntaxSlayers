@@ -129,12 +129,29 @@ void Coordinador::dibuja()
 			if (pTablerogl->huboColision())
 			{
 				std::cout << "[DEBUG] Colision detectada, entrando a arena\n"; // DEBUG
-				
+
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
 				_pDefensoraCombate = pTablerogl->getPiezaDefensora();
 
-				_arena.iniciarCombate(*pTablerogl->getPiezaAtacante(),
-					*pTablerogl->getPiezaDefensora(),
+				// EXTRAEMOS LAS PIEZAS PARA VER QUIÉN ES QUIÉN
+				Pieza* atac = _pAtacanteCombate;
+				Pieza* def = _pDefensoraCombate;
+
+				Pieza* pLocal = nullptr;
+				Pieza* pRival = nullptr;
+
+				// FILTRAMOS PARA QUE TU PIEZA (LOCAL) SEA SIEMPRE EL JUGADOR 1
+				if (atac->getBando() == Bando::CRISTIANO) {
+					pLocal = atac;   // TÚ ATACASTE
+					pRival = def;
+				}
+				else {
+					pLocal = def;    // LA IA TE ATACÓ, TÚ TE DEFIENDES
+					pRival = atac;
+				}
+
+				// INICIAMOS LA ARENA FORZANDO TU PIEZA AL PRIMER PUESTO DE CONTROLES
+				_arena.iniciarCombate(*pLocal, *pRival,
 					configuracion.modo,
 					pTablerogl->getVentajaTerrenoCombate());
 
@@ -142,6 +159,9 @@ void Coordinador::dibuja()
 				ETSIDI::play("sonidos/sonido_combate_fight.wav");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				pTablerogl->limpiarCombate();
+
+				pTablerogl->gestorTurnos.terminarTurno();
+
 				estado = EstadoJuego::ARENA;
 			}
 		}
@@ -334,24 +354,28 @@ void Coordinador::mueve(double dt)
 				MovimientoIA mov = _minimax.calcularMejorMovimiento(*pTablero);
 
 				if (mov.filaOrigen >= 0) {
-					// VERIFICA QUE EL DESTINO ESTÁ VACÍO
-					if (pTablero->getCasilla(mov.filaDestino, mov.colDestino).bando != bando_nada) {
-						std::cout << "[IA] Destino ocupado, cancelando.\n"; // AVISO
+
+					// AHORA SOLO CANCELAMOS SI INTENTA PISAR A UN ALIADO (BANDO_RIVAL)
+					if (pTablero->getCasilla(mov.filaDestino, mov.colDestino).bando == bando_rival) {
+
+						std::cout << "[IA] Destino ocupado por aliado, cancelando.\n";
 						_iaYaMovio = false;        // PERMITE RECALCULAR
+
 					}
-					else {
+					else { // SI ESTÁ VACÍA O HAY UN ENEMIGO, ATACAMOS
+
 						Pieza* pieza = pTablero->getCasilla(mov.filaOrigen, mov.colOrigen).obj;
 						if (pieza) {
 							std::cout << "[IA] Moviendo (" << mov.filaOrigen << ","
 								<< mov.colOrigen << ") -> (" << mov.filaDestino << ","
-								<< mov.colDestino << ")\n";                // LOG
-							pTablerogl->Filacursor[1] = mov.filaDestino; // CURSOR A DESTINO
+								<< mov.colDestino << ")\n";
+							pTablerogl->Filacursor[1] = mov.filaDestino;
 							pTablerogl->Colcursor[1] = mov.colDestino;
-							pTablerogl->fromFila = mov.filaOrigen;  // ORIGEN
+							pTablerogl->fromFila = mov.filaOrigen;
 							pTablerogl->fromCol = mov.colOrigen;
 							pTablerogl->fromBando = bando_rival;
 							pTablerogl->piezaSeleccionada = true;
-							pTablerogl->trySelectorMove(bando_rival);        // EJECUTA
+							pTablerogl->trySelectorMove(bando_rival);        // EJECUTA EL MOVIMIENTO O COMBATE
 						}
 					}
 				}
@@ -364,7 +388,14 @@ void Coordinador::mueve(double dt)
 		}
 
 		// ACTUALIZA TURNOS Y ANIMACIONES
-		pTablerogl->gestorTurnos.update(dt);
+		// SI NO HAY COLISIÓN Y LA PIEZA NO ESTÁ VIAJANDO GRÁFICAMENTE, AVANZAMOS EL TURNO DE VERDAD
+		if (!pTablerogl->huboColision() && !pTablerogl->piezaSeleccionada) {
+
+			// SOLO AVANZA EL TIEMPO/TURNO SI EL TABLERO ESTÁ TOTALMENTE QUIETO
+			pTablerogl->gestorTurnos.update(dt);
+
+		}
+		// EL TABLEROGL Y LOS MENSAJES SÍ DEBEN ACTUALIZARSE SIEMPRE PARA DIBUJAR LA ANIMACIÓN CORRECTAMENTE
 		pTablerogl->updateMensaje(dt);
 		pTablerogl->update(dt);
 
