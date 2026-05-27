@@ -203,6 +203,10 @@ void Coordinador::dibuja()
 		}
 		break;
 
+	case EstadoJuego::AYUDA:
+		DibujaMenu::ayuda_dibujar(_ayudaSeleccion, _ayudaSeccion, _anchoVentana, _altoVentana);
+		break;
+
 	default: break;
 	}
 }
@@ -270,6 +274,18 @@ void Coordinador::tecla(unsigned char key)
 			estado = EstadoJuego::MENU;
 		}
 		break;
+
+	case EstadoJuego::AYUDA:
+		if (key == 27) {
+			if (_ayudaSeccion == -1)
+				estado = EstadoJuego::GUARDANDO; // Vuelve a pausa
+			else
+				_ayudaSeccion = -1; // Vuelve al menu de ayuda
+		}
+		if (key == 13 && _ayudaSeccion == -1) {
+				_ayudaSeccion = _ayudaSeleccion; // Entra en controles o normas
+		}
+		break;
 	}
 
 	glutPostRedisplay();
@@ -295,6 +311,13 @@ void Coordinador::tecla_especial(int key)
 		break;
 	case EstadoJuego::GUARDANDO:
 		gestorInput.teclaEspecialGuardando(key, estado);
+		break;
+	case EstadoJuego::AYUDA:
+		if (_ayudaSeccion == -1) 
+		{
+			if (key == GLUT_KEY_UP)   _ayudaSeleccion = (_ayudaSeleccion - 1 + 2) % 2;
+			if (key == GLUT_KEY_DOWN) _ayudaSeleccion = (_ayudaSeleccion + 1) % 2;
+		}
 		break;
 	default: break;
 	}
@@ -455,7 +478,27 @@ void Coordinador::raton(int boton, int state, int x, int y)
 	case EstadoJuego::GUARDANDO:
 		gestorInput.ratonGuardando(x, y, true, estado);
 		break;
+	case EstadoJuego::AYUDA:
+		if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1) 
+		{
+			// Detecta clic en botones Controles/Normas
+			int gy = _altoVentana - y;
+			float btnW = 260, btnH = 48;
+			float btnX = _anchoVentana / 2.0f - btnW / 2.0f;
+			float btnY[2] = { _altoVentana / 2.0f + 20, _altoVentana / 2.0f - 50 };
+			for (int i = 0; i < 2; i++) 
+			{
+				if (gy >= btnY[i] && gy <= btnY[i] + btnH && x >= btnX && x <= btnX + btnW) 
+				{
+					_ayudaSeccion = i;
+				}
+			}
+		}
+
+		break;
+
 	default: break;
+
 	}
 	glutPostRedisplay();
 }
