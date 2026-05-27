@@ -644,16 +644,6 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     case pieza_cubog:
     {
-        // Filtramos el local, si cae en cristiano dibuja figura ( de momento):
-        if (casilla.bando != bando_rival) {
-            glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
-            glutSolidTetrahedron();
-            glPopMatrix();
-            return;
-        }
-
-        //codigo dibujo guardia negra
-
         // Capturamos matrices ANTES de salir del contexto 3D
         GLdouble winX, winY, winZ;
 
@@ -662,34 +652,62 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
         glPopMatrix();
 
-        // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
-        float px = (float)winX - size * 0.3f;
-        float py = (float)winY + size * 0.1f;
-
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
 
-
-
-        EstadoPersonaje estadoGuardia = EstadoPersonaje::IDLE;
+        EstadoPersonaje estadoInfanteria = EstadoPersonaje::IDLE;
         bool moviendo = false;
 
-        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
-        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
-            moviendo = true;
-            estadoGuardia = EstadoPersonaje::IDLE;
-        }
 
         // Le pedimos a la pieza su ID único en lugar de usar un contador global
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
-        // Dibujamos el miliciano usando su ID
-        _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false);
-        util_salir2D();
-        return;
+        //voltear true si es del bando rival la pieza
+        bool voltear = (casilla.bando == bando_rival);
+
+
+
+        // Para el bando andalusi, dibuja guardia negra:
+        if (casilla.bando != bando_local) {
+            //ajustes coordenadas
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
+            float px = (float)winX - size * 0.3f;
+            float py = (float)winY + size * 0.1f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfanteria = EstadoPersonaje::IDLE;
+
+            }
+
+            //dibuja según flags, bando, tipo, coordenadas...
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoInfanteria, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+        }
+        //ahora para bando cristiano
+        else {
+            //ajustes coordenadas para infanteria
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
+            float px = (float)winX - size * 0.17f; //- size * 0.07f;
+            float py = (float)winY + size * 0.1f;
+
+            //si se esta moviendo, anda la pieza y cambia la flag
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfanteria = EstadoPersonaje::IDLE;
+
+            }
+
+            //dibuja según flags, bando, tipo, coordenadas...
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoInfanteria, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+
+        }
     }
     break;
 

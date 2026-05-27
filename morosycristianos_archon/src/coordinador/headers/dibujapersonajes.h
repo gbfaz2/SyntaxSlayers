@@ -13,6 +13,7 @@ enum class TipoPersonaje {
     ASESINO_DE_ELITE,
     GUARDIA_NEGRA,
     JINETE_BEREBER,
+    INFANTERIA,
     TOTAL  // siempre al final, cuenta cuántos hay
 };
 

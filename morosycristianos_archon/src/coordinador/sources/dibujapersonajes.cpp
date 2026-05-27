@@ -19,6 +19,9 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
         return "imagenes\\GUARDIANEGRA.png";
     case TipoPersonaje::JINETE_BEREBER: 
         return "imagenes\\JINETE_BEREBER_SI.png";
+    case TipoPersonaje::INFANTERIA:
+        return "imagenes\\INFANTERIA_SISISI.png";
+
     default:                            
         return "";
     }
@@ -34,7 +37,7 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
     case pieza_dodecaedro:  
         return TipoPersonaje::ASESINO_DE_ELITE;
     case pieza_cubog:       
-        return TipoPersonaje::GUARDIA_NEGRA;
+        return (bando == bando_rival) ? TipoPersonaje::GUARDIA_NEGRA : TipoPersonaje::INFANTERIA;
     case pieza_tetraedro:   
         return TipoPersonaje::JINETE_BEREBER;
     case pieza_esfera:
