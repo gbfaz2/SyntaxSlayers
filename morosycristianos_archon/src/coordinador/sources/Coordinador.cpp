@@ -376,7 +376,7 @@ void Coordinador::mueve(double dt)
 		}
 
 		// COMPRUEBA VICTORIA
-		if (!_necesitaRecargarGraficos && _framesCargando <= 0)
+		if (!_necesitaRecargarGraficos)
 		{
 			ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 			if (rv != ResultadoVictoria::SIN_GANADOR) {
