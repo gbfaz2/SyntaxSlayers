@@ -110,9 +110,10 @@ public:
 	Pieza* getPiezaDefensora() const { return _pDefensora; }
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
-	void mostrarMensajeInvalido(const std::string& mensaje) {
-		// NO PROCESAR SI ESTAMOS EN MODO HECHIZO
-		if (_modoHechizo) return;
+	void mostrarMensajeInvalido(const std::string& mensaje, bool forzar = false) {
+		// SI FORZAR ES TRUE, IGNORAMOS EL BLOQUEO DE LOS HECHIZOS Y MOSTRAMOS
+		if (_modoHechizo && !forzar) return;
+
 		_mensajeInvalido = mensaje;
 		_tiempoMensajeInvalido = 2.0f;
 		

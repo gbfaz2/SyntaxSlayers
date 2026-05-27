@@ -1,5 +1,6 @@
 #include "GestorHechizos.h"
 #include <iostream>
+#include <string>
 #include "Miliciano.h"
 
 GestorHechizos::GestorHechizos(Tablero& tablero, Hechicero* hechiceroLocal, Hechicero* hechiceroRival)
@@ -106,10 +107,11 @@ bool GestorHechizos::relevoDeguardia(BandoPieza bando,
 }
 
 // ASEDIO: bloquear una pieza enemiga
-bool GestorHechizos::asedio(BandoPieza bando, int fila, int col)
+bool GestorHechizos::asedio(BandoPieza bando, int fila, int col, std::string& mensajeError)
 {
     if (!puedeUsarConjuro(bando, Conjuro::ASEDIO)) {
         std::cout << "[Hechizos] ASEDIO ya fue usado.\n";
+        mensajeError = "Asedio ya utilizado";
         return false;
     }
 
@@ -118,12 +120,14 @@ bool GestorHechizos::asedio(BandoPieza bando, int fila, int col)
 
     if (cas.bando != bandoEnemigo || cas.obj == nullptr) {
         std::cout << "[Hechizos] No hay pieza enemiga en esa casilla.\n";
+        mensajeError = "No hay enemigo en la casilla";
         return false;
     }
 
     //INMUNIDAD DE LOS HECHIZOS EN LOS PUNTOS DE PODER
     if (cas.tipo == Casilla_poder) {
         std::cout << "[Hechizos] Falla: La pieza enemiga esta en un Punto de Poder y es INMUNE.\n";
+        mensajeError = "Pieza enemiga INMUNE";
         return false; // No aplicamos el hechizo ni lo damos por gastado
     }
 

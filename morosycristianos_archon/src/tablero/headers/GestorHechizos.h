@@ -1,6 +1,7 @@
 #pragma once
 #include "Tablero.h"
 #include "Hechicero.h"
+#include <string>
 # include <vector>
 
 class GestorHechizos 
@@ -27,7 +28,7 @@ public:
     bool rutasSecretas(BandoPieza bando, int filaOrigen, int colOrigen, int filaDest, int colDest);
     bool avituallamiento(BandoPieza bando, int fila, int col);
     bool relevoDeguardia(BandoPieza bando, int fila1, int col1, int fila2, int col2);
-    bool asedio(BandoPieza bando, int fila, int col);
+    bool asedio(BandoPieza bando, int fila, int col, std::string& mensajeError);
 
     // Para el asedio
     bool estaBloqueada(int fila, int col) const;

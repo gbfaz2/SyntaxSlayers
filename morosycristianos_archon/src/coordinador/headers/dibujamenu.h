@@ -55,11 +55,6 @@ class DibujaMenu : public Dibuja {
     static void destino_textos(const PantallaDestino& p, int ancho, int alto);
     static void destino_continuar(const PantallaDestino& p, int ancho, int alto);
 
-
-
-    static void victoria_dibujar(int ancho, int alto, const std::string& ganador,
-        const std::string& batalla, bool ganaJ1, float tiempoRestante);
-
 public:
     // ── PANTALLA INTRO
     static void intro_dibujar(PantallaIntro& p, int ancho, int alto);
