@@ -4,6 +4,7 @@
 #include "tablerogl.h"
 #include "Coordinador.h" // INCLUDE COMPLETO SOLO EN EL CPP
 #include "ETSIDI.h"
+#include "Infiltrado.h"
 
 // =============================================================
 // MENU
@@ -261,6 +262,32 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     }
 
     // ============================================================
+    // I: ACTIVA HABILIDAD INFILTRADO/ASESINO
+    // ============================================================
+    if (key == 'i' || key == 'I') {
+        if (_tablerogl->piezaSeleccionada) {
+            const Casilla& cas = _coordinador->pTablero->getCasilla(_tablerogl->fromFila, _tablerogl->fromCol);
+
+            // Verificamos si la pieza seleccionada es un Infiltrado
+            if (cas.obj != nullptr && dynamic_cast<Infiltrado*>(cas.obj) != nullptr) {
+                _tablerogl->_modoInfiltrado = true;
+                _tablerogl->_infiltradoFila = _tablerogl->fromFila;
+                _tablerogl->_infiltradoCol = _tablerogl->fromCol;
+
+                // Deseleccionamos para que pueda mover el cursor libremente a ver a sus rivales
+                _tablerogl->piezaSeleccionada = false;
+                _tablerogl->fromFila = _tablerogl->fromCol = -1;
+
+                _tablerogl->mostrarMensajeInvalido("Modo Copia: Elige rival", true);
+            }
+            else {
+                _tablerogl->mostrarMensajeInvalido("No tienes la habilidad", true);
+            }
+        }
+        return;
+    }
+
+    // ============================================================
     // NÚMERO: ELIGE HECHIZO (solo en modo hechizo, conjuro no elegido aún)
     // ============================================================
     if (_tablerogl->_modoHechizo && !_tablerogl->_conjuroElegido) {
@@ -302,6 +329,25 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     // ESPACIO: CONFIRMA HECHIZO P1 O SELECCIONA/MUEVE PIEZA P1
     // ============================================================
     if (key == ' ') {
+        //PARA LA SELECCION DE PIEZAS CON EL PERSONAJE DE INFILTRADO
+        if (_tablerogl->_modoInfiltrado && _tablerogl->gestorTurnos.getBandoActual() == bando_local) {
+            int fila = _tablerogl->Filacursor[0];
+            int col = _tablerogl->Colcursor[0];
+            const Casilla& casEnemigo = _coordinador->pTablero->getCasilla(fila, col);
+            Infiltrado* inf = dynamic_cast<Infiltrado*>(_coordinador->pTablero->getCasilla(_tablerogl->_infiltradoFila, _tablerogl->_infiltradoCol).obj);
+
+            if (inf && casEnemigo.obj && casEnemigo.bando == bando_rival) {
+                inf->copiarStats(*(casEnemigo.obj));
+                _tablerogl->_modoInfiltrado = false;
+                _tablerogl->mostrarMensajeInvalido("¡Stats copiados!", true);
+                _tablerogl->gestorTurnos.terminarTurno();
+            }
+            else {
+                _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true);
+            }
+            return;
+        }
+
         if (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_local) {
             int fila = _tablerogl->Filacursor[0];          // FILA CURSOR P1
             int col = _tablerogl->Colcursor[0];           // COL CURSOR P1
@@ -316,6 +362,24 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     // PUNTO: CONFIRMA HECHIZO P2 O SELECCIONA/MUEVE PIEZA P2
     // ============================================================
     if (key == '.') {
+        //PARA LA SELECCION DE PIEZAS CON EL PERSONAJE DE ASESINO DE ÉLITE
+        if (_tablerogl->_modoInfiltrado && _tablerogl->gestorTurnos.getBandoActual() == bando_rival) {
+            int fila = _tablerogl->Filacursor[1];
+            int col = _tablerogl->Colcursor[1];
+            const Casilla& casEnemigo = _coordinador->pTablero->getCasilla(fila, col);
+            Infiltrado* inf = dynamic_cast<Infiltrado*>(_coordinador->pTablero->getCasilla(_tablerogl->_infiltradoFila, _tablerogl->_infiltradoCol).obj);
+
+            if (inf && casEnemigo.obj && casEnemigo.bando == bando_local) {
+                inf->copiarStats(*(casEnemigo.obj));
+                _tablerogl->_modoInfiltrado = false;
+                _tablerogl->mostrarMensajeInvalido("¡Stats copiados!", true);
+                _tablerogl->gestorTurnos.terminarTurno();
+            }
+            else {
+                _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true);
+            }
+            return;
+        }
         if (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_rival) {
             int fila = _tablerogl->Filacursor[1];          // FILA CURSOR P2
             int col = _tablerogl->Colcursor[1];           // COL CURSOR P2
@@ -398,6 +462,25 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
     }
 
     const Casilla& clicked = _tablerogl->m_tablero->getCasilla(clickFila, clickCol);
+
+    // MODO INFILTRADO: CLIC IZQUIERDO CONFIRMA COPIA
+    if (_tablerogl->_modoInfiltrado) {
+        const Casilla& casEnemigo = _tablerogl->m_tablero->getCasilla(clickFila, clickCol);
+        Infiltrado* inf = dynamic_cast<Infiltrado*>(_tablerogl->m_tablero->getCasilla(_tablerogl->_infiltradoFila, _tablerogl->_infiltradoCol).obj);
+        // Obtenemos el bando en formato Tablero (bando_local o bando_rival)
+        BandoPieza miBando = _tablerogl->gestorTurnos.getBandoActual();
+
+        if (inf && casEnemigo.obj && casEnemigo.bando != miBando && casEnemigo.bando != bando_nada) {
+            inf->copiarStats(*(casEnemigo.obj));
+            _tablerogl->_modoInfiltrado = false;
+            _tablerogl->mostrarMensajeInvalido("¡Stats copiados!", true);
+            _tablerogl->gestorTurnos.terminarTurno();
+        }
+        else {
+            _tablerogl->mostrarMensajeInvalido("Debes elegir un rival", true);
+        }
+        return; // IMPORTANTE: Cortamos aquí para que no mueva la pieza
+    }
 
     if (!_tablerogl->piezaSeleccionada) {              // SIN PIEZA SELECCIONADA: SELECCIONA
         if (clicked.pieza != pieza_nada) {
