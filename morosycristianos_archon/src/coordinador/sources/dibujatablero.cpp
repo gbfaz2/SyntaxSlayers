@@ -1089,7 +1089,8 @@ void DibujaTablero::tablero_panel_hechizos(const Tablerogl& t)
         // Estado de espera normal
         ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
-        ETSIDI::printxy("[H] Lanza Hechizo:", px + 8, PY + PH - 22);
+        if (cas.bando == bando_local) ETSIDI::printxy("[H] Lanza Hechizo:", px + 8, PY + PH - 22);
+        else if (cas.bando == bando_rival) ETSIDI::printxy("[J] Lanza Hechizo:", px + 8, PY + PH - 22);
     }
 
     // LÍNEA SEPARADORA DE CORTE DE PANEL
