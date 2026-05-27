@@ -19,8 +19,8 @@ enum class EstadoJuego {
     CARGANDO,       // Para que cargue la partida guardada
     RANKING,        // Pantalla de ranking
     FINAL,          // Pantalla de fin de partida
-    PAUSA           // Pausa
- 
+    PAUSA,          // Pausa
+    AYUDA,          // Pantalla de ayuda
 };
 
 // Modo de juego

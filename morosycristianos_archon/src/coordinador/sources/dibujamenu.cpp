@@ -437,7 +437,11 @@ void DibujaMenu::destino_textos(const PantallaDestino& p, int ancho, int alto) {
     // TÍTULO DE LA BATALLA
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 24);
     ETSIDI::setTextColor((0.85f + brillo) * alfa, (0.70f + brillo * 0.5f) * alfa, 0.10f * alfa, alfa);
-    ETSIDI::printxy(nombreBatalla(p.m_cfg.batalla), ancho / 2 - 150, alto - 85);
+    {
+        const char* tituloBat = nombreBatalla(p.m_cfg.batalla);
+        int tw = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)tituloBat);
+        ETSIDI::printxy(tituloBat, ancho / 2 - (int)(tw * 0.80f), alto - 85);
+    }
 
     // LÍNEA DECORATIVA
     glColor4f(0.85f * alfa, 0.68f * alfa, 0.10f * alfa, 0.65f * alfa);
@@ -458,7 +462,9 @@ void DibujaMenu::destino_textos(const PantallaDestino& p, int ancho, int alto) {
         letrasRestantes -= lineLen;
         std::string visible = p.m_lineas[i].substr(0, mostrar);
         ETSIDI::setTextColor(0.92f, 0.88f, 0.80f, alfa);
-        ETSIDI::printxy(visible.c_str(), 140, alto - 160 - i * 26);
+        // Centrar usando la línea completa para que no se desplace durante el efecto máquina de escribir
+        int lw = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)p.m_lineas[i].c_str());
+        ETSIDI::printxy(visible.c_str(), ancho / 2 - lw / 2, alto - 160 - i * 26);
     }
 
     glDisable(GL_BLEND);
@@ -471,7 +477,11 @@ void DibujaMenu::destino_continuar(const PantallaDestino& p, int ancho, int alto
     float parpadeo = (sinf((float)p.m_fotograma * 0.08f) + 1.0f) * 0.5f;
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 12);
     ETSIDI::setTextColor(0.80f, 0.78f, 0.65f, 0.35f + parpadeo * 0.65f);
-    ETSIDI::printxy("Pulsa cualquier tecla para comenzar la batalla", ancho / 2 - 230, 30);
+    {
+        const char* contTxt = "Pulsa cualquier tecla para comenzar la batalla";
+        int cw = glutBitmapLength(GLUT_BITMAP_HELVETICA_12, (const unsigned char*)contTxt);
+        ETSIDI::printxy(contTxt, ancho / 2 - cw / 2, 30);
+    }
 }
 
 // RANKING
@@ -640,6 +650,124 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
     char buf[32];
     sprintf_s(buf, "Ranking en %d segundos...", (int)tiempoRestante + 1);
     ETSIDI::printxy(buf, ancho / 2 - 110, alto / 2 - 60);
+
+    util_salir2D();
+}
+
+void DibujaMenu::ayuda_dibujar(int seleccion, int seccion, int ancho, int alto)
+{
+    util_entrar2D(ancho, alto);
+
+    // FONDO OSCURO
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.85f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0); glVertex2f(ancho, 0);
+    glVertex2f(ancho, alto); glVertex2f(0, alto);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    if (seccion == -1) {
+        // MENU AYUDA: DOS BOTONES
+        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 32);
+        ETSIDI::printxy("AYUDA", ancho / 2 - 50, alto - 100);
+
+        const char* opciones[2] = { "Controles", "Normas" };
+        float btnW = 260, btnH = 48;
+        float btnX = ancho / 2.0f - btnW / 2.0f;
+        float btnY[2] = { alto / 2.0f + 20, alto / 2.0f - 50 };
+
+        for (int i = 0; i < 2; i++) {
+            bool sel = (seleccion == i);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glColor4f(sel ? 0.55f : 0.30f, sel ? 0.15f : 0.10f, sel ? 0.80f : 0.50f, 0.95f);
+            glBegin(GL_QUADS);
+            glVertex2f(btnX, btnY[i]); glVertex2f(btnX + btnW, btnY[i]);
+            glVertex2f(btnX + btnW, btnY[i] + btnH); glVertex2f(btnX, btnY[i] + btnH);
+            glEnd();
+            glColor4f(0.85f, 0.70f, 0.25f, 1.0f);
+            glLineWidth(sel ? 2.5f : 1.5f);
+            glBegin(GL_LINE_LOOP);
+            glVertex2f(btnX, btnY[i]); glVertex2f(btnX + btnW, btnY[i]);
+            glVertex2f(btnX + btnW, btnY[i] + btnH); glVertex2f(btnX, btnY[i] + btnH);
+            glEnd();
+            glLineWidth(1.0f);
+            glDisable(GL_BLEND);
+            if (sel) ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+            else     ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+            ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
+            ETSIDI::printxy(opciones[i], (int)(btnX + 80), (int)(btnY[i] + 14));
+        }
+        ETSIDI::setTextColor(0.6f, 0.6f, 0.6f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+        ETSIDI::printxy("ESC: volver a pausa  |  ENTER: seleccionar", ancho / 2 - 160, 30);
+    }
+    else if (seccion == 0) {
+        // CONTROLES
+        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 24);
+        ETSIDI::printxy("CONTROLES", ancho / 2 - 70, alto - 60);
+
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+        int x = ancho / 2 - 300, y = alto - 90, sep = 22;
+        ETSIDI::printxy("TABLERO:", x, y); y -= sep;
+        ETSIDI::printxy("  W/A/S/D         Mover cursor Jugador 1", x, y); y -= sep;
+        ETSIDI::printxy("  ESPACIO         Seleccionar/Mover pieza J1", x, y); y -= sep;
+        ETSIDI::printxy("  FLECHAS         Mover cursor Jugador 2", x, y); y -= sep;
+        ETSIDI::printxy("  PUNTO (.)       Seleccionar/Mover pieza J2", x, y); y -= sep;
+        ETSIDI::printxy("  H               Activar hechizo J1 (selecciona Rey primero)", x, y); y -= sep;
+        ETSIDI::printxy("  J               Activar hechizo J2 (selecciona Emir primero)", x, y); y -= sep;
+        ETSIDI::printxy("  1/2/3/4         Elegir hechizo activo", x, y); y -= sep;
+        ETSIDI::printxy("  I               Habilidad del Infiltrado", x, y); y -= sep;
+        ETSIDI::printxy("  ESC             Menu de pausa", x, y); y -= sep + 10;
+        ETSIDI::printxy("ARENA:", x, y); y -= sep;
+        ETSIDI::printxy("  W/A/S/D         Mover J1", x, y); y -= sep;
+        ETSIDI::printxy("  F               Atacar J1", x, y); y -= sep;
+        ETSIDI::printxy("  FLECHAS         Mover J2 (JvJ)", x, y); y -= sep;
+        ETSIDI::printxy("  L               Atacar J2 (JvJ)", x, y); y -= sep;
+        ETSIDI::printxy("  ENTER           Volver al tablero (tras combate)", x, y);
+
+        ETSIDI::setTextColor(0.6f, 0.6f, 0.6f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+        ETSIDI::printxy("ESC: volver", ancho / 2 - 40, 30);
+    }
+    else if (seccion == 1) {
+        // NORMAS
+        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 24);
+        ETSIDI::printxy("NORMAS", ancho / 2 - 50, alto - 60);
+
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+        int x = ancho / 2 - 300, y = alto - 110, sep = 26;
+        ETSIDI::printxy("OBJETIVO: Ganar controlando el tablero mediante una de estas condiciones:", x, y); y -= sep;
+        ETSIDI::printxy("  1. Controlar los 5 Bastiones Historicos del tablero.", x, y); y -= sep;
+        ETSIDI::printxy("  2. Eliminar todas las piezas enemigas.", x, y); y -= sep;
+        ETSIDI::printxy("  3. Dejar al rival con una sola pieza bloqueada.", x, y); y -= sep + 10;
+        ETSIDI::printxy("TURNO: Cada jugador mueve una pieza por turno. Si el tiempo se acaba, pasa el turno.", x, y); y -= sep + 10;
+        ETSIDI::printxy("COMBATE: Si dos piezas coinciden en una casilla se abre la arena.", x, y); y -= sep;
+        ETSIDI::printxy("  En la arena luchan en tiempo real. El ganador ocupa la casilla.", x, y); y -= sep;
+        ETSIDI::printxy("  La pieza ganadora mantiene la vida con la que termino el combate.", x, y); y -= sep + 10;
+        ETSIDI::printxy("HECHIZOS: El Rey/Emir puede lanzar 4 conjuros (uno de cada, uso unico):", x, y); y -= sep;
+        ETSIDI::printxy("  1. Avituallamiento: cura una pieza aliada a vida maxima.", x, y); y -= sep;
+        ETSIDI::printxy("  2. Rutas Secretas: teleporta una pieza aliada a cualquier casilla libre.", x, y); y -= sep;
+        ETSIDI::printxy("  3. Relevo de Guardia: intercambia dos piezas aliadas de posicion.", x, y); y -= sep;
+        ETSIDI::printxy("  4. Asedio: bloquea una pieza enemiga en su casilla.", x, y); y -= sep + 10;
+        ETSIDI::printxy("HABILIDAD ESPECIAL: infiltrado, asesino de elite:", x, y); y -= sep;
+        ETSIDI::printxy("  Selecciona al Infiltrado y pulsa I para activar la habilidad.", x, y); y -= sep;
+        ETSIDI::printxy("  Luego haz clic en un enemigo para copiar sus estadisticas.", x, y); y -= sep;
+        ETSIDI::printxy("  Pulsa ENTER para confirmar el robo. Gasta el turno.", x, y); y -= sep + 10;
+        ETSIDI::printxy("CASILLAS: Las casillas dinamicas cambian de bando cada 4 turnos.", x, y); y -= sep;
+        ETSIDI::printxy("  Luchar en casillas propias da ventaja en combate.", x, y);
+
+        ETSIDI::setTextColor(0.6f, 0.6f, 0.6f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+        ETSIDI::printxy("ESC: volver", ancho / 2 - 40, 30);
+    }
 
     util_salir2D();
 }
