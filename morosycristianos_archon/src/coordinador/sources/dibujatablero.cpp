@@ -884,6 +884,7 @@ void DibujaTablero::tablero_mensaje_invalido(const Tablerogl& t)
         (int)(mx + 20), (int)(my + mh * 0.35f));
     util_salir2D();
 }
+
 void DibujaTablero::tablero_panel_pieza(const Tablerogl& t) {
     // Solo mostramos el panel si hay pieza seleccionada
     if (!t.piezaSeleccionada || t.fromFila < 0 || t.fromCol < 0) return;
@@ -897,9 +898,10 @@ void DibujaTablero::tablero_panel_pieza(const Tablerogl& t) {
     int aw = Tablerogl::_anchoVentana;
 
     // Tamaño del panel
-    const int PW = 180; // ancho del panel en píxeles
-    const int PH = 170; // alto del panel
-    const int PY = 60;  // separación desde el borde inferior
+    const int PW = 195; // ancho del panel en píxeles
+    const int PH = 210; // alto del panel
+    const int PY = 52;  // separación desde el borde inferior
+    const int RADIO_ESQ = 6; // no se usa directamente pero orienta los márgenes
 
     // Posición X según bando: izquierda para local, derecha para rival
     int px, py;
@@ -911,96 +913,212 @@ void DibujaTablero::tablero_panel_pieza(const Tablerogl& t) {
     }
     py = PY; // borde inferior
 
-    // ── Fondo del panel ──────────────────────────────────────
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // Fondo: morado oscuro para locales, rojo oscuro para rivales
-    if (cas.bando == bando_local)
-        glColor4f(0.20f, 0.05f, 0.30f, 0.88f);
-    else
-        glColor4f(0.30f, 0.03f, 0.03f, 0.88f);
+
+    // Sombra exterior
+    glColor4f(0.0f, 0.0f, 0.0f, 0.60f);
     glBegin(GL_QUADS);
-    glVertex2i(px, py);     glVertex2i(px + PW, py);
-    glVertex2i(px + PW, py + PH); glVertex2i(px, py + PH);
+    glVertex2i(px + 6, py - 6);
+    glVertex2i(px + PW + 6, py - 6);
+    glVertex2i(px + PW + 6, py + PH + 6);
+    glVertex2i(px + 6, py + PH + 6);
     glEnd();
 
-    // Borde del panel
-    if (cas.bando == bando_local)
-        glColor4f(0.65f, 0.20f, 0.85f, 1.0f); // morado
-    else
-        glColor4f(0.85f, 0.15f, 0.15f, 1.0f); // rojo
-    glLineWidth(2.0f);
-    glBegin(GL_LINE_LOOP);
-    glVertex2i(px, py);     glVertex2i(px + PW, py);
-    glVertex2i(px + PW, py + PH); glVertex2i(px, py + PH);
+    // Fondo de cuero (degradado vertical marron)
+    glBegin(GL_QUADS);
+    glColor4f(0.42f, 0.22f, 0.09f, 0.98f); // arriba: cuero claro
+    glVertex2i(px, py + PH);
+    glVertex2i(px + PW, py + PH);
+    glColor4f(0.20f, 0.09f, 0.03f, 0.98f); // abajo: cuero oscuro
+    glVertex2i(px + PW, py);
+    glVertex2i(px, py);
     glEnd();
-    glLineWidth(1.0f);
+
     glDisable(GL_BLEND);
 
-    // ── Nombre de la pieza ───────────────────────────────────
-    ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 16);
-    ETSIDI::printxy(p->getNombre().c_str(), px + 8, py + PH - 22);
-
-    // Separador
-    glColor3f(0.6f, 0.6f, 0.6f);
-    glBegin(GL_LINES);
-    glVertex2i(px + 5, py + PH - 30);
-    glVertex2i(px + PW - 5, py + PH - 30);
+    // Borde del panel, dorado grueso
+    glColor3f(0.80f, 0.60f, 0.16f);
+    glLineWidth(4.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(px, py);
+    glVertex2i(px + PW, py);
+    glVertex2i(px + PW, py + PH);
+    glVertex2i(px, py + PH);
     glEnd();
 
+    // Borde interior dorado fino (para que de sensacion de relieve)
+    glColor3f(0.95f, 0.80f, 0.35f);
+    glLineWidth(1.2f);
+    int m = 6;
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(px + m, py + m);
+    glVertex2f(px + PW - m, py + m);
+    glVertex2f(px + PW - m, py + PH - m);
+    glVertex2f(px + m, py + PH - m);
+    glEnd();
+    glLineWidth(1.0f);
+
+    // Diseños en esquinas (pequeños cuadrados dorados)
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.80f, 0.60f, 0.16f, 1.0f);
+    int cs = 7; // corner size
+    int off = 3;
+    // Esquina inferior-izquierda
+    glBegin(GL_QUADS);
+    glVertex2i(px + off, py + off);
+    glVertex2i(px + off + cs, py + off);
+    glVertex2i(px + off + cs, py + off + cs);
+    glVertex2i(px + off, py + off + cs);
+    glEnd();
+    // Esquina inferior-derecha
+    glBegin(GL_QUADS);
+    glVertex2i(px + PW - off - cs, py + off);
+    glVertex2i(px + PW - off, py + off);
+    glVertex2i(px + PW - off, py + off + cs);
+    glVertex2i(px + PW - off - cs, py + off + cs);
+    glEnd();
+    // Esquina superior-izquierda
+    glBegin(GL_QUADS);
+    glVertex2i(px + off, py + PH - off - cs);
+    glVertex2i(px + off + cs, py + PH - off - cs);
+    glVertex2i(px + off + cs, py + PH - off);
+    glVertex2i(px + off, py + PH - off);
+    glEnd();
+    // Esquina superior-derecha
+    glBegin(GL_QUADS);
+    glVertex2i(px + PW - off - cs, py + PH - off - cs);
+    glVertex2i(px + PW - off, py + PH - off - cs);
+    glVertex2i(px + PW - off, py + PH - off);
+    glVertex2i(px + PW - off - cs, py + PH - off);
+    glEnd();
+
+    glDisable(GL_BLEND);
+
+    // Nombre de la pieza (centrado, fuente grande)
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
+    ETSIDI::setTextColor(0.97f, 0.92f, 0.76f, 1.0f);
+    // Lo centramos aproximadamente
+    int nombreLen = (int)p->getNombre().size();
+    int nombreX = px + (PW / 2) - (nombreLen * 5);
+    ETSIDI::printxy(p->getNombre().c_str(), nombreX, py + PH - 28);
+
+    // Separador, dorado (debajo del nombre)
+    glColor3f(0.75f, 0.56f, 0.14f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINES);
+    glVertex2i(px + 12, py + PH - 37);
+    glVertex2i(px + PW - 12, py + PH - 37);
+    glEnd();
+    glLineWidth(1.0f);
+
     // ── Barras de estadísticas ───────────────────────────────
-    // Cada barra tiene: etiqueta, y_posicion, valor, maximo, color
-    int barX = px + 8;
-    int barW = PW - 16;
-    int barH = 12;
-    int lineH = 28; // separación entre barras
+
+    // Función lambda local para dibujar un círculo-número de icono
+    auto dibujaIcono = [&](int cx, int cy, int num, float r, float g, float b) {
+        int radio = 9;
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        // Relleno
+        glColor4f(r * 0.35f, g * 0.35f, b * 0.35f, 0.95f);
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex2i(cx, cy);
+        for (int i = 0; i <= 20; i++) {
+            float a = 2.0f * 3.14159f * i / 20.0f;
+            glVertex2f(cx + radio * cosf(a), cy + radio * sinf(a));
+        }
+        glEnd();
+        // Borde
+        glColor4f(r, g, b, 1.0f);
+        glLineWidth(1.5f);
+        glBegin(GL_LINE_LOOP);
+        for (int i = 0; i < 20; i++) {
+            float a = 2.0f * 3.14159f * i / 20.0f;
+            glVertex2f(cx + radio * cosf(a), cy + radio * sinf(a));
+        }
+        glEnd();
+        glLineWidth(1.0f);
+        glDisable(GL_BLEND);
+        };
+
+    char buf[64];
+    int barX = px + 14;
+    int barW = PW - 28;
+    int barH = 9;
+    int lineH = 43;
 
     // Vida (verde)
-    ETSIDI::setTextColor(0.70f, 1.0f, 0.70f, 1.0f);
+    int yVida = py + PH - 62;
+    dibujaIcono(px + 20, yVida + 4, 1, 0.20f, 0.85f, 0.20f);
     ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
-    char buf[64];
-    sprintf_s(buf, "Vida: %d", p->getVida());
-    int yVida = py + PH - 55;
-    ETSIDI::printxy(buf, barX, yVida + 3);
-    tablero_barra(barX, yVida - 14, barW, barH,
-        (float)p->getVida(), 100.0f,
-        0.15f, 0.85f, 0.15f);
+    ETSIDI::setTextColor(0.70f, 1.0f, 0.70f, 1.0f);
+    ETSIDI::printxy("Vida:", barX + 18, yVida + 8);
+    sprintf_s(buf, "%d", p->getVida());
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+    ETSIDI::setTextColor(0.97f, 0.97f, 0.97f, 1.0f);
+    ETSIDI::printxy(buf, px + PW - 28, yVida + 7);
+    tablero_barra(barX, yVida - 7, barW, barH, (float)p->getVida(), 100.0f, 0.15f, 0.85f, 0.15f);
+
 
     // Fuerza (rojo anaranjado)
-    ETSIDI::setTextColor(1.0f, 0.60f, 0.40f, 1.0f);
-    sprintf_s(buf, "Fuerza: %d", p->getFuerza());
     int yFuerza = yVida - lineH;
-    ETSIDI::printxy(buf, barX, yFuerza + 3);
-    tablero_barra(barX, yFuerza - 14, barW, barH,
-        (float)p->getFuerza(), 100.0f,
-        0.90f, 0.35f, 0.10f);
+    dibujaIcono(px + 20, yFuerza + 4, 2, 0.90f, 0.40f, 0.10f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+    ETSIDI::setTextColor(1.0f, 0.62f, 0.30f, 1.0f);
+    ETSIDI::printxy("Fuerza:", barX + 18, yFuerza + 8);
+    sprintf_s(buf, "%d", p->getFuerza());
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+    ETSIDI::setTextColor(0.97f, 0.97f, 0.97f, 1.0f);
+    ETSIDI::printxy(buf, px + PW - 28, yFuerza + 7);
+    tablero_barra(barX, yFuerza - 7, barW, barH, (float)p->getFuerza(), 100.0f, 0.90f, 0.40f, 0.10f);
 
     // Velocidad de ataque (azul)
-    ETSIDI::setTextColor(0.50f, 0.75f, 1.0f, 1.0f);
-    sprintf_s(buf, "Vel.Atk: %d", p->getVelAtaque());
     int yVel = yFuerza - lineH;
-    ETSIDI::printxy(buf, barX, yVel + 3);
-    tablero_barra(barX, yVel - 14, barW, barH,
-        (float)p->getVelAtaque(), 100.0f,
-        0.20f, 0.50f, 0.95f);
+    dibujaIcono(px + 20, yVel + 4, 3, 0.25f, 0.55f, 0.95f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+    ETSIDI::setTextColor(0.50f, 0.80f, 1.0f, 1.0f);
+    ETSIDI::printxy("Vel.Atk:", barX + 18, yVel + 8);
+    sprintf_s(buf, "%d", p->getVelAtaque());
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+    ETSIDI::setTextColor(0.97f, 0.97f, 0.97f, 1.0f);
+    ETSIDI::printxy(buf, px + PW - 28, yVel + 7);
+    tablero_barra(barX, yVel - 7, barW, barH, (float)p->getVelAtaque(), 100.0f, 0.20f, 0.50f, 0.95f);
 
     // Radio de movimiento (texto simple, no barra)
-    ETSIDI::setTextColor(0.90f, 0.90f, 0.60f, 1.0f);
-    sprintf_s(buf, "Radio mov: %d", p->getRadioMov());
-    ETSIDI::printxy(buf, barX, py + 8);
+    int yRad = yVel - lineH + 10;
+    dibujaIcono(px + 20, yRad + 4, 4, 0.82f, 0.63f, 0.15f);
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+    ETSIDI::setTextColor(0.95f, 0.88f, 0.55f, 1.0f);
+    ETSIDI::printxy("Radio mov:", barX + 18, yRad + 8);
+    sprintf_s(buf, "%d", p->getRadioMov());
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
+    ETSIDI::setTextColor(0.97f, 0.97f, 0.97f, 1.0f);
+    ETSIDI::printxy(buf, px + PW - 28, yRad + 6);
+
+    // Pie de carta
+    glColor3f(0.75f, 0.56f, 0.14f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINES);
+    glVertex2i(px + 12, py + 22);
+    glVertex2i(px + PW - 12, py + 22);
+    glEnd();
+
+    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 9);
+    ETSIDI::setTextColor(0.70f, 0.52f, 0.18f, 1.0f);
+    ETSIDI::printxy("LA RECONQUISTA", px + 14, py + 10);
 }
 void DibujaTablero::tablero_barra(int x, int y, int ancho, int alto,
-    float valor, float maximo,
-    float r, float g, float b) {
+    float valor, float maximo, float r, float g, float b) {
     float fraccion = (maximo > 0.0f) ? (valor / maximo) : 0.0f;
     if (fraccion < 0.0f) fraccion = 0.0f;
     if (fraccion > 1.0f) fraccion = 1.0f;
 
-    // Fondo gris oscuro de la barra
-    glColor4f(0.15f, 0.15f, 0.15f, 0.90f);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Fondo oscuro de la barra (ranura)
+    glColor4f(0.05f, 0.03f, 0.01f, 0.95f);
     glBegin(GL_QUADS);
     glVertex2i(x, y);
     glVertex2i(x + ancho, y);
@@ -1010,13 +1128,33 @@ void DibujaTablero::tablero_barra(int x, int y, int ancho, int alto,
 
     // Relleno de color según el valor
     int relleno = (int)(ancho * fraccion);
-    glColor4f(r, g, b, 0.95f);
+    glColor4f(r, g, b, 0.88f);
     glBegin(GL_QUADS);
     glVertex2i(x, y);
     glVertex2i(x + relleno, y);
     glVertex2i(x + relleno, y + alto);
     glVertex2i(x, y + alto);
     glEnd();
+
+    // Brillo superior de la barra
+    glColor4f(1.0f, 1.0f, 1.0f, 0.12f);
+    glBegin(GL_QUADS);
+    glVertex2i(x, y + alto / 2);
+    glVertex2i(x + relleno, y + alto / 2);
+    glVertex2i(x + relleno, y + alto);
+    glVertex2i(x, y + alto);
+    glEnd();
+
+    // Borde dorado de la barra
+    glColor4f(0.70f, 0.52f, 0.14f, 0.80f);
+    glLineWidth(1.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(x, y);
+    glVertex2i(x + ancho, y);
+    glVertex2i(x + ancho, y + alto);
+    glVertex2i(x, y + alto);
+    glEnd();
+
     glDisable(GL_BLEND);
 }
 
@@ -1033,88 +1171,110 @@ void DibujaTablero::tablero_panel_hechizos(const Tablerogl& t)
     int aw = Tablerogl::_anchoVentana;
 
     // DIMENSIONES DEL PANEL
-    const int PW = 180;
-    const int PH = 135; // Altura compacta ideal para el título y los 4 hechizos
-    const int PY = 240;
+    const int PW = 195;
+    const int PH = 140; // Altura compacta ideal para el título y los 4 hechizos
+    const int PY = 275; // Justo encima del panel de stats
 
     // Posición: Izquierda para locales, Derecha para rivales
-    int px;
-    if (cas.bando == bando_local) {
-        px = 10;
-    }
-    else {
-        px = aw - PW - 10;
-    }
+    int px = (cas.bando == bando_local) ? 10 : (aw - PW - 10);
+    int py = PY;
 
-    //DIBUJAR EL FONDO TRANSLÚCIDO 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    if (cas.bando == bando_local)
-        glColor4f(0.20f, 0.05f, 0.30f, 0.88f); // Morado oscuro translúcido
-    else
-        glColor4f(0.30f, 0.03f, 0.03f, 0.88f); // Rojo oscuro translúcido
-
+    // Sombra
+    glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
     glBegin(GL_QUADS);
-    glVertex2i(px, PY);
-    glVertex2i(px + PW, PY);
-    glVertex2i(px + PW, PY + PH);
-    glVertex2i(px, PY + PH);
+    glVertex2i(px + 5, py - 5);
+    glVertex2i(px + PW + 5, py - 5);
+    glVertex2i(px + PW + 5, py + PH + 5);
+    glVertex2i(px + 5, py + PH + 5);
     glEnd();
 
-    // DIBUJAR EL BORDE SÓLIDO 
-    if (cas.bando == bando_local)
-        glColor4f(0.65f, 0.20f, 0.85f, 1.0f); // Borde Morado vivo
-    else
-        glColor4f(0.85f, 0.15f, 0.15f, 1.0f); // Borde Rojo vivo
+    // Fondo cuero (más oscuro para diferenciarlo del de stats)
+    glBegin(GL_QUADS);
+    glColor4f(0.36f, 0.18f, 0.07f, 0.98f);
+    glVertex2i(px, py + PH);
+    glVertex2i(px + PW, py + PH);
+    glColor4f(0.18f, 0.08f, 0.02f, 0.98f);
+    glVertex2i(px + PW, py);
+    glVertex2i(px, py);
+    glEnd();
 
-    glLineWidth(2.0f);
+    glDisable(GL_BLEND);
+
+    // Marco dorado exterior
+    glColor3f(0.80f, 0.60f, 0.16f);
+    glLineWidth(4.0f);
     glBegin(GL_LINE_LOOP);
-    glVertex2i(px, PY);
-    glVertex2i(px + PW, PY);
-    glVertex2i(px + PW, PY + PH);
-    glVertex2i(px, PY + PH);
+    glVertex2i(px, py);
+    glVertex2i(px + PW, py);
+    glVertex2i(px + PW, py + PH);
+    glVertex2i(px, py + PH);
+    glEnd();
+
+    // Marco interior fino
+    glColor3f(0.95f, 0.80f, 0.35f);
+    glLineWidth(1.2f);
+    int m = 6;
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(px + m, py + m);
+    glVertex2i(px + PW - m, py + m);
+    glVertex2i(px + PW - m, py + PH - m);
+    glVertex2i(px + m, py + PH - m);
     glEnd();
     glLineWidth(1.0f);
+
+    // Ornamentos esquinas
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.80f, 0.60f, 0.16f, 1.0f);
+    int cs = 7, off = 3;
+    glBegin(GL_QUADS); glVertex2i(px + off, py + off); glVertex2i(px + off + cs, py + off); glVertex2i(px + off + cs, py + off + cs); glVertex2i(px + off, py + off + cs); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + PW - off - cs, py + off); glVertex2i(px + PW - off, py + off); glVertex2i(px + PW - off, py + off + cs); glVertex2i(px + PW - off - cs, py + off + cs); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + off, py + PH - off - cs); glVertex2i(px + off + cs, py + PH - off - cs); glVertex2i(px + off + cs, py + PH - off); glVertex2i(px + off, py + PH - off); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + PW - off - cs, py + PH - off - cs); glVertex2i(px + PW - off, py + PH - off - cs); glVertex2i(px + PW - off, py + PH - off); glVertex2i(px + PW - off - cs, py + PH - off); glEnd();
     glDisable(GL_BLEND);
 
     // TEXTO DEL TÍTULO E INDICACIÓN DE TECLA
     if (t._modoHechizo) {
         // Si el modo hechizo ya se ha pulsado, alertamos visualmente en verde
-        ETSIDI::setTextColor(0.2f, 1.0f, 0.2f, 1.0f);
+        ETSIDI::setTextColor(0.30f, 1.0f, 0.30f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-        ETSIDI::printxy("CONJURO ACTIVO", px + 8, PY + PH - 22);
+        ETSIDI::printxy("CONJURO ACTIVO", px + 12, PY + PH - 26);
     }
     else {
         // Estado de espera normal
-        ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
-        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
-        if (cas.bando == bando_local) ETSIDI::printxy("[H] Lanza Hechizo:", px + 8, PY + PH - 22);
-        else if (cas.bando == bando_rival) ETSIDI::printxy("[J] Lanza Hechizo:", px + 8, PY + PH - 22);
+        ETSIDI::setTextColor(0.97f, 0.92f, 0.76f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+        if (cas.bando == bando_local) ETSIDI::printxy("[H] Lanza Hechizo:", px + 12, PY + PH - 26);
+        else if (cas.bando == bando_rival) ETSIDI::printxy("[J] Lanza Hechizo:", px + 12, PY + PH - 26);
     }
 
     // LÍNEA SEPARADORA DE CORTE DE PANEL
-    glColor3f(0.6f, 0.6f, 0.6f);
+    glColor3f(0.75f, 0.56f, 0.14f);
+    glLineWidth(1.5f);
     glBegin(GL_LINES);
-    glVertex2i(px + 5, PY + PH - 30);
-    glVertex2i(px + PW - 5, PY + PH - 30);
+    glVertex2i(px + 12, PY + PH - 35);
+    glVertex2i(px + PW - 12, PY + PH - 35);
     glEnd();
+    glLineWidth(1.0f);
 
     //LISTADO DE LOS 4 HECHIZOS DISPONIBLES
-    int filaY = PY + PH - 52;
-    int saltoLinea = 20;
+    int filaY = PY + PH - 54;
+    int saltoLinea = 22;
 
     // Lambda interna para imprimir cada línea iluminándola en amarillo si está seleccionada
     auto printLineaConjuro = [&](const char* texto, bool seleccionado) {
         if (seleccionado) {
-            ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f); // Amarillo resaltado
+            ETSIDI::setTextColor(1.0f, 1.0f, 0.20f, 1.0f); // Amarillo resaltado
             ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
         }
         else {
-            ETSIDI::setTextColor(0.90f, 0.90f, 0.90f, 1.0f); // Blanco/Gris suave estático
+            ETSIDI::setTextColor(0.88f, 0.82f, 0.68f, 1.0f); // Blanco/Gris suave estático
             ETSIDI::setFont("fuentes/ARIALNBI.ttf", 12);
         }
-        ETSIDI::printxy(texto, px + 12, filaY);
+        ETSIDI::printxy(texto, px + 14, filaY);
         filaY -= saltoLinea;
         };
 
