@@ -8,7 +8,7 @@ using namespace std;
 const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     switch (tipo) {
     case TipoPersonaje::MILICIANO:     
-        return "imagenes\\MILICIANO_PNG.png";
+        return "imagenes\\MILICIANO_SI.png";
     case TipoPersonaje::REY:
         return "imagenes\\REY_PRUEBA.png";
     case TipoPersonaje::EMIR:           
