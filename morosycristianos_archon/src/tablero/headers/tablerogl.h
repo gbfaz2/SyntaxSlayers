@@ -7,7 +7,6 @@
 #include "GestorMovimiento.h"
 #include "GestorTurnos.h"
 #include "Hechicero.h"
-#include "SpriteRey.h"
 #include "dibujatablero.h"
 #include "menu.h"
 #include<ETSIDI.h>
@@ -91,7 +90,7 @@ protected:
 
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
-	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey
+	virtual ~Tablerogl() {}//destructor virtual + destruir rey
 
 	void trySelectorMove(BandoPieza bando);
 

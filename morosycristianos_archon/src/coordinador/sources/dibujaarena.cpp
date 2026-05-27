@@ -1,11 +1,13 @@
 // DIBUJAARENA — IMPLEMENTACIÓN DE GRÁFICOS DEL COMBATE
 
 #include "dibujaarena.h"
+#include<iostream>
 #include "freeglut.h"
 #include "ETSIDI.h"
 #include <cstdio> 
 #include <cstring> 
 #include <string>
+
 
 dibujapersonajes DibujaArena::_personajes;
 
@@ -59,6 +61,10 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     //investigar que significa bien lo de lambda (aparece aqui y en dibujatablero)
     // Lambda que dibuja cualquier combatiente con sprite
     auto dibujarCombatiente = [&](const Combatiente& c, int indice) {
+
+        std::cout << "nombre='" << c.nombre() << "'" << std::endl;
+
+
         // Proyectamos posicion 3D a coordenadas de pantalla
         GLdouble winX, winY, winZ;
         GLdouble model[16], proj[16];
@@ -83,23 +89,62 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
 
         bool voltear = false; 
         TipoPersonaje tipo = TipoPersonaje::MILICIANO;
-        if (c.nombre() == "Miliciano")      tipo = TipoPersonaje::MILICIANO;
-        else if (c.nombre() == "Rey")     tipo = TipoPersonaje::REY;
-        else if (c.nombre() == "Infiltrado")     tipo = TipoPersonaje::INFILTRADO;
+
+        if (c.nombre() == "Miliciano") {
+            tipo = TipoPersonaje::MILICIANO;
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
+        else if (c.nombre() == "Rey") {
+            tipo = TipoPersonaje::REY;
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
+
+        else if (c.nombre() == "Asesino de Elite") {
+            tipo = TipoPersonaje::ASESINO_DE_ELITE;
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
         else if (c.nombre() == "Guardia Negra") {
-            voltear = true;
             tipo = TipoPersonaje::GUARDIA_NEGRA;
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
         }
         else if (c.nombre() == "Jinete Bereber") {
-           
-            voltear = true;
             tipo = TipoPersonaje::JINETE_BEREBER;
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
 
         }
         else if (c.nombre() == "Emir") {
-            voltear = true;
+            //devuelve el tipo de personaje EMIR
             tipo = TipoPersonaje::EMIR;
+
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
         }
+
+
         float size = _anchoVentana * 0.15f;
 
         //convertir a 2d
@@ -114,74 +159,25 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     };
 
 
-
-    // P1
     float r, g, b;
+
+    // P1 (ATACANTE)
+    
     arena.p1().color(r, g, b);
     if (arena.p1().atacando())
         arena_hitbox(arena.p1().x() + arena.p1().lado() * 0.5f, arena.p1().z(), 1.0f, arena.p1().alcanceAtaque());
     //funcion dibujar combatiente
     dibujarCombatiente(arena.p1(), 0);
 
-    /*
-    if (arena.p1().nombre() == "Miliciano") 
-    {
-        
-        GLdouble winX, winY, winZ;
-        GLdouble model[16], proj[16];
-        GLint view[4];
-        glGetDoublev(GL_MODELVIEW_MATRIX, model);
-        glGetDoublev(GL_PROJECTION_MATRIX, proj);
-        glGetIntegerv(GL_VIEWPORT, view);
-        gluProject(arena.p1().x(), arena.p1().y(), arena.p1().z(),
-            model, proj, view, &winX, &winY, &winZ);
+    
 
-        EstadoPersonaje estado = arena.p1().atacando() ? EstadoPersonaje::ATTACK : EstadoPersonaje::IDLE;
-        bool moviendose = arena.p1().enMovimiento();
-        float size = _anchoVentana * 0.15f;
-
-        util_entrar2D(_anchoVentana, _altoVentana);
-        glDisable(GL_LIGHTING);
-        _personajes.dibujar((float)winX, (float)winY, size, estado, 0, moviendose);
-        util_salir2D();
-    }
-    else {
-        arena_cubo3d(arena.p1().x(), arena.p1().y(), arena.p1().z(), arena.p1().lado(), r, g, b);
-    }
-*/
-
-
-    // P2
+    // P2 (ATACADO)
     arena.p2().color(r, g, b);
     if (arena.p2().atacando())
         arena_hitbox(arena.p2().x() - arena.p2().lado() * 0.5f, arena.p2().z(), -1.0f, arena.p2().alcanceAtaque());
     dibujarCombatiente(arena.p2(), 1);
 
-    /*
-    if (arena.p2().nombre() == "Miliciano") 
-    {
-        GLdouble winX, winY, winZ;
-        GLdouble model[16], proj[16];
-        GLint view[4];
-        glGetDoublev(GL_MODELVIEW_MATRIX, model);
-        glGetDoublev(GL_PROJECTION_MATRIX, proj);
-        glGetIntegerv(GL_VIEWPORT, view);
-        gluProject(arena.p2().x(), arena.p2().y(), arena.p2().z(),
-            model, proj, view, &winX, &winY, &winZ);
-
-        EstadoPersonaje estado = arena.p2().atacando() ? EstadoPersonaje::ATTACK : EstadoPersonaje::IDLE;
-        bool moviendose = arena.p2().enMovimiento();
-        float size = _anchoVentana * 0.15f;
-
-        util_entrar2D(_anchoVentana, _altoVentana);
-        glDisable(GL_LIGHTING);
-        _personajes.miliciano((float)winX, (float)winY, size, estado, 1, moviendose);
-        util_salir2D();
-    }
-    else {
-        arena_cubo3d(arena.p2().x(), arena.p2().y(), arena.p2().z(), arena.p2().lado(), r, g, b);
-    }
-*/
+  
     // HUD ENCIMA DE TODO
     arena_hud(arena);
 }
