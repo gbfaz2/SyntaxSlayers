@@ -89,6 +89,11 @@ protected:
 	int  _hechizoColOrigen{ -1 };    // COL ORIGEN DEL HECHIZO
 	bool _conjuroElegido{ false }; // EL JUGADOR YA ELIGIÓ UN NÚMERO
 
+	//VARIABLES PARA LA HABILIDAD DEL INFILTRADO
+	bool _modoInfiltrado{ false }; //controla si estamos en modo seleccionar víctima
+	int _infiltradoFila{ -1 };//guarda donde está el infiltrado original
+	int _infiltradoCol{ -1 };
+
 public:
 	Tablerogl(Tablero* pb);//constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() { SpriteRey::liberarTextura(); }//destructor virtual + destruir rey

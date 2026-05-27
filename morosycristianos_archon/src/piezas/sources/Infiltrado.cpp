@@ -18,18 +18,16 @@ Infiltrado::Infiltrado(Bando bando)
 }
 
 void Infiltrado::copiarStats(Pieza& enemigo) {
-    // ESPECIAL INFILTRADO:  copia las stats de combate del enemigo
-    // Solo copia fuerza, velAtaque y recarga — no la vida ni la posición(no tiene sentido)
-    fuerza = enemigo.getFuerza();
-    velAtaque = enemigo.getVelAtaque();
-    recarga = enemigo.getRecarga();
+    // Copiamos todas las características principales de la pieza objetivo
+    this->vidaMax = enemigo.getVidaMax();
+    this->vida = enemigo.getVidaMax(); // Le restauramos la vida completa del nuevo rol
+    this->fuerza = enemigo.getFuerza();
+    this->velAtaque = enemigo.getVelAtaque();
+    this->recarga = enemigo.getRecarga();
+    this->radioMov = enemigo.getRadioMov();
 
-    //imprime por pantalla lo que va haciendo (solo para la demo)
-    std::cout << "[" << nombre << "] Espionaje Tactico activado!" << std::endl;
-    std::cout << "  Copiando stats de: " << enemigo.getNombre() << std::endl;
-    std::cout << "  Fuerza    -> " << fuerza << std::endl;
-    std::cout << "  VelAtaque -> " << velAtaque << std::endl;
-    std::cout << "  Recarga   -> " << recarga << std::endl;
+    // Mensaje de consola para feedback interno
+    std::cout << "[Habilidad] Infiltrado ha copiado los stats de " << enemigo.getNombre() << std::endl;
 }
 
 void Infiltrado::mostrarStats() const {
