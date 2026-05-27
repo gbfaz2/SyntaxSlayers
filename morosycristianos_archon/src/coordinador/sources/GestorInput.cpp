@@ -117,6 +117,7 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
 bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
 {
     bool ejecutado = false;                            // CONTROLA SI SE EJECUTÓ
+    std::string mensajeError = "";//VARIABLE PARA GUARDAR EL MOTIVO DEL ERROR EN EL ASEDIO
 
     switch (_tablerogl->_conjuroActivo) {
 
@@ -159,7 +160,10 @@ bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
         break;
 
     case Conjuro::ASEDIO:                              // BLOQUEA PIEZA ENEMIGA EN CASILLA ACTUAL
-        ejecutado = _coordinador->pGestorHechizos->asedio(bando, fila, col);
+        ejecutado = _coordinador->pGestorHechizos->asedio(bando, fila, col,mensajeError);
+        //SI FALLA FORZAMOS LA APARICIÓN DEL CARTEL TEMPORAL
+        if (!ejecutado && !mensajeError.empty()) 
+            _tablerogl->mostrarMensajeInvalido(mensajeError, true);
         break;
 
     default: break;                                    // HECHIZOS NO IMPLEMENTADOS
