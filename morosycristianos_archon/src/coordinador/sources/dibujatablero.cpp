@@ -1309,62 +1309,102 @@ void DibujaTablero::tablero_panel_infiltrado(const Tablerogl& t)
     int av = Tablerogl::_altoVentana;
     int aw = Tablerogl::_anchoVentana;
 
-    const int PW = 180;
-    const int PH = 100; // Panel más compacto
-    const int PY = 240; // Posicionado encima de las stats
+    const int PW = 195;
+    const int PH = 120; // Panel más compacto
+    const int PY = 430; // Posicionado encima de las stats
 
     int px = (bandoPanel == bando_local) ? 10 : (aw - PW - 10);
+    int py = PY;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    if (bandoPanel == bando_local) glColor4f(0.20f, 0.05f, 0.30f, 0.88f);
-    else glColor4f(0.30f, 0.03f, 0.03f, 0.88f);
-
+    // Sombra
+    glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
     glBegin(GL_QUADS);
-    glVertex2i(px, PY); glVertex2i(px + PW, PY);
-    glVertex2i(px + PW, PY + PH); glVertex2i(px, PY + PH);
+    glVertex2i(px + 5, py - 5);
+    glVertex2i(px + PW + 5, py - 5);
+    glVertex2i(px + PW + 5, py + PH + 5);
+    glVertex2i(px + 5, py + PH + 5);
     glEnd();
 
-    if (bandoPanel == bando_local) glColor4f(0.65f, 0.20f, 0.85f, 1.0f);
-    else glColor4f(0.85f, 0.15f, 0.15f, 1.0f);
+    // Fondo cuero
+    glBegin(GL_QUADS);
+    glColor4f(0.36f, 0.18f, 0.07f, 0.98f);
+    glVertex2i(px, py + PH);
+    glVertex2i(px + PW, py + PH);
+    glColor4f(0.18f, 0.08f, 0.02f, 0.98f);
+    glVertex2i(px + PW, py);
+    glVertex2i(px, py);
+    glEnd();
 
-    glLineWidth(2.0f);
+    glDisable(GL_BLEND);
+
+    // Marco dorado exterior
+    glColor3f(0.80f, 0.60f, 0.16f);
+    glLineWidth(4.0f);
     glBegin(GL_LINE_LOOP);
-    glVertex2i(px, PY); glVertex2i(px + PW, PY);
-    glVertex2i(px + PW, PY + PH); glVertex2i(px, PY + PH);
+    glVertex2i(px, py);
+    glVertex2i(px + PW, py);
+    glVertex2i(px + PW, py + PH);
+    glVertex2i(px, py + PH);
+    glEnd();
+
+    // Marco interior fino
+    glColor3f(0.95f, 0.80f, 0.35f);
+    glLineWidth(1.2f);
+    int m = 6;
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(px + m, py + m);
+    glVertex2i(px + PW - m, py + m);
+    glVertex2i(px + PW - m, py + PH - m);
+    glVertex2i(px + m, py + PH - m);
     glEnd();
     glLineWidth(1.0f);
+
+    // Ornamentos esquinas
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.80f, 0.60f, 0.16f, 1.0f);
+    int cs = 7, off = 3;
+    glBegin(GL_QUADS); glVertex2i(px + off, py + off); glVertex2i(px + off + cs, py + off); glVertex2i(px + off + cs, py + off + cs); glVertex2i(px + off, py + off + cs); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + PW - off - cs, py + off); glVertex2i(px + PW - off, py + off); glVertex2i(px + PW - off, py + off + cs); glVertex2i(px + PW - off - cs, py + off + cs); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + off, py + PH - off - cs); glVertex2i(px + off + cs, py + PH - off - cs); glVertex2i(px + off + cs, py + PH - off); glVertex2i(px + off, py + PH - off); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + PW - off - cs, py + PH - off - cs); glVertex2i(px + PW - off, py + PH - off - cs); glVertex2i(px + PW - off, py + PH - off); glVertex2i(px + PW - off - cs, py + PH - off); glEnd();
     glDisable(GL_BLEND);
 
     // TEXTOS Y ESTADOS
     if (t._modoInfiltrado) {
         ETSIDI::setTextColor(0.2f, 1.0f, 0.2f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-        ETSIDI::printxy("MODO COPIA ACTIVO", px + 8, PY + PH - 22);
+        ETSIDI::printxy("MODO COPIA ACTIVO", px + 12, PY + PH - 26);
     }
     else {
         ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
-        ETSIDI::printxy("[I] Activar Habilidad:", px + 8, PY + PH - 22);
+        ETSIDI::printxy("[I] Activar Habilidad:", px + 2, PY + PH - 26);
     }
 
-    glColor3f(0.6f, 0.6f, 0.6f);
+    // Separador dorado
+    glColor3f(0.75f, 0.56f, 0.14f);
+    glLineWidth(1.5f);
     glBegin(GL_LINES);
-    glVertex2i(px + 5, PY + PH - 30);
-    glVertex2i(px + PW - 5, PY + PH - 30);
+    glVertex2i(px + 12, py + PH - 35);
+    glVertex2i(px + PW - 12, py + PH - 35);
     glEnd();
+    glLineWidth(1.0f);
 
+    // Contenido
     int filaY = PY + PH - 52;
     if (t._modoInfiltrado) {
-        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.20f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
         ETSIDI::printxy("Click en un enemigo", px + 12, filaY);
         ETSIDI::printxy("para robarle sus", px + 12, filaY - 20);
         ETSIDI::printxy("estadisticas.", px + 12, filaY - 40);
     }
     else {
-        ETSIDI::setTextColor(0.90f, 0.90f, 0.90f, 1.0f);
+        ETSIDI::setTextColor(0.88f, 0.82f, 0.68f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 12);
         ETSIDI::printxy("Permite robar los", px + 12, filaY);
         ETSIDI::printxy("stats de una pieza", px + 12, filaY - 20);
