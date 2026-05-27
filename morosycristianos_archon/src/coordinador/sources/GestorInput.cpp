@@ -670,7 +670,8 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             _coordinador->reiniciarTablero();
             _coordinador->estado = EstadoJuego::MENU;
             break;
-        case 2:  // AYUDA — DE MOMENTO NADA
+        case 2:  // AYUDA
+            _coordinador->estado = EstadoJuego::AYUDA;
             break;
         case 3: // SALIR SIN GUARDAR
             ETSIDI::stopMusica();

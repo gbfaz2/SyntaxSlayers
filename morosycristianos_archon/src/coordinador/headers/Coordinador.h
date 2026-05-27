@@ -51,6 +51,9 @@ class Coordinador
 
 	int _framesCargando{ 0 };
 
+	int _ayudaSeleccion{ 0 }; // 0 = controles, 1 = normas
+	int _ayudaSeccion{ -1 }; // -1 = menu ayuda
+
 public:
 	Coordinador() = default;
 	~Coordinador();
