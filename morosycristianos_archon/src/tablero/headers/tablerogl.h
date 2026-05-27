@@ -114,15 +114,17 @@ public:
 	Pieza* getPiezaDefensora() const { return _pDefensora; }
 
 	void limpiarCombate();//para liberar a la defensora y resetear los flags
-	void mostrarMensajeInvalido(const std::string& mensaje, bool forzar = false) {
+	void mostrarMensajeInvalido(const std::string& mensaje, bool forzar = false,bool reproducirSonido = true) {
 		// SI FORZAR ES TRUE, IGNORAMOS EL BLOQUEO DE LOS HECHIZOS Y MOSTRAMOS
 		if (_modoHechizo && !forzar) return;
 
 		_mensajeInvalido = mensaje;
 		_tiempoMensajeInvalido = 2.0f;
 		
-		//musica MEEEEH error
-		ETSIDI::playMusica("sonidos/error_tablero.mp3");
+		//musica MEEEEH error, reproducir solo para los errores de movimiento
+		if (reproducirSonido) {
+			ETSIDI::playMusica("sonidos/error_tablero.mp3");
+		}
 	}
 	//descuenta el temporizador del cartel 
 	void updateMensaje(double dt){
