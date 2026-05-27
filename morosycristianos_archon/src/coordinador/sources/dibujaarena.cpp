@@ -62,7 +62,7 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     // Lambda que dibuja cualquier combatiente con sprite
     auto dibujarCombatiente = [&](const Combatiente& c, int indice) {
 
-        std::cout << "nombre='" << c.nombre() << "'" << std::endl;
+        //std::cout << "nombre='" << c.nombre() << "'" << std::endl;
 
 
         // Proyectamos posicion 3D a coordenadas de pantalla
