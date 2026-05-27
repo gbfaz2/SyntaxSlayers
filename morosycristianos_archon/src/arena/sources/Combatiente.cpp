@@ -121,7 +121,7 @@ Combatiente::Combatiente(float x, float z, float r, float g, float b, const Piez
 	_velocidad = 2.0f + pieza.getRadioMov() * 0.8f;
 
 	// Alcance segun tipo de arma (dynamic_cast de Pieza a Arma)
-	_alcanceAtaque = 3.0f; // por defecto cuerpo a cuerpo
+	_alcanceAtaque = 6.0f; // por defecto cuerpo a cuerpo
 	const Arma* arma = dynamic_cast<const Arma*>(&pieza);
 	if (arma && arma->getTipoAtaque() == TipoAtaque::DISTANCIA)
 		_alcanceAtaque = 5.0f;

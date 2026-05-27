@@ -105,25 +105,34 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
-			gestorTurnos.terminarTurno();
+			//gestorTurnos.terminarTurno();
 		}
 
 
 		else if (resultado == ResultadoMovimiento::COMBATE) {
+
+			// 1. CALCULAMOS COORDENADAS PARA LA ANIMACIÓN (IGUAL QUE EN MOVIMIENTO_OK)
+			float ox, oy, dx, dy;
+			cell2center(fromFila, fromCol, ox, oy);
+			cell2center(currentFila, currentCol, dx, dy);
+
+			_animMov.pieza = pieza;
+			_animMov.origenX = ox;  _animMov.origenY = oy;
+			_animMov.destinoX = dx;  _animMov.destinoY = dy;
+			_animMov.t = 0.0f;
+			_animMov.activa = true; // ARRANCAMOS LA ANIMACIÓN VISUAL HACIA EL ENEMIGO
+
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
-			
-			// Avisamos al coordinador de que hay combate pendiente
+
+			// 2. PREPARAMOS EL COMBATE, PERO AÚN NO AVISAMOS AL COORDINADOR
 			Pieza* atacante = gestorMovimiento.getUltimoAtacante();
 			Pieza* defensora = gestorMovimiento.getUltimaDefensora();
 
 			if (atacante && defensora) {
 				_pAtacante = atacante;
 				_pDefensora = defensora;
-				_combatePendiente = true;
 			}
-
-			gestorTurnos.terminarTurno();
 		}
 		// Si el movimiento es INVÁLIDO o BLOQUEADO, la pieza sigue seleccionada
 		// esperando a que elijas un destino válido (o puedes cancelar la selección si prefieres).
@@ -192,10 +201,19 @@ void Tablerogl::aplicarCambiosDinamicos()
 void Tablerogl::update(double dt)
 {
 	if (_animMov.activa) {
-		_animMov.t += (float)dt * 2.0f; // velocidad: 2 
+		_animMov.t += (float)dt * 2.0f; // VELOCIDAD: 2 
 		if (_animMov.t >= 1.0f) {
 			_animMov.t = 1.0f;
 			_animMov.activa = false;
+
+			// LA PIEZA YA HA LLEGADO VISUALMENTE A SU DESTINO. 
+			// COMPROBAMOS SI HABÍA UN COMBATE EN ESPERA
+			if (_pAtacante != nullptr && _pDefensora != nullptr) {
+				_combatePendiente = true; // AHORA SÍ, QUE SALTE LA ARENA TRAS EL CHOQUE
+			}
+			else {
+				gestorTurnos.terminarTurno(); // SI NO HAY PELEA, CAMBIA EL TURNO NORMALMENTE
+			}
 		}
 	}
 
