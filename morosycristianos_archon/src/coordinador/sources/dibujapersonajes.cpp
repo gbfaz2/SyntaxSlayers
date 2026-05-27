@@ -12,7 +12,7 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     case TipoPersonaje::REY:
         return "imagenes\\REY_PRUEBA.png";
     case TipoPersonaje::EMIR:           
-        return "imagenes\\EMIR_DEF.png";
+        return "imagenes\\EMIR_SISISI.png";
     case TipoPersonaje::ASESINO_DE_ELITE:     
         return "imagenes\\ASESINO_DEF.png";
     case TipoPersonaje::GUARDIA_NEGRA:  
