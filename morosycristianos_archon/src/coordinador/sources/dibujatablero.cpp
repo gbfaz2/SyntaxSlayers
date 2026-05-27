@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <string>
 #include <iostream>
+#include "Infiltrado.h"
 
 static const int SEGS = 24; // NUMERO DE SEGMENTOS PARA DIBUJAR LOS CIRCULOS
 
@@ -103,6 +104,7 @@ void DibujaTablero::tablero_dibujar(Tablerogl& t) {
     tablero_contadores(t);
     tablero_panel_pieza(t);
     tablero_panel_hechizos(t);
+    tablero_panel_infiltrado(t);
     tablero_mensaje_invalido(t);
     util_salir2D();
 }
@@ -1123,6 +1125,92 @@ void DibujaTablero::tablero_panel_hechizos(const Tablerogl& t)
     printLineaConjuro("[4] Asedio", t._modoHechizo && t._conjuroActivo == Conjuro::ASEDIO);
 }
 
+void DibujaTablero::tablero_panel_infiltrado(const Tablerogl& t)
+{
+    bool mostrar = false;
+    BandoPieza bandoPanel = bando_nada;
+
+    // Se muestra si estamos en el modo, o si acabamos de seleccionar a un Infiltrado
+    if (t._modoInfiltrado) {
+        mostrar = true;
+        bandoPanel = t.gestorTurnos.getBandoActual();
+    }
+    else if (t.piezaSeleccionada && t.fromFila >= 0 && t.fromCol >= 0) {
+        const Casilla& cas = t.m_tablero->getCasilla(t.fromFila, t.fromCol);
+        // Magia del polimorfismo: Si el casteo funciona, la pieza es un Infiltrado
+        if (cas.obj != nullptr && dynamic_cast<Infiltrado*>(cas.obj) != nullptr) {
+            mostrar = true;
+            bandoPanel = cas.bando;
+        }
+    }
+
+    if (!mostrar) return;
+
+    int av = Tablerogl::_altoVentana;
+    int aw = Tablerogl::_anchoVentana;
+
+    const int PW = 180;
+    const int PH = 100; // Panel más compacto
+    const int PY = 240; // Posicionado encima de las stats
+
+    int px = (bandoPanel == bando_local) ? 10 : (aw - PW - 10);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    if (bandoPanel == bando_local) glColor4f(0.20f, 0.05f, 0.30f, 0.88f);
+    else glColor4f(0.30f, 0.03f, 0.03f, 0.88f);
+
+    glBegin(GL_QUADS);
+    glVertex2i(px, PY); glVertex2i(px + PW, PY);
+    glVertex2i(px + PW, PY + PH); glVertex2i(px, PY + PH);
+    glEnd();
+
+    if (bandoPanel == bando_local) glColor4f(0.65f, 0.20f, 0.85f, 1.0f);
+    else glColor4f(0.85f, 0.15f, 0.15f, 1.0f);
+
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(px, PY); glVertex2i(px + PW, PY);
+    glVertex2i(px + PW, PY + PH); glVertex2i(px, PY + PH);
+    glEnd();
+    glLineWidth(1.0f);
+    glDisable(GL_BLEND);
+
+    // TEXTOS Y ESTADOS
+    if (t._modoInfiltrado) {
+        ETSIDI::setTextColor(0.2f, 1.0f, 0.2f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
+        ETSIDI::printxy("MODO COPIA ACTIVO", px + 8, PY + PH - 22);
+    }
+    else {
+        ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+        ETSIDI::printxy("[I] Activar Habilidad:", px + 8, PY + PH - 22);
+    }
+
+    glColor3f(0.6f, 0.6f, 0.6f);
+    glBegin(GL_LINES);
+    glVertex2i(px + 5, PY + PH - 30);
+    glVertex2i(px + PW - 5, PY + PH - 30);
+    glEnd();
+
+    int filaY = PY + PH - 52;
+    if (t._modoInfiltrado) {
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
+        ETSIDI::printxy("Click en un enemigo", px + 12, filaY);
+        ETSIDI::printxy("para robarle sus", px + 12, filaY - 20);
+        ETSIDI::printxy("estadisticas.", px + 12, filaY - 40);
+    }
+    else {
+        ETSIDI::setTextColor(0.90f, 0.90f, 0.90f, 1.0f);
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 12);
+        ETSIDI::printxy("Permite robar los", px + 12, filaY);
+        ETSIDI::printxy("stats de una pieza", px + 12, filaY - 20);
+        ETSIDI::printxy("del bando rival.", px + 12, filaY - 40);
+    }
+}
 
 void DibujaTablero::tablero_guardando(Tablerogl& t, int ancho, int alto, float tiempoRestante)
 {
