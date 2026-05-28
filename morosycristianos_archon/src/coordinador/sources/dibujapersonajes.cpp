@@ -27,6 +27,8 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
         return "imagenes\\CABALLERIA_PESADA.png";  
     case TipoPersonaje::BALLESTERO:
             return "imagenes\\BALLESTERO_SISISI.png";
+    case TipoPersonaje::GHAZI:
+        return "imagenes\\GHAZI.png";
 
     default:                            
         return "";
@@ -39,7 +41,7 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
 TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando) {
     switch (pieza) {
     case pieza_cubo_p:     
-        return TipoPersonaje::MILICIANO;
+        return (bando == bando_rival) ? TipoPersonaje::GHAZI : TipoPersonaje::MILICIANO;
     case pieza_dodecaedro:  
         return (bando == bando_rival) ? TipoPersonaje::ASESINO_DE_ELITE : TipoPersonaje::INFILTRADO;
     case pieza_cubog:       
