@@ -8,13 +8,13 @@ using namespace std;
 const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     switch (tipo) {
     case TipoPersonaje::MILICIANO:     
-        return "imagenes\\MILICIANO_SI.png";
+        return "imagenes\\MILICIANO_SISISISI.png";
     case TipoPersonaje::REY:
         return "imagenes\\REY_PRUEBA.png";
     case TipoPersonaje::EMIR:           
         return "imagenes\\EMIR_SISISI.png";
     case TipoPersonaje::ASESINO_DE_ELITE:     
-        return "imagenes\\ASESINO_DEF.png";
+        return "imagenes\\asesino_de_elite.png";
     case TipoPersonaje::GUARDIA_NEGRA:  
         return "imagenes\\guardia_negra.png";
     case TipoPersonaje::JINETE_BEREBER: 
@@ -33,6 +33,9 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
         return "imagenes\\caballeria_acorazada.png";
     case TipoPersonaje::CABALLERIA_LIGERA:
         return "imagenes\\caballeria_ligera.png";
+    case TipoPersonaje::ARQUERO_GHAZI:
+        return "imagenes\\arquero_ghazi.png";
+
 
     default:                            
         return "";
@@ -57,7 +60,8 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
     case pieza_cono:
         return (bando == bando_rival) ? TipoPersonaje::CABALLERIA_ACORAZADA : TipoPersonaje::CABALLERIA_PESADA;
     case pieza_cilindro:
-        return TipoPersonaje::BALLESTERO;
+        return (bando == bando_rival) ? TipoPersonaje::ARQUERO_GHAZI : TipoPersonaje::BALLESTERO;
+   
 
 
     default:                return TipoPersonaje::MILICIANO;
