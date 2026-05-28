@@ -224,6 +224,26 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
             //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
             voltear = !esAtacante;
         }
+        else if (c.nombre() == "Almogavar") {
+            //devuelve el tipo de personaje EMIR
+            tipo = TipoPersonaje::ALMOGAVAR;
+
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
+        else if (c.nombre() == "Arquero a Caballo") {
+                //devuelve el tipo de personaje EMIR
+                tipo = TipoPersonaje::ARQUERO_CABALLO;
+
+                //si es atacante (P1 SIMEPRE ATACA) devuelve true
+                bool esAtacante = (&c == &arena.p1());
+
+                //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+                voltear = !esAtacante;
+                }
         float size = _anchoVentana * 0.10f;
 
         //convertir a 2d
