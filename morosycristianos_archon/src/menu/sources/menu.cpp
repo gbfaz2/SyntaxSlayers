@@ -1,99 +1,163 @@
-
-// Autor: Ines Alc�rreca S�nchez
-// Implementaci�n de las pantallas de introducci�n y men� principal
+﻿// Autor: Ines Alcérreca Sánchez
+// Implementación de las pantallas de introducción y menú principal
 
 #include "menu.h"
 #include "GestorPartida.h"
 
-//PANTALLA INTRO 
+// ============================================================
+// PANTALLA INTRO
+// ============================================================
+
 PantallaIntro::PantallaIntro() { reiniciar(); }
 
-// Dibujo principal
 void PantallaIntro::reiniciar() {
     m_fotograma = 0;
     m_terminado = false;
 }
 
-// Permite saltar la intro al pulsar cualquier tecla
 void PantallaIntro::saltar() {
     m_terminado = true;
 }
 
-//  PANTALLA MENU PRINCIPAL
+// ============================================================
+// MENÚ PRINCIPAL
+// ============================================================
 
 MenuPrincipal::MenuPrincipal() { reiniciar(); }
 
 void MenuPrincipal::reiniciar() {
-    m_paso = 0; 
-    m_seleccion = 0; // opcion resaltada
-    m_fotograma = 0; // para animaciones
-    m_terminado = false; // cuando el jugador confirma, se marca como terminado para que el main cambie de estado
-    m_siguiente = EstadoJuego::MENU; // el estado al que se pasar� cuando termine (puede ser MENU, TABLERO, ARENA, RANKING...)
-    m_cfg = ConfigPartida(); // configuraci�n de partida (modo, bando, batalla, turno1)
-	m_nombreActual = ""; // para escribir los nombres de los jugadores
+    m_paso = 0;
+    m_seleccion = 0;
+    m_fotograma = 0;
+    m_terminado = false;
+    m_siguiente = EstadoJuego::MENU;
+    m_cfg = ConfigPartida();
+    m_nombreJ1Actual = "";
+    m_nombreJ2Actual = "";
+    m_focoNombre = 0; // FOCO INICIAL EN J1
 }
 
-// Confirmar seleccion y avanzar al siguiente paso o estado
+// ============================================================
+// CONFIRMAR — avanza al siguiente paso según el paso actual
+// ============================================================
 void MenuPrincipal::confirmar() {
+
+    // ── PASO 0: MENÚ PRINCIPAL ──────────────────────────────
     if (m_paso == 0) {
         switch (m_seleccion) {
-        case 0: m_cfg.modo = ModoJuego::JVJ;  m_paso = 1; m_nombreActual = ""; break;
-        case 1: m_cfg.modo = ModoJuego::JVIA; m_paso = 1; m_nombreActual = ""; break;
-        case 2:
+        case 0: // CARGAR PARTIDA
             if (GestorPartida::hayPartidaGuardada()) {
                 m_siguiente = EstadoJuego::CARGANDO;
                 m_terminado = true;
             }
             break;
-        case 3: m_siguiente = EstadoJuego::RANKING; m_terminado = true; break;
-        case 4: m_siguiente = EstadoJuego::FINAL;   m_terminado = true; break;
+        case 1: // NUEVA PARTIDA → elige modo
+            m_paso = 1; m_seleccion = 0;
+            break;
+        case 2: // AYUDA
+            m_siguiente = EstadoJuego::AYUDA;
+            m_terminado = true;
+            break;
+        case 3: // RANKING
+            m_siguiente = EstadoJuego::RANKING;
+            m_terminado = true;
+            break;
+        case 4: // SALIR
+            m_siguiente = EstadoJuego::FINAL;
+            m_terminado = true;
+            break;
         }
     }
+
+    // ── PASO 1: ELEGIR MODO (JVJ / JVIA) ────────────────────
     else if (m_paso == 1) {
-        if (!m_nombreActual.empty()) m_cfg.nombre_j1 = m_nombreActual;
-        m_nombreActual = "";
+        switch (m_seleccion) {
+        case 0: m_cfg.modo = ModoJuego::JVJ;  break;
+        case 1: m_cfg.modo = ModoJuego::JVIA; break;
+        }
+
+        // EN JVIA: FIJAMOS BANDOS AUTOMÁTICAMENTE (JUGADOR = CRISTIANO, IA = ANDALUSÍ)
+        if (m_cfg.modo == ModoJuego::JVIA) {
+            m_cfg.bando = BandoJugador::CRISTIANO;
+            m_cfg.bando_j2 = BandoJugador::MUSULMAN;
+        }
+
+        // PASAMOS A LA PANTALLA DE CONFIGURACIÓN
         m_paso = 2; m_seleccion = 0;
+        m_nombreJ1Actual = "";
+        m_nombreJ2Actual = "";
+        m_focoNombre = 0;
     }
+
+    // ── PASO 2: CONFIGURACIÓN (nombres + bandos/dificultad) ─
     else if (m_paso == 2) {
-        m_cfg.bando = (m_seleccion == 0) ? BandoJugador::CRISTIANO : BandoJugador::MUSULMAN;
+        // GUARDAMOS LOS NOMBRES SI NO ESTÁN VACÍOS
+        if (!m_nombreJ1Actual.empty()) m_cfg.nombre_j1 = m_nombreJ1Actual;
+        if (!m_nombreJ2Actual.empty() && m_cfg.modo == ModoJuego::JVJ)
+            m_cfg.nombre_j2 = m_nombreJ2Actual;
+
+        // EN JVJ: ASIGNAMOS BANDO J2 OPUESTO AL J1
         if (m_cfg.modo == ModoJuego::JVJ) {
-            m_paso = 3; m_nombreActual = "";
+            m_cfg.bando_j2 = (m_cfg.bando == BandoJugador::CRISTIANO)
+                ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
         }
-        else {
-            m_paso = 4; m_seleccion = 0;
-        }
+
+        // PASAMOS A SELECCIÓN DE BATALLA
+        m_paso = 3; m_seleccion = 0;
     }
+
+    // ── PASO 3: SELECCIÓN DE BATALLA ────────────────────────
     else if (m_paso == 3) {
-        if (!m_nombreActual.empty()) m_cfg.nombre_j2 = m_nombreActual;
-        m_cfg.bando_j2 = (m_cfg.bando == BandoJugador::CRISTIANO)
-            ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
-        m_nombreActual = "";
-        m_paso = 4; m_seleccion = 0;
-    }
-    else if (m_paso == 4) {
         m_cfg.batalla = (Batalla)m_seleccion;
         m_cfg.turno1 = iniciativa(m_cfg.batalla);
+<<<<<<< Updated upstream
         m_paso = 5; m_seleccion = 0;
+=======
+        m_paso = 4; m_seleccion = 0;
+>>>>>>> Stashed changes
     }
-    else if (m_paso == 5) {
+
+    // ── PASO 4: CONFIRMAR (JUGAR / VOLVER) ──────────────────
+    else if (m_paso == 4) {
         if (m_seleccion == 0) {
+            // JUGAR — LANZAMOS LA PARTIDA
             m_siguiente = EstadoJuego::DESTINO;
             m_terminado = true;
         }
         else {
-            m_paso = 4; m_seleccion = 0;
+            // VOLVER — RETROCEDEMOS A SELECCIÓN DE BATALLA
+            m_paso = 3; m_seleccion = 0;
         }
     }
 }
 
-void MenuPrincipal::teclaTexto(unsigned char key) {
-    if (key == 13) {  // ENTER confirma el nombre
+// ============================================================
+// TECLAS DE TEXTO — captura caracteres para los nombres
+// ============================================================
+
+void MenuPrincipal::teclaTextoJ1(unsigned char key) {
+    if (key == 13) { // ENTER: MUEVE EL FOCO A J2 O CONFIRMA
+        if (m_cfg.modo == ModoJuego::JVJ)
+            m_focoNombre = 1; // PASA A ESCRIBIR J2
+        else
+            confirmar(); // EN JVIA SOLO HAY J1, CONFIRMA DIRECTO
+    }
+    else if ((key == 8 || key == 127) && !m_nombreJ1Actual.empty()) {
+        m_nombreJ1Actual.pop_back(); // BACKSPACE
+    }
+    else if (key >= 32 && key < 127 && m_nombreJ1Actual.size() < 20) {
+        m_nombreJ1Actual += (char)key;
+    }
+}
+
+void MenuPrincipal::teclaTextoJ2(unsigned char key) {
+    if (key == 13) { // ENTER: CONFIRMA LA CONFIGURACIÓN
         confirmar();
     }
-    else if ((key == 8 || key == 127) && !m_nombreActual.empty()) { // BACKSPACE
-        m_nombreActual.pop_back();
+    else if ((key == 8 || key == 127) && !m_nombreJ2Actual.empty()) {
+        m_nombreJ2Actual.pop_back(); // BACKSPACE
     }
-    else if (key >= 32 && key < 127 && m_nombreActual.size() < 20) {
-        m_nombreActual += (char)key;
+    else if (key >= 32 && key < 127 && m_nombreJ2Actual.size() < 20) {
+        m_nombreJ2Actual += (char)key;
     }
 }
