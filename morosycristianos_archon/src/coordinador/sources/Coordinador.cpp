@@ -617,6 +617,7 @@ void Coordinador::redimensionar(int ancho, int alto)
 	_altoVentana = (alto == 0) ? 1 : alto;
 	glViewport(0, 0, _anchoVentana, _altoVentana);
 	Tablerogl::setVentana(_anchoVentana, _altoVentana);
+	DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 }
 
 void Coordinador::reiniciarTablero()
