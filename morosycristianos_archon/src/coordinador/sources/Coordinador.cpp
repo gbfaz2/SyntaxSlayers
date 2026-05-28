@@ -71,7 +71,19 @@ void Coordinador::dibuja()
 
 					// NOMBRES DE LOS JUGADORES PARA EL HUD
 					pTablerogl->nombre_j1 = configuracion.nombre_j1;
-					pTablerogl->nombre_j2 = configuracion.nombre_j2;
+
+					// EN JVIA EL J2 ES LA IA — MOSTRAMOS NOMBRE CON DIFICULTAD
+					if (configuracion.modo == ModoJuego::JVIA) {
+						switch (configuracion.dificultad) {
+						case NivelDificultad::FACIL:   pTablerogl->nombre_j2 = "IA - Facil";   break;
+						case NivelDificultad::MEDIO:   pTablerogl->nombre_j2 = "IA - Medio";   break;
+						case NivelDificultad::DIFICIL: pTablerogl->nombre_j2 = "IA - Dificil"; break;
+						default:                       pTablerogl->nombre_j2 = "IA";           break;
+						}
+					}
+					else {
+						pTablerogl->nombre_j2 = configuracion.nombre_j2;
+					}
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),

@@ -14,43 +14,90 @@ void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
     PantallaIntro& intro, MenuPrincipal& menu, PantallaDestino& destino)
 {
     switch (estado) {
-
     case EstadoJuego::INTRO:
-        intro.saltar(); // CUALQUIER TECLA SALTA LA INTRO
+        intro.saltar();
         break;
 
     case EstadoJuego::MENU:
         if (key == 27) { // ESC: RETROCEDE UN PASO
+<<<<<<< Updated upstream
             if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; menu.m_nombreActual = ""; }
+=======
+            if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; }
+>>>>>>> Stashed changes
             else { menu.m_siguiente = EstadoJuego::INTRO; menu.m_terminado = true; }
             return;
         }
-        if (menu.m_paso == 1 || menu.m_paso == 3)
-            menu.teclaTexto(key); // PASOS DE TEXTO: CAPTURA CARACTERES
-        else
-            if (key == 13) menu.confirmar(); // RESTO DE PASOS: SOLO ENTER CONFIRMA
+        if (menu.m_paso == 2) {
+            if (key == '\t') {
+                // TAB CAMBIA FOCO ENTRE J1 Y J2 (SOLO EN JVJ)
+                if (menu.m_cfg.modo == ModoJuego::JVJ)
+                    menu.m_focoNombre = (menu.m_focoNombre == 0) ? 1 : 0;
+            }
+            else if (menu.m_focoNombre == 0)
+                menu.teclaTextoJ1(key);
+            else
+                menu.teclaTextoJ2(key);
+        }
+        else {
+            if (key == 13) menu.confirmar(); // ENTER CONFIRMA EN RESTO DE PASOS
+        }
         break;
 
     case EstadoJuego::DESTINO:
-        destino.avanzar(); // CUALQUIER TECLA AVANZA LA PANTALLA
+        destino.avanzar();
         break;
 
-    default:
-        break;
+    default: break;
     }
-} 
+}
 
 void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal& menu)
 {
-    if (estado != EstadoJuego::MENU) return; // SOLO EN MENU
-    if (menu.maxOpciones() == 0) return; 
+    if (estado != EstadoJuego::MENU) return;
 
-    if (key == GLUT_KEY_UP)
-        menu.m_seleccion = (menu.m_seleccion - 1 + menu.maxOpciones()) % menu.maxOpciones(); // SUBE SELECCION
-    if (key == GLUT_KEY_DOWN)
-        menu.m_seleccion = (menu.m_seleccion + 1) % menu.maxOpciones(); // BAJA SELECCION
-    if (key == GLUT_KEY_LEFT && menu.m_paso == 2) menu.m_seleccion = 0; // SELECCIONA IZQUIERDA
-    if (key == GLUT_KEY_RIGHT && menu.m_paso == 2) menu.m_seleccion = 1; // SELECCIONA DERECHA
+    // ¡CUIDADO AQUÍ GABRI! Antes tenías un 'return' directo si maxOpciones() era 0.
+    // Eso mataba la función entera y por eso el Paso 2 nunca recibía las flechas.
+    // Solución: Metemos la lógica global dentro de un 'if' normal para que solo 
+    // se salte la navegación del menú principal, pero siga leyendo lo de abajo.
+    if (menu.maxOpciones() > 0) {
+        if (key == GLUT_KEY_UP)
+            menu.m_seleccion = (menu.m_seleccion - 1 + menu.maxOpciones()) % menu.maxOpciones();
+        if (key == GLUT_KEY_DOWN)
+            menu.m_seleccion = (menu.m_seleccion + 1) % menu.maxOpciones();
+    }
+
+    // PASO 1: FLECHAS IZQUIERDA/DERECHA PARA ELEGIR MODO (se queda igual)
+    if (menu.m_paso == 1) {
+        if (key == GLUT_KEY_LEFT)  menu.m_seleccion = 0;
+        if (key == GLUT_KEY_RIGHT) menu.m_seleccion = 1;
+    }
+
+    // PASO 2 JVJ: ¡AHORA SÍ VA A LLEGAR AQUÍ! 
+    // FLECHAS IZQUIERDA/DERECHA CAMBIAN BANDO DE J1
+    if (menu.m_paso == 2 && menu.m_cfg.modo == ModoJuego::JVJ) {
+        if (key == GLUT_KEY_LEFT)
+            menu.m_cfg.bando = BandoJugador::CRISTIANO;
+        if (key == GLUT_KEY_RIGHT)
+            menu.m_cfg.bando = BandoJugador::MUSULMAN;
+    }
+
+    // PASO 2 JVIA: ¡Y TAMBIÉN LLEGARÁ AQUÍ! 
+    // FLECHAS ARRIBA/ABAJO CAMBIAN DIFICULTAD
+    if (menu.m_paso == 2 && menu.m_cfg.modo == ModoJuego::JVIA) {
+        if (key == GLUT_KEY_UP || key == GLUT_KEY_LEFT) {
+            if (menu.m_cfg.dificultad == NivelDificultad::MEDIO)
+                menu.m_cfg.dificultad = NivelDificultad::FACIL;
+            else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL)
+                menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+        }
+        if (key == GLUT_KEY_DOWN || key == GLUT_KEY_RIGHT) {
+            if (menu.m_cfg.dificultad == NivelDificultad::FACIL)
+                menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+            else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO)
+                menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+        }
+    }
 }
 
 void GestorInput::ratonMenu(int boton, int state, int x, int y,
@@ -68,8 +115,78 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
         break;
     case EstadoJuego::MENU:
         if (boton == GLUT_LEFT_BUTTON) {
+<<<<<<< Updated upstream
             ratonMovidoMenu(x, y, estado, menu); // ACTUALIZA SELECCION
             menu.confirmar();                    // CONFIRMA SELECCION
+=======
+            ratonMovidoMenu(x, y, estado, menu); // ACTUALIZA SELECCIÓN / BANDO
+
+            // EN EL PASO 2 (CONFIGURACIÓN) SOLO CONFIRMAMOS SI SE CLICA "CONTINUAR"
+            if (menu.m_paso == 2) {
+                int gy = _alto - y;
+                float mitad = _ancho / 2.0f;
+                float colW = mitad * 0.80f;
+                float col1X = mitad - colW - 20;
+                float col2X = mitad + 20;
+                float campoY = _alto * 0.72f - 50;
+                float bandoY = campoY - 80;
+                float bw = (colW - 10) / 2.0f;
+
+                
+
+                // CLIC EN CAJA NOMBRE J1 → FOCO A J1
+                if (x >= col1X && x <= col1X + colW && gy >= campoY - 30 && gy <= campoY + 6)
+                    menu.m_focoNombre = 0;
+                   
+                // CLIC EN CAJA NOMBRE J2 → FOCO A J2
+                if (x >= col2X && x <= col2X + colW && gy >= campoY - 30 && gy <= campoY + 6)
+                    menu.m_focoNombre = 1;
+
+                // CLIC EN BANDOS J1 (SOLO JVJ)
+                if (menu.m_cfg.modo == ModoJuego::JVJ) {
+                    if (x >= col1X && x <= col1X + bw && gy >= bandoY - 30 && gy <= bandoY + 6)
+                        menu.m_cfg.bando = BandoJugador::CRISTIANO;
+                    if (x >= col1X + bw + 10 && x <= col1X + colW && gy >= bandoY - 30 && gy <= bandoY + 6)
+                        menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                }
+
+                // CLIC EN DIFICULTAD (SOLO JVIA)
+                if (menu.m_cfg.modo == ModoJuego::JVIA) {
+                    NivelDificultad niveles[] = {
+                        NivelDificultad::FACIL, NivelDificultad::MEDIO, NivelDificultad::DIFICIL
+                    };
+                    for (int i = 0; i < 3; i++) {
+                        float dy = campoY - 30 - i * 46;
+                        if (x >= col2X && x <= col2X + colW && gy >= dy && gy <= dy + 36)
+                            menu.m_cfg.dificultad = niveles[i];
+                    }
+                }
+
+                // CLIC EN BANDO J2 TAMBIÉN CAMBIA EL BANDO DE J1 (AL OPUESTO)
+                if (menu.m_cfg.modo == ModoJuego::JVJ) {
+                    float bandoY2 = campoY - 80;
+                    float bw = (colW - 10) / 2.0f;
+
+                    // CLIC EN CRISTIANO J2 → J1 SE PONE ANDALUSÍ
+                    if (x >= col2X && x <= col2X + bw && gy >= bandoY2 - 30 && gy <= bandoY2 + 6)
+                        menu.m_cfg.bando = BandoJugador::MUSULMAN;
+
+                    // CLIC EN ANDALUSÍ J2 → J1 SE PONE CRISTIANO
+                    if (x >= col2X + bw + 10 && x <= col2X + colW && gy >= bandoY2 - 30 && gy <= bandoY2 + 6)
+                        menu.m_cfg.bando = BandoJugador::CRISTIANO;
+                }
+
+                // CLIC EN BOTÓN CONTINUAR
+                float btnW = 200, btnH = 40;
+                float btnX = _ancho / 2.0f - btnW / 2.0f;
+                float btnY = _alto * 0.12f;
+                if (x >= btnX && x <= btnX + btnW && gy >= btnY && gy <= btnY + btnH)
+                    menu.confirmar();
+            }
+            else {
+                menu.confirmar(); // EN EL RESTO DE PASOS, CUALQUIER CLIC CONFIRMA
+            }
+>>>>>>> Stashed changes
         }
         break;
     default:
@@ -79,35 +196,55 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
 
 void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrincipal& menu)
 {
-    if (estado != EstadoJuego::MENU) return; // SOLO EN MENU
-
-    int gy = _alto - my; // INVIERTE Y (GLUT DESDE ARRIBA, OPENGL DESDE ABAJO)
+    if (estado != EstadoJuego::MENU) return;
+    int gy = _alto - my;
 
     auto enCaja = [&](float x, float y, float aw, float ah) {
         return mx >= x && mx <= x + aw && gy >= y && gy <= y + ah;
         };
 
-    if (menu.m_paso == 0) { // PASO 0: SELECCION MODO
-        float aw = 280, ah = 44, sep = 14;
-        float sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 60;
-        for (int i = 0; i < 4; i++)
+    if (menu.m_paso == 0) {
+        // MENÚ PRINCIPAL — opciones a la izquierda
+        float aw = 300, ah = 44, sep = 10;
+        float sx = _ancho * 0.08f, sy = _alto / 2.0f + 100;
+        for (int i = 0; i < 5; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
-    else if (menu.m_paso == 2) { // PASO 1: SELECCION BANDO
-        float aw = 240, ah = 55, sep = 30, sy = _alto / 2.0f + 10;
+    else if (menu.m_paso == 1) {
+        // ELEGIR MODO — dos botones centrados
+        float aw = 260, ah = 55, sep = 30;
+        float sy = _alto / 2.0f + 10;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) menu.m_seleccion = 0;
-        if (enCaja(_ancho / 2.0f + sep / 2.0f, sy, aw, ah))      menu.m_seleccion = 1;
+        if (enCaja(_ancho / 2.0f + sep / 2.0f, sy, aw, ah)) menu.m_seleccion = 1;
     }
-    else if (menu.m_paso == 4) { // PASO 2: SELECCION BATALLA
-        float aw = 340, ah = 48, sep = 12;
-        float sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 80;
+    else if (menu.m_paso == 2) {
+        float mitad = _ancho / 2.0f;
+        float colW = mitad * 0.80f;
+        float col1X = mitad - colW - 20;
+        float col2X = mitad + 20;
+        float campoY = _alto * 0.72f - 50;
+
+        // HOVER SOBRE CAJAS DE TEXTO — CAMBIA FOCO AL PASAR EL RATÓN
+        if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0;
+        if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1;
+        // BANDOS Y DIFICULTAD NO SE TOCAN AQUÍ — SOLO AL HACER CLIC
+    }
+    else if (menu.m_paso == 3) {
+        // SELECCIÓN BATALLA
+        float aw = 360, ah = 48, sep = 12;
+        float sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 90;
         for (int i = 0; i < 4; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
-    else if (menu.m_paso == 5) { // PASO 3: CONFIRMACION
-        float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 20;
+    else if (menu.m_paso == 4) {
+        // CONFIRMAR
+        float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 70;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) menu.m_seleccion = 0;
+<<<<<<< Updated upstream
         if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah))      menu.m_seleccion = 1;
+=======
+        if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah)) menu.m_seleccion = 1;
+>>>>>>> Stashed changes
     }
 }
 
