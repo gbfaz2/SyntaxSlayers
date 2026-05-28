@@ -73,7 +73,15 @@ void MenuPrincipal::confirmar() {
     else if (m_paso == 4) {
         m_cfg.batalla = (Batalla)m_seleccion;
         m_cfg.turno1 = iniciativa(m_cfg.batalla);
-        m_paso = 5; m_seleccion = 0;
+
+        // NUEVO: si es JvIA, añadimos paso extra para elegir dificultad
+        if (m_cfg.modo == ModoJuego::JVIA) {
+            m_paso = 6; // PASO 6 = selección de dificultad
+            m_seleccion = 0;
+        }
+        else {
+            m_paso = 5; m_seleccion = 0; // JvJ salta directo a confirmar
+        }
     }
     else if (m_paso == 5) {
         if (m_seleccion == 0) {
@@ -83,6 +91,15 @@ void MenuPrincipal::confirmar() {
         else {
             m_paso = 4; m_seleccion = 0;
         }
+    }
+    // NUEVO: paso 6 — elige dificultad (Fácil / Medio / Difícil)
+    else if (m_paso == 6) {
+        switch (m_seleccion) {
+        case 0: m_cfg.dificultad = NivelDificultad::FACIL;   break;
+        case 1: m_cfg.dificultad = NivelDificultad::MEDIO;   break;
+        case 2: m_cfg.dificultad = NivelDificultad::DIFICIL; break;
+        }
+        m_paso = 5; m_seleccion = 0; // pasa a confirmar
     }
 }
 

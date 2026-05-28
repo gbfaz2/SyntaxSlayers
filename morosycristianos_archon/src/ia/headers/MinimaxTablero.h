@@ -1,5 +1,6 @@
 #pragma once
 #include "Tablero.h"
+#include "estadojuego.h"   // ← NivelDificultad viene de aquí
 #include <vector>
 #include <climits>
 
@@ -10,50 +11,62 @@ template<typename T>
 class PilaHistorial {
     std::vector<T> _pila;
 public:
-    void guardar(const T& estado) { _pila.push_back(estado); }  // GUARDA ESTADO
-    T recuperar() { T t = _pila.back(); _pila.pop_back(); return t; } // RECUPERA Y ELIMINA
-    bool vacia() const { return _pila.empty(); }                // COMPRUEBA SI VACÍA
+    void guardar(const T& estado) { _pila.push_back(estado); }
+    T recuperar() { T t = _pila.back(); _pila.pop_back(); return t; }
+    bool vacia() const { return _pila.empty(); }
 };
 
 // MOVIMIENTO POSIBLE PARA LA IA
 struct MovimientoIA {
-    int filaOrigen{ -1 };   // FILA DE LA PIEZA A MOVER
-    int colOrigen{ -1 };    // COL DE LA PIEZA A MOVER
-    int filaDestino{ -1 };  // FILA DESTINO
-    int colDestino{ -1 };   // COL DESTINO
+    int filaOrigen{ -1 };
+    int colOrigen{ -1 };
+    int filaDestino{ -1 };
+    int colDestino{ -1 };
 };
 
 // ESTADO GUARDADO PARA DESHACER UN MOVIMIENTO
 struct EstadoCasilla {
-    int fila{ -1 };                  // FILA DE LA CASILLA
-    int col{ -1 };                   // COL DE LA CASILLA
-    TipoPieza  pieza{ pieza_nada };  // TIPO DE PIEZA
-    BandoPieza bando{ bando_nada };  // BANDO
-    Pieza* obj{ nullptr };           // PUNTERO AL OBJETO
+    int fila{ -1 };
+    int col{ -1 };
+    TipoPieza  pieza{ pieza_nada };
+    BandoPieza bando{ bando_nada };
+    Pieza* obj{ nullptr };
 };
 
 class MinimaxTablero {
 
-    int _profundidad;                // PROFUNDIDAD DE BÚSQUEDA
+    int _profundidad; // PROFUNDIDAD DE BÚSQUEDA
 
     int minimax(Tablero& tablero, int profundidad, bool maximizar,
-        int alpha, int beta);                          // MINIMAX CON ALPHA-BETA
+        int alpha, int beta);
 
-    int evaluar(const Tablero& tablero) const;                 // EVALÚA LA POSICIÓN
+    int evaluar(const Tablero& tablero) const;
 
     std::vector<MovimientoIA> generarMovimientos(
-        const Tablero& tablero, BandoPieza bando) const;       // GENERA MOVIMIENTOS
+        const Tablero& tablero, BandoPieza bando) const;
 
     EstadoCasilla aplicarMovimiento(
-        Tablero& tablero, const MovimientoIA& mov);            // APLICA MOVIMIENTO
+        Tablero& tablero, const MovimientoIA& mov);
 
     void deshacerMovimiento(Tablero& tablero, const MovimientoIA& mov,
-        const EstadoCasilla& estadoAnterior); // DESHACE MOVIMIENTO
+        const EstadoCasilla& estadoAnterior);
 
-    bool hayVictoria(const Tablero& tablero) const;            // COMPRUEBA VICTORIA
+    bool hayVictoria(const Tablero& tablero) const;
 
 public:
-    MinimaxTablero(int profundidad = 2);                       // CONSTRUCTOR
+    // CONSTRUCTOR: profundidad por defecto = FÁCIL (2 niveles)
+    MinimaxTablero(int profundidad = (int)NivelDificultad::FACIL);
 
-    MovimientoIA calcularMejorMovimiento(Tablero& tablero);    // MÉTODO PRINCIPAL
+    // CAMBIA LA DIFICULTAD DINÁMICAMENTE DESDE EL MENÚ
+    void setDificultad(NivelDificultad nivel) {
+        _profundidad = static_cast<int>(nivel);
+    }
+
+    // DEVUELVE LA DIFICULTAD ACTUAL
+    NivelDificultad getDificultad() const {
+        return static_cast<NivelDificultad>(_profundidad);
+    }  // ← llave cierra getDificultad, NO contiene nada más
+
+    // MÉTODO PRINCIPAL DE LA IA
+    MovimientoIA calcularMejorMovimiento(Tablero& tablero);
 };
