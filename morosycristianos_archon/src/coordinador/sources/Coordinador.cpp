@@ -190,6 +190,11 @@ void Coordinador::dibuja()
 		estado = EstadoJuego::TABLERO;
 		break;
 
+	case EstadoJuego::VICTORIA:
+		DibujaMenu::victoria_dibujar(_anchoVentana, _altoVentana,
+			_rankingGanador, _rankingBatalla, _rankingGanaJ1, _tiempoVictoria);
+		break;
+
 	case EstadoJuego::RANKING:
 		DibujaMenu::ranking_dibujar(
 			_anchoVentana, _altoVentana,
@@ -275,6 +280,11 @@ void Coordinador::tecla(unsigned char key)
 			reiniciarTablero();
 		}
 		estado = EstadoJuego::MENU; break;
+
+	case EstadoJuego::VICTORIA:
+		_rankingTop10 = GestorRanking::cargar();
+		estado = EstadoJuego::RANKING;
+		break;
 
 	case EstadoJuego::RANKING:
 		if (key == 27) {
@@ -449,7 +459,8 @@ void Coordinador::mueve(double dt)
 					pTablerogl->setVictoria(bando_rival);
 
 				_rankingTop10 = GestorRanking::cargar();
-				estado = EstadoJuego::RANKING;
+				_tiempoVictoria = 10.0f;
+				estado = EstadoJuego::VICTORIA;
 			}
 		}
 	}
@@ -460,6 +471,14 @@ void Coordinador::mueve(double dt)
 			ETSIDI::stopMusica();
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
+		}
+	}
+
+	if (estado == EstadoJuego::VICTORIA) {
+		_tiempoVictoria -= (float)dt;
+		if (_tiempoVictoria <= 0.0f) {
+			_rankingTop10 = GestorRanking::cargar();
+			estado = EstadoJuego::RANKING;
 		}
 	}
 

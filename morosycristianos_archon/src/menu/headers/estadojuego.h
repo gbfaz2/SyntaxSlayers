@@ -17,6 +17,7 @@ enum class EstadoJuego {
     ARENA,          // Combate en arena 1vs1
     GUARDANDO,      // Guardar partida
     CARGANDO,       // Para que cargue la partida guardada
+	VICTORIA,        // Pantalla de victoria
     RANKING,        // Pantalla de ranking
     FINAL,          // Pantalla de fin de partida
     PAUSA,          // Pausa
