@@ -62,7 +62,7 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     // Lambda que dibuja cualquier combatiente con sprite
     auto dibujarCombatiente = [&](const Combatiente& c, int indice) {
 
-        std::cout << "nombre='" << c.nombre() << "'" << std::endl;
+        //std::cout << "nombre='" << c.nombre() << "'" << std::endl;
 
 
         // Proyectamos posicion 3D a coordenadas de pantalla
@@ -143,7 +143,26 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
             //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
             voltear = !esAtacante;
         }
+        else if (c.nombre() == "Infanteria") {
+            //devuelve el tipo de personaje EMIR
+            tipo = TipoPersonaje::INFANTERIA;
 
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
+        else if (c.nombre() == "Infiltrado") {
+            //devuelve el tipo de personaje EMIR
+            tipo = TipoPersonaje::INFILTRADO;
+
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
 
         float size = _anchoVentana * 0.15f;
 

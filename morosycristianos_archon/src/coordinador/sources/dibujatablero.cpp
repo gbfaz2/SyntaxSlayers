@@ -532,6 +532,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     case pieza_dodecaedro:
     //INFILTRADO
     {
+        //REY / EMIR
+
         // Capturamos matrices ANTES de salir del contexto 3D
         GLdouble winX, winY, winZ;
 
@@ -541,46 +543,59 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
-        float px = (float)winX - size * 0.3f;
-        float py = (float)winY + size * 0.1f;
+
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
 
 
-
-        EstadoPersonaje estadoInfiltrado = EstadoPersonaje::IDLE;
-        bool moviendo = false;
-
-        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
-        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
-            moviendo = true;
-            estadoInfiltrado = EstadoPersonaje::IDLE;
-        }
-
         // Le pedimos a la pieza su ID único en lugar de usar un contador global
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
-        
-        // Solo dibujamos para el bando cristiano
+        bool voltear = (casilla.bando == bando_rival);
+
+
+        EstadoPersonaje estadoInfiltrado = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+
+        // Para el asesino de elite: 
         if (casilla.bando != bando_local) {
-            bool voltear = true;
+            // Calculamos posición y tamaño en el plano 2D de la ventana
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+            float px = (float)winX - size * 0.3f;
+            float py = (float)winY + size * 0.1f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfiltrado = EstadoPersonaje::IDLE;
+
+            }
+
             _dibujador.dibujar(tipo, px, py, size,
-                EstadoPersonaje::IDLE, idAnim, false, voltear);
+                estadoInfiltrado, idAnim, moviendo, voltear);
             util_salir2D();
             return;
         }
+        else {
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
+            float px = (float)winX - size * 0.17f; //- size * 0.07f;
+            float py = (float)winY + size * 0.1f;
 
-        // Dibujamos el miliciano usando su ID
-        _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false);
-        util_salir2D();
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfiltrado = EstadoPersonaje::IDLE;
 
-        
+            }
 
-        return;
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoInfiltrado, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+
+        }
+
     }
     break;
     case pieza_icosaedro:
@@ -644,16 +659,6 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     case pieza_cubog:
     {
-        // Filtramos el local, si cae en cristiano dibuja figura ( de momento):
-        if (casilla.bando != bando_rival) {
-            glScalef(escala * 0.70f, escala * 0.70f, escala * 0.70f);
-            glutSolidTetrahedron();
-            glPopMatrix();
-            return;
-        }
-
-        //codigo dibujo guardia negra
-
         // Capturamos matrices ANTES de salir del contexto 3D
         GLdouble winX, winY, winZ;
 
@@ -662,34 +667,62 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
         glPopMatrix();
 
-        // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
-        float px = (float)winX - size * 0.3f;
-        float py = (float)winY + size * 0.1f;
-
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
 
-
-
-        EstadoPersonaje estadoGuardia = EstadoPersonaje::IDLE;
+        EstadoPersonaje estadoInfanteria = EstadoPersonaje::IDLE;
         bool moviendo = false;
 
-        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
-        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
-            moviendo = true;
-            estadoGuardia = EstadoPersonaje::IDLE;
-        }
 
         // Le pedimos a la pieza su ID único en lugar de usar un contador global
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
-        // Dibujamos el miliciano usando su ID
-        _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false);
-        util_salir2D();
-        return;
+        //voltear true si es del bando rival la pieza
+        bool voltear = (casilla.bando == bando_rival);
+
+
+
+        // Para el bando andalusi, dibuja guardia negra:
+        if (casilla.bando != bando_local) {
+            //ajustes coordenadas
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
+            float px = (float)winX - size * 0.3f;
+            float py = (float)winY + size * 0.1f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfanteria = EstadoPersonaje::IDLE;
+
+            }
+
+            //dibuja según flags, bando, tipo, coordenadas...
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoInfanteria, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+        }
+        //ahora para bando cristiano
+        else {
+            //ajustes coordenadas para infanteria
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
+            float px = (float)winX - size * 0.17f; //- size * 0.07f;
+            float py = (float)winY + size * 0.1f;
+
+            //si se esta moviendo, anda la pieza y cambia la flag
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfanteria = EstadoPersonaje::IDLE;
+
+            }
+
+            //dibuja según flags, bando, tipo, coordenadas...
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoInfanteria, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+
+        }
     }
     break;
 
@@ -1309,62 +1342,102 @@ void DibujaTablero::tablero_panel_infiltrado(const Tablerogl& t)
     int av = Tablerogl::_altoVentana;
     int aw = Tablerogl::_anchoVentana;
 
-    const int PW = 180;
-    const int PH = 100; // Panel más compacto
-    const int PY = 240; // Posicionado encima de las stats
+    const int PW = 195;
+    const int PH = 120; // Panel más compacto
+    const int PY = 430; // Posicionado encima de las stats
 
     int px = (bandoPanel == bando_local) ? 10 : (aw - PW - 10);
+    int py = PY;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    if (bandoPanel == bando_local) glColor4f(0.20f, 0.05f, 0.30f, 0.88f);
-    else glColor4f(0.30f, 0.03f, 0.03f, 0.88f);
-
+    // Sombra
+    glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
     glBegin(GL_QUADS);
-    glVertex2i(px, PY); glVertex2i(px + PW, PY);
-    glVertex2i(px + PW, PY + PH); glVertex2i(px, PY + PH);
+    glVertex2i(px + 5, py - 5);
+    glVertex2i(px + PW + 5, py - 5);
+    glVertex2i(px + PW + 5, py + PH + 5);
+    glVertex2i(px + 5, py + PH + 5);
     glEnd();
 
-    if (bandoPanel == bando_local) glColor4f(0.65f, 0.20f, 0.85f, 1.0f);
-    else glColor4f(0.85f, 0.15f, 0.15f, 1.0f);
+    // Fondo cuero
+    glBegin(GL_QUADS);
+    glColor4f(0.36f, 0.18f, 0.07f, 0.98f);
+    glVertex2i(px, py + PH);
+    glVertex2i(px + PW, py + PH);
+    glColor4f(0.18f, 0.08f, 0.02f, 0.98f);
+    glVertex2i(px + PW, py);
+    glVertex2i(px, py);
+    glEnd();
 
-    glLineWidth(2.0f);
+    glDisable(GL_BLEND);
+
+    // Marco dorado exterior
+    glColor3f(0.80f, 0.60f, 0.16f);
+    glLineWidth(4.0f);
     glBegin(GL_LINE_LOOP);
-    glVertex2i(px, PY); glVertex2i(px + PW, PY);
-    glVertex2i(px + PW, PY + PH); glVertex2i(px, PY + PH);
+    glVertex2i(px, py);
+    glVertex2i(px + PW, py);
+    glVertex2i(px + PW, py + PH);
+    glVertex2i(px, py + PH);
+    glEnd();
+
+    // Marco interior fino
+    glColor3f(0.95f, 0.80f, 0.35f);
+    glLineWidth(1.2f);
+    int m = 6;
+    glBegin(GL_LINE_LOOP);
+    glVertex2i(px + m, py + m);
+    glVertex2i(px + PW - m, py + m);
+    glVertex2i(px + PW - m, py + PH - m);
+    glVertex2i(px + m, py + PH - m);
     glEnd();
     glLineWidth(1.0f);
+
+    // Ornamentos esquinas
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.80f, 0.60f, 0.16f, 1.0f);
+    int cs = 7, off = 3;
+    glBegin(GL_QUADS); glVertex2i(px + off, py + off); glVertex2i(px + off + cs, py + off); glVertex2i(px + off + cs, py + off + cs); glVertex2i(px + off, py + off + cs); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + PW - off - cs, py + off); glVertex2i(px + PW - off, py + off); glVertex2i(px + PW - off, py + off + cs); glVertex2i(px + PW - off - cs, py + off + cs); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + off, py + PH - off - cs); glVertex2i(px + off + cs, py + PH - off - cs); glVertex2i(px + off + cs, py + PH - off); glVertex2i(px + off, py + PH - off); glEnd();
+    glBegin(GL_QUADS); glVertex2i(px + PW - off - cs, py + PH - off - cs); glVertex2i(px + PW - off, py + PH - off - cs); glVertex2i(px + PW - off, py + PH - off); glVertex2i(px + PW - off - cs, py + PH - off); glEnd();
     glDisable(GL_BLEND);
 
     // TEXTOS Y ESTADOS
     if (t._modoInfiltrado) {
         ETSIDI::setTextColor(0.2f, 1.0f, 0.2f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-        ETSIDI::printxy("MODO COPIA ACTIVO", px + 8, PY + PH - 22);
+        ETSIDI::printxy("MODO COPIA ACTIVO", px + 12, PY + PH - 26);
     }
     else {
         ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
-        ETSIDI::printxy("[I] Activar Habilidad:", px + 8, PY + PH - 22);
+        ETSIDI::printxy("[I] Activar Habilidad:", px + 2, PY + PH - 26);
     }
 
-    glColor3f(0.6f, 0.6f, 0.6f);
+    // Separador dorado
+    glColor3f(0.75f, 0.56f, 0.14f);
+    glLineWidth(1.5f);
     glBegin(GL_LINES);
-    glVertex2i(px + 5, PY + PH - 30);
-    glVertex2i(px + PW - 5, PY + PH - 30);
+    glVertex2i(px + 12, py + PH - 35);
+    glVertex2i(px + PW - 12, py + PH - 35);
     glEnd();
+    glLineWidth(1.0f);
 
+    // Contenido
     int filaY = PY + PH - 52;
     if (t._modoInfiltrado) {
-        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.20f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 13);
         ETSIDI::printxy("Click en un enemigo", px + 12, filaY);
         ETSIDI::printxy("para robarle sus", px + 12, filaY - 20);
         ETSIDI::printxy("estadisticas.", px + 12, filaY - 40);
     }
     else {
-        ETSIDI::setTextColor(0.90f, 0.90f, 0.90f, 1.0f);
+        ETSIDI::setTextColor(0.88f, 0.82f, 0.68f, 1.0f);
         ETSIDI::setFont("fuentes/ARIALNBI.ttf", 12);
         ETSIDI::printxy("Permite robar los", px + 12, filaY);
         ETSIDI::printxy("stats de una pieza", px + 12, filaY - 20);
