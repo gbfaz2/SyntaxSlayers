@@ -532,6 +532,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     case pieza_dodecaedro:
     //INFILTRADO
     {
+        //REY / EMIR
+
         // Capturamos matrices ANTES de salir del contexto 3D
         GLdouble winX, winY, winZ;
 
@@ -541,46 +543,59 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
-        float px = (float)winX - size * 0.3f;
-        float py = (float)winY + size * 0.1f;
+
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
 
 
-
-        EstadoPersonaje estadoInfiltrado = EstadoPersonaje::IDLE;
-        bool moviendo = false;
-
-        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
-        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
-            moviendo = true;
-            estadoInfiltrado = EstadoPersonaje::IDLE;
-        }
-
         // Le pedimos a la pieza su ID único en lugar de usar un contador global
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
-        
-        // Solo dibujamos para el bando cristiano
+        bool voltear = (casilla.bando == bando_rival);
+
+
+        EstadoPersonaje estadoInfiltrado = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+
+        // Para el asesino de elite: 
         if (casilla.bando != bando_local) {
-            bool voltear = true;
+            // Calculamos posición y tamaño en el plano 2D de la ventana
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+            float px = (float)winX - size * 0.3f;
+            float py = (float)winY + size * 0.1f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfiltrado = EstadoPersonaje::IDLE;
+
+            }
+
             _dibujador.dibujar(tipo, px, py, size,
-                EstadoPersonaje::IDLE, idAnim, false, voltear);
+                estadoInfiltrado, idAnim, moviendo, voltear);
             util_salir2D();
             return;
         }
+        else {
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
+            float px = (float)winX - size * 0.17f; //- size * 0.07f;
+            float py = (float)winY + size * 0.1f;
 
-        // Dibujamos el miliciano usando su ID
-        _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false);
-        util_salir2D();
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoInfiltrado = EstadoPersonaje::IDLE;
 
-        
+            }
 
-        return;
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoInfiltrado, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+
+        }
+
     }
     break;
     case pieza_icosaedro:
