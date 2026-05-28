@@ -22,7 +22,7 @@ class DibujaArena : public Dibuja
     // HUD Y TEXTOS EN 2D
     static void arena_hud(const Arena& arena, Batalla batalla);
     static void arena_texto(float x, float y, const char* texto, float r = 1.0f, float g = 1.0f, float b = 1.0f);
-    static void arena_barra_vida(float x, float y, float ancho, float alto, float fraccion, float r, float g, float b);
+    static void arena_barra_vida(float x, float y, float ancho, float alto, float fraccion, bool invertir);
 
 public:
     // ORQUESTADORES PRINCIPALES

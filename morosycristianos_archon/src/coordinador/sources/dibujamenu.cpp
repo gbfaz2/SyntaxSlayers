@@ -678,6 +678,83 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
     glEnd();
     glDisable(GL_BLEND);
 
+    // FIGURAS PIXEL ART CON ENTRADA DESLIZANTE
+    {
+        float sTam  = std::min((float)ancho * 0.28f, (float)alto * 0.50f);
+        float sY    = (float)alto  * 0.42f;
+        float sXizq = (float)ancho * 0.18f;
+        float sXder = (float)ancho * 0.82f;
+
+        const float FRAMES_ENTRADA = 80.0f;
+        float tRaw  = std::min((float)s_fotoV / FRAMES_ENTRADA, 1.0f);
+        float tEase = 1.0f - (1.0f - tRaw) * (1.0f - tRaw) * (1.0f - tRaw);
+
+        // Cristiano entra DESDE LA DERECHA
+        float cristIniX = (float)ancho + sTam * 0.5f;
+        float cristFinX = ganaJ1 ? sXizq : sXder;
+        float cristX    = cristIniX + (cristFinX - cristIniX) * tEase;
+
+        // Moro entra DESDE LA IZQUIERDA
+        float moroIniX = -sTam * 0.5f;
+        float moroFinX = ganaJ1 ? sXder : sXizq;
+        float moroX    = moroIniX + (moroFinX - moroIniX) * tEase;
+
+        auto dibujarFrame = [&](const char* ruta,
+                                float u0, float v0, float u1, float v1,
+                                float cx, float cy, float tam) {
+            auto texF = ETSIDI::getTexture(ruta);
+            if (texF.id == 0) return;
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, texF.id);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glColor4f(1.0f, 1.0f, 1.0f, alfa);
+            float x0s = cx - tam * 0.5f, x1s = cx + tam * 0.5f;
+            float y0s = cy - tam * 0.5f, y1s = cy + tam * 0.5f;
+            glBegin(GL_QUADS);
+            glTexCoord2f(u0, v0); glVertex2f(x0s, y1s);
+            glTexCoord2f(u1, v0); glVertex2f(x1s, y1s);
+            glTexCoord2f(u1, v1); glVertex2f(x1s, y0s);
+            glTexCoord2f(u0, v1); glVertex2f(x0s, y0s);
+            glEnd();
+            glDisable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
+        };
+
+        // Animación del ganador: 2 frames alternando cada ~0.5 s
+        int   frameVic = (s_fotoV / 20) % 2;
+        float vicU0    = (frameVic == 0) ? 0.0f : 0.5f;
+        float vicU1    = (frameVic == 0) ? 0.5f : 1.0f;
+
+        if (ganaJ1) {
+            dibujarFrame("imagenes\\VIC_REY.png",  vicU0, 0.0f, vicU1, 1.0f, cristX, sY, sTam);
+            dibujarFrame("imagenes\\DEF_EMIR.png", 0.0f,  0.0f, 1.0f,  1.0f, moroX,  sY, sTam);
+        } else {
+            dibujarFrame("imagenes\\VIC_EMIR.png", vicU0, 0.0f, vicU1, 1.0f, moroX,  sY, sTam);
+            dibujarFrame("imagenes\\DEF_REY.png",  0.0f,  0.0f, 1.0f,  1.0f, cristX, sY, sTam);
+        }
+
+        // Etiquetas VICTORIOSO / DERROTADO: aparecen cuando la entrada termina
+        if (tRaw > 0.90f) {
+            float lAlfa = std::min((tRaw - 0.90f) / 0.10f, 1.0f) * alfa;
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 16);
+            float labelY = sY - sTam * 0.5f - 26.0f;
+            // Color del victorioso según bando
+            if (ganaJ1)
+                ETSIDI::setTextColor(0.95f, 0.80f, 0.10f, lAlfa); // dorado cristiano
+            else
+                ETSIDI::setTextColor(0.55f, 0.10f, 0.90f, lAlfa); // púrpura andalusí
+            ETSIDI::printxy("VICTORIOSO", (int)(sXizq - 50), (int)labelY);
+            ETSIDI::setTextColor(0.55f, 0.55f, 0.55f, lAlfa);
+            ETSIDI::printxy("DERROTADO",  (int)(sXder - 44), (int)labelY);
+            glDisable(GL_BLEND);
+        }
+    }
+
     // MENSAJE DE VICTORIA — CON FADE Y CENTRADO DINÁMICO
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -691,7 +768,7 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
 
     // ARIALNBI bold italic: cada caracter ocupa aprox 0.62 * tamano de fuente px
     int twV = (int)(strlen(tituloVic) * 52 * 0.62f);
-    ETSIDI::printxy(tituloVic, ancho / 2 - twV / 2, alto / 2 + 80);
+    ETSIDI::printxy(tituloVic, ancho / 2 - twV / 2, alto - 90);
 
     // NOMBRE DEL GANADOR — CENTRADO Y CON FADE
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 30);
@@ -699,7 +776,7 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
     {
         std::string txt = "Ganador: " + ganador;
         int tw2 = (int)(txt.size() * 30 * 0.62f);
-        ETSIDI::printxy(txt.c_str(), ancho / 2 - tw2 / 2, alto / 2 + 20);
+        ETSIDI::printxy(txt.c_str(), ancho / 2 - tw2 / 2, alto - 145);
     }
 
     // LÍNEA SEPARADORA DORADA
@@ -707,8 +784,8 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
         glColor4f(0.85f * alfa, 0.68f * alfa, 0.10f * alfa, 0.8f * alfa);
         glLineWidth(2.0f);
         glBegin(GL_LINES);
-        glVertex2f((float)ancho / 2.0f - 200.0f, (float)alto / 2.0f - 10.0f);
-        glVertex2f((float)ancho / 2.0f + 200.0f, (float)alto / 2.0f - 10.0f);
+        glVertex2f((float)ancho / 2.0f - 200.0f, (float)alto - 170.0f);
+        glVertex2f((float)ancho / 2.0f + 200.0f, (float)alto - 170.0f);
         glEnd();
         glLineWidth(1.0f);
     }
@@ -721,7 +798,7 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
         char buf[64];
         sprintf_s(buf, "Ranking en %d segundos...", (int)tiempoRestante);
         int tw3 = (int)(strlen(buf) * 18 * 0.62f);
-        ETSIDI::printxy(buf, ancho / 2 - tw3 / 2, alto / 2 - 50);
+        ETSIDI::printxy(buf, ancho / 2 - tw3 / 2, 45);
     }
 
     glDisable(GL_BLEND);
