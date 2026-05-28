@@ -61,6 +61,7 @@ public:
 
     // ── MENÚ PRINCIPAL
     static void menu_dibujar(MenuPrincipal& m, int ancho, int alto);
+    static void menu_paso_dificultad(MenuPrincipal& m, int ancho, int alto);
 
     // ── PANTALLA DESTINO
     static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
