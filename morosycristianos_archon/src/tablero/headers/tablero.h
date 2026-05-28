@@ -71,10 +71,14 @@ class Tablero
 		tablero[fila][col].pieza = p;
 		tablero[fila][col].bando = b;
 	}
+	void moverSinAnimacion(int fr, int fc, int tr, int tc); // PARA USO INTERNO DE LA IA
 
 public:
 	static const int N = 9;//constante no vamos a modificarlo
 	Tablero();//constructor por defecto que llama al método iniCasillas()
+	Tablero(const Tablero& otro); // CONSTRUCTOR DE COPIA PROFUNDA
+	bool _esCopia{ false }; // SI ES COPIA, NO BORRA LAS PIEZAS
+
 	~Tablero();
 	int getSize() const { return N; }
 	//acceso de solo lectura a una casilla, lo usará tablerogl para saber qué color pintar. usaremos (0,0) como la esquina superior izquierda 

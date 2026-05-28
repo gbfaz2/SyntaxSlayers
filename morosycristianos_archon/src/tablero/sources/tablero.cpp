@@ -21,8 +21,24 @@ Tablero::Tablero()
 	iniPiezas();
 	cout << "[Tablero]" << N << "x" << N << "creado." << endl;
 }
+
+Tablero::Tablero(const Tablero& otro)
+{
+	// COPIA LAS CASILLAS SIN COPIAR LOS PUNTEROS — LA IA NO NECESITA OBJETOS REALES
+	for (int f = 0; f < N; f++) {
+		for (int c = 0; c < N; c++) {
+			tablero[f][c].tipo = otro.tablero[f][c].tipo;
+			tablero[f][c].pieza = otro.tablero[f][c].pieza;
+			tablero[f][c].bando = otro.tablero[f][c].bando;
+			tablero[f][c].obj = otro.tablero[f][c].obj; // COPIA EL PUNTERO SIN DUPLICAR
+			_esCopia = true; // MARCA QUE ESTA INSTANCIA NO ES DUEÑA DE LAS PIEZAS
+		}
+	}
+}
+
 Tablero::~Tablero()
 {
+	if (_esCopia) return; // LA COPIA NO ES DUEÑA DE LAS PIEZAS
 	for (int f = 0; f < N; f++)
 		for (int c = 0; c < N; c++) {
 			delete tablero[f][c].obj;
@@ -449,4 +465,17 @@ Pieza* Tablero::crearPieza(TipoPieza tipo, BandoPieza bando)
 	case pieza_cubo_p:      return new Miliciano(b);
 	default:                return nullptr;
 	}
+}
+
+void Tablero::moverSinAnimacion(int fr, int fc, int tr, int tc)
+{
+	// IGUAL QUE muevePieza PERO SIN setPosicion — LA IA NO MUEVE OBJETOS REALES
+	tablero[tr][tc].pieza = tablero[fr][fc].pieza;
+	tablero[tr][tc].bando = tablero[fr][fc].bando;
+	tablero[tr][tc].obj = tablero[fr][fc].obj;
+	// SIN: tablero[tr][tc].obj->setPosicion(tr, tc);
+
+	tablero[fr][fc].pieza = pieza_nada;
+	tablero[fr][fc].bando = bando_nada;
+	tablero[fr][fc].obj = nullptr;
 }

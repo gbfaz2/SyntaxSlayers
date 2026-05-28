@@ -44,11 +44,12 @@ class MenuPrincipal {
 	void teclaTexto(unsigned char key); // para escribir los nombres de los jugadores
     int maxOpciones() const {
         switch (m_paso) {
-        case 0: return 5;  // modo
+        case 0: return 5;  // modo de juego
         case 2: return 2;  // bando
         case 4: return 4;  // batalla
         case 5: return 2;  // confirmar
-        default: return 0; // pasos de texto (1 y 3)
+        case 6: return 3;  // NUEVO: dificultad (Fácil/Medio/Difícil)
+        default: return 0;
         }
     }
 public:

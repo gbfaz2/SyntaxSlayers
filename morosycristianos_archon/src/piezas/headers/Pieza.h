@@ -58,7 +58,7 @@ public:
 
     // Funciones para guardar y leer el ID
     void setIdAnimacion(int id) { id_animacion = id; }
-    int getIdAnimacion() { return id_animacion; }
+    int getIdAnimacion() const { return id_animacion; }
 
     // Métodos virtuales puros(=0): cambian para cada pieza (los implementa a su manera)
     virtual TipoMovimiento getTipoMovimiento() const = 0; //devuelve terrestre, voladora, teleport...

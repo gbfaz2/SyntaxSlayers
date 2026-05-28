@@ -85,6 +85,7 @@ void DibujaMenu::menu_dibujar(MenuPrincipal& m, int ancho, int alto) {
     case 3: menu_paso_nombre(m, ancho, alto); break;
     case 4: menu_paso2(m, ancho, alto); break;
     case 5: menu_paso3(m, ancho, alto); break;
+    case 6: menu_paso_dificultad(m, ancho, alto); break; // ← AÑADE ESTA LÍNEA
     }
     menu_pie(ancho, alto);
     util_salir2D();
@@ -216,6 +217,34 @@ void DibujaMenu::menu_pie(int ancho, int alto) {
     menu_textoCentrado(
         "[Flechas/Raton] Navegar       [ENTER/Click] Seleccionar       [ESC] Volver",
         ancho / 2.0f, 12, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+}
+
+void DibujaMenu::menu_paso_dificultad(MenuPrincipal& m, int ancho, int alto) {
+    menu_textoCentrado("Selecciona la dificultad de la IA:",
+        ancho / 2.0f, alto - 135,
+        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
+
+    float aw = 340, ah = 48, sep = 12;
+    float sx = ancho / 2.0f - aw / 2.0f;
+    float sy = alto / 2.0f + 80;
+
+    const char* opciones[] = {
+        "  Facil   - IA principiante",
+        "  Medio   - IA equilibrada",
+        "  Dificil - IA avanzada"
+    };
+    const char* descripciones[] = {
+        "La IA toma decisiones rapidas con poco analisis.",
+        "La IA evalua varias jugadas antes de mover.",
+        "La IA calcula en profundidad. Muy dificil de vencer."
+    };
+
+    for (int i = 0; i < 3; i++)
+        menu_opcion(opciones[i], sx, sy - i * (ah + sep), aw, ah, m.m_seleccion == i);
+
+    menu_textoCentrado(descripciones[m.m_seleccion],
+        ancho / 2.0f, alto / 2.0f - 80,
+        0.65f, 0.65f, 0.65f, GLUT_BITMAP_HELVETICA_12);
 }
 
 
@@ -606,14 +635,24 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto, const std::string& ganador
 void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganador,
     const std::string& batalla, bool ganaJ1, float tiempoRestante)
 {
+    static int s_fotoV = 0;
+    s_fotoV++;
+    // RESET: si tiempoRestante es alto (partida nueva) reiniciamos
+    static float s_prevTime = -1.0f;
+    if (tiempoRestante > s_prevTime + 1.0f) s_fotoV = 0;
+    s_prevTime = tiempoRestante; 
+
+    float alfa = (s_fotoV < 60) ? s_fotoV / 60.0f : 1.0f; // FADE-IN EN 1 SEGUNDO
+
     util_entrar2D(ancho, alto);
 
     // FONDO DE BATALLA
-    const char* ruta = "imagenes/fondo_guadalete.png";
-    if (batalla == "Guadalete") ruta = "imagenes/fondo_guadalete.png";
-    else if (batalla == "Alarcos")   ruta = "imagenes/fondo_alarcos.png";
-    else if (batalla == "Navas")     ruta = "imagenes/fondo_navas.png";
-    else if (batalla == "Granada")   ruta = "imagenes/fondo_granada.png";
+        // FONDO DE BATALLA (mismas rutas que la pantalla destino)
+    const char* ruta = "imagenes\\GUADALETE.png";
+    if      (batalla.find("Guadalete") != std::string::npos) ruta = "imagenes\\GUADALETE.png";
+    else if (batalla.find("Alarcos")   != std::string::npos) ruta = "imagenes\\ALARCOS.png";
+    else if (batalla.find("Navas")     != std::string::npos) ruta = "imagenes\\NAVAS_TOLOSA.png";
+    else if (batalla.find("Granada")   != std::string::npos) ruta = "imagenes\\GRANADA.png";
 
     auto tex = ETSIDI::getTexture(ruta);
     if (tex.id != 0) {
@@ -621,10 +660,10 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
         glBindTexture(GL_TEXTURE_2D, tex.id);
         glColor3f(1, 1, 1);
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0); glVertex2f(0, 0);
-        glTexCoord2f(1, 0); glVertex2f(ancho, 0);
-        glTexCoord2f(1, 1); glVertex2f(ancho, alto);
-        glTexCoord2f(0, 1); glVertex2f(0, alto);
+        glTexCoord2f(0, 0); glVertex2f(0.0f, (float)alto);
+        glTexCoord2f(1, 0); glVertex2f((float)ancho, (float)alto);
+        glTexCoord2f(1, 1); glVertex2f((float)ancho, 0.0f);
+        glTexCoord2f(0, 1); glVertex2f(0.0f, 0.0f);
         glEnd();
         glDisable(GL_TEXTURE_2D);
     }
@@ -639,29 +678,102 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto, const std::string& ganado
     glEnd();
     glDisable(GL_BLEND);
 
-    // MENSAJE DE VICTORIA
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 52);
-    if (ganaJ1) {
-        ETSIDI::setTextColor(0.86f, 0.08f, 0.24f, 1.0f); // CARMESÍ
-        ETSIDI::printxy("VICTORIA CRISTIANA", ancho / 2 - 240, alto / 2 + 60);
-    }
-    else {
-        ETSIDI::setTextColor(0.55f, 0.10f, 0.75f, 1.0f); // PÚRPURA
-        ETSIDI::printxy("VICTORIA AL-ANDALUS", ancho / 2 - 255, alto / 2 + 60);
+    // MENSAJE DE VICTORIA — CON FADE Y CENTRADO DINÁMICO
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    const char* tituloVic = ganaJ1 ? "VICTORIA CRISTIANA" : "VICTORIA AL-ANDALUS";
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 52);
+    if (ganaJ1)
+        ETSIDI::setTextColor(0.95f, 0.75f, 0.10f, alfa); // ORO CRISTIANO
+    else
+        ETSIDI::setTextColor(0.55f, 0.10f, 0.85f, alfa); // PÚRPURA ANDALUSÍ
+
+    // ARIALNBI bold italic: cada caracter ocupa aprox 0.62 * tamano de fuente px
+    int twV = (int)(strlen(tituloVic) * 52 * 0.62f);
+    ETSIDI::printxy(tituloVic, ancho / 2 - twV / 2, alto / 2 + 80);
+
+    // NOMBRE DEL GANADOR — CENTRADO Y CON FADE
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 30);
+    ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, alfa);
+    {
+        std::string txt = "Ganador: " + ganador;
+        int tw2 = (int)(txt.size() * 30 * 0.62f);
+        ETSIDI::printxy(txt.c_str(), ancho / 2 - tw2 / 2, alto / 2 + 20);
     }
 
-    // NOMBRE DEL GANADOR
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 30);
-    ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
-    std::string txt = "Ganador: " + ganador;
-    ETSIDI::printxy(txt.c_str(), ancho / 2 - 120, alto / 2);
+    // LÍNEA SEPARADORA DORADA
+    if (alfa > 0.3f) {
+        glColor4f(0.85f * alfa, 0.68f * alfa, 0.10f * alfa, 0.8f * alfa);
+        glLineWidth(2.0f);
+        glBegin(GL_LINES);
+        glVertex2f((float)ancho / 2.0f - 200.0f, (float)alto / 2.0f - 10.0f);
+        glVertex2f((float)ancho / 2.0f + 200.0f, (float)alto / 2.0f - 10.0f);
+        glEnd();
+        glLineWidth(1.0f);
+    }
 
-    // CONTADOR
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
-    ETSIDI::setTextColor(0.70f, 0.70f, 0.70f, 1.0f);
-    char buf[32];
-    sprintf_s(buf, "Ranking en %d segundos...", (int)tiempoRestante + 1);
-    ETSIDI::printxy(buf, ancho / 2 - 110, alto / 2 - 60);
+    // CONTADOR PARPADEANTE
+    float parpadeo = (sinf((float)s_fotoV * 0.08f) + 1.0f) * 0.5f * alfa;
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 18);
+    ETSIDI::setTextColor(0.70f, 0.70f, 0.70f, parpadeo);
+    {
+        char buf[64];
+        sprintf_s(buf, "Ranking en %d segundos...", (int)tiempoRestante);
+        int tw3 = (int)(strlen(buf) * 18 * 0.62f);
+        ETSIDI::printxy(buf, ancho / 2 - tw3 / 2, alto / 2 - 50);
+    }
+
+    glDisable(GL_BLEND);
+    // PARTÍCULAS DE CELEBRACIÓN
+    static std::vector<Particula> s_partV;
+    static int s_partFotoV = 0;
+    static float s_prevPartTime = -1.0f;
+    if (tiempoRestante > s_prevPartTime + 1.0f) { s_partV.clear(); s_partFotoV = 0; }
+    s_prevPartTime = tiempoRestante;
+    s_partFotoV++;
+
+    // EMITIR NUEVAS PARTÍCULAS
+    if ((int)s_partV.size() < 200) {
+        for (int i = 0; i < 3; i++) {
+            Particula p;
+            float v = (float)rand() / RAND_MAX;
+            if (ganaJ1) { // CRISTIANO: dorado
+                p.r = 0.90f + v * 0.10f; p.g = 0.70f + v * 0.20f; p.b = 0.05f;
+            }
+            else {      // ANDALUSÍ: púrpura
+                p.r = 0.40f + v * 0.30f; p.g = 0.05f; p.b = 0.70f + v * 0.30f;
+            }
+            p.vidaMax = 80.0f + v * 100.0f;
+            p.vida = p.vidaMax;
+            p.alfa = 0.9f;
+            p.x = (float)(rand() % ancho);
+            p.y = -5.0f;
+            p.vx = ((float)rand() / RAND_MAX - 0.5f) * 2.0f;
+            p.vy = 1.5f + (float)rand() / RAND_MAX * 2.5f;
+            p.tam = 2.0f + (float)rand() / RAND_MAX * 3.0f;
+            s_partV.push_back(p);
+        }
+    }
+
+    // ACTUALIZAR Y DIBUJAR
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_POINT_SMOOTH);
+    for (auto& p : s_partV) {
+        p.x += p.vx; p.y += p.vy; p.vida -= 1.0f;
+        p.alfa = (p.vida / p.vidaMax) * 0.85f;
+        glPointSize(p.tam);
+        glColor4f(p.r, p.g, p.b, p.alfa * alfa);
+        glBegin(GL_POINTS); glVertex2f(p.x, p.y); glEnd();
+    }
+    s_partV.erase(
+        std::remove_if(s_partV.begin(), s_partV.end(),
+            [&](const Particula& p) { return p.vida <= 0 || p.y > alto + 10; }),
+        s_partV.end());
+    glDisable(GL_POINT_SMOOTH);
+    glPointSize(1.0f);
+    glDisable(GL_BLEND);
 
     util_salir2D();
 }
