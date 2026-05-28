@@ -23,6 +23,10 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
         return "imagenes\\INFANTERIA_SISISI.png";
     case TipoPersonaje::INFILTRADO:
         return "imagenes\\INFILTRADO_SISISI.png";
+    case TipoPersonaje::CABALLERIA_PESADA:
+        return "imagenes\\CABALLERIA_PESADA.png";  
+    case TipoPersonaje::BALLESTERO:
+            return "imagenes\\BALLESTERO_SISISI.png";
 
     default:                            
         return "";
@@ -44,6 +48,10 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
         return TipoPersonaje::JINETE_BEREBER;
     case pieza_esfera:
         return (bando == bando_rival) ? TipoPersonaje::EMIR : TipoPersonaje::REY;
+    case pieza_cono:
+        return TipoPersonaje::CABALLERIA_PESADA;
+
+
     default:                return TipoPersonaje::MILICIANO;
     }
 }

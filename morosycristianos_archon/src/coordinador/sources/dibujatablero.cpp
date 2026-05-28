@@ -728,12 +728,57 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     case pieza_cono:
     {
-        GLUquadric* q = gluNewQuadric();
-        glRotatef(90, 1, 0, 0);
-        glTranslatef(0, 0, -escala * 0.7f);
-        gluCylinder(q, escala * 0.5f, 0.0f, escala * 1.2f, 12, 1);
-        gluDisk(q, 0, escala * 0.5f, 12, 1);
-        gluDeleteQuadric(q);
+        
+
+        //dibujo CABALLERIA PESADA
+        // Si bando musulman -> dibuja cono ( de momento)
+        if (casilla.bando != bando_local) {
+            
+            GLUquadric* q = gluNewQuadric();
+            glRotatef(90, 1, 0, 0);
+            glTranslatef(0, 0, -escala * 0.7f);
+            gluCylinder(q, escala * 0.5f, 0.0f, escala * 1.2f, 12, 1);
+            gluDisk(q, 0, escala * 0.5f, 12, 1);
+            gluDeleteQuadric(q);
+            glPopMatrix();
+            return;
+        }
+
+
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        // Calculamos posición y tamaño en el plano 2D de la ventana
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY + size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+        EstadoPersonaje estadoCaballero = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoCaballero = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.dibujar(tipo, px, py, size,
+            EstadoPersonaje::IDLE, idAnim, false);
+        util_salir2D();
+        return;
     }
     break;
 
