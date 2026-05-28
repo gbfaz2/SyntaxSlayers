@@ -194,9 +194,23 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	//poner(7, 8, pieza_cubog, bando_rival, new Infanteria(Bando::ANDALUSI));
 	//poner(2, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
 	//poner(6, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
-	poner(0, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
-	poner(8, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
+	//poner(0, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
+	//poner(8, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
 	
+
+	int idBalle = 0; // Contador de IDs para infiltrado
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* Arq = new Ballestero(Bando::ANDALUSI);
+	Arq->setIdAnimacion(idBalle++);
+	poner(0, 7, pieza_cilindro, bando_rival, Arq);
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* Arq2 = new Ballestero(Bando::ANDALUSI);
+	Arq2->setIdAnimacion(idBalle++);
+	poner(8, 7, pieza_cilindro, bando_rival, Arq2);
+
+
 	int idCabLige = 0; // Contador de IDs para infiltrado
 
 	//asignar ID para caballero ligero de la fila 0
