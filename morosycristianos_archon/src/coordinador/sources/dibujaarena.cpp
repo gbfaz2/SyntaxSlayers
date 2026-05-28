@@ -503,8 +503,8 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
     glBegin(GL_QUADS);
-    glVertex2f(_anchoVentana - 280, _altoVentana - 150);
-    glVertex2f(_anchoVentana, _altoVentana - 150);
+    glVertex2f(_anchoVentana - 280, _altoVentana - 140);
+    glVertex2f(_anchoVentana, _altoVentana - 140);
     glVertex2f(_anchoVentana, _altoVentana);
     glVertex2f(_anchoVentana - 280, _altoVentana);
     glEnd();
@@ -512,8 +512,8 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
 
     ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
     ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-    ETSIDI::printxy("  QUE COMIENCE LA BATALLA!", _anchoVentana - 250, _altoVentana - 100);
-    ETSIDI::printxy("    mucha suerte combatientes", _anchoVentana - 250, _altoVentana - 60);
+    ETSIDI::printxy("  QUE COMIENCE LA BATALLA!", _anchoVentana - 250, _altoVentana - 95);
+    ETSIDI::printxy("    mucha suerte combatientes", _anchoVentana - 250, _altoVentana - 40);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
