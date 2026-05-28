@@ -11,6 +11,11 @@
 
 dibujapersonajes DibujaArena::_personajes;
 
+float DibujaArena::_tiempoFlash = 0.0f;
+bool  DibujaArena::_flashActivo = true;
+float DibujaArena::_duracionFlash = 3.0f;
+float DibujaArena::_duracionFade = 0.6f;
+
 // ORQUESTADORES PRINCIPALES
 
 void DibujaArena::arena_configurar_vista(int anchoVentana, int altoVentana) 
@@ -54,9 +59,6 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     arena_fondo(batalla);
     arena_configurar_luz();
     arena_suelo(arena.ancho(), arena.profundo(), batalla);
-
-   
-    
 
     //investigar que significa bien lo de lambda (aparece aqui y en dibujatablero)
     // Lambda que dibuja cualquier combatiente con sprite
@@ -249,6 +251,12 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
   
     // HUD ENCIMA DE TODO
     arena_hud(arena, batalla);
+
+    // FLASH DE INICIO (encima del HUD)
+    util_entrar2D(_anchoVentana, _altoVentana);
+    glDisable(GL_LIGHTING);
+    arena_flash_inicio(batalla);
+    util_salir2D();
 }
 
 // CAPAS BASE DE LA ARENA
@@ -564,7 +572,74 @@ void DibujaArena::arena_init()
     _personajes.init();
 }
 
+void DibujaArena::arena_flash_inicio(Batalla batalla)
+{
+    if (!_flashActivo) return;
+
+    // Calcular alpha según fase del fade
+    float alpha = 1.0f;
+    if (_tiempoFlash < _duracionFade) {
+        // Fade IN
+        alpha = _tiempoFlash / _duracionFade;
+    }
+    else if (_tiempoFlash > _duracionFlash - _duracionFade) {
+        // Fade OUT
+        alpha = (_duracionFlash - _tiempoFlash) / _duracionFade;
+    }
+    alpha = std::max(0.0f, std::min(1.0f, alpha)); // clamp
+
+    // Nombre de la batalla
+    const char* nombreBatalla = "";
+    switch (batalla) {
+    case Batalla::GUADALETE:    nombreBatalla = "BATALLA DE GUADALETE - 711 d.C.";    break;
+    case Batalla::ALARCOS:      nombreBatalla = "BATALLA DE ALARCOS - 1195 d.C.";     break;
+    case Batalla::NAVAS_TOLOSA: nombreBatalla = "BATALLA DE LAS NAVAS - 1212 d.C.";  break;
+    case Batalla::GRANADA:      nombreBatalla = "BATALLA DE GRANADA - 1492 d.C.";     break;
+    }
+
+    float cx = _anchoVentana * 0.5f;
+    float cy = _altoVentana * 0.5f;
+    float anchoPanel = 550.0f;
+    float altoPanel = 100.0f;
+
+    // Fondo semitransparente
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.72f * alpha);
+    glBegin(GL_QUADS);
+    glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glEnd();
+
+    // Borde dorado
+    glColor4f(0.85f, 0.70f, 0.25f, alpha);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    // Texto: nombre de la batalla (dorado)
+    float xNombre = cx - strlen(nombreBatalla) * 4.5f;
+    arena_texto(xNombre, cy - 12.0f, nombreBatalla, 0.85f, 0.70f, 0.25f);
+
+    // Texto: A COMBATIR (blanco)
+    const char* combatir = " ¡A COMBATIR! ";
+    float xCombatir = cx - strlen(combatir) * 4.5f;
+    arena_texto(xCombatir, cy + 18.0f, combatir, 1.0f, 1.0f, 1.0f);
+}
+
 void DibujaArena::arena_update(float dt) 
 {
     _personajes.update();
+    if (_flashActivo) {
+        _tiempoFlash += dt;
+        if (_tiempoFlash >= _duracionFlash)
+            _flashActivo = false;
+    }
 }
