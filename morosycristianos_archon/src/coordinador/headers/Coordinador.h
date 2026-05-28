@@ -14,14 +14,15 @@
 #include "GestorPartida.h"
 #include "MinimaxTablero.h"
 #include "GestorRanking.h"
+#include <thread>
+#include <atomic>
+#include <mutex>
 
 class Coordinador
 {
 	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
 	
 	EstadoJuego     estado{ EstadoJuego::INTRO }; // ESTADO INICIAL
-
-	
 
 	PantallaIntro   pantallaIntro;
 	MenuPrincipal   menuPrincipal;
@@ -43,7 +44,8 @@ class Coordinador
 	Pieza* _pAtacanteCombate{ nullptr };  // pieza atacante del combate actual
 	Pieza* _pDefensoraCombate{ nullptr }; // pieza defensora del combate actual
 
-	MinimaxTablero _minimax{ 3 };          // IA CON PROFUNDIDAD 3
+	MinimaxTablero _minimax{ (int)NivelDificultad::FACIL }; // se sobreescribirá al iniciar partida
+
 	bool _iaCalculando{ false };           // EVITA CALCULAR VARIAS VECES POR FRAME
 	bool _iaYaMovio{ false };  // CONTROLA QUE LA IA SOLO MUEVE UNA VEZ POR TURNO
 	int  _turnoAnteriorIA{ -1 }; // TURNO EN EL QUE MOVIÓ LA IA POR ÚLTIMA VEZ
@@ -54,6 +56,11 @@ class Coordinador
 	int _ayudaSeleccion{ 0 }; // 0 = controles, 1 = normas
 	int _ayudaSeccion{ -1 }; // -1 = menu ayuda
 
+	std::thread          _hiloIA; // HILO DE CÁLCULO DE LA IA
+	std::atomic<bool>    _iaTerminada{ false }; // FLAG: el hilo ya acabó
+	std::mutex           _mutexMovIA; // PROTEGE EL ACCESO AL RESULTADO
+	MovimientoIA         _movimientoIA{}; // RESULTADO DEL HILO
+
 public:
 	Coordinador() = default;
 	~Coordinador();
@@ -62,6 +69,7 @@ public:
 	int      _altoVentana{ 600 };
 	
 	float _tiempoGuardado{ 0.0f };
+	float _tiempoVictoria{ 10.0f };
 
 	void inicializa();
 	void dibuja();
