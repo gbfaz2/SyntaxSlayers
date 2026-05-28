@@ -80,12 +80,27 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	poner(8, 0, pieza_tetraedro, bando_local, new CaballeriaLigera(Bando::CRISTIANO));
 	//poner(1, 0, pieza_cubog, bando_local, new Infanteria(Bando::CRISTIANO));
 	//poner(7, 0, pieza_cubog, bando_local, new Infanteria(Bando::CRISTIANO));
-	poner(2, 0, pieza_cono, bando_local, new CaballeriaPesada(Bando::CRISTIANO));
-	poner(6, 0, pieza_cono, bando_local, new CaballeriaPesada(Bando::CRISTIANO));
+	//poner(2, 0, pieza_cono, bando_local, new CaballeriaPesada(Bando::CRISTIANO));
+	//poner(6, 0, pieza_cono, bando_local, new CaballeriaPesada(Bando::CRISTIANO));
 	poner(0, 1, pieza_cilindro, bando_local, new Ballestero(Bando::CRISTIANO));
 	poner(8, 1, pieza_cilindro, bando_local, new Ballestero(Bando::CRISTIANO));
 	//for (int fila = 1; fila <= 7; fila++)
 		//poner(fila, 1, pieza_cubo_p, bando_local, new Miliciano(Bando::CRISTIANO));
+
+
+
+	int idCab = 0; // Contador de IDs para infiltrado
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* Cabb = new CaballeriaPesada(Bando::CRISTIANO);
+	Cabb->setIdAnimacion(idCab++);
+	poner(2, 0, pieza_cono, bando_local, Cabb);
+
+	Pieza* Cab = new CaballeriaPesada(Bando::CRISTIANO);
+	Cab->setIdAnimacion(idCab++);
+	poner(6, 0, pieza_cono, bando_local, Cab);
+
+	
 
 	int idMiliciano = 0; //contador ID para milicianos
 
@@ -114,17 +129,17 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 
 
 
-	int idInfan = 0; // Contador de IDs para infiltrado
+	int idInfanT = 0; // Contador de IDs para infiltrado
 
 	//asignar ID para caballero ligero de la fila 0
 	Pieza* Infanterr = new Infanteria(Bando::CRISTIANO);
-	Infanterr->setIdAnimacion(idInfan++);
+	Infanterr->setIdAnimacion(idInfanT++);
 	poner(1, 0, pieza_cubog, bando_local, Infanterr);
 
 	//asignar ID para caballero ligero de la fila 0
-	Pieza* Infanteri = new Infanteria(Bando::CRISTIANO);
-	Infanteri->setIdAnimacion(idInfan++);
-	poner(7, 0, pieza_cubog, bando_local, Infanteri);
+	Pieza* Infanterii = new Infanteria(Bando::CRISTIANO);
+	Infanterii->setIdAnimacion(idInfanT++);
+	poner(7, 0, pieza_cubog, bando_local, Infanterii);
 
 
 
