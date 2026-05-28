@@ -578,6 +578,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
             util_salir2D();
             return;
         }
+        //para el infiltrado
         else {
             float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.98f;
             float px = (float)winX - size * 0.23f; //- size * 0.07f;
@@ -702,9 +703,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         // Para el bando andalusi, dibuja guardia negra:
         if (casilla.bando != bando_local) {
             //ajustes coordenadas
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.2f;
-            float px = (float)winX - size * 0.35f;
-            float py = (float)winY - size * 0.1f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.90f;
+            float px = (float)winX + size * 0.17f;
+            float py = (float)winY+size * 0.1f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -909,8 +910,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         if (casilla.bando != bando_local) {
             // Calculamos posición y tamaño en el plano 2D de la ventana
             float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
-            float px = (float)winX + size * 0.35f;
-            float py = (float)winY + size * 0.2f;
+            float px = (float)winX + size * 0.27f;
+            float py = (float)winY + size * 0.17f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -923,12 +924,12 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
             util_salir2D();
             return;
         }
-        //para emir
+        //para miliciano
         else {
 
             // Calculamos posición y tamaño en el plano 2D de la ventana
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
-            float px = (float)winX - size * 0.3f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
+            float px = (float)winX - size * 0.36f;
             float py = (float)winY + size * 0.1f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
