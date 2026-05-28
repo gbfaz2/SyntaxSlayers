@@ -1,6 +1,7 @@
 #include "MinimaxTablero.h"
 #include <iostream>
 #include <climits>
+#include <algorithm>
 
 // CONSTRUCTOR
 MinimaxTablero::MinimaxTablero(int profundidad)
@@ -21,8 +22,12 @@ std::vector<MovimientoIA> MinimaxTablero::generarMovimientos(
 
             auto validas = tablero.casillasValidas(f, c);
             for (const auto& dest : validas) {
-                // SOLO CASILLAS VACÍAS — EVITA CORRUPCIÓN DEL TABLERO
-                if (tablero.getCasilla(dest.fila, dest.col).bando == bando_nada) {
+
+                // OBTENEMOS EL BANDO DE LA CASILLA DESTINO
+                BandoPieza bandoDestino = tablero.getCasilla(dest.fila, dest.col).bando;
+
+                // ACEPTAMOS LA CASILLA SI ESTÁ VACÍA O SI HAY UN ENEMIGO (DIFERENTE A MI BANDO)
+                if (bandoDestino != bando) {
                     movimientos.push_back({ f, c, dest.fila, dest.col });
                 }
             }
@@ -86,14 +91,36 @@ void MinimaxTablero::deshacerMovimiento(
 // COMPRUEBA SI HAY VICTORIA
 bool MinimaxTablero::hayVictoria(const Tablero& tablero) const
 {
-    // CUENTA PIEZAS DE CADA BANDO
     int piezasLocal = 0, piezasRival = 0;
-    for (int f = 0; f < Tablero::N; f++)
+    int poderLocal = 0, poderRival = 0;
+
+    // RECORREMOS TABLERO UNA SOLA VEZ PARA NO RALENTIZAR LA IA
+    for (int f = 0; f < Tablero::N; f++) {
         for (int c = 0; c < Tablero::N; c++) {
-            if (tablero.getCasilla(f, c).bando == bando_local) piezasLocal++;
-            if (tablero.getCasilla(f, c).bando == bando_rival) piezasRival++;
+
+            const Casilla& cas = tablero.getCasilla(f, c);
+
+            if (cas.bando == bando_local) {
+                piezasLocal++;
+                // SUMAMOS SI ESTÁ EN UN PUNTO DE PODER
+                if (cas.tipo == Casilla_poder) poderLocal++;
+            }
+            else if (cas.bando == bando_rival) {
+                piezasRival++;
+                // SUMAMOS SI ESTÁ EN UN PUNTO DE PODER
+                if (cas.tipo == Casilla_poder) poderRival++;
+            }
         }
-    return piezasLocal == 0 || piezasRival == 0; // ALGUIEN SE QUEDÓ SIN PIEZAS
+    }
+
+    // VICTORIA 1: ANIQUILACIÓN (CERO PIEZAS VIVAS)
+    if (piezasLocal == 0 || piezasRival == 0) return true;
+
+    // VICTORIA 2: DOMINIO (5 PUNTOS DE PODER CONTROLADOS)
+    if (poderLocal == 5 || poderRival == 5) return true;
+
+    // IGNORAMOS ASEDIO EN LA SIMULACIÓN PORQUE CALCULAR VECINOS CONSUME MUCHA CPU
+    return false;
 }
 
 // FUNCIÓN DE EVALUACIÓN
@@ -124,9 +151,18 @@ int MinimaxTablero::evaluar(const Tablero& tablero) const
             const Casilla& cas = tablero.getCasilla(f, c);
             if (cas.pieza == pieza_nada) continue;
 
-            int val = valorPieza(cas.pieza);                   // VALOR BASE
+            int val = valorPieza(cas.pieza);  // VALOR BASE
 
-            if (cas.tipo == Casilla_poder) val += 50;          // BONUS PUNTO DE PODER
+            if (cas.obj != nullptr && cas.obj->getVidaMax() > 0) {
+
+                // ESCALAMOS EL VALOR SEGÚN EL PORCENTAJE DE VIDA RESTANTE
+                val = (val * cas.obj->getVida()) / cas.obj->getVidaMax();
+
+                // SUMAMOS LA FUERZA COMO BONUS DE PELIGROSIDAD
+                val += cas.obj->getFuerza();
+			}
+
+            if (cas.tipo == Casilla_poder) val += 50;  // BONUS PUNTO DE PODER
 
             // BONUS POR PROXIMIDAD A PUNTOS DE PODER
             for (auto& pp : poderPos) {
@@ -153,40 +189,75 @@ int MinimaxTablero::evaluar(const Tablero& tablero) const
 int MinimaxTablero::minimax(Tablero& tablero, int profundidad,
     bool maximizar, int alpha, int beta)
 {
-    // CASO BASE: profundidad 0 o victoria
     if (profundidad == 0 || hayVictoria(tablero))
         return evaluar(tablero);
 
-    BandoPieza bando = maximizar ? bando_rival : bando_local; // BANDO QUE MUEVE
-    auto movimientos = generarMovimientos(tablero, bando);    // GENERA MOVIMIENTOS
+    BandoPieza bando = maximizar ? bando_rival : bando_local;
+    auto movimientos = generarMovimientos(tablero, bando);
 
-    if (movimientos.empty()) return evaluar(tablero);          // SIN MOVIMIENTOS
+    if (movimientos.empty()) return evaluar(tablero);
 
-    PilaHistorial<EstadoCasilla> historial;                    // HISTORIAL DE ESTADOS
+    // LAMBDA LOCAL PARA SABER EL VALOR DE LAS PIEZAS (IGUAL QUE EN EVALUAR)
+    auto valorPieza = [](TipoPieza tipo) -> int {
+        switch (tipo) {
+        case pieza_esfera:     return 1000;
+        case pieza_dodecaedro: return   90;
+        case pieza_icosaedro:  return   85;
+        case pieza_tetraedro:  return   60;
+        case pieza_cubog:      return   70;
+        case pieza_cono:       return   75;
+        case pieza_cilindro:   return   60;
+        case pieza_cubo_p:     return   30;
+        default:               return    0;
+        }
+        };
+
+    // 1. ORDENAR MOVIMIENTOS: PROBAR PRIMERO LAS CAPTURAS MÁS VALIOSAS (OPTIMIZA PODA)
+    std::sort(movimientos.begin(), movimientos.end(), [&tablero, &valorPieza](const MovimientoIA& a, const MovimientoIA& b) {
+        int valA = valorPieza(tablero.getCasilla(a.filaDestino, a.colDestino).pieza);
+        int valB = valorPieza(tablero.getCasilla(b.filaDestino, b.colDestino).pieza);
+        return valA > valB; // DE MAYOR A MENOR VALOR DE CAPTURA DESTINO
+        });
+
+    PilaHistorial<EstadoCasilla> historial;
 
     if (maximizar) {
-        int mejorValor = INT_MIN;                              // IA BUSCA MÁXIMO
+        int mejorValor = INT_MIN;
         for (const auto& mov : movimientos) {
-            EstadoCasilla estado = aplicarMovimiento(tablero, mov); // APLICA
-            historial.guardar(estado);                         // GUARDA EN HISTORIAL
-            int valor = minimax(tablero, profundidad - 1, false, alpha, beta); // RECURSIVO
-            deshacerMovimiento(tablero, mov, historial.recuperar()); // DESHACE
-            mejorValor = std::max(mejorValor, valor);          // ACTUALIZA MEJOR
-            alpha = std::max(alpha, valor);                    // ACTUALIZA ALPHA
-            if (beta <= alpha) break;                          // PODA BETA
+            EstadoCasilla estado = aplicarMovimiento(tablero, mov);
+            historial.guardar(estado);
+            int valor = minimax(tablero, profundidad - 1, false, alpha, beta);
+            deshacerMovimiento(tablero, mov, historial.recuperar());
+
+            // 2. BONIFICACIÓN POR CAPTURAR PIEZAS ENEMIGAS
+            // EL ESTADO GUARDÓ LA PIEZA QUE PISAMOS AL MOVER
+            if (estado.pieza != pieza_nada && estado.bando == bando_local) {
+                valor += valorPieza(estado.pieza) * 2; // PREMIA DEVORAR PIEZAS
+            }
+
+            mejorValor = std::max(mejorValor, valor);
+            alpha = std::max(alpha, valor);
+            if (beta <= alpha) break; // PODA BETA
         }
         return mejorValor;
     }
     else {
-        int mejorValor = INT_MAX;                              // JUGADOR BUSCA MÍNIMO
+        int mejorValor = INT_MAX;
         for (const auto& mov : movimientos) {
-            EstadoCasilla estado = aplicarMovimiento(tablero, mov); // APLICA
-            historial.guardar(estado);                         // GUARDA EN HISTORIAL
-            int valor = minimax(tablero, profundidad - 1, true, alpha, beta); // RECURSIVO
-            deshacerMovimiento(tablero, mov, historial.recuperar()); // DESHACE
-            mejorValor = std::min(mejorValor, valor);          // ACTUALIZA MEJOR
-            beta = std::min(beta, valor);                      // ACTUALIZA BETA
-            if (beta <= alpha) break;                          // PODA ALPHA
+            EstadoCasilla estado = aplicarMovimiento(tablero, mov);
+            historial.guardar(estado);
+            int valor = minimax(tablero, profundidad - 1, true, alpha, beta);
+            deshacerMovimiento(tablero, mov, historial.recuperar());
+
+            // 3. PENALIZACIÓN POR EXPONER NUESTRAS PIEZAS AL RIVAL
+            // SI EL RIVAL NOS COME ALGO EN SU TURNO SIMULADO, RESTAMOS PUNTOS
+            if (estado.pieza != pieza_nada && estado.bando == bando_rival) {
+                valor -= valorPieza(estado.pieza) / 2; // PENALIZA PERDER TROPAS
+            }
+
+            mejorValor = std::min(mejorValor, valor);
+            beta = std::min(beta, valor);
+            if (beta <= alpha) break; // PODA ALPHA
         }
         return mejorValor;
     }
