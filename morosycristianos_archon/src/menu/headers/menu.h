@@ -16,7 +16,7 @@ class PantallaIntro {
     int  m_fotograma;
     bool m_terminado;
 
-    static const int DURACION = 250; // fotogramas (aprox 4 segundos a 60 fps)
+    static const int DURACION = 420; // fotogramas (aprox 7 segundos a 60 fps)
 
     friend class DibujaMenu; // PERMITE A DIBUJAMENU LEER VARIABLES PRIVADAS
 
