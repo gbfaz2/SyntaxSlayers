@@ -15,20 +15,39 @@ std::vector<MovimientoIA> MinimaxTablero::generarMovimientos(
 {
     std::vector<MovimientoIA> movimientos;
 
+    const int dirs[4][2] = { {0,1},{0,-1},{1,0},{-1,0} }; // SOLO 4 DIRECCIONES
+
     for (int f = 0; f < Tablero::N; f++) {
         for (int c = 0; c < Tablero::N; c++) {
             const Casilla& cas = tablero.getCasilla(f, c);
             if (cas.bando != bando || cas.obj == nullptr) continue;
 
-            auto validas = tablero.casillasValidas(f, c);
-            for (const auto& dest : validas) {
+            int radio = 1;
+            switch (cas.pieza) {
+            case pieza_esfera:     radio = 3; break;
+            case pieza_dodecaedro: radio = 8; break;
+            case pieza_icosaedro:  radio = 4; break;
+            case pieza_tetraedro:  radio = 3; break;
+            case pieza_cubog:      radio = 2; break;
+            case pieza_cono:       radio = 3; break;
+            case pieza_cilindro:   radio = 3; break;
+            case pieza_cubo_p:     radio = 3; break;
+            default:               radio = 1; break;
+            }
 
-                // OBTENEMOS EL BANDO DE LA CASILLA DESTINO
-                BandoPieza bandoDestino = tablero.getCasilla(dest.fila, dest.col).bando;
+            // AVANZA EN CADA DIRECCIÓN PARANDO SI HAY UNA PIEZA EN EL CAMINO
+            for (auto& d : dirs) {
+                for (int paso = 1; paso <= radio; paso++) {
+                    int tf = f + d[0] * paso;
+                    int tc = c + d[1] * paso;
+                    if (tf < 0 || tf >= Tablero::N || tc < 0 || tc >= Tablero::N) break;
 
-                // ACEPTAMOS LA CASILLA SI ESTÁ VACÍA O SI HAY UN ENEMIGO (DIFERENTE A MI BANDO)
-                if (bandoDestino != bando) {
-                    movimientos.push_back({ f, c, dest.fila, dest.col });
+                    BandoPieza bandoDst = tablero.getCasilla(tf, tc).bando;
+                    if (bandoDst == bando) break; // ALIADO — BLOQUEADO, PARA
+
+                    movimientos.push_back({ f, c, tf, tc });
+
+                    if (bandoDst != bando_nada) break; // ENEMIGO — CAPTURA Y PARA
                 }
             }
         }
@@ -266,18 +285,20 @@ int MinimaxTablero::minimax(Tablero& tablero, int profundidad,
 // MÉTODO PRINCIPAL: CALCULA EL MEJOR MOVIMIENTO PARA LA IA
 MovimientoIA MinimaxTablero::calcularMejorMovimiento(Tablero& tablero)
 {
-    // SILENCIA PRINTS DURANTE EL CÁLCULO
     std::streambuf* bufOriginal = std::cout.rdbuf(nullptr);
 
     MovimientoIA mejorMov;
     int mejorValor = INT_MIN;
 
-    auto movimientos = generarMovimientos(tablero, bando_rival);
+    // TRABAJAMOS SOBRE UNA COPIA — EL TABLERO REAL NUNCA SE TOCA
+    Tablero copia = tablero;
+
+    auto movimientos = generarMovimientos(copia, bando_rival);
 
     for (const auto& mov : movimientos) {
-        EstadoCasilla estado = aplicarMovimiento(tablero, mov);
-        int valor = minimax(tablero, _profundidad - 1, false, INT_MIN, INT_MAX);
-        deshacerMovimiento(tablero, mov, estado);
+        EstadoCasilla estado = aplicarMovimiento(copia, mov);
+        int valor = minimax(copia, _profundidad - 1, false, INT_MIN, INT_MAX);
+        deshacerMovimiento(copia, mov, estado);
 
         if (valor > mejorValor) {
             mejorValor = valor;
@@ -285,7 +306,6 @@ MovimientoIA MinimaxTablero::calcularMejorMovimiento(Tablero& tablero)
         }
     }
 
-    // RESTAURA PRINTS
     std::cout.rdbuf(bufOriginal);
     std::cout << "[IA] Movimiento: ("
         << mejorMov.filaOrigen << "," << mejorMov.colOrigen << ") -> ("

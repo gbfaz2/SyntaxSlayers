@@ -3,6 +3,7 @@
 #include "GestorTurnos.h"
 #include "estadojuego.h"
 
+
 // Gestiona el guardado y carga de partidas en fichero de texto
 
 class GestorPartida

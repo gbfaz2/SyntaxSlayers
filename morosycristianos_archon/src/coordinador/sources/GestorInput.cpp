@@ -21,7 +21,8 @@ void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
 
     case EstadoJuego::MENU:
         if (key == 27) { // ESC: RETROCEDE UN PASO
-            if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; menu.m_nombreActual = ""; }
+            if (menu.m_paso == 6) { menu.m_paso = 4; menu.m_seleccion = 0; } // DIFICULTAD → BATALLA
+            else if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; menu.m_nombreActual = ""; }
             else { menu.m_siguiente = EstadoJuego::INTRO; menu.m_terminado = true; }
             return;
         }
@@ -70,7 +71,9 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
         if (boton == GLUT_LEFT_BUTTON) {
             ratonMovidoMenu(x, y, estado, menu); // ACTUALIZA SELECCION
             menu.confirmar();                    // CONFIRMA SELECCION
+
         }
+
         break;
     default:
         break;
@@ -108,6 +111,12 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
         float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 20;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) menu.m_seleccion = 0;
         if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah))      menu.m_seleccion = 1;
+    }
+    else if (menu.m_paso == 6) { // PASO 6: DIFICULTAD  ← AÑADE ESTO
+        float aw = 340, ah = 48, sep = 12;
+        float sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 80;
+        for (int i = 0; i < 3; i++)
+            if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
 }
 
@@ -563,42 +572,70 @@ void GestorInput::teclaArena(unsigned char key)
     if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
         bool ganaP1 = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
 
-        if (ganaP1) {
-            Pieza* atacante = _coordinador->_pAtacanteCombate;
-            Pieza* defensora = _coordinador->_pDefensoraCombate;
-            if (atacante && defensora && _coordinador->pTablero) {
-                int filaAtacante = atacante->getFila();
-                int colAtacante = atacante->getColumna();
-                int filaDefensora = defensora->getFila();
-                int colDefensora = defensora->getColumna();
+        // P1 FUE EL JUGADOR LOCAL, P2 FUE EL RIVAL
+        bool atacanteEraLocal = (_coordinador->_pAtacanteCombate &&
+            _coordinador->_pAtacanteCombate->getBando() == Bando::CRISTIANO);
 
-                Casilla& cDef = _coordinador->pTablero->getCasilla(filaDefensora, colDefensora);
-                delete cDef.obj;                         // ELIMINA PIEZA PERDEDORA
-                cDef.obj = nullptr;
-                cDef.pieza = pieza_nada;
-                cDef.bando = bando_nada;
+        Pieza* pJugador = atacanteEraLocal ? _coordinador->_pAtacanteCombate
+            : _coordinador->_pDefensoraCombate;
+        Pieza* pRival = atacanteEraLocal ? _coordinador->_pDefensoraCombate
+            : _coordinador->_pAtacanteCombate;
 
-                _coordinador->pTablero->muevePieza(filaAtacante, colAtacante, filaDefensora, colDefensora);
+        bool ganaJugador = ganaP1; // P1 siempre fue el jugador
+
+        if (ganaJugador) {
+            bool jugadorEraAtacante = (_coordinador->_pAtacanteCombate->getBando() == Bando::CRISTIANO);
+
+            if (jugadorEraAtacante) {
+                // JUGADOR ATACÓ Y GANÓ → elimina defensora, mueve atacante a su casilla
+                Casilla& cDef = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+                delete cDef.obj;
+                cDef.obj = nullptr; cDef.pieza = pieza_nada; cDef.bando = bando_nada;
+
+                _coordinador->pTablero->muevePieza(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante,
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+
+                if (pJugador) pJugador->setVida((int)_coordinador->_arena.p1().vida());
+            }
+            else {
+                // RIVAL ATACÓ, JUGADOR DEFENDIÓ Y GANÓ → elimina atacante, defensora se queda
+                Casilla& cAtac = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante);
+                delete cAtac.obj;
+                cAtac.obj = nullptr; cAtac.pieza = pieza_nada; cAtac.bando = bando_nada;
+
+                // LA DEFENSORA YA ESTÁ EN SU CASILLA, SOLO ACTUALIZAMOS SU VIDA
+                if (pJugador) pJugador->setVida((int)_coordinador->_arena.p1().vida());
             }
         }
         else {
-            Pieza* atacante = _coordinador->_pAtacanteCombate;
-            if (atacante && _coordinador->pTablero) {
-                int fila = atacante->getFila();
-                int col = atacante->getColumna();
-                Casilla& c = _coordinador->pTablero->getCasilla(fila, col);
-                delete c.obj;                            // ELIMINA PIEZA PERDEDORA
-                c.obj = nullptr;
-                c.pieza = pieza_nada;
-                c.bando = bando_nada;
+            bool jugadorEraAtacante = (_coordinador->_pAtacanteCombate->getBando() == Bando::CRISTIANO);
+
+            if (jugadorEraAtacante) {
+                // JUGADOR ATACÓ Y PERDIÓ → elimina atacante (jugador)
+                Casilla& c = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante);
+                delete c.obj;
+                c.obj = nullptr; c.pieza = pieza_nada; c.bando = bando_nada;
+
+                if (pRival) pRival->setVida((int)_coordinador->_arena.p2().vida());
+            }
+            else {
+                // RIVAL ATACÓ Y GANÓ → elimina defensora (jugador), mueve atacante a su casilla
+                Casilla& cDef = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+                delete cDef.obj;
+                cDef.obj = nullptr; cDef.pieza = pieza_nada; cDef.bando = bando_nada;
+
+                _coordinador->pTablero->muevePieza(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante,
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+
+                if (pRival) pRival->setVida((int)_coordinador->_arena.p2().vida());
             }
         }
-
-        // GUARDA LA VIDA RESTANTE DE LA GANADORA
-        if (ganaP1 && _coordinador->_pAtacanteCombate)
-            _coordinador->_pAtacanteCombate->setVida((int)_coordinador->_arena.p1().vida());
-        else if (!ganaP1 && _coordinador->_pDefensoraCombate)
-            _coordinador->_pDefensoraCombate->setVida((int)_coordinador->_arena.p2().vida());
 
         _coordinador->_pAtacanteCombate = nullptr;
         _coordinador->_pDefensoraCombate = nullptr;
