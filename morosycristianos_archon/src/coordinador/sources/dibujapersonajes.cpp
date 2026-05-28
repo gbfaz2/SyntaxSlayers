@@ -21,6 +21,8 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
         return "imagenes\\JINETE_BEREBER_SI.png";
     case TipoPersonaje::INFANTERIA:
         return "imagenes\\INFANTERIA_SISISI.png";
+    case TipoPersonaje::INFILTRADO:
+        return "imagenes\\INFILTRADO_SISISI.png";
 
     default:                            
         return "";
@@ -35,7 +37,7 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
     case pieza_cubo_p:     
         return TipoPersonaje::MILICIANO;
     case pieza_dodecaedro:  
-        return TipoPersonaje::ASESINO_DE_ELITE;
+        return (bando == bando_rival) ? TipoPersonaje::ASESINO_DE_ELITE : TipoPersonaje::INFILTRADO;
     case pieza_cubog:       
         return (bando == bando_rival) ? TipoPersonaje::GUARDIA_NEGRA : TipoPersonaje::INFANTERIA;
     case pieza_tetraedro:   
