@@ -214,7 +214,7 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
             //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
             voltear = !esAtacante;
         }
-        float size = _anchoVentana * 0.15f;
+        float size = _anchoVentana * 0.10f;
 
         //convertir a 2d
         util_entrar2D(_anchoVentana, _altoVentana);
