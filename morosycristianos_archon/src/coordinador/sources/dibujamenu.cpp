@@ -85,6 +85,7 @@ void DibujaMenu::menu_dibujar(MenuPrincipal& m, int ancho, int alto) {
     case 3: menu_paso_nombre(m, ancho, alto); break;
     case 4: menu_paso2(m, ancho, alto); break;
     case 5: menu_paso3(m, ancho, alto); break;
+    case 6: menu_paso_dificultad(m, ancho, alto); break; // ← AÑADE ESTA LÍNEA
     }
     menu_pie(ancho, alto);
     util_salir2D();
@@ -216,6 +217,34 @@ void DibujaMenu::menu_pie(int ancho, int alto) {
     menu_textoCentrado(
         "[Flechas/Raton] Navegar       [ENTER/Click] Seleccionar       [ESC] Volver",
         ancho / 2.0f, 12, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+}
+
+void DibujaMenu::menu_paso_dificultad(MenuPrincipal& m, int ancho, int alto) {
+    menu_textoCentrado("Selecciona la dificultad de la IA:",
+        ancho / 2.0f, alto - 135,
+        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
+
+    float aw = 340, ah = 48, sep = 12;
+    float sx = ancho / 2.0f - aw / 2.0f;
+    float sy = alto / 2.0f + 80;
+
+    const char* opciones[] = {
+        "  Facil   - IA principiante",
+        "  Medio   - IA equilibrada",
+        "  Dificil - IA avanzada"
+    };
+    const char* descripciones[] = {
+        "La IA toma decisiones rapidas con poco analisis.",
+        "La IA evalua varias jugadas antes de mover.",
+        "La IA calcula en profundidad. Muy dificil de vencer."
+    };
+
+    for (int i = 0; i < 3; i++)
+        menu_opcion(opciones[i], sx, sy - i * (ah + sep), aw, ah, m.m_seleccion == i);
+
+    menu_textoCentrado(descripciones[m.m_seleccion],
+        ancho / 2.0f, alto / 2.0f - 80,
+        0.65f, 0.65f, 0.65f, GLUT_BITMAP_HELVETICA_12);
 }
 
 
