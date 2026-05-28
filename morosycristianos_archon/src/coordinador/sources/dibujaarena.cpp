@@ -429,23 +429,59 @@ void DibujaArena::arena_texto(float x, float y, const char* texto, float r, floa
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 }
 
-void DibujaArena::arena_barra_vida(float x, float y, float ancho, float alto, float fraccion, float r, float g, float b) {
-    glColor3f(0.2f, 0.2f, 0.2f);
+void DibujaArena::arena_barra_vida(float x, float y, float ancho, float alto, float fraccion, bool invertir) {
+    // COLOR DINÁMICO según fracción de vida
+    float r, g, b;
+    if (fraccion > 0.6f) {
+        // Verde → Amarillo  (de 1.0 a 0.6)
+        float t = (fraccion - 0.6f) / 0.4f;   // 1 en llena, 0 en 60%
+        r = 1.0f - t;   // sube el rojo
+        g = 0.82f;
+        b = 0.1f;
+    }
+    else if (fraccion > 0.3f) {
+        // Amarillo → Naranja  (de 0.6 a 0.3)
+        float t = (fraccion - 0.3f) / 0.3f;
+        r = 1.0f;
+        g = 0.82f * t;
+        b = 0.0f;
+    }
+    else {
+        // Naranja → Rojo  (de 0.3 a 0.0)
+        r = 1.0f;
+        g = 0.0f;
+        b = 0.0f;
+    }
+
+    // FONDO OSCURO
+    glColor3f(0.15f, 0.15f, 0.15f);
     glBegin(GL_QUADS);
-    glVertex2f(x, y); glVertex2f(x + ancho, y);
+    glVertex2f(x, y);        glVertex2f(x + ancho, y);
     glVertex2f(x + ancho, y + alto); glVertex2f(x, y + alto);
     glEnd();
 
+    // RELLENO (orientación según jugador)
+    float xIni, xFin;
+    if (!invertir) {
+        xIni = x;
+        xFin = x + ancho * fraccion;
+    }
+    else {
+        xIni = x + ancho * (1.0f - fraccion);
+        xFin = x + ancho;
+    }
+
     glColor3f(r, g, b);
     glBegin(GL_QUADS);
-    glVertex2f(x, y); glVertex2f(x + ancho * fraccion, y);
-    glVertex2f(x + ancho * fraccion, y + alto); glVertex2f(x, y + alto);
+    glVertex2f(xIni, y);        glVertex2f(xFin, y);
+    glVertex2f(xFin, y + alto); glVertex2f(xIni, y + alto);
     glEnd();
 
+    // BORDE
     glColor3f(0.0f, 0.0f, 0.0f);
     glLineWidth(2.0f);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(x, y); glVertex2f(x + ancho, y);
+    glVertex2f(x, y);        glVertex2f(x + ancho, y);
     glVertex2f(x + ancho, y + alto); glVertex2f(x, y + alto);
     glEnd();
 }
@@ -467,16 +503,16 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
     float altoBarra = 18.0f;
     float margen = 20.0f;
 
-    // P1
+    // P1, hacia la derecha, no se invierte
     float fracP1 = arena.p1().vida() / arena.p1().vidaMax();
-    arena_barra_vida(margen, margen, anchoBarra, altoBarra, fracP1, 0.89f, 0.29f, 0.29f);
+    arena_barra_vida(margen, margen, anchoBarra, altoBarra, fracP1, false);
     std::string etiquetaP1 = arena.p1().nombre() + " - WASD + F";
     arena_texto(margen, margen + altoBarra + 16, etiquetaP1.c_str(), 1.0f, 1.0f, 1.0f);
 
-    // P2
+    // P2, hacia la izquierda, si se invierte
     float fracP2 = arena.p2().vida() / arena.p2().vidaMax();
     float xP2 = _anchoVentana - margen - anchoBarra;
-    arena_barra_vida(xP2, margen, anchoBarra, altoBarra, fracP2, 0.39f, 0.60f, 0.13f);
+    arena_barra_vida(xP2, margen, anchoBarra, altoBarra, fracP2, true);
     std::string etiquetaP2 = arena.p2().nombre() + (arena.iaActiva() ? "- IA" : "- Flechas + L ");
     arena_texto(xP2, margen + altoBarra + 16, etiquetaP2.c_str(), 1.0f, 1.0f, 1.0f);
 
