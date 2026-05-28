@@ -18,7 +18,7 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     case TipoPersonaje::GUARDIA_NEGRA:  
         return "imagenes\\guardia_negra.png";
     case TipoPersonaje::JINETE_BEREBER: 
-        return "imagenes\\JINETE_BEREBER_SI.png";
+        return "imagenes\\jinete_bereber.png";
     case TipoPersonaje::INFANTERIA:
         return "imagenes\\INFANTERIA_SISISI.png";
     case TipoPersonaje::INFILTRADO:
