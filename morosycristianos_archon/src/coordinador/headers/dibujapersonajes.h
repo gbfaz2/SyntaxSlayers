@@ -20,7 +20,8 @@ enum class TipoPersonaje {
     GHAZI,
     CABALLERIA_LIGERA,
     CABALLERIA_ACORAZADA,
-    TOTAL  // siempre al final, cuenta cuántos hay
+    ARQUERO_GHAZI,
+    TOTAL// siempre al final, cuenta cuántos hay
 };
 
 
