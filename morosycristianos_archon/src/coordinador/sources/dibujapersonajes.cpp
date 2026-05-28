@@ -50,6 +50,8 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
         return (bando == bando_rival) ? TipoPersonaje::EMIR : TipoPersonaje::REY;
     case pieza_cono:
         return TipoPersonaje::CABALLERIA_PESADA;
+    case pieza_cilindro:
+        return TipoPersonaje::BALLESTERO;
 
 
     default:                return TipoPersonaje::MILICIANO;

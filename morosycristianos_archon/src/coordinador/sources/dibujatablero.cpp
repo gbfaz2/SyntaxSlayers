@@ -493,9 +493,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
         // Para el emir: 
         if (casilla.bando != bando_local) {
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
             float px = (float)winX + size * 0.18f; //- size * 0.07f;
-            float py = (float)winY + size * 0.2f;
+            float py = (float)winY + size * 0.1f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -509,8 +509,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
             return;
         }
         else {
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
-            float px = (float)winX - size * 0.17f; //- size * 0.07f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.90f;
+            float px = (float)winX - size * 0.32f; //- size * 0.07f;
             float py = (float)winY + size * 0.1f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
@@ -579,9 +579,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
             return;
         }
         else {
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
-            float px = (float)winX - size * 0.17f; //- size * 0.07f;
-            float py = (float)winY + size * 0.1f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.98f;
+            float px = (float)winX - size * 0.23f; //- size * 0.07f;
+            float py = (float)winY + size * 0.05f;//- size * 0.05f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -624,9 +624,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.05f;
         float px = (float)winX + size * 0.2f;
-        float py = (float)winY + size * 0.10f;
+        float py = (float)winY; //+ size * 0.10f;
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
@@ -686,9 +686,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         // Para el bando andalusi, dibuja guardia negra:
         if (casilla.bando != bando_local) {
             //ajustes coordenadas
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
-            float px = (float)winX - size * 0.3f;
-            float py = (float)winY + size * 0.1f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.2f;
+            float px = (float)winX - size * 0.35f;
+            float py = (float)winY - size * 0.1f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -755,7 +755,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
         float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
-        float px = (float)winX - size * 0.3f;
+        float px = (float)winX - size * 0.15f;
         float py = (float)winY + size * 0.1f;
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
@@ -784,13 +784,61 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     case pieza_cilindro:
     {
-        GLUquadric* q = gluNewQuadric();
-        glTranslatef(0, 0, -escala * 0.5f);
-        gluCylinder(q, escala * 0.35f, escala * 0.35f, escala * 1.0f, 12, 1);
-        gluDisk(q, 0, escala * 0.35f, 12, 1);
-        glTranslatef(0, 0, escala * 1.0f);
-        gluDisk(q, 0, escala * 0.35f, 12, 1);
-        gluDeleteQuadric(q);
+      
+
+        //dibujo BALLESTERO
+        // Si bando musulman -> dibuja cilindro ( de momento)
+        if (casilla.bando != bando_local) {
+
+            GLUquadric* q = gluNewQuadric();
+            glTranslatef(0, 0, -escala * 0.5f);
+            gluCylinder(q, escala * 0.35f, escala * 0.35f, escala * 1.0f, 12, 1);
+            gluDisk(q, 0, escala * 0.35f, 12, 1);
+            glTranslatef(0, 0, escala * 1.0f);
+            gluDisk(q, 0, escala * 0.35f, 12, 1);
+            gluDeleteQuadric(q);
+
+            glPopMatrix();
+            return;
+        }
+
+
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        // Calculamos posición y tamaño en el plano 2D de la ventana
+        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
+        float px = (float)winX - size * 0.3f;
+        float py = (float)winY; // size * 0.1f;
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+        EstadoPersonaje estadoBallestero = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
+        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+            moviendo = true;
+            estadoBallestero = EstadoPersonaje::IDLE;
+        }
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+
+        // Dibujamos el miliciano usando su ID
+        _dibujador.dibujar(tipo, px, py, size,
+            EstadoPersonaje::IDLE, idAnim, false);
+        util_salir2D();
+        return;
+
+
     }
     break;
 
@@ -817,7 +865,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
         float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
-        float px = (float)winX - size * 0.3f;
+        float px = (float)winX - size * 0.45f;
         float py = (float)winY + size * 0.1f;
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
