@@ -21,8 +21,8 @@ enum class ResultadoCombate {
 class Arena 
 {
 	// Dimensiones del escenario
-	float _ancho{ 14.0f };
-	float _profundo{ 10.0f };
+	float _ancho{ 10.0f };
+	float _profundo{ 7.0f };
 
 	Combatiente _p1{ -4.0f, 0.0f, 0.0f, 0.89f, 0.29f, 0.29f }; // Posicion inicial y color de p1 (rojo)
 	Combatiente _p2{ 4.0f, 0.0f, 0.0f, 0.39f, 0.60f, 0.13f }; // Posicion inicial y color de p2 (verde)

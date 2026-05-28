@@ -21,8 +21,24 @@ Tablero::Tablero()
 	iniPiezas();
 	cout << "[Tablero]" << N << "x" << N << "creado." << endl;
 }
+
+Tablero::Tablero(const Tablero& otro)
+{
+	// COPIA LAS CASILLAS SIN COPIAR LOS PUNTEROS — LA IA NO NECESITA OBJETOS REALES
+	for (int f = 0; f < N; f++) {
+		for (int c = 0; c < N; c++) {
+			tablero[f][c].tipo = otro.tablero[f][c].tipo;
+			tablero[f][c].pieza = otro.tablero[f][c].pieza;
+			tablero[f][c].bando = otro.tablero[f][c].bando;
+			tablero[f][c].obj = otro.tablero[f][c].obj; // COPIA EL PUNTERO SIN DUPLICAR
+			_esCopia = true; // MARCA QUE ESTA INSTANCIA NO ES DUEÑA DE LAS PIEZAS
+		}
+	}
+}
+
 Tablero::~Tablero()
 {
+	if (_esCopia) return; // LA COPIA NO ES DUEÑA DE LAS PIEZAS
 	for (int f = 0; f < N; f++)
 		for (int c = 0; c < N; c++) {
 			delete tablero[f][c].obj;
@@ -76,8 +92,8 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	//poner(4, 0, pieza_esfera, bando_local, new Rey(Bando::CRISTIANO));
 	//poner(3, 0, pieza_dodecaedro, bando_local, new Infiltrado(Bando::CRISTIANO));
 	poner(5, 0, pieza_icosaedro, bando_local, new Almogavar(Bando::CRISTIANO));
-	poner(0, 0, pieza_tetraedro, bando_local, new CaballeriaLigera(Bando::CRISTIANO));
-	poner(8, 0, pieza_tetraedro, bando_local, new CaballeriaLigera(Bando::CRISTIANO));
+	//poner(0, 0, pieza_tetraedro, bando_local, new CaballeriaLigera(Bando::CRISTIANO));
+	//poner(8, 0, pieza_tetraedro, bando_local, new CaballeriaLigera(Bando::CRISTIANO));
 	//poner(1, 0, pieza_cubog, bando_local, new Infanteria(Bando::CRISTIANO));
 	//poner(7, 0, pieza_cubog, bando_local, new Infanteria(Bando::CRISTIANO));
 	//poner(2, 0, pieza_cono, bando_local, new CaballeriaPesada(Bando::CRISTIANO));
@@ -86,6 +102,19 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	//poner(8, 1, pieza_cilindro, bando_local, new Ballestero(Bando::CRISTIANO));
 	//for (int fila = 1; fila <= 7; fila++)
 		//poner(fila, 1, pieza_cubo_p, bando_local, new Miliciano(Bando::CRISTIANO));
+
+	int idCabLig = 0; // Contador de IDs para infiltrado
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* CabLig = new CaballeriaLigera(Bando::CRISTIANO);
+	CabLig->setIdAnimacion(idCabLig++);
+	poner(0, 0, pieza_tetraedro, bando_local, CabLig);
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* CabLig2 = new CaballeriaLigera(Bando::CRISTIANO);
+	CabLig2->setIdAnimacion(idCabLig++);
+	poner(8, 0, pieza_tetraedro, bando_local, CabLig2);
+
 
 	int idBall = 0; // Contador de IDs para infiltrado
 
@@ -98,8 +127,6 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	Pieza* Ballest = new Ballestero(Bando::CRISTIANO);
 	Ballest->setIdAnimacion(idBall++);
 	poner(8, 1, pieza_cilindro, bando_local, Ballest);
-
-
 
 
 	int idCab = 0; // Contador de IDs para infiltrado
@@ -165,11 +192,36 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	//poner(8, 8, pieza_tetraedro, bando_rival, new CaballeriaLigera(Bando::ANDALUSI));
 	//poner(1, 8, pieza_cubog, bando_rival, new Infanteria(Bando::ANDALUSI));
 	//poner(7, 8, pieza_cubog, bando_rival, new Infanteria(Bando::ANDALUSI));
-	poner(2, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
-	poner(6, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
+	//poner(2, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
+	//poner(6, 8, pieza_cono, bando_rival, new CaballeriaPesada(Bando::ANDALUSI));
 	poner(0, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
 	poner(8, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
 	
+	int idCabLige = 0; // Contador de IDs para infiltrado
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* CabPes = new CaballeriaPesada(Bando::ANDALUSI);
+	CabPes->setIdAnimacion(idCabLige++);
+	poner(2, 8, pieza_cono, bando_local, CabPes);
+
+	//asignar ID para caballero ligero de la fila 0
+	Pieza* CabPes2 = new CaballeriaPesada(Bando::ANDALUSI);
+	CabPes2->setIdAnimacion(idCabLige++);
+	poner(6, 8, pieza_cono, bando_local, CabPes2);
+
+
+
+
+	int idMilici = 0; //contador ID para milicianos
+
+
+	//asignamos ID para cada miliciano
+	for (int fila = 1; fila <= 7; fila++) {
+		Pieza* mRival = new Miliciano(Bando::ANDALUSI);
+		mRival->setIdAnimacion(idMiliciano); // Le damos ID 0, 1, 2...
+		idMiliciano++;
+		poner(fila, 7, pieza_cubo_p, bando_rival, mRival);
+	}
 
 
 	int idRey = 0; // Contador de IDs para infiltrado
@@ -438,4 +490,17 @@ Pieza* Tablero::crearPieza(TipoPieza tipo, BandoPieza bando)
 	case pieza_cubo_p:      return new Miliciano(b);
 	default:                return nullptr;
 	}
+}
+
+void Tablero::moverSinAnimacion(int fr, int fc, int tr, int tc)
+{
+	// IGUAL QUE muevePieza PERO SIN setPosicion — LA IA NO MUEVE OBJETOS REALES
+	tablero[tr][tc].pieza = tablero[fr][fc].pieza;
+	tablero[tr][tc].bando = tablero[fr][fc].bando;
+	tablero[tr][tc].obj = tablero[fr][fc].obj;
+	// SIN: tablero[tr][tc].obj->setPosicion(tr, tc);
+
+	tablero[fr][fc].pieza = pieza_nada;
+	tablero[fr][fc].bando = bando_nada;
+	tablero[fr][fc].obj = nullptr;
 }
