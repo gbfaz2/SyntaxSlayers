@@ -171,6 +171,17 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	poner(8, 7, pieza_cilindro, bando_rival, new Ballestero(Bando::ANDALUSI));
 	
 
+	int idMilici = 0; //contador ID para milicianos
+
+
+	//asignamos ID para cada miliciano
+	for (int fila = 1; fila <= 7; fila++) {
+		Pieza* mRival = new Miliciano(Bando::ANDALUSI);
+		mRival->setIdAnimacion(idMiliciano); // Le damos ID 0, 1, 2...
+		idMiliciano++;
+		poner(fila, 7, pieza_cubo_p, bando_rival, mRival);
+	}
+
 
 	int idRey = 0; // Contador de IDs para infiltrado
 

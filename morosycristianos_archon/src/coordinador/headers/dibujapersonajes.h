@@ -17,6 +17,7 @@ enum class TipoPersonaje {
     INFILTRADO,
     CABALLERIA_PESADA,
     BALLESTERO,
+    GHAZI,
     TOTAL  // siempre al final, cuenta cuántos hay
 };
 
