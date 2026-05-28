@@ -133,25 +133,14 @@ void Coordinador::dibuja()
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
 				_pDefensoraCombate = pTablerogl->getPiezaDefensora();
 
-				// EXTRAEMOS LAS PIEZAS PARA VER QUIÉN ES QUIÉN
-				Pieza* atac = _pAtacanteCombate;
-				Pieza* def = _pDefensoraCombate;
+				_filaAtacante = _pAtacanteCombate->getFila();
+				_colAtacante = _pAtacanteCombate->getColumna();
+				_filaDefensora = _pDefensoraCombate->getFila();
+				_colDefensora = _pDefensoraCombate->getColumna();
 
-				Pieza* pLocal = nullptr;
-				Pieza* pRival = nullptr;
-
-				// FILTRAMOS PARA QUE TU PIEZA (LOCAL) SEA SIEMPRE EL JUGADOR 1
-				if (atac->getBando() == Bando::CRISTIANO) {
-					pLocal = atac;   // TÚ ATACASTE
-					pRival = def;
-				}
-				else {
-					pLocal = def;    // LA IA TE ATACÓ, TÚ TE DEFIENDES
-					pRival = atac;
-				}
 
 				// INICIAMOS LA ARENA FORZANDO TU PIEZA AL PRIMER PUESTO DE CONTROLES
-				_arena.iniciarCombate(*pLocal, *pRival,
+				_arena.iniciarCombate(*_pAtacanteCombate, *_pDefensoraCombate,
 					configuracion.modo,
 					pTablerogl->getVentajaTerrenoCombate());
 

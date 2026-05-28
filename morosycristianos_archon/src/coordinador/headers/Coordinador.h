@@ -85,4 +85,7 @@ public:
 	bool _rankingGanaJ1{ true };
 
 	bool _necesitaRecargarGraficos{ false };
+
+	int _filaAtacante{ -1 }, _colAtacante{ -1 };
+	int _filaDefensora{ -1 }, _colDefensora{ -1 };
 };
