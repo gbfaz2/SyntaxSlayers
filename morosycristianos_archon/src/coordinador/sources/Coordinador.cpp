@@ -176,6 +176,7 @@ void Coordinador::dibuja()
 				ETSIDI::stopMusica();
 				ETSIDI::play("sonidos/sonido_combate_fight.wav");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
+				DibujaArena::resetFlash();
 				pTablerogl->limpiarCombate();
 				pTablerogl->gestorTurnos.terminarTurno();
 				estado = EstadoJuego::ARENA;
