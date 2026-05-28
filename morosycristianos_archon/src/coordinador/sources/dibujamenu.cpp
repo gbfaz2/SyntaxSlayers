@@ -6,6 +6,8 @@
 #include "ETSIDI.h" // NECESARIO PARA TEXTURAS Y TEXTOS
 #include <algorithm>
 
+static ETSIDI::SpriteSequence* s_gifInicio = nullptr;
+
 // PANTALLA INTRO
 
 void DibujaMenu::intro_dibujar(PantallaIntro& p, int ancho, int alto) {
@@ -19,27 +21,37 @@ void DibujaMenu::intro_dibujar(PantallaIntro& p, int ancho, int alto) {
 
     util_entrar2D(ancho, alto);
 
-    // FONDO NEGRO
-    menu_rectangulo(0, 0, (float)ancho, (float)alto, 0, 0, 0, 1.0f);
+    // GIF DE FONDO
+    if (!s_gifInicio) {
+        s_gifInicio = new ETSIDI::SpriteSequence(
+            "imagenes\\GIFT_GOT.png",
+            5, 9, 80, true, 0, 0, 480, 269
+        );
+    }
+    
+    //PARA CENTRAR EL GIFT DEL INICIO
+    s_gifInicio->setPos(200.0f, 50.0f); //He cambiado los valores 20 veces y asi se ve mejor, asi q asi se queda
+    s_gifInicio->setSize((float)ancho * 1.15f, (float)alto * 1.15f);
+
+    s_gifInicio->loop();
+    s_gifInicio->draw();
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     // TÍTULO PRINCIPAL
-    std::string titulo = "MOROS Y CRISTIANOS";
-    int tw = glutBitmapLength((unsigned char*)GLUT_BITMAP_TIMES_ROMAN_24,
-        (const unsigned char*)titulo.c_str());
-    glColor4f(0.85f * alfa, 0.70f * alfa, 0.10f * alfa, alfa);
-    glRasterPos2f(ancho / 2.0f - tw / 2.0f, alto / 2.0f + 30);
-    for (char c : titulo) glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, c);
+    ETSIDI::setFont("fuentes\\ALGER.TTF", 40);
+    ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, alfa);
+    ETSIDI::printxy("MOROS Y CRISTIANOS", ancho / 2 - 270, alto / 2 + 30);
 
     // SUBTÍTULO
-    std::string sub = "La Reconquista";
-    int sw = glutBitmapLength((unsigned char*)GLUT_BITMAP_HELVETICA_18,
-        (const unsigned char*)sub.c_str());
-    glColor4f(0.85f * alfa, 0.85f * alfa, 0.85f * alfa, alfa);
-    glRasterPos2f(ancho / 2.0f - sw / 2.0f, alto / 2.0f);
-    for (char c : sub) glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, c);
+    ETSIDI::setFont("fuentes\\BRUSHSCI.TTF", 28);
+    ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, alfa);
+    ETSIDI::printxy("La Reconquista", ancho / 2 - 110, alto / 2 - 20);
 
     // TEXTO SKIP (PARPADEA EN LA SEGUNDA MITAD)
     if (p.m_fotograma > PantallaIntro::DURACION / 2) {
