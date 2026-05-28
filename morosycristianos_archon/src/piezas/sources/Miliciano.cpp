@@ -4,7 +4,7 @@
 //inicializa con los constructores de las clases de las que viene
 Miliciano::Miliciano(Bando bando)
     : PiezaTerrestre(
-        bando == Bando::CRISTIANO ? "Miliciano" : "Ghazí", //nombre pieza
+        bando == Bando::CRISTIANO ? "Miliciano" : "Ghazi", //nombre pieza
         //dependiendo si es cristiano, miliciano, si no, ghazí (musulman)
         bando,
         30,   // vidaMax   — poca vida, es carnaza del frente

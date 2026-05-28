@@ -822,6 +822,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         EstadoPersonaje estadoBallestero = EstadoPersonaje::IDLE;
         bool moviendo = false;
 
+
         // Si la pieza se está moviendo, cambiamos su estado a ATTACK
         if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
             moviendo = true;
@@ -846,50 +847,72 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
     case pieza_cubo_p:
     {
 
-        //dibujo MILICIANO
-        // Solo dibujamos para el bando cristiano
-        if (casilla.bando != bando_local) {
-            glutSolidCube(escala * 0.75f);
-            glPopMatrix();
-            return;
-        }
-
-
         // Capturamos matrices ANTES de salir del contexto 3D
         GLdouble winX, winY, winZ;
-        
+
         // Usamos la posición z donde están las piezas
         gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
 
         glPopMatrix();
 
         // Calculamos posición y tamaño en el plano 2D de la ventana
-        float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
-        float px = (float)winX - size * 0.45f;
-        float py = (float)winY + size * 0.1f;
+
 
         util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
         glDisable(GL_LIGHTING);
 
-        
-
-        EstadoPersonaje estadoMiliciano = EstadoPersonaje::IDLE;
-        bool moviendo = false;
-
-        // Si la pieza se está moviendo, cambiamos su estado a ATTACK
-        if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
-            moviendo = true;
-            estadoMiliciano = EstadoPersonaje::IDLE;
-        }
 
         // Le pedimos a la pieza su ID único en lugar de usar un contador global
         TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
         int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
 
-        // Dibujamos el miliciano usando su ID
-        _dibujador.dibujar(tipo, px, py, size,
-            EstadoPersonaje::IDLE, idAnim, false);
-        util_salir2D();
+        bool voltear = (casilla.bando == bando_rival);
+
+
+        EstadoPersonaje estadoMiliciano = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+
+        // Para ghazi: 
+        if (casilla.bando != bando_local) {
+            // Calculamos posición y tamaño en el plano 2D de la ventana
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
+            float px = (float)winX + size * 0.35f;
+            float py = (float)winY + size * 0.2f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoMiliciano = EstadoPersonaje::IDLE;
+
+            }
+
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoMiliciano, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+        }
+        //para emir
+        else {
+
+            // Calculamos posición y tamaño en el plano 2D de la ventana
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.8f;
+            float px = (float)winX - size * 0.3f;
+            float py = (float)winY + size * 0.1f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoMiliciano = EstadoPersonaje::IDLE;
+
+            }
+
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoMiliciano, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+
+        }
+        //dibujo MILICIANO
+       
         return;
     }
     break;
