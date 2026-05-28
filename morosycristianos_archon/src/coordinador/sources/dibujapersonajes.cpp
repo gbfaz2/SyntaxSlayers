@@ -16,7 +16,7 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     case TipoPersonaje::ASESINO_DE_ELITE:     
         return "imagenes\\ASESINO_DEF.png";
     case TipoPersonaje::GUARDIA_NEGRA:  
-        return "imagenes\\GUARDIANEGRA.png";
+        return "imagenes\\guardia_negra.png";
     case TipoPersonaje::JINETE_BEREBER: 
         return "imagenes\\JINETE_BEREBER_SI.png";
     case TipoPersonaje::INFANTERIA:
@@ -29,6 +29,10 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
             return "imagenes\\BALLESTERO_SISISI.png";
     case TipoPersonaje::GHAZI:
         return "imagenes\\GHAZI.png";
+    case TipoPersonaje::CABALLERIA_ACORAZADA:
+        return "imagenes\\caballeria_acorazada.png";
+    case TipoPersonaje::CABALLERIA_LIGERA:
+        return "imagenes\\caballeria_ligera.png";
 
     default:                            
         return "";
@@ -47,11 +51,11 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
     case pieza_cubog:       
         return (bando == bando_rival) ? TipoPersonaje::GUARDIA_NEGRA : TipoPersonaje::INFANTERIA;
     case pieza_tetraedro:   
-        return TipoPersonaje::JINETE_BEREBER;
+        return (bando == bando_rival) ? TipoPersonaje::JINETE_BEREBER : TipoPersonaje::CABALLERIA_LIGERA;
     case pieza_esfera:
         return (bando == bando_rival) ? TipoPersonaje::EMIR : TipoPersonaje::REY;
     case pieza_cono:
-        return TipoPersonaje::CABALLERIA_PESADA;
+        return (bando == bando_rival) ? TipoPersonaje::CABALLERIA_ACORAZADA : TipoPersonaje::CABALLERIA_PESADA;
     case pieza_cilindro:
         return TipoPersonaje::BALLESTERO;
 

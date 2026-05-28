@@ -18,6 +18,8 @@ enum class TipoPersonaje {
     CABALLERIA_PESADA,
     BALLESTERO,
     GHAZI,
+    CABALLERIA_LIGERA,
+    CABALLERIA_ACORAZADA,
     TOTAL  // siempre al final, cuenta cuántos hay
 };
 
