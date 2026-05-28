@@ -1,8 +1,8 @@
 modo 1
 batalla 2
 turno 1
-tiempo 86.0659
-numturno 15
+tiempo 80.9117
+numturno 1
 j1 sofia
 j2 sofi
 0 0 4 1 50
@@ -19,7 +19,7 @@ j2 sofi
 3 1 8 1 30
 3 5 1 2 80
 4 0 1 1 80
-4 4 2 2 38
+4 4 2 2 40
 4 8 8 1 30
 5 0 3 1 60
 5 5 7 2 20

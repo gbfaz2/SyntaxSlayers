@@ -62,6 +62,7 @@ public:
 	int      _altoVentana{ 600 };
 	
 	float _tiempoGuardado{ 0.0f };
+	float _tiempoVictoria{ 10.0f };
 
 	void inicializa();
 	void dibuja();
