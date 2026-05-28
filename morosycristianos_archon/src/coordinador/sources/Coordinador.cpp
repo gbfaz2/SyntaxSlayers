@@ -12,8 +12,12 @@
 #include "GestorRanking.h"
 
 
+
 Coordinador::~Coordinador()
 {
+	// ESPERA A QUE EL HILO DE IA TERMINE ANTES DE DESTRUIR TODO
+	if (_hiloIA.joinable()) _hiloIA.join();
+	
 	delete pTablerogl; // LIBERA TABLEROGL
 	delete pTablero;   // LIBERA TABLERO
 	delete pGestorHechizos;
@@ -54,6 +58,7 @@ void Coordinador::dibuja()
 		if (menuPrincipal.terminado()) {
 			EstadoJuego siguiente = menuPrincipal.siguienteEstado();
 			configuracion = menuPrincipal.getConfiguracion();
+			_minimax.setDificultad(configuracion.dificultad);
 
 			if (siguiente == EstadoJuego::FINAL) exit(0);
 
@@ -99,6 +104,27 @@ void Coordinador::dibuja()
 
 	case EstadoJuego::TABLERO:
 		if (pTablerogl) {
+			// NO DIBUJA EL TABLERO MIENTRAS LA IA ESTÁ CALCULANDO (evita corrupción visual)
+			if (_iaCalculando) {
+				// DIBUJA EL TABLERO NORMAL PERO SIN ACTUALIZARLO (solo lectura visual)
+				DibujaTablero::tablero_dibujar(*pTablerogl);
+
+				// OVERLAY SEMITRANSPARENTE CON MENSAJE
+				Dibuja::util_entrar2D(_anchoVentana, _altoVentana);
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				glColor4f(0.0f, 0.0f, 0.0f, 0.45f); // OSCURECE UN POCO
+				glBegin(GL_QUADS);
+				glVertex2f(0, 0); glVertex2f(_anchoVentana, 0);
+				glVertex2f(_anchoVentana, _altoVentana); glVertex2f(0, _altoVentana);
+				glEnd();
+				glDisable(GL_BLEND);
+				ETSIDI::setFont("fuentes/ARIALNBI.ttf", 28);
+				ETSIDI::setTextColor(0.9f, 0.8f, 0.2f, 1.0f);
+				ETSIDI::printxy("La IA esta pensando...", _anchoVentana / 2 - 160, _altoVentana / 2);
+				Dibuja::util_salir2D();
+				break;
+			}
 
 			if (!_necesitaRecargarGraficos && _framesCargando <= 0)
 			{
@@ -126,10 +152,9 @@ void Coordinador::dibuja()
 			}
 			DibujaTablero::tablero_dibujar(*pTablerogl);
 
+			
 			if (pTablerogl->huboColision())
 			{
-				std::cout << "[DEBUG] Colision detectada, entrando a arena\n"; // DEBUG
-
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
 				_pDefensoraCombate = pTablerogl->getPiezaDefensora();
 
@@ -138,19 +163,21 @@ void Coordinador::dibuja()
 				_filaDefensora = _pDefensoraCombate->getFila();
 				_colDefensora = _pDefensoraCombate->getColumna();
 
+				// P1 = SIEMPRE EL JUGADOR LOCAL, P2 = SIEMPRE EL RIVAL/IA
+				bool atacanteEsLocal = (_pAtacanteCombate->getBando() == Bando::CRISTIANO);
 
-				// INICIAMOS LA ARENA FORZANDO TU PIEZA AL PRIMER PUESTO DE CONTROLES
-				_arena.iniciarCombate(*_pAtacanteCombate, *_pDefensoraCombate,
+				Pieza* pJugador = atacanteEsLocal ? _pAtacanteCombate : _pDefensoraCombate;
+				Pieza* pRival = atacanteEsLocal ? _pDefensoraCombate : _pAtacanteCombate;
+
+				_arena.iniciarCombate(*pJugador, *pRival,
 					configuracion.modo,
 					pTablerogl->getVentajaTerrenoCombate());
 
-				ETSIDI::stopMusica(); // DEJA DE SONAR MUSICA TABLERO
+				ETSIDI::stopMusica();
 				ETSIDI::play("sonidos/sonido_combate_fight.wav");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				pTablerogl->limpiarCombate();
-
 				pTablerogl->gestorTurnos.terminarTurno();
-
 				estado = EstadoJuego::ARENA;
 			}
 		}
@@ -346,6 +373,7 @@ void Coordinador::mueve(double dt)
 		if (_framesCargando > 0) _framesCargando--;
 
 		// IA: MUEVE SOLO UNA VEZ POR TURNO
+		// IA: MUEVE SOLO UNA VEZ POR TURNO
 		if (configuracion.modo == ModoJuego::JVIA &&
 			pTablerogl->gestorTurnos.getBandoActual() == bando_rival &&
 			!pTablerogl->huboColision() &&
@@ -353,29 +381,51 @@ void Coordinador::mueve(double dt)
 
 			int turnoActual = pTablerogl->gestorTurnos.getNumeroTurno();
 			if (turnoActual != _turnoAnteriorIA) {
-				_turnoAnteriorIA = turnoActual;    // MARCA TURNO ACTUAL
-				_tiempoEsperaIA = 3.0f;           // ESPERA 3 SEGUNDOS
+				_turnoAnteriorIA = turnoActual;
+				_tiempoEsperaIA = 3.0f; // ESPERA 3 SEGUNDOS ANTES DE PENSAR
 			}
 
 			if (_tiempoEsperaIA > 0.0f) {
-				_tiempoEsperaIA -= (float)dt;      // DESCUENTA TIEMPO
+				_tiempoEsperaIA -= (float)dt; // CUENTA ATRÁS VISUAL
 			}
-			else {
-				_iaYaMovio = true;                 // BLOQUEA PARA NO REPETIR
+			else if (!_iaCalculando) {
+				// ── LANZA EL CÁLCULO EN UN HILO PARA NO CONGELAR EL JUEGO ──
+				_iaCalculando = true;
+				_iaTerminada = false;
 
-				MovimientoIA mov = _minimax.calcularMejorMovimiento(*pTablero);
+				if (_hiloIA.joinable()) _hiloIA.join(); // LIMPIA HILO ANTERIOR
+
+				_hiloIA = std::thread([this]() {
+					// ESTE CÓDIGO CORRE EN PARALELO — EL RENDER SIGUE FUNCIONANDO
+					MovimientoIA mov = _minimax.calcularMejorMovimiento(*pTablero);
+					{
+						std::lock_guard<std::mutex> lock(_mutexMovIA);
+						_movimientoIA = mov; // GUARDA EL RESULTADO DE FORMA SEGURA
+					}
+					_iaTerminada = true; // SEÑALIZA QUE YA TERMINÓ
+					});
+			}
+
+			// CUANDO EL HILO TERMINA, RECOGE EL RESULTADO Y EJECUTA EL MOVIMIENTO
+			if (_iaCalculando && _iaTerminada) {
+				if (_hiloIA.joinable()) _hiloIA.join();
+
+				MovimientoIA mov;
+				{
+					std::lock_guard<std::mutex> lock(_mutexMovIA);
+					mov = _movimientoIA; // LEE EL MOVIMIENTO CALCULADO
+				}
+
+				_iaCalculando = false;
+				_iaYaMovio = true;
 
 				if (mov.filaOrigen >= 0) {
-
-					// AHORA SOLO CANCELAMOS SI INTENTA PISAR A UN ALIADO (BANDO_RIVAL)
+					// CANCELA SI LA IA INTENTA PISAR A UN ALIADO (no debería pasar, pero por seguridad)
 					if (pTablero->getCasilla(mov.filaDestino, mov.colDestino).bando == bando_rival) {
-
 						std::cout << "[IA] Destino ocupado por aliado, cancelando.\n";
-						_iaYaMovio = false;        // PERMITE RECALCULAR
-
+						_iaYaMovio = false;
 					}
-					else { // SI ESTÁ VACÍA O HAY UN ENEMIGO, ATACAMOS
-
+					else {
 						Pieza* pieza = pTablero->getCasilla(mov.filaOrigen, mov.colOrigen).obj;
 						if (pieza) {
 							std::cout << "[IA] Moviendo (" << mov.filaOrigen << ","
@@ -387,24 +437,34 @@ void Coordinador::mueve(double dt)
 							pTablerogl->fromCol = mov.colOrigen;
 							pTablerogl->fromBando = bando_rival;
 							pTablerogl->piezaSeleccionada = true;
-							pTablerogl->trySelectorMove(bando_rival);        // EJECUTA EL MOVIMIENTO O COMBATE
+							pTablerogl->trySelectorMove(bando_rival); // EJECUTA EL MOVIMIENTO
 						}
 					}
 				}
 			}
 		}
 
-		// RESETEA CUANDO ES TURNO LOCAL
+		// RESETEA CUANDO VUELVE EL TURNO LOCAL
 		if (pTablerogl->gestorTurnos.getBandoActual() == bando_local) {
-			_iaYaMovio = false;                    // PERMITE QUE IA MUEVA EN PRÓXIMO TURNO
+			_iaYaMovio = false;
+			_iaCalculando = false; // POR SI EL TURNO CAMBIA MIENTRAS LA IA AÚN CALCULA
 		}
 
 		// ACTUALIZA TURNOS Y ANIMACIONES
 		// SI NO HAY COLISIÓN Y LA PIEZA NO ESTÁ VIAJANDO GRÁFICAMENTE, AVANZAMOS EL TURNO DE VERDAD
 		if (!pTablerogl->huboColision() && !pTablerogl->piezaSeleccionada) {
 
-			// SOLO AVANZA EL TIEMPO/TURNO SI EL TABLERO ESTÁ TOTALMENTE QUIETO
-			pTablerogl->gestorTurnos.update(dt);
+			// BLOQUEA INPUT DEL JUGADOR DURANTE EL TURNO DE LA IA
+			if (configuracion.modo == ModoJuego::JVIA &&
+				pTablerogl->gestorTurnos.getBandoActual() == bando_rival) {
+				pTablerogl->piezaSeleccionada = false; // CANCELA CUALQUIER SELECCIÓN DEL JUGADOR
+			}
+
+			// ACTUALIZA TURNOS Y ANIMACIONES
+			// SI NO HAY COLISIÓN Y LA PIEZA NO ESTÁ VIAJANDO GRÁFICAMENTE, AVANZAMOS EL TURNO DE VERDAD
+			if (!pTablerogl->huboColision() && !pTablerogl->piezaSeleccionada) {
+				pTablerogl->gestorTurnos.update(dt);
+			}
 
 		}
 		// EL TABLEROGL Y LOS MENSAJES SÍ DEBEN ACTUALIZARSE SIEMPRE PARA DIBUJAR LA ANIMACIÓN CORRECTAMENTE
