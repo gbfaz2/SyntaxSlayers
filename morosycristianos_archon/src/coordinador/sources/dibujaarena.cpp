@@ -524,15 +524,19 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
     // P1, hacia la derecha, no se invierte
     float fracP1 = arena.p1().vida() / arena.p1().vidaMax();
     arena_barra_vida(margen, margen, anchoBarra, altoBarra, fracP1, false);
+    float fracCD1 = std::min(arena.p1().tiempoDesdeUltimoAtaque() / arena.p1().cooldownAtaque(), 1.0f);
+    arena_cooldown(margen, margen + altoBarra + 2.0f, anchoBarra, fracCD1);
     std::string etiquetaP1 = arena.p1().nombre() + " - WASD + F";
-    arena_texto(margen, margen + altoBarra + 16, etiquetaP1.c_str(), 1.0f, 1.0f, 1.0f);
+    arena_texto(margen, margen + altoBarra + 38.0f, etiquetaP1.c_str(), 1.0f, 1.0f, 1.0f);
 
     // P2, hacia la izquierda, si se invierte
     float fracP2 = arena.p2().vida() / arena.p2().vidaMax();
     float xP2 = _anchoVentana - margen - anchoBarra;
     arena_barra_vida(xP2, margen, anchoBarra, altoBarra, fracP2, true);
+    float fracCD2 = std::min(arena.p2().tiempoDesdeUltimoAtaque() / arena.p2().cooldownAtaque(), 1.0f);
+    arena_cooldown(xP2, margen + altoBarra + 2.0f, anchoBarra, fracCD2);
     std::string etiquetaP2 = arena.p2().nombre() + (arena.iaActiva() ? "- IA" : "- Flechas + L ");
-    arena_texto(xP2, margen + altoBarra + 16, etiquetaP2.c_str(), 1.0f, 1.0f, 1.0f);
+    arena_texto(xP2, margen + altoBarra + 38.0f, etiquetaP2.c_str(), 1.0f, 1.0f, 1.0f);
 
     // MENSAJE DE FIN
     if (arena.resultado() != ResultadoCombate::EnCurso) {
@@ -652,4 +656,53 @@ void DibujaArena::arena_update(float dt)
         if (_tiempoFlash >= _duracionFlash)
             _flashActivo = false;
     }
+}
+
+void DibujaArena::arena_cooldown(float x, float y, float ancho, float fraccion)
+{
+    bool listo = fraccion >= 1.0f;
+    float alto = 10.0f;
+
+    // COLOR: rojo recargando → dorado listo
+    float r, g, b;
+    if (listo) {
+        r = 0.85f; g = 0.70f; b = 0.25f; // DORADO
+    }
+    else {
+        r = 0.55f; g = 0.10f; b = 0.10f; // ROJO OSCURO
+    }
+
+    // FONDO
+    glColor3f(0.1f, 0.1f, 0.1f);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + ancho, y);
+    glVertex2f(x + ancho, y + alto);
+    glVertex2f(x, y + alto);
+    glEnd();
+
+    // RELLENO
+    float relleno = std::min(fraccion, 1.0f) * ancho;
+    glColor3f(r, g, b);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + relleno, y);
+    glVertex2f(x + relleno, y + alto);
+    glVertex2f(x, y + alto);
+    glEnd();
+
+    // BORDE
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y);
+    glVertex2f(x + ancho, y);
+    glVertex2f(x + ancho, y + alto);
+    glVertex2f(x, y + alto);
+    glEnd();
+
+    // ICONO de espadas y texto
+    const char* label = listo ? " LISTO " : "recargando...";
+    float xLabel = x + ancho * 0.5f - strlen(label) * 4.0f;
+    arena_texto(xLabel, y - 4.0f, label, r, g, b);
 }

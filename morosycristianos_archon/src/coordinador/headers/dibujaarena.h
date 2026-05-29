@@ -38,4 +38,7 @@ public:
 
     static void arena_flash_inicio(Batalla batalla);
     static void resetFlash() { _tiempoFlash = 0.0f; _flashActivo = true; }
+
+    // Para el cooldown
+    static void arena_cooldown(float x, float y, float ancho, float fraccion);
 };
