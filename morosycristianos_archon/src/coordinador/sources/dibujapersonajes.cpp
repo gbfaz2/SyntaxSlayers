@@ -127,7 +127,7 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
 
         else {
             // Bucle frames 0-2 para andar
-            if (currentFrame < baseFrame || currentFrame >= baseFrame + 2)
+            if (currentFrame < baseFrame || currentFrame >= baseFrame + 3)
                 _sprites[t][indice]->setState(0, false);
             else 
                 _sprites[t][indice]->pause(false);//vuelve a animar
