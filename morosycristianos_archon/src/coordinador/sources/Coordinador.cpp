@@ -11,8 +11,6 @@
 #include "tablerogl.h"
 #include "GestorRanking.h"
 
-
-
 Coordinador::~Coordinador()
 {
 	// ESPERA A QUE EL HILO DE IA TERMINE ANTES DE DESTRUIR TODO
@@ -556,7 +554,6 @@ void Coordinador::mueve(double dt)
 	}
 }
 
-
 void Coordinador::raton(int boton, int state, int x, int y)
 {
 	bool pulsado = (state == GLUT_DOWN);
@@ -586,7 +583,8 @@ void Coordinador::raton(int boton, int state, int x, int y)
 		gestorInput.ratonGuardando(x, y, true, estado);
 		break;
 	case EstadoJuego::AYUDA:
-		if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1)
+		gestorInput.ratonAyuda(boton, state, x, y, estado);
+		/*if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1)
 		{
 			// Detecta clic en botones Controles/Normas
 			int gy = _altoVentana - y;
@@ -600,7 +598,8 @@ void Coordinador::raton(int boton, int state, int x, int y)
 					_ayudaSeccion = i;
 				}
 			}
-		}
+		}*/
+		
 		break;
 
 	default: break;
@@ -615,6 +614,8 @@ void Coordinador::ratonMovido(int x, int y)
 	gestorInput.ratonMovidoMenu(x, y, estado, menuPrincipal);
 	if (estado == EstadoJuego::GUARDANDO)
 		gestorInput.ratonMovidoGuardando(x, y); // HOVER PAUSA
+	else if (estado == EstadoJuego::AYUDA)
+		gestorInput.ratonMovidoAyuda(x, y, estado); // HOVER AYUDA
 	glutPostRedisplay();
 }
 

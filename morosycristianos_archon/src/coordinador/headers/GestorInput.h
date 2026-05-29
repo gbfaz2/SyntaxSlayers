@@ -50,4 +50,6 @@ public:
     void ratonTablero(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
     void ratonGuardando(int x, int y, bool click, EstadoJuego& estado); // RATÓN MENÚ PAUSA
     void ratonMovidoGuardando(int x, int y); // HOVER MENÚ PAUSA
+    void ratonAyuda(int boton, int state, int x, int y, EstadoJuego& estado);
+    void ratonMovidoAyuda(int x, int y, EstadoJuego& estado);
 };

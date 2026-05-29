@@ -845,3 +845,55 @@ void GestorInput::ratonMovidoGuardando(int x, int y)
         }
     }
 }
+
+void GestorInput::ratonMovidoAyuda(int mx, int my, EstadoJuego& estado)
+{
+    // Solo actuamos si estamos en la pantalla de ayuda seleccionando sección
+    if (estado != EstadoJuego::AYUDA || _coordinador->_ayudaSeccion != -1) return;
+
+    int gy = _alto - my; // Invertimos la Y para que coincida con OpenGL
+    float aw = 300, ah = 52, sep = 40;
+    float sy = _alto / 2.0f + 10;
+
+    // Coordenadas exactas de los botones según dibujamenu.cpp
+    float btnControlesX = _ancho / 2.0f - aw - sep / 2.0f;
+    float btnNormasX = _ancho / 2.0f + sep / 2.0f;
+
+    // ¿El ratón está sobre "Controles"?
+    if (mx >= btnControlesX && mx <= btnControlesX + aw && gy >= sy && gy <= sy + ah) {
+        _coordinador->_ayudaSeleccion = 0;
+    }
+    // ¿El ratón está sobre "Normas"?
+    else if (mx >= btnNormasX && mx <= btnNormasX + aw && gy >= sy && gy <= sy + ah) {
+        _coordinador->_ayudaSeleccion = 1;
+    }
+}
+
+void GestorInput::ratonAyuda(int boton, int state, int x, int y, EstadoJuego& estado)
+{
+    if (estado != EstadoJuego::AYUDA || state != GLUT_DOWN || boton != GLUT_LEFT_BUTTON) return;
+
+    if (_coordinador->_ayudaSeccion == -1) {
+        // Actualizamos la selección por si el "hover" no se registró a tiempo
+        ratonMovidoAyuda(x, y, estado);
+
+        int gy = _alto - y;
+        float aw = 300, ah = 52, sep = 40;
+        float sy = _alto / 2.0f + 10;
+        float btnControlesX = _ancho / 2.0f - aw - sep / 2.0f;
+        float btnNormasX = _ancho / 2.0f + sep / 2.0f;
+
+        // Solo confirmamos (simulando un ENTER) si hemos hecho clic REALMENTE dentro del botón
+        if ((x >= btnControlesX && x <= btnControlesX + aw && gy >= sy && gy <= sy + ah) ||
+            (x >= btnNormasX && x <= btnNormasX + aw && gy >= sy && gy <= sy + ah)) {
+
+            unsigned char fakeKey = 13; // 13 es el código de ENTER
+            teclaAyuda(fakeKey, estado);
+        }
+    }
+    else {
+        // Si ya estás dentro leyendo las normas o controles, hacer clic en la pantalla te devuelve atrás
+        unsigned char fakeKey = 27; // 27 es el código de ESC
+        teclaAyuda(fakeKey, estado);
+    }
+}
