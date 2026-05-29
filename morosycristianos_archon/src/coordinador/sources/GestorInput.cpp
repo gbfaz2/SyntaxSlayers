@@ -20,11 +20,11 @@ void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
 
     case EstadoJuego::MENU:
         if (key == 27) { // ESC: RETROCEDE UN PASO
-<<<<<<< Updated upstream
-            if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; menu.m_nombreActual = ""; }
-=======
+
+            //if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; menu.m_nombreActual = ""; }
+
             if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; }
->>>>>>> Stashed changes
+
             else { menu.m_siguiente = EstadoJuego::INTRO; menu.m_terminado = true; }
             return;
         }
@@ -108,85 +108,90 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
 
     switch (estado) {
     case EstadoJuego::INTRO:
-        intro.saltar(); // CLIC SALTA LA INTRO
+        intro.saltar();
         break;
     case EstadoJuego::DESTINO:
-        destino.avanzar(); // CLIC AVANZA LA PANTALLA
+        destino.avanzar();
         break;
     case EstadoJuego::MENU:
         if (boton == GLUT_LEFT_BUTTON) {
-<<<<<<< Updated upstream
-            ratonMovidoMenu(x, y, estado, menu); // ACTUALIZA SELECCION
-            menu.confirmar();                    // CONFIRMA SELECCION
-=======
+
             ratonMovidoMenu(x, y, estado, menu); // ACTUALIZA SELECCIÓN / BANDO
+
+            int gy = _alto - y; // Invertimos la Y para que cuadre con OpenGL
+
+            // Helper para comprobar si el ratón está dentro de un botón
+            auto enCaja = [&](float bx, float by, float baw, float bah) {
+                return x >= bx && x <= bx + baw && gy >= by && gy <= by + bah;
+                };
 
             // EN EL PASO 2 (CONFIGURACIÓN) SOLO CONFIRMAMOS SI SE CLICA "CONTINUAR"
             if (menu.m_paso == 2) {
-                int gy = _alto - y;
                 float mitad = _ancho / 2.0f;
                 float colW = mitad * 0.80f;
                 float col1X = mitad - colW - 20;
                 float col2X = mitad + 20;
-                float campoY = _alto * 0.72f - 50;
-                float bandoY = campoY - 80;
+                float topY = _alto * 0.60f;
+                float campoY = topY - 50.0f;
+                float bandoY = campoY - 80.0f;
                 float bw = (colW - 10) / 2.0f;
 
-                
+                // Focos nombre
+                if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0;
+                if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1;
 
-                // CLIC EN CAJA NOMBRE J1 → FOCO A J1
-                if (x >= col1X && x <= col1X + colW && gy >= campoY - 30 && gy <= campoY + 6)
-                    menu.m_focoNombre = 0;
-                   
-                // CLIC EN CAJA NOMBRE J2 → FOCO A J2
-                if (x >= col2X && x <= col2X + colW && gy >= campoY - 30 && gy <= campoY + 6)
-                    menu.m_focoNombre = 1;
-
-                // CLIC EN BANDOS J1 (SOLO JVJ)
+                // BANDOS (Solo si es modo JvJ)
                 if (menu.m_cfg.modo == ModoJuego::JVJ) {
-                    if (x >= col1X && x <= col1X + bw && gy >= bandoY - 30 && gy <= bandoY + 6)
-                        menu.m_cfg.bando = BandoJugador::CRISTIANO;
-                    if (x >= col1X + bw + 10 && x <= col1X + colW && gy >= bandoY - 30 && gy <= bandoY + 6)
-                        menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                    if (enCaja(col1X, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::CRISTIANO;
+                    if (enCaja(col1X + bw + 10, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                    if (enCaja(col2X, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                    if (enCaja(col2X + bw + 10, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::CRISTIANO;
                 }
 
-                // CLIC EN DIFICULTAD (SOLO JVIA)
                 if (menu.m_cfg.modo == ModoJuego::JVIA) {
-                    NivelDificultad niveles[] = {
-                        NivelDificultad::FACIL, NivelDificultad::MEDIO, NivelDificultad::DIFICIL
-                    };
+                    NivelDificultad nivelesEnum[] = { NivelDificultad::FACIL, NivelDificultad::MEDIO, NivelDificultad::DIFICIL };
                     for (int i = 0; i < 3; i++) {
                         float dy = campoY - 30 - i * 46;
-                        if (x >= col2X && x <= col2X + colW && gy >= dy && gy <= dy + 36)
-                            menu.m_cfg.dificultad = niveles[i];
+                        if (enCaja(col2X, dy, colW, 36)) menu.m_cfg.dificultad = nivelesEnum[i];
                     }
                 }
 
-                // CLIC EN BANDO J2 TAMBIÉN CAMBIA EL BANDO DE J1 (AL OPUESTO)
-                if (menu.m_cfg.modo == ModoJuego::JVJ) {
-                    float bandoY2 = campoY - 80;
-                    float bw = (colW - 10) / 2.0f;
-
-                    // CLIC EN CRISTIANO J2 → J1 SE PONE ANDALUSÍ
-                    if (x >= col2X && x <= col2X + bw && gy >= bandoY2 - 30 && gy <= bandoY2 + 6)
-                        menu.m_cfg.bando = BandoJugador::MUSULMAN;
-
-                    // CLIC EN ANDALUSÍ J2 → J1 SE PONE CRISTIANO
-                    if (x >= col2X + bw + 10 && x <= col2X + colW && gy >= bandoY2 - 30 && gy <= bandoY2 + 6)
-                        menu.m_cfg.bando = BandoJugador::CRISTIANO;
-                }
-
-                // CLIC EN BOTÓN CONTINUAR
+                // Continuar
                 float btnW = 200, btnH = 40;
-                float btnX = _ancho / 2.0f - btnW / 2.0f;
-                float btnY = _alto * 0.12f;
-                if (x >= btnX && x <= btnX + btnW && gy >= btnY && gy <= btnY + btnH)
-                    menu.confirmar();
+                float btnX = _ancho / 2.0f - btnW / 2.0f, btnY = _alto * 0.12f;
+                if (enCaja(btnX, btnY, btnW, btnH)) menu.confirmar();
             }
             else {
-                menu.confirmar(); // EN EL RESTO DE PASOS, CUALQUIER CLIC CONFIRMA
+                bool clicValido = false; // 
+
+                if (menu.m_paso == 0) {
+                    float aw = 240, ah = 52, sep = 12;
+                    float sx = _ancho * 0.08f, sy = _alto / 2.0f + 110;
+                    for (int i = 0; i < 5; i++)
+                        if (enCaja(sx, sy - i * (ah + sep), aw, ah)) {
+                            menu.m_seleccion = i;
+                            clicValido = true; // Solo si está dentro de una caja, es válido
+                        }
+                }
+                else if (menu.m_paso == 1) {
+                    float aw = 260, ah = 55, sep = 30, sy = _alto / 2.0f + 10;
+                    if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) { menu.m_seleccion = 0; clicValido = true; }
+                    if (enCaja(_ancho / 2.0f + sep / 2.0f, sy, aw, ah)) { menu.m_seleccion = 1; clicValido = true; }
+                }
+                else if (menu.m_paso == 3) {
+                    float aw = 360, ah = 48, sep = 12, sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 90;
+                    for (int i = 0; i < 4; i++)
+                        if (enCaja(sx, sy - i * (ah + sep), aw, ah)) { menu.m_seleccion = i; clicValido = true; }
+                }
+                else if (menu.m_paso == 4) {
+                    float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 70;
+                    if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) { menu.m_seleccion = 0; clicValido = true; }
+                    if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah)) { menu.m_seleccion = 1; clicValido = true; }
+                }
+
+                // Solo avanza de pantalla si el click fue dentro de un botón real
+                if (clicValido) menu.confirmar();
             }
->>>>>>> Stashed changes
         }
         break;
     default:
@@ -204,14 +209,13 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
         };
 
     if (menu.m_paso == 0) {
-        // MENÚ PRINCIPAL — opciones a la izquierda
-        float aw = 300, ah = 44, sep = 10;
-        float sx = _ancho * 0.08f, sy = _alto / 2.0f + 100;
+        // Sincronizamos con las cajas más estrechitas y altas
+        float aw = 240, ah = 52, sep = 12;
+        float sx = _ancho * 0.08f, sy = _alto / 2.0f + 110;
         for (int i = 0; i < 5; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
     else if (menu.m_paso == 1) {
-        // ELEGIR MODO — dos botones centrados
         float aw = 260, ah = 55, sep = 30;
         float sy = _alto / 2.0f + 10;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) menu.m_seleccion = 0;
@@ -222,29 +226,22 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
         float colW = mitad * 0.80f;
         float col1X = mitad - colW - 20;
         float col2X = mitad + 20;
-        float campoY = _alto * 0.72f - 50;
+        float topY = _alto * 0.60f; // 🔥 Mismo valor
+        float campoY = topY - 50.0f;
 
-        // HOVER SOBRE CAJAS DE TEXTO — CAMBIA FOCO AL PASAR EL RATÓN
         if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0;
         if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1;
-        // BANDOS Y DIFICULTAD NO SE TOCAN AQUÍ — SOLO AL HACER CLIC
     }
     else if (menu.m_paso == 3) {
-        // SELECCIÓN BATALLA
         float aw = 360, ah = 48, sep = 12;
         float sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 90;
         for (int i = 0; i < 4; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
     else if (menu.m_paso == 4) {
-        // CONFIRMAR
         float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 70;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) menu.m_seleccion = 0;
-<<<<<<< Updated upstream
         if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah))      menu.m_seleccion = 1;
-=======
-        if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah)) menu.m_seleccion = 1;
->>>>>>> Stashed changes
     }
 }
 

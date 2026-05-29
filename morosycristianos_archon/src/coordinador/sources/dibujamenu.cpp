@@ -1,4 +1,3 @@
-// Autor: Ines Alcérreca Sánchez
 // DibujaMenu — todo el dibujo de PantallaIntro y MenuPrincipal
 
 #include "dibujamenu.h"
@@ -136,20 +135,32 @@ void DibujaMenu::menu_textoCentrado(const std::string& texto,
 }
 
 // BOTÓN CON ESQUINAS REDONDEADAS — dorado al hacer hover
-void DibujaMenu::menu_opcion(const std::string& texto,
-    float x, float y, float ancho, float alto, bool seleccionada) {
+void DibujaMenu::menu_opcion(const std::string& texto, float x, float y, float ancho, float alto, bool seleccionada) {
+
+
+    if (seleccionada) {
+        // Fondo: Un marrón cálido que recuerda a la madera iluminada
+        dibujarRectRedondeado(x, y, ancho, alto, 10.0f, 0.45f, 0.25f, 0.10f, 0.60f);
+        // Borde: Dorado brillante (como las letras de tu título principal)
+        dibujarBordeRedondeado(x, y, ancho, alto, 10.0f, 0.85f, 0.70f, 0.10f, 7.0f);
+    }
+    else {
+        // Fondo: Marrón súper oscuro (casi negro pero con base madera)
+        dibujarRectRedondeado(x, y, ancho, alto, 10.0f, 0.15f, 0.08f, 0.05f, 0.65f);
+        // Borde: EL COLOR EXACTO DEL MARCO DE MADERA DE TU IMAGEN
+        dibujarBordeRedondeado(x, y, ancho, alto, 10.0f, 0.50f, 0.28f, 0.14f, 7.0f);
+    }
+
+    // LETRA MÁS GRANDE (De 16 pasamos a 20) para que el botón se sienta más grande
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 20);
+
     if (seleccionada)
-        dibujarRectRedondeado(x, y, ancho, alto, 10.0f, 0.85f, 0.70f, 0.10f, 0.25f);
+        ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f); // Texto amarillo neón
     else
-        dibujarRectRedondeado(x, y, ancho, alto, 10.0f, 0.08f, 0.08f, 0.08f, 0.50f);
-    if (seleccionada)
-        dibujarBordeRedondeado(x, y, ancho, alto, 10.0f, 0.95f, 0.80f, 0.10f, 2.0f);
-    else
-        dibujarBordeRedondeado(x, y, ancho, alto, 10.0f, 0.50f, 0.50f, 0.50f, 1.0f);
-    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 16);
-    if (seleccionada) ETSIDI::setTextColor(1.0f, 1.0f, 0.55f, 1.0f);
-    else              ETSIDI::setTextColor(0.80f, 0.80f, 0.80f, 1.0f);
-    ETSIDI::printxy(texto.c_str(), (int)(x + 12), (int)(y + alto / 2.0f - 8));
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f); // Texto blanco puro
+
+    // Ajuste fino para centrar la letra con el nuevo tamaño
+    ETSIDI::printxy(texto.c_str(), (int)(x + 15), (int)(y + alto / 2.0f - 8));
 }
 
 // ============================================================
@@ -159,23 +170,17 @@ void DibujaMenu::menu_opcion(const std::string& texto,
 void DibujaMenu::menu_dibujar(MenuPrincipal& m, int ancho, int alto) {
     m.m_fotograma++;
     util_entrar2D(ancho, alto);
-    menu_fondo(ancho, alto);
+
+    // AQUÍ PASAMOS 'm' PARA PODER CAMBIAR ENTRE FONDOS
+    menu_fondo(m, ancho, alto);
+
     menu_titulo(m, ancho, alto);
     switch (m.m_paso) {
-<<<<<<< Updated upstream
-    case 0: menu_paso0(m, ancho, alto); break;
-    case 1: menu_paso_nombre(m, ancho, alto); break;
-    case 2: menu_paso1(m, ancho, alto); break;
-    case 3: menu_paso_nombre(m, ancho, alto); break;
-    case 4: menu_paso2(m, ancho, alto); break;
-    case 5: menu_paso3(m, ancho, alto); break;
-=======
     case 0: menu_paso0(m, ancho, alto); break; // MENÚ PRINCIPAL
     case 1: menu_paso1(m, ancho, alto); break; // ELEGIR MODO
     case 2: menu_paso2(m, ancho, alto); break; // CONFIGURACIÓN
     case 3: menu_paso3(m, ancho, alto); break; // BATALLA
     case 4: menu_paso4(m, ancho, alto); break; // CONFIRMAR
->>>>>>> Stashed changes
     }
     menu_pie(ancho, alto);
     util_salir2D();
@@ -185,33 +190,41 @@ void DibujaMenu::menu_dibujar(MenuPrincipal& m, int ancho, int alto) {
 // FONDO Y TÍTULO
 // ============================================================
 
-void DibujaMenu::menu_fondo(int ancho, int alto) {
-    // DEGRADADO: AZUL OSCURO ARRIBA → ROJO OSCURO ABAJO
+void DibujaMenu::menu_fondo(MenuPrincipal& m, int ancho, int alto) {
+    // TEXTURA DINÁMICA DEPENDIENDO DEL PASO
+    unsigned int texturaId = 0;
+    if (m.m_paso == 0) {
+        texturaId = ETSIDI::getTexture("imagenes/FONDO_MENU.png").id;
+    }
+    else {
+        texturaId = ETSIDI::getTexture("imagenes/FONDO_MENU_BORROSO.png").id;
+    }
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texturaId);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // Color neutro
+
     glBegin(GL_QUADS);
-    glColor3f(0.05f, 0.05f, 0.22f); glVertex2f(0, alto);
-    glColor3f(0.05f, 0.05f, 0.22f); glVertex2f(ancho, alto);
-    glColor3f(0.18f, 0.03f, 0.03f); glVertex2f(ancho, 0);
-    glColor3f(0.18f, 0.03f, 0.03f); glVertex2f(0, 0);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, (float)alto);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)ancho, (float)alto);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)ancho, 0.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
     glEnd();
+
+    glDisable(GL_TEXTURE_2D);
 }
 
 void DibujaMenu::menu_titulo(MenuPrincipal& m, int ancho, int alto) {
     float brillo = (sinf(m.m_fotograma * 0.04f) + 1.0f) * 0.15f;
     // TÍTULO CON FUENTE ALGER Y BRILLO ANIMADO
-    ETSIDI::setFont("fuentes\\ALGER.TTF", 36);
+    ETSIDI::setFont("fuentes\\ALGER.TTF", 45);
     ETSIDI::setTextColor(0.85f + brillo, 0.70f + brillo * 0.5f, 0.10f, 1.0f);
-    ETSIDI::printxy("+ MOROS Y CRISTIANOS )", ancho / 2 - 280, alto - 60);
+    ETSIDI::printxy("MOROS Y CRISTIANOS", ancho / 2 - 280, alto - 100);
     // SUBTÍTULO
-    ETSIDI::setFont("fuentes\\BRUSHSCI.TTF", 20);
+    ETSIDI::setFont("fuentes\\BRUSHSCI.TTF", 30);
     ETSIDI::setTextColor(0.75f, 0.75f, 0.75f, 1.0f);
-    ETSIDI::printxy("- La Reconquista -", ancho / 2 - 100, alto - 95);
-    // LÍNEA DECORATIVA DORADA
-    glLineWidth(1.5f);
-    glColor3f(0.85f + brillo, 0.70f, 0.10f);
-    glBegin(GL_LINES);
-    glVertex2f(ancho * 0.05f, alto - 108); glVertex2f(ancho * 0.95f, alto - 108);
-    glEnd();
-    glLineWidth(1.0f);
+    ETSIDI::printxy("- La Reconquista -", ancho / 2 - 130, alto - 140);
+    
 }
 
 void DibujaMenu::menu_pie(int ancho, int alto) {
@@ -220,76 +233,15 @@ void DibujaMenu::menu_pie(int ancho, int alto) {
         ancho / 2.0f, 12, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
 }
 
-<<<<<<< Updated upstream
-
-// ══════════════════════════════════════════════════════════════════════════
-// PRIMITIVAS COMPARTIDAS DEL MENÚ
-// ══════════════════════════════════════════════════════════════════════════
-
-void DibujaMenu::menu_paso_nombre(MenuPrincipal& m, int ancho, int alto) {
-    bool esJ2 = (m.m_paso == 3);
-    std::string prompt = esJ2
-        ? "Introduce tu nombre, Jugador 2:"
-        : "Introduce tu nombre, Jugador 1:";
-
-    menu_textoCentrado(prompt, ancho / 2.0f, alto / 2.0f + 80,
-        0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
-
-    float bw = 400, bh = 50;
-    float bx = ancho / 2.0f - bw / 2.0f;
-    float by = alto / 2.0f - bh / 2.0f;
-    menu_rectangulo(bx, by, bw, bh, 0.08f, 0.08f, 0.08f, 0.70f);
-    menu_borde(bx, by, bw, bh, 0.85f, 0.70f, 0.10f, 2.0f);
-
-    std::string texto = m.m_nombreActual;
-    if ((m.m_fotograma / 30) % 2 == 0) texto += "_";
-    menu_texto(texto, bx + 12, by + bh / 2.0f - 6,
-        1.0f, 1.0f, 1.0f, GLUT_BITMAP_HELVETICA_18);
-
-    menu_textoCentrado("Pulsa ENTER para confirmar",
-        ancho / 2.0f, alto / 2.0f - 70,
-        0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
-}
-
-void DibujaMenu::menu_texto(const std::string& texto,
-    float x, float y,
-    float r, float g, float b, void* fuente) {
-    if (!fuente) fuente = GLUT_BITMAP_HELVETICA_18;
-    glColor3f(r, g, b);
-    glRasterPos2f(x, y);
-    for (char c : texto) glutBitmapCharacter(fuente, c);
-}
-
-void DibujaMenu::menu_textoCentrado(const std::string& texto,
-    float cx, float y,
-    float r, float g, float b, void* fuente) {
-    if (!fuente) fuente = GLUT_BITMAP_HELVETICA_18;
-    int ancho = glutBitmapLength((unsigned char*)fuente,
-        (const unsigned char*)texto.c_str());
-    menu_texto(texto, cx - ancho / 2.0f, y, r, g, b, fuente);
-}
-
-void DibujaMenu::menu_rectangulo(float x, float y,
-    float ancho, float alto,
-    float r, float g, float b, float alfa) {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(r, g, b, alfa);
-    glBegin(GL_QUADS);
-    glVertex2f(x, y);
-    glVertex2f(x + ancho, y);
-    glVertex2f(x + ancho, y + alto);
-    glVertex2f(x, y + alto);
-=======
 // ============================================================
 // PASO 0 — MENÚ PRINCIPAL
-// Opciones a la izquierda, derecha reservada para imagen futura
+// Opciones a la izquierda, derecha reservada para imagen
 // ============================================================
 
 void DibujaMenu::menu_paso0(MenuPrincipal& m, int ancho, int alto) {
-    float aw = 300, ah = 44, sep = 10;
-    float sx = ancho * 0.08f;      // PEGADO A LA IZQUIERDA
-    float sy = alto / 2.0f + 100; // CENTRADAS VERTICALMENTE
+    float aw = 240, ah = 52, sep = 12;
+    float sx = ancho * 0.08f;      // Pegadito a la izquierda
+    float sy = alto / 2.0f + 110;  // Un pelín más arriba para que respire
 
     const char* opciones[] = {
         "  Cargar Partida",
@@ -303,19 +255,10 @@ void DibujaMenu::menu_paso0(MenuPrincipal& m, int ancho, int alto) {
 
     // AVISO SI NO HAY PARTIDA AL SELECCIONAR "CARGAR"
     if (m.m_seleccion == 0 && !GestorPartida::hayPartidaGuardada()) {
-        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
-        ETSIDI::setTextColor(0.9f, 0.3f, 0.3f, 1.0f);
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14); // Un poquito más visible
+        ETSIDI::setTextColor(1.0f, 0.3f, 0.3f, 1.0f); // Rojo más brillante
         ETSIDI::printxy("No hay partida guardada", (int)sx, (int)(sy + 22));
     }
-
-    // LÍNEA VERTICAL SEPARADORA
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.85f, 0.70f, 0.10f, 0.3f); glLineWidth(1.0f);
-    glBegin(GL_LINES);
-    glVertex2f(ancho * 0.42f, alto * 0.15f); glVertex2f(ancho * 0.42f, alto * 0.85f);
->>>>>>> Stashed changes
-    glEnd();
-    glDisable(GL_BLEND);
 }
 
 // ============================================================
@@ -324,18 +267,15 @@ void DibujaMenu::menu_paso0(MenuPrincipal& m, int ancho, int alto) {
 
 void DibujaMenu::menu_paso1(MenuPrincipal& m, int ancho, int alto) {
     menu_textoCentrado("Selecciona el modo de juego:",
-        ancho / 2.0f, alto - 130, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
-    float aw = 260, ah = 55, sep = 30;
+        ancho / 2.0f, alto - 200, 0.95f, 0.90f, 0.80f, GLUT_BITMAP_HELVETICA_12);
+    float aw = 300, ah = 52, sep = 40;
     float sy = alto / 2.0f + 10;
-    menu_opcion("  Jugador vs Jugador", ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah, m.m_seleccion == 0);
-    menu_opcion("  Jugador vs IA", ancho / 2.0f + sep / 2.0f, sy, aw, ah, m.m_seleccion == 1);
+    menu_opcion("Jugador vs Jugador", ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah, m.m_seleccion == 0);
+    menu_opcion("Jugador vs IA", ancho / 2.0f + sep / 2.0f, sy, aw, ah, m.m_seleccion == 1);
 }
 
 // ============================================================
 // PASO 2 — CONFIGURACIÓN UNIFICADA (dos columnas)
-//
-// JVJ:  J1 (nombre + bando) | J2 (nombre + bando opuesto auto)
-// JVIA: J1 (nombre + cristiano fijo) | IA (selección dificultad)
 // ============================================================
 
 void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
@@ -344,13 +284,13 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
     float colW = mitad * 0.80f;
     float col1X = mitad - colW - 20;
     float col2X = mitad + 20;
-    float topY = alto * 0.72f;
+    float topY = alto * 0.60f;
 
     // LÍNEA CENTRAL SEPARADORA
     glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0.85f, 0.70f, 0.10f, 0.6f); glLineWidth(2.0f);
+    glColor4f(0.85f, 0.70f, 0.10f, 0.6f); glLineWidth(2.5f);
     glBegin(GL_LINES);
-    glVertex2f(mitad, alto * 0.20f); glVertex2f(mitad, alto * 0.85f);
+    glVertex2f(mitad, alto * 0.30f); glVertex2f(mitad, alto * 0.70f);
     glEnd();
     glDisable(GL_BLEND);
 
@@ -383,7 +323,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
     if (focoJ1 && (m.m_fotograma / 30) % 2 == 0) txtJ1 += "_";
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 16);
     ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
-    ETSIDI::printxy(txtJ1.c_str(), (int)(col1X + 8), (int)(campoY - 12));
+    ETSIDI::printxy(txtJ1.c_str(), (int)(col1X + 8), (int)(campoY - 17));
 
     // ── BANDO J1 ─────────────────────────────────────────────
     float bandoY = campoY - 80;
@@ -396,7 +336,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
         dibujarBordeRedondeado(col1X, bandoY - 30, colW, 36, 6.0f, 1.0f, 0.50f, 0.10f, 2.5f);
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 15);
         ETSIDI::setTextColor(1.0f, 0.90f, 0.65f, 1.0f);
-        ETSIDI::printxy("CRISTIANO (fijo)", (int)(col1X + 8), (int)(bandoY - 12));
+        ETSIDI::printxy("CRISTIANO", (int)(col1X + 8), (int)(bandoY - 17));
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 12);
         ETSIDI::setTextColor(0.85f, 0.75f, 0.45f, 1.0f); // VISIBLE
         ETSIDI::printxy("La IA siempre juega como Andalusi", (int)col1X, (int)(bandoY - 52));
@@ -414,7 +354,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
             crisSel ? 2.5f : 1.5f);
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
         ETSIDI::setTextColor(crisSel ? 1.0f : 0.75f, crisSel ? 0.90f : 0.75f, crisSel ? 0.65f : 0.75f, 1.0f);
-        ETSIDI::printxy("Cristiano", (int)(col1X + 6), (int)(bandoY - 12));
+        ETSIDI::printxy("Cristiano", (int)(col1X + 6), (int)(bandoY - 17));
 
         // BOTÓN ANDALUSÍ J1
         float bx2 = col1X + bw + 10;
@@ -427,7 +367,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
             andSel ? 2.5f : 1.5f);
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
         ETSIDI::setTextColor(andSel ? 0.85f : 0.75f, andSel ? 0.65f : 0.75f, andSel ? 1.0f : 0.75f, 1.0f);
-        ETSIDI::printxy("Andalusi", (int)(bx2 + 6), (int)(bandoY - 12));
+        ETSIDI::printxy("Andalusi", (int)(bx2 + 6), (int)(bandoY - 17));
     }
 
     // ── COLUMNA DERECHA ───────────────────────────────────────
@@ -437,9 +377,9 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
         ETSIDI::printxy("Dificultad:", (int)col2X, (int)(campoY + 20));
 
         const char* niveles[] = {
-            "  Facil   - IA principiante",
-            "  Medio   - IA equilibrada",
-            "  Dificil - IA avanzada"
+            "  Facil: IA principiante",
+            "  Medio: IA equilibrada",
+            "  Dificil: IA avanzada"
         };
         NivelDificultad nivelesEnum[] = {
             NivelDificultad::FACIL, NivelDificultad::MEDIO, NivelDificultad::DIFICIL
@@ -472,7 +412,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
         if (focoJ2 && (m.m_fotograma / 30) % 2 == 0) txtJ2 += "_";
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 16);
         ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
-        ETSIDI::printxy(txtJ2.c_str(), (int)(col2X + 8), (int)(campoY - 12));
+        ETSIDI::printxy(txtJ2.c_str(), (int)(col2X + 8), (int)(campoY - 17));
 
         float bandoY2 = campoY - 80;
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
@@ -491,7 +431,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
             j2Cris ? 2.5f : 1.5f);
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
         ETSIDI::setTextColor(j2Cris ? 1.0f : 0.75f, j2Cris ? 0.90f : 0.75f, j2Cris ? 0.65f : 0.75f, 1.0f);
-        ETSIDI::printxy("Cristiano", (int)(col2X + 6), (int)(bandoY2 - 12));
+        ETSIDI::printxy("Cristiano", (int)(col2X + 6), (int)(bandoY2 - 17));
 
         // BOTÓN ANDALUSÍ J2
         float bx2 = col2X + bw + 10;
@@ -504,7 +444,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
             j2And ? 2.5f : 1.5f);
         ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
         ETSIDI::setTextColor(j2And ? 0.85f : 0.75f, j2And ? 0.65f : 0.75f, j2And ? 1.0f : 0.75f, 1.0f);
-        ETSIDI::printxy("Andalusi", (int)(bx2 + 6), (int)(bandoY2 - 12));
+        ETSIDI::printxy("Andalusi", (int)(bx2 + 6), (int)(bandoY2 - 17));
     }
 
     // BOTÓN CONTINUAR
@@ -517,10 +457,10 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
     if (m.m_cfg.modo == ModoJuego::JVJ)
         menu_textoCentrado("TAB: cambiar campo de texto   |   Flechas: cambiar bando",
-            ancho / 2.0f, alto * 0.07f, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
+            ancho / 2.0f, alto * 0.07f, 0.95f, 0.90f, 0.80f, GLUT_BITMAP_HELVETICA_12);
     else
         menu_textoCentrado("Escribe tu nombre y pulsa ENTER para continuar",
-            ancho / 2.0f, alto * 0.07f, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
+            ancho / 2.0f, alto * 0.07f, 0.95f, 0.90f, 0.80f, GLUT_BITMAP_HELVETICA_12);
 }
 
 // ============================================================
@@ -702,7 +642,18 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto,
     const std::vector<EntradaRanking>& ranking, bool ganaJ1)
 {
     util_entrar2D(ancho, alto);
-    menu_fondo(ancho, alto);
+
+    // Si necesitas el fondo del caballero aquí también, tendríamos que pasar 'm'
+    // Pero si quieres mantener el que tenías, llamamos al degradado antiguo que ahora 
+    // tendrías que definir de nuevo, O hacer un glClearColor. 
+    // Para simplificar, he puesto un cuadrado negro rápido, o pudes poner la imagen.
+    glBegin(GL_QUADS);
+    glColor3f(0.05f, 0.05f, 0.05f); glVertex2f(0, alto);
+    glColor3f(0.05f, 0.05f, 0.05f); glVertex2f(ancho, alto);
+    glColor3f(0.05f, 0.05f, 0.05f); glVertex2f(ancho, 0);
+    glColor3f(0.05f, 0.05f, 0.05f); glVertex2f(0, 0);
+    glEnd();
+
     menu_textoCentrado("RESULTADO FINAL", ancho / 2.0f, alto - 80, 0.85f, 0.70f, 0.10f, GLUT_BITMAP_TIMES_ROMAN_24);
     menu_textoCentrado("Batalla: " + batalla, ancho / 2.0f, alto - 130, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
     menu_textoCentrado("Turnos: " + std::to_string(turnos), ancho / 2.0f, alto - 155, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
