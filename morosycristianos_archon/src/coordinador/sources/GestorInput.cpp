@@ -719,9 +719,11 @@ void GestorInput::teclaArena(unsigned char key)
     // ESC SIEMPRE VUELVE AL MENU
     if (key == 27) {
         //ETSIDI::stopMusica();
-        ETSIDI::playMusica("sonidos/MENU.mp3", true);
+        
         _coordinador->reiniciarTablero();
         _coordinador->estado = EstadoJuego::GUARDANDO;
+        ETSIDI::playMusica("sonidos/MENU.mp3", true);
+        
         return;
     }
 
@@ -872,6 +874,7 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             _coordinador->estado = EstadoJuego::MENU;
             break;
         case 2:  // AYUDA
+            ETSIDI::playMusica("sonidos/AYUDA.mp3", false);
             _coordinador->estado = EstadoJuego::AYUDA;
             break;
         case 3: // SALIR SIN GUARDAR
@@ -882,7 +885,10 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             break;
         }
     }
-    if (key == 27) estado = EstadoJuego::TABLERO;  // ESC SIEMPRE CONTINÚA
+    if (key == 27) {
+
+        estado = EstadoJuego::TABLERO;
+    }// ESC SIEMPRE CONTINÚA
 }
 
 void GestorInput::ratonGuardando(int x, int y, bool click, EstadoJuego& estado)
