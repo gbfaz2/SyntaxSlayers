@@ -147,7 +147,7 @@ void Coordinador::dibuja()
 				DibujaTablero::tablero_init(); // Recarga texturas
 				_necesitaRecargarGraficos = false;
 			}
-
+			
 			if (!_necesitaRecargarGraficos && _framesCargando <= 0)
 			{
 				ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
@@ -621,7 +621,6 @@ void Coordinador::mueve(double dt)
 	}
 
 	if (estado == EstadoJuego::GUARDANDO) {
-		//_tiempoGuardado -= (float)dt;
 		if (_tiempoGuardado <= 0.0f) {
 			//ETSIDI::stopMusica();
 			reiniciarTablero();
