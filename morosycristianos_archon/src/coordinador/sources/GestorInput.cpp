@@ -687,9 +687,8 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ESC SIEMPRE VUELVE AL MENU
     if (key == 27) {
-        ETSIDI::stopMusica();
-        _coordinador->reiniciarTablero();
-        _coordinador->estado = EstadoJuego::MENU;
+        _coordinador->estado = EstadoJuego::GUARDANDO;
+        _coordinador->_tiempoGuardado = 10.0f;
         return;
     }
 

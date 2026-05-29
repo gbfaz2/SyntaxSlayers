@@ -1,20 +1,16 @@
-﻿// Autor: Ines Alcérreca Sánchez (Modificado por Gabri)
-// Pantallas E_INTRO y E_MENU
-
-#pragma once
+﻿#pragma once
 #include "estadojuego.h"
 #include <string>
 #include "dibuja.h"
 #include "GestorPartida.h"
 
-class DibujaMenu; // DECLARACION ANTICIPADA PARA LA AMISTAD
+class DibujaMenu;
 
 class PantallaIntro {
     int  m_fotograma;
     bool m_terminado;
-    static const int DURACION = 420; // ~7 segundos a 60fps
+    static const int DURACION = 420;
     friend class DibujaMenu;
-
 public:
     PantallaIntro();
     void saltar();
@@ -23,15 +19,15 @@ public:
 };
 
 class MenuPrincipal {
-    int m_paso;
-    int m_seleccion;
-    int m_fotograma;
-    bool m_terminado;
-    EstadoJuego m_siguiente;
+    int           m_paso;
+    int           m_seleccion;
+    int           m_fotograma;
+    bool          m_terminado;
+    EstadoJuego   m_siguiente;
     ConfigPartida m_cfg;
-    std::string m_nombreJ1Actual;
-    std::string m_nombreJ2Actual;
-    int m_focoNombre;
+    std::string   m_nombreJ1Actual;
+    std::string   m_nombreJ2Actual;
+    int           m_focoNombre;
 
     void confirmar();
     void teclaTextoJ1(unsigned char key);
@@ -47,12 +43,6 @@ class MenuPrincipal {
         default: return 0;
         }
     }
-
-    static void menu_paso0(MenuPrincipal& m, int ancho, int alto);
-    static void menu_paso1(MenuPrincipal& m, int ancho, int alto);
-    static void menu_paso2(MenuPrincipal& m, int ancho, int alto);
-    static void menu_paso3(MenuPrincipal& m, int ancho, int alto);
-    static void menu_paso4(MenuPrincipal& m, int ancho, int alto);
 
 public:
     MenuPrincipal();
