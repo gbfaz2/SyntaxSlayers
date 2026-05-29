@@ -1,6 +1,3 @@
-// AUTOR: GABRIELA FERNÁNDEZ ÁLVAREZ
-// DIBUJAMENU — TODO EL DIBUJO DE PANTALLAINTRO Y MENUPRINCIPAL
-
 #pragma once
 #include "dibuja.h"
 #include "menu.h"
@@ -11,26 +8,22 @@
 class PantallaDestino;
 
 class DibujaMenu : public Dibuja {
+    // ⬇️ ATENCIÓN AQUÍ: Pasamos MenuPrincipal& m para leer el estado del menú
+    // Así sabremos si cargar la imagen normal o la blurreada
+    static void menu_fondo(MenuPrincipal& m, int ancho, int alto);
 
-    // SECCIONES DEL MENÚ — PRIVADAS, SOLO USA menu_dibujar
-    static void menu_fondo(int ancho, int alto);
     static void menu_titulo(MenuPrincipal& m, int ancho, int alto);
     static void menu_pie(int ancho, int alto);
-    static void menu_paso0(MenuPrincipal& m, int ancho, int alto); // MENÚ PRINCIPAL
-    static void menu_paso1(MenuPrincipal& m, int ancho, int alto); // ELEGIR MODO
-    static void menu_paso2(MenuPrincipal& m, int ancho, int alto); // CONFIGURACIÓN
-    static void menu_paso3(MenuPrincipal& m, int ancho, int alto); // BATALLA
-    static void menu_paso4(MenuPrincipal& m, int ancho, int alto); // CONFIRMAR
+    static void menu_paso0(MenuPrincipal& m, int ancho, int alto);
+    static void menu_paso1(MenuPrincipal& m, int ancho, int alto);
+    static void menu_paso2(MenuPrincipal& m, int ancho, int alto);
+    static void menu_paso3(MenuPrincipal& m, int ancho, int alto);
+    static void menu_paso4(MenuPrincipal& m, int ancho, int alto);
 
-    // PRIMITIVAS COMPARTIDAS
-    static void menu_texto(const std::string& texto,
-        float x, float y, float r, float g, float b, void* fuente = nullptr);
-    static void menu_textoCentrado(const std::string& texto,
-        float cx, float y, float r, float g, float b, void* fuente = nullptr);
-    static void menu_opcion(const std::string& texto,
-        float x, float y, float ancho, float alto, bool seleccionada);
+    static void menu_texto(const std::string& texto, float x, float y, float r, float g, float b, void* fuente = nullptr);
+    static void menu_textoCentrado(const std::string& texto, float cx, float y, float r, float g, float b, void* fuente = nullptr);
+    static void menu_opcion(const std::string& texto, float x, float y, float ancho, float alto, bool seleccionada);
 
-    // FUNCIONES DE DIBUJO DE DESTINO
     static void destino_fondo(const PantallaDestino& p, int ancho, int alto);
     static void destino_efectos(const PantallaDestino& p, int ancho, int alto);
     static void destino_particulas(const PantallaDestino& p);
@@ -40,18 +33,8 @@ class DibujaMenu : public Dibuja {
 public:
     static void intro_dibujar(PantallaIntro& p, int ancho, int alto);
     static void menu_dibujar(MenuPrincipal& m, int ancho, int alto);
-<<<<<<< Updated upstream
-
-    // ── PANTALLA DESTINO
-=======
->>>>>>> Stashed changes
     static void destino_dibujar(PantallaDestino& p, int ancho, int alto);
-    static void ranking_dibujar(int ancho, int alto,
-        const std::string& ganador, const std::string& batalla,
-        int turnos, int piezasLocal, int piezasRival,
-        const std::vector<EntradaRanking>& ranking, bool ganaJ1);
-    static void victoria_dibujar(int ancho, int alto,
-        const std::string& ganador, const std::string& batalla,
-        bool ganaJ1, float tiempoRestante);
+    static void ranking_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, int turnos, int piezasLocal, int piezasRival, const std::vector<EntradaRanking>& ranking, bool ganaJ1);
+    static void victoria_dibujar(int ancho, int alto, const std::string& ganador, const std::string& batalla, bool ganaJ1, float tiempoRestante);
     static void ayuda_dibujar(int seleccion, int seccion, int ancho, int alto);
 };
