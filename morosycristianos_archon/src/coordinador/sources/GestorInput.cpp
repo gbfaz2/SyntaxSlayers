@@ -52,14 +52,36 @@ void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal&
         // FLECHAS IZQUIERDA/DERECHA: CAMBIAN BANDO DE QUIEN TIENE EL FOCO
         if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
             if (menu.m_focoNombre == 0) {
-                // CAMBIA BANDO J1
+                // CAMBIA BANDO J1 Y ACTUALIZA J2 AUTOMÁTICAMENTE
                 menu.m_cfg.bando = (menu.m_cfg.bando == BandoJugador::CRISTIANO)
+                    ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+                menu.m_cfg.bando_j2 = (menu.m_cfg.bando == BandoJugador::CRISTIANO)
                     ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
             }
             else if (menu.m_focoNombre == 1 && menu.m_cfg.modo == ModoJuego::JVJ) {
-                // CAMBIA BANDO J2 (automáticamente opuesto, pero por si acaso)
+                // CAMBIA BANDO J2 Y ACTUALIZA J1 AUTOMÁTICAMENTE
                 menu.m_cfg.bando_j2 = (menu.m_cfg.bando_j2 == BandoJugador::CRISTIANO)
                     ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+                menu.m_cfg.bando = (menu.m_cfg.bando_j2 == BandoJugador::CRISTIANO)
+                    ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+            }
+
+            // ¡NUEVO! FLECHAS ARRIBA/ABAJO: CAMBIAN DIFICULTAD DE LA IA
+            if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
+                // Si estamos en modo IA, las flechas arriba/abajo siempre cambian la dificultad
+                // (quitamos lo del foco porque la IA no tiene caja de texto para escribir su nombre)
+                if (menu.m_cfg.modo == ModoJuego::JVIA) {
+                    if (key == GLUT_KEY_UP) {
+                        if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::FACIL;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+                    }
+                    else if (key == GLUT_KEY_DOWN) {
+                        if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::FACIL;
+                    }
+                }
             }
         }
         return; // EN PASO 2 LAS FLECHAS SOLO CAMBIAN BANDO
@@ -118,14 +140,73 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
         break;
     case EstadoJuego::MENU:
         if (boton == GLUT_LEFT_BUTTON) {
-            ratonMovidoMenu(x, y, estado, menu);
+            ratonMovidoMenu(x, y, estado, menu); // actualiza hover general
             if (menu.m_paso == 2) {
-                int gy = _alto - y;
+                int gy = _alto - y; // invertir coordenada y
+
+                // detecta click en boton continuar
                 float btnW = 200, btnH = 40;
                 float btnX = _ancho / 2.0f - btnW / 2.0f;
                 float btnY = _alto * 0.12f;
-                if (x >= btnX && x <= btnX + btnW && gy >= btnY && gy <= btnY + btnH)
+                if (x >= btnX && x <= btnX + btnW && gy >= btnY && gy <= btnY + btnH) {
                     menu.confirmar();
+                    return;
+                }
+
+                // 2. Detectar clics en paneles de configuración (Matemática extraída de DibujaMenu)
+                float mitad = _ancho / 2.0f;
+                float colW = mitad * 0.80f;
+                float col1X = mitad - colW - 20;
+                float col2X = mitad + 20;
+                float topY = _alto * 0.60f;
+                float campoY = topY - 50;
+                float bandoY = campoY - 80;
+                float bw = (colW - 10) / 2.0f;
+
+                // Función lambda para comprobar si el clic cae dentro de una caja
+                auto enCaja = [&](float bx, float by, float anchoCaja, float altoCaja) {
+                    return x >= bx && x <= bx + anchoCaja && gy >= by && gy <= by + altoCaja;
+                    };
+
+                // --- CLICS JUGADOR 1 (Columna Izquierda) ---
+                if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0; // Foco Nombre J1
+
+                if (enCaja(col1X, bandoY - 30, bw, 36)) { // Botón Cristiano J1
+                    menu.m_cfg.bando = BandoJugador::CRISTIANO;
+                    menu.m_cfg.bando_j2 = BandoJugador::MUSULMAN;
+                    menu.m_focoNombre = 0;
+                }
+                if (enCaja(col1X + bw + 10, bandoY - 30, bw, 36)) { // Botón Andalusí J1
+                    menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                    menu.m_cfg.bando_j2 = BandoJugador::CRISTIANO;
+                    menu.m_focoNombre = 0;
+                }
+
+                // --- CLICS JUGADOR 2 / IA (Columna Derecha) ---
+                if (menu.m_cfg.modo == ModoJuego::JVJ) {
+                    if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1; // Foco Nombre J2
+
+                    if (enCaja(col2X, bandoY - 30, bw, 36)) { // Botón Cristiano J2
+                        menu.m_cfg.bando_j2 = BandoJugador::CRISTIANO;
+                        menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                        menu.m_focoNombre = 1;
+                    }
+                    if (enCaja(col2X + bw + 10, bandoY - 30, bw, 36)) { // Botón Andalusí J2
+                        menu.m_cfg.bando_j2 = BandoJugador::MUSULMAN;
+                        menu.m_cfg.bando = BandoJugador::CRISTIANO;
+                        menu.m_focoNombre = 1;
+                    }
+                }
+                else if (menu.m_cfg.modo == ModoJuego::JVIA) {
+                    for (int i = 0; i < 3; i++) {
+                        float dy = campoY - 30 - i * 46;
+                        if (enCaja(col2X, dy, colW, 36)) { // Clic en Dificultad IA
+                            menu.m_cfg.dificultad = (i == 0) ? NivelDificultad::FACIL :
+                                (i == 1) ? NivelDificultad::MEDIO :
+                                NivelDificultad::DIFICIL;
+                        }
+                    }
+                }
             }
             else {
                 menu.confirmar();
@@ -135,11 +216,6 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
     case EstadoJuego::DESTINO:
         destino.avanzar();
         break;
-        if (boton == GLUT_LEFT_BUTTON) {
-            ratonMovidoMenu(x, y, estado, menu); // ← actualiza selección Y puede llamar confirmar()
-            if (menu.m_paso != 2)                // ← este guard llega TARDE si ratonMovido ya confirmó
-                menu.confirmar();
-        }
     default:
         break;
     }
