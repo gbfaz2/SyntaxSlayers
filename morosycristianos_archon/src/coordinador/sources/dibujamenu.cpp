@@ -267,7 +267,7 @@ void DibujaMenu::menu_paso0(MenuPrincipal& m, int ancho, int alto) {
 
 void DibujaMenu::menu_paso1(MenuPrincipal& m, int ancho, int alto) {
     menu_textoCentrado("Selecciona el modo de juego:",
-        ancho / 2.0f, alto - 200, 0.95f, 0.90f, 0.80f, GLUT_BITMAP_HELVETICA_12);
+        ancho / 2.0f, alto - 200, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
     float aw = 300, ah = 52, sep = 40;
     float sy = alto / 2.0f + 10;
     menu_opcion("Jugador vs Jugador", ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah, m.m_seleccion == 0);
@@ -457,10 +457,10 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
     if (m.m_cfg.modo == ModoJuego::JVJ)
         menu_textoCentrado("TAB: cambiar campo de texto   |   Flechas: cambiar bando",
-            ancho / 2.0f, alto * 0.07f, 0.95f, 0.90f, 0.80f, GLUT_BITMAP_HELVETICA_12);
+            ancho / 2.0f, alto * 0.07f, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
     else
         menu_textoCentrado("Escribe tu nombre y pulsa ENTER para continuar",
-            ancho / 2.0f, alto * 0.07f, 0.95f, 0.90f, 0.80f, GLUT_BITMAP_HELVETICA_12);
+            ancho / 2.0f, alto * 0.07f, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
 }
 
 // ============================================================
@@ -469,10 +469,11 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
 
 void DibujaMenu::menu_paso3(MenuPrincipal& m, int ancho, int alto) {
     menu_textoCentrado("Elige la batalla historica:",
-        ancho / 2.0f, alto - 130, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_12);
-    float aw = 360, ah = 48, sep = 12;
+        ancho / 2.0f, alto - 130, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+    float aw = 400, ah = 48, sep = 12;
     float sx = ancho / 2.0f - aw / 2.0f;
     float sy = alto / 2.0f + 90;
+
     const char* batallas[] = {
         "  Batalla de Guadalete (711)",
         "  Batalla de Alarcos (1195)",
@@ -488,7 +489,7 @@ void DibujaMenu::menu_paso3(MenuPrincipal& m, int ancho, int alto) {
         "Los Reyes Catolicos completan la Reconquista peninsular."
     };
     menu_textoCentrado(descripciones[m.m_seleccion],
-        ancho / 2.0f, alto / 2.0f - 150, 0.65f, 0.65f, 0.65f, GLUT_BITMAP_HELVETICA_12);
+        ancho / 2.0f, alto / 2.0f - 150, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
 }
 
 // ============================================================
@@ -500,23 +501,23 @@ void DibujaMenu::menu_paso4(MenuPrincipal& m, int ancho, int alto) {
     std::string bando = (m.m_cfg.bando == BandoJugador::CRISTIANO) ? "Cristiano" : "Andalusi";
 
     menu_textoCentrado("Modo:    " + modo,
-        ancho / 2.0f, alto / 2.0f + 80, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+        ancho / 2.0f, alto / 2.0f + 80, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
     menu_textoCentrado("J1:      " + m.m_cfg.nombre_j1 + " (" + bando + ")",
-        ancho / 2.0f, alto / 2.0f + 50, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+        ancho / 2.0f, alto / 2.0f + 50, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
 
     if (m.m_cfg.modo == ModoJuego::JVJ) {
         std::string b2 = (m.m_cfg.bando_j2 == BandoJugador::CRISTIANO) ? "Cristiano" : "Andalusi";
         menu_textoCentrado("J2:      " + m.m_cfg.nombre_j2 + " (" + b2 + ")",
-            ancho / 2.0f, alto / 2.0f + 20, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+            ancho / 2.0f, alto / 2.0f + 20, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
     }
     else {
         std::string dif = (m.m_cfg.dificultad == NivelDificultad::FACIL) ? "Facil" :
             (m.m_cfg.dificultad == NivelDificultad::MEDIO) ? "Medio" : "Dificil";
         menu_textoCentrado("IA:      Dificultad " + dif,
-            ancho / 2.0f, alto / 2.0f + 20, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+            ancho / 2.0f, alto / 2.0f + 20, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
     }
     menu_textoCentrado("Batalla: " + std::string(nombreBatalla(m.m_cfg.batalla)),
-        ancho / 2.0f, alto / 2.0f - 10, 0.90f, 0.85f, 0.60f, GLUT_BITMAP_HELVETICA_18);
+        ancho / 2.0f, alto / 2.0f - 10, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
 
     float aw = 180, ah = 44, sep = 30;
     float cy = alto / 2.0f - 70;
