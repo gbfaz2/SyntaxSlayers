@@ -1,4 +1,4 @@
-﻿// Autor: Ines Alcérreca Sánchez
+﻿
 // Implementación de las pantallas de introducción y menú principal
 
 #include "menu.h"

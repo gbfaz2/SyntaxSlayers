@@ -115,7 +115,6 @@ void Arena::limitarPosicion(Combatiente& c)
 void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo, int ventajaTerreno)
 {
 	_modo = modo;
-	std::cout << "[Arena] iniciarCombate llamado!" << std::endl;
 
 	// Creamos los combatientes con las stats reales de las piezas del tablero P1 (atacante) siempre empieza a la izquierda, color segun bando
 	float r1 = atacante.getBando() == Bando::CRISTIANO ? 0.89f : 0.39f;
@@ -146,8 +145,6 @@ void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJu
 	// Reseteamos el resultado
 	_resultado = ResultadoCombate::EnCurso;
 
-	std::cout << "[Arena] vida p1: " << _p1.vida() << " vida p2: " << _p2.vida() << std::endl;
-	std::cout << "[Arena] resultado = EnCurso" << std::endl;
 }
 
 void Arena::resolverColision()
