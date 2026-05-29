@@ -30,7 +30,7 @@ enum class EstadoPersonaje {
     HURT = 8, // fila 3
 };
 
-
+3
 class dibujapersonajes 
 {
     //funcion de libreria etsidi para animación
