@@ -485,7 +485,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
 
 void DibujaMenu::menu_paso3(MenuPrincipal& m, int ancho, int alto) {
     menu_textoCentrado("Elige la batalla historica:",
-        ancho / 2.0f, alto - 130, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+        ancho / 2.0f, alto - 175, 100.0f, 100.0f, 100.0f, GLUT_BITMAP_HELVETICA_12);
     float aw = 400, ah = 48, sep = 12;
     float sx = ancho / 2.0f - aw / 2.0f;
     float sy = alto / 2.0f + 90;
@@ -498,18 +498,6 @@ void DibujaMenu::menu_paso3(MenuPrincipal& m, int ancho, int alto) {
     };
     for (int i = 0; i < 4; i++)
         menu_opcion(batallas[i], sx, sy - i * (ah + sep), aw, ah, m.m_seleccion == i);
-    const char* descripciones[] = {
-        "Los musulmanes cruzan el estrecho y vencen al rey Rodrigo.",
-        "Al-Mansur derrota a Alfonso VIII de Castilla.",
-        "Los reinos cristianos unidos rompen el poder almohade.",
-        "Los Reyes Catolicos completan la Reconquista peninsular."
-    };
-	// SOMBRA
-    menu_textoCentrado(descripciones[m.m_seleccion],
-        ancho / 2.0f, alto / 2.0f - 150, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_12);
-	// TEXTO
-    menu_textoCentrado(descripciones[m.m_seleccion],
-        ancho / 2.0f, alto / 2.0f - 150, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_12);
 }
 
 // ============================================================
@@ -632,7 +620,7 @@ void DibujaMenu::destino_textos(const PantallaDestino& p, int ancho, int alto) {
     {
         const char* tituloBat = nombreBatalla(p.m_cfg.batalla);
         int tw = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)tituloBat);
-        ETSIDI::printxy(tituloBat, ancho / 2 - (int)(tw * 0.80f), alto - 85);
+        ETSIDI::printxy(tituloBat, ancho / 2 - (int)(tw * 0.65f), alto - 85);
     }
     glColor4f(0.85f * alfa, 0.68f * alfa, 0.10f * alfa, 0.65f * alfa); glLineWidth(1.5f);
     glBegin(GL_LINES);
