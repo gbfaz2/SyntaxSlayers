@@ -1,10 +1,10 @@
 modo 1
-batalla 0
-turno 1
-tiempo 87.4754
+batalla 3
+turno 2
+tiempo 88.7243
 numturno 2
-j1 KN
-j2 Jugador 2
+j1 sofia
+j2 pe
 0 0 4 1 50
 0 1 7 1 20
 0 7 7 2 20
@@ -22,8 +22,8 @@ j2 Jugador 2
 3 7 8 2 30
 3 8 2 2 40
 4 0 1 1 80
-4 1 8 1 30
-4 4 8 2 30
+4 4 8 1 30
+4 7 8 2 30
 4 8 1 2 80
 5 0 3 1 60
 5 1 8 1 30

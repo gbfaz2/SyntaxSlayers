@@ -241,30 +241,20 @@ void Coordinador::dibuja()
 
 		// Cargamos la partida y volvemos al tablero
 		if (!pTablero) {
-			// RESTAURA NOMBRES AL CARGAR, respetando el bando de cada jugador
-			if (configuracion.bando == BandoJugador::CRISTIANO) {
-				pTablerogl->nombre_j1 = configuracion.nombre_j1;
-				pTablerogl->nombre_j2 = configuracion.nombre_j2;
-			}
-			else {
-				pTablerogl->nombre_j1 = configuracion.nombre_j2;
-				pTablerogl->nombre_j2 = configuracion.nombre_j1;
-			}
+			pTablero = new Tablero();         // ← FALTABA ESTO
+			pTablerogl = new Tablerogl(pTablero); // ← FALTABA ESTO
 			DibujaTablero::tablero_init();
 			gestorInput.setTablerogl(pTablerogl);
 			pGestorHechizos = new GestorHechizos(*pTablero,
 				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
 				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
 		}
-
 		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
 		pTablerogl->setBatalla((int)configuracion.batalla);
-		pTablerogl->nombre_j1 = configuracion.nombre_j1; // RESTAURA NOMBRES AL CARGAR
+		pTablerogl->nombre_j1 = configuracion.nombre_j1;
 		pTablerogl->nombre_j2 = configuracion.nombre_j2;
 
-		// Recarga texturas después de cargar piezas
 		_necesitaRecargarGraficos = true;
-
 		ETSIDI::playMusica("sonidos/TABLERO.mp3", true);
 		_framesCargando = 5;
 		estado = EstadoJuego::TABLERO;
@@ -606,8 +596,8 @@ void Coordinador::mueve(double dt)
 				_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL); // true = gano el bando cristiano (controla los efectos visuales de victoria)
 				_rankingBatalla = nombreBatalla(configuracion.batalla);
 				_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
-				_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
-				_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
+				_rankingPiezasLocal = 18 - gestorVictoria.piezasVivas(*pTablero, bando_local); // cada bando empieza con 18 piezas
+				_rankingPiezasRival = 18 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
 
 				// Guardar en el Ranking
 				GestorRanking::guardar(

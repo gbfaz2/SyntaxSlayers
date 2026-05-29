@@ -688,8 +688,8 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto,
 
     menu_rect(margen, tablaY - filaAlto * 2, tablaAncho, filaAlto, 0.08f, 0.08f, 0.08f, 0.5f);
     menu_texto("Resultado", margen + 10, tablaY - filaAlto * 2 + 12, 0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
-    menu_texto(ganaJ1 ? "GANADOR" : "perdedor", margen + colAncho + 10, tablaY - filaAlto * 2 + 12, ganaJ1 ? 1.0f : 0.5f, ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
-    menu_texto(!ganaJ1 ? "GANADOR" : "perdedor", margen + colAncho * 2 + 10, tablaY - filaAlto * 2 + 12, !ganaJ1 ? 1.0f : 0.5f, !ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(ganaJ1 ? "GANADOR" : "PERDEDOR", margen + colAncho + 10, tablaY - filaAlto * 2 + 12, ganaJ1 ? 1.0f : 0.5f, ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(!ganaJ1 ? "GANADOR" : "PERDEDOR", margen + colAncho * 2 + 10, tablaY - filaAlto * 2 + 12, !ganaJ1 ? 1.0f : 0.5f, !ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
 
     menu_rect(margen, tablaY - filaAlto * 3, tablaAncho, filaAlto, 0.12f, 0.12f, 0.12f, 0.5f);
     menu_texto("Piezas eliminadas", margen + 10, tablaY - filaAlto * 3 + 12, 0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
