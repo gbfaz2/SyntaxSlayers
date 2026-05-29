@@ -126,9 +126,14 @@ void Coordinador::dibuja()
 
 			if (_necesitaRecargarGraficos && _framesCargando <= 0)
 			{
-				ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 				DibujaTablero::tablero_init(); // Recarga texturas
 				_necesitaRecargarGraficos = false;
+			}
+
+			if (!_necesitaRecargarGraficos && _framesCargando <= 0)
+			{
+				ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
+
 			}
 
 			glEnable(GL_DEPTH_TEST);

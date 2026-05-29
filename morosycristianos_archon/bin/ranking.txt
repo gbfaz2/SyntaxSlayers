@@ -1,4 +1,5 @@
 sofia 799 1 -2 Las Navas de Tolosa (1212)
+sofia 799 1 -2 Las Navas de Tolosa (1212)
 ines 587 13 -4 Las Navas de Tolosa (1212)
 Jugador 2 587 13 -4 Batalla de Guadalete (711)
 Jugador 1 690 10 -3 Batalla de Guadalete (711)
