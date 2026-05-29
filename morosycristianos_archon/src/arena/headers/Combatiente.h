@@ -144,4 +144,7 @@ public:
 	std::string nombre() const { return _nombre; }
 
 	bool enMovimiento() const { return _enMovimiento; } // Getter
+
+	float cooldownAtaque() const { return _cooldownAtaque; }
+	float tiempoDesdeUltimoAtaque() const { return _tiempoDesdeUltimoAtaque; }
 };

@@ -93,17 +93,21 @@ void Arena::resolverAtaque(Combatiente& atacante, Combatiente& objetivo)
 void Arena::limitarPosicion(Combatiente& c) 
 {
 	// Evitar que el combatiente salga de la arena, limitando su posicion a las dimensiones del escenario
-	float halfX = _ancho * 0.5f;
-	float halfZ = _profundo * 0.5f;
+	float halfX = _ancho * 0.5f - c.lado() * 0.5f - 1.0f; // Márgen extra
+	float halfZ = _profundo * 0.5f - c.lado() * 0.5f;
 	float r = c.lado() * 0.5f; // Radio del cubo (la mitad del lado), para que no se quede "pillado" en los bordes
 
 	float x = c.x();
 	float z = c.z();
 
-	if (x < -halfX + r) x = -halfX + r;
-	if (x > halfX - r) x = halfX - r;
-	if (z < -halfZ + r) z = -halfZ + r;
-	if (z > halfZ - r) z = halfZ - r;
+	// LÍMITES ASIMÉTRICOS PARA COMPENSAR LA PERSPECTIVA
+	float limIzq = -_ancho * 0.5f + r + 1.0f; // borde izquierdo
+	float limDer = _ancho * 0.5f - r - 1.8f; // borde derecho (más restrictivo por perspectiva)
+
+	if (x < limIzq) x = limIzq;
+	if (x > limDer) x = limDer;
+	if (z < -halfZ) z = -halfZ;
+	if (z > halfZ)  z = halfZ;
 
 	c.posicion(x, c.y(), z);
 }
