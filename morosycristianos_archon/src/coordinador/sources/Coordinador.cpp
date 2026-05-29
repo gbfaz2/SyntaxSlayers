@@ -594,8 +594,8 @@ void Coordinador::mueve(double dt)
 				_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL); // true = gano el bando cristiano (controla los efectos visuales de victoria)
 				_rankingBatalla = nombreBatalla(configuracion.batalla);
 				_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
-				_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
-				_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
+				_rankingPiezasLocal = 18 - gestorVictoria.piezasVivas(*pTablero, bando_local); // cada bando empieza con 18 piezas
+				_rankingPiezasRival = 18 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
 
 				// Guardar en el Ranking
 				GestorRanking::guardar(
