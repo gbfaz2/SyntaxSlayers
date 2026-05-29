@@ -83,7 +83,7 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
         EstadoPersonaje estado;
         if (c.recibioDanio()) estado = EstadoPersonaje::HURT;
         else if (c.atacando())     estado = EstadoPersonaje::ATTACK;
-        else                       estado = EstadoPersonaje::IDLE;
+        else      estado = EstadoPersonaje::IDLE;
 
         // Tipo de personaje según nombre
         //FALTAN PERSONAJES
@@ -248,10 +248,13 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
                 }
         float size = _anchoVentana * 0.10f;
 
+        
         //convertir a 2d
         util_entrar2D(_anchoVentana, _altoVentana);
         glDisable(GL_LIGHTING);
 
+
+      
 
         //dibjar con funcion de dibujappersonajes teniendo en cuenta el nombre del personaje y el estado
         _personajes.dibujar(tipo, (float)winX, (float)winY, size,

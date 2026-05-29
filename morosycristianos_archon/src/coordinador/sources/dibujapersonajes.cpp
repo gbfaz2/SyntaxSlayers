@@ -126,12 +126,31 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
         }
 
         else {
-            // Bucle frames 0-2 para andar
-            if (currentFrame < baseFrame || currentFrame >= baseFrame + 3)
-                _sprites[t][indice]->setState(0, false);
-            else 
-                _sprites[t][indice]->pause(false);//vuelve a animar
+            if (tipo == TipoPersonaje::INFILTRADO || tipo == TipoPersonaje::ASESINO_DE_ELITE) {
+                //para infiltrado /asesino de élite: se queda congelado en el frame de la bolita chiquita
+                 // Magia para el Infiltrado/Asesino
+                if (currentFrame < baseFrame || currentFrame > baseFrame + 3) {
+                    // Si viene de otro estado, empieza la animación de convertirse en humo
+                    _sprites[t][indice]->setState(baseFrame, false);
+                }
+                else if (currentFrame == baseFrame + 3) {
+                    // Si ya ha llegado a la bolita (cuarto frame), ¡lo congelamos!
+                    _sprites[t][indice]->pause(true);
+                }
+                else {
+                    // Si está en el frame 0, 1 o 2, dejamos que siga reproduciéndose hacia la bolita
+                    _sprites[t][indice]->pause(false);
+                }
 
+
+            }
+            else {
+                // Bucle frames 0-3 para andar para personajes normales
+                if (currentFrame < baseFrame || currentFrame >= baseFrame + 3)
+                    _sprites[t][indice]->setState(0, false);
+                else
+                    _sprites[t][indice]->pause(false);//vuelve a animar
+            }
         }
     }
     else {
