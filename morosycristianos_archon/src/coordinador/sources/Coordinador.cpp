@@ -23,7 +23,6 @@ Coordinador::~Coordinador()
 
 void Coordinador::inicializa()
 {
-	ETSIDI::playMusica("sonidos/MENU.mp3", true);
 	srand((unsigned)time(nullptr));
 	pantallaIntro.reiniciar();
 	menuPrincipal.reiniciar();
@@ -51,8 +50,6 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::MENU:
-
-		
 		// LA PROPIA CLASE DIBUJAMENU ENTRA Y SALE DE 2D INTERNAMENTE
 		DibujaMenu::menu_dibujar(menuPrincipal, _anchoVentana, _altoVentana); // PINTA LAS FASES DEL MENU PRINCIPAL
 
@@ -318,8 +315,7 @@ void Coordinador::tecla(unsigned char key)
 
 	case EstadoJuego::RANKING:
 		if (key == 27) {
-			//ETSIDI::stopMusica();
-			ETSIDI::playMusica("sonidos/MENU.mp3", true);
+			ETSIDI::stopMusica();
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
 		}
@@ -343,8 +339,7 @@ void Coordinador::tecla(unsigned char key)
 
 	default:
 		if (key == 27) {
-			//ETSIDI::stopMusica();
-			ETSIDI::playMusica("sonidos/MENU.mp3", true);
+			ETSIDI::stopMusica();
 			menuPrincipal.reiniciar();
 			reiniciarTablero();
 		}

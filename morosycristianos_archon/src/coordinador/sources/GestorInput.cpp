@@ -718,8 +718,7 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ESC SIEMPRE VUELVE AL MENU
     if (key == 27) {
-        //ETSIDI::stopMusica();
-        ETSIDI::playMusica("sonidos/MENU.mp3", true);
+        ETSIDI::stopMusica();
         _coordinador->reiniciarTablero();
         _coordinador->estado = EstadoJuego::GUARDANDO;
         return;
@@ -860,8 +859,7 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             GestorPartida::guardar(*_coordinador->pTablero,
                 _tablerogl->gestorTurnos, _coordinador->configuracion);
             std::cout << "[Pausa] Partida guardada.\n";
-           // ETSIDI::stopMusica();
-            ETSIDI::playMusica("sonidos/MENU.mp3", true);
+            ETSIDI::stopMusica();
             _coordinador->reiniciarTablero();
             _coordinador->estado = EstadoJuego::MENU;
             break;
@@ -869,8 +867,7 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             _coordinador->estado = EstadoJuego::AYUDA;
             break;
         case 3: // SALIR SIN GUARDAR
-            //ETSIDI::stopMusica();
-            ETSIDI::playMusica("sonidos/MENU.mp3", true);
+            ETSIDI::stopMusica();
             _coordinador->reiniciarTablero();
             estado = EstadoJuego::MENU;
             break;
