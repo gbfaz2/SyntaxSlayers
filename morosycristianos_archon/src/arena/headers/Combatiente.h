@@ -11,9 +11,6 @@
 // -Y: eje vertical (suelo = 0, cielo = positivo)
 // -Z: eje horizontal (cerca<--->lejos de la camara)
 
-// Esta clase es la versión "demo" inicial. Cuando este lista la
-// jerarquia de clases de Alba, adaptaremos esta para
-// integrarse con ella
 
 // Direcciones de movimiento del combtiente en la arena
 

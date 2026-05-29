@@ -1,4 +1,4 @@
-// Lo usamos para separar la lógica del dibujo. Primero probaremos a hacer un tablero vacío con un aspecto visual del Archon original
+
 #pragma once
 #include "tablero.h"
 #include "GestorMovimiento.h"
@@ -94,7 +94,6 @@ public:
 	//para actualizar el dt para la interpolacion
 	void update(double dt);
 
-	//conversores de coordenadas cogidas del repositorio de Pablo
 	void cell2center(int casilla_x, int casilla_y, float& glx, float& gly);
 	void world2cell(double x, double y, int& casilla_x, int& casilla_y); //dado un punto (x,y) en coordenadas opengl, devuelve la fila y columna del tablero
 
