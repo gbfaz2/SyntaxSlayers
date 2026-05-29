@@ -18,7 +18,7 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     case TipoPersonaje::GUARDIA_NEGRA:  
         return "imagenes\\guardia_negra.png";
     case TipoPersonaje::JINETE_BEREBER: 
-        return "imagenes\\jinete_bereber.png";
+        return "imagenes\\jinete_bereber_yes.png";
     case TipoPersonaje::INFANTERIA:
         return "imagenes\\INFANTERIA_SISISI.png";
     case TipoPersonaje::INFILTRADO:
@@ -127,7 +127,7 @@ void dibujapersonajes::dibujar(TipoPersonaje tipo, float x, float y, float size,
 
         else {
             // Bucle frames 0-2 para andar
-            if (currentFrame < baseFrame || currentFrame >= baseFrame + 2)
+            if (currentFrame < baseFrame || currentFrame >= baseFrame + 3)
                 _sprites[t][indice]->setState(0, false);
             else 
                 _sprites[t][indice]->pause(false);//vuelve a animar

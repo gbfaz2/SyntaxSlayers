@@ -610,10 +610,10 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
         glColor3f(0.85f, 0.70f, 0.25f);
         glLineWidth(1.5f);
         glBegin(GL_LINES);
-        glVertex2f(cx - 160.0f, cy - 38.0f);
-        glVertex2f(cx - 20.0f, cy - 38.0f);
-        glVertex2f(cx + 20.0f, cy - 38.0f);
-        glVertex2f(cx + 160.0f, cy - 38.0f);
+        glVertex2f(cx - 160.0f, cy - 47.0f);
+        glVertex2f(cx - 20.0f, cy - 47.0f);
+        glVertex2f(cx + 20.0f, cy - 47.0f);
+        glVertex2f(cx + 160.0f, cy - 47.0f);
         glEnd();
 
         // TÍTULO

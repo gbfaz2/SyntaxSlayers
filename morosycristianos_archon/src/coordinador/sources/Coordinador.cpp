@@ -126,7 +126,7 @@ void Coordinador::dibuja()
 				break;
 			}
 
-			if (!_necesitaRecargarGraficos && _framesCargando <= 0)
+			if (_necesitaRecargarGraficos && _framesCargando <= 0)
 			{
 				ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
 				DibujaTablero::tablero_init(); // Recarga texturas
