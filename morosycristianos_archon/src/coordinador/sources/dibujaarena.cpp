@@ -560,20 +560,97 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
 
     // MENSAJE DE FIN
     if (arena.resultado() != ResultadoCombate::EnCurso) {
-        glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
+        float cx = _anchoVentana * 0.5f;
+        float cy = _altoVentana * 0.5f;
+        float anchoPanel = 420.0f;
+        float altoPanel = 140.0f;
+
+        // FONDO GENERAL MUY SUAVE
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor4f(0.0f, 0.0f, 0.0f, 0.35f);
         glBegin(GL_QUADS);
-        glVertex2f(0, 0); glVertex2f((float)_anchoVentana, 0);
-        glVertex2f((float)_anchoVentana, (float)_altoVentana); glVertex2f(0, (float)_altoVentana);
+        glVertex2f(0.0f, 0.0f);
+        glVertex2f((float)_anchoVentana, 0.0f);
+        glVertex2f((float)_anchoVentana, (float)_altoVentana);
+        glVertex2f(0.0f, (float)_altoVentana);
         glEnd();
 
-        //const char* msg = "";
-        std::string msgStr = "";
-        if (arena.resultado() == ResultadoCombate::GanaP1) msgStr = "Gana " + arena.p1().nombre() + "!  -  ENTER para volver al tablero";
-        else if (arena.resultado() == ResultadoCombate::GanaP2) msgStr = "Gana " + arena.p2().nombre() + "!- ENTER para volver al tablero";
-        else msgStr = "Empate!  -  ENTER para volver al tablero";
+        // PANEL CENTRAL
+        glColor4f(0.05f, 0.03f, 0.0f, 0.92f);
+        glBegin(GL_QUADS);
+        glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glEnd();
 
-        float xMsg = _anchoVentana * 0.5f - strlen(msgStr.c_str()) * 4.5f;
-        arena_texto(xMsg, _altoVentana * 0.5f, msgStr.c_str(), 1.0f, 1.0f, 1.0f);
+        // BORDE EXTERIOR DORADO
+        glColor4f(0.85f, 0.70f, 0.25f, 1.0f);
+        glLineWidth(2.5f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glEnd();
+
+        // BORDE INTERIOR DORADO TENUE
+        glColor4f(0.85f, 0.70f, 0.25f, 0.35f);
+        glLineWidth(1.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(cx - anchoPanel * 0.5f + 6.0f, cy - altoPanel * 0.5f + 6.0f);
+        glVertex2f(cx + anchoPanel * 0.5f - 6.0f, cy - altoPanel * 0.5f + 6.0f);
+        glVertex2f(cx + anchoPanel * 0.5f - 6.0f, cy + altoPanel * 0.5f - 6.0f);
+        glVertex2f(cx - anchoPanel * 0.5f + 6.0f, cy + altoPanel * 0.5f - 6.0f);
+        glEnd();
+        glDisable(GL_BLEND);
+
+        // LÍNEA DECORATIVA SUPERIOR  ——— * ———
+        glColor3f(0.85f, 0.70f, 0.25f);
+        glLineWidth(1.5f);
+        glBegin(GL_LINES);
+        glVertex2f(cx - 160.0f, cy - 38.0f);
+        glVertex2f(cx - 20.0f, cy - 38.0f);
+        glVertex2f(cx + 20.0f, cy - 38.0f);
+        glVertex2f(cx + 160.0f, cy - 38.0f);
+        glEnd();
+
+        // TÍTULO
+        std::string linea1 = (arena.resultado() == ResultadoCombate::Empate) ? "* EMPATE *" : "* VICTORIA *";
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 22);
+        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
+        ETSIDI::printxy(linea1.c_str(), cx - strlen(linea1.c_str()) * 7.0f, cy - 20.0f);
+
+        // LÍNEA DECORATIVA INFERIOR DEL TÍTULO
+        glColor3f(0.85f, 0.70f, 0.25f);
+        glLineWidth(1.0f);
+        glBegin(GL_LINES);
+        glVertex2f(cx - 160.0f, cy - 5.0f);
+        glVertex2f(cx + 160.0f, cy - 5.0f);
+        glEnd();
+
+        // NOMBRE DEL GANADOR
+        std::string linea2 = "";
+        if (arena.resultado() == ResultadoCombate::GanaP1)      linea2 = "Gana " + arena.p1().nombre();
+        else if (arena.resultado() == ResultadoCombate::GanaP2) linea2 = "Gana " + arena.p2().nombre();
+        else                                                     linea2 = "";
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 16);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy(linea2.c_str(), cx - strlen(linea2.c_str()) * 5.0f, cy + 25.0f);
+
+        // SEPARADOR
+        glColor3f(0.5f, 0.5f, 0.5f);
+        glLineWidth(1.0f);
+        glBegin(GL_LINES);
+        glVertex2f(cx - 140.0f, cy + 42.0f);
+        glVertex2f(cx + 140.0f, cy + 42.0f);
+        glEnd();
+
+        // INSTRUCCIÓN
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 12);
+        ETSIDI::setTextColor(0.65f, 0.65f, 0.65f, 1.0f);
+        ETSIDI::printxy("Pulsa ENTER para volver al tablero", cx - 120.0f, cy + 58.0f);
     }
 
     // Panel nombre de la batalla
