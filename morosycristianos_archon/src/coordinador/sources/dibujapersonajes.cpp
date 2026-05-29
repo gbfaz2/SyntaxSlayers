@@ -35,6 +35,11 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
         return "imagenes\\caballeria_ligera.png";
     case TipoPersonaje::ARQUERO_GHAZI:
         return "imagenes\\arquero_ghazi.png";
+    case TipoPersonaje::ALMOGAVAR:
+        return "imagenes\\almogavar.png";
+    case TipoPersonaje::ARQUERO_CABALLO:
+        return "imagenes\\arquero_caballo.png";
+
 
 
     default:                            
@@ -61,7 +66,10 @@ TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando
         return (bando == bando_rival) ? TipoPersonaje::CABALLERIA_ACORAZADA : TipoPersonaje::CABALLERIA_PESADA;
     case pieza_cilindro:
         return (bando == bando_rival) ? TipoPersonaje::ARQUERO_GHAZI : TipoPersonaje::BALLESTERO;
+    case pieza_icosaedro:
+        return (bando == bando_rival) ? TipoPersonaje::ARQUERO_CABALLO : TipoPersonaje::ALMOGAVAR;
    
+
 
 
     default:                return TipoPersonaje::MILICIANO;
