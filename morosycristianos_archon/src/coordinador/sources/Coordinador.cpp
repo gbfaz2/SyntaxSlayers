@@ -98,7 +98,7 @@ void Coordinador::dibuja()
 
 		if (pantallaDestino.terminado()) {
 			estado = EstadoJuego::TABLERO;
-			ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
+			ETSIDI::playMusica("sonidos/TABLERO.mp3", true);
 		}
 		break;
 
@@ -174,7 +174,7 @@ void Coordinador::dibuja()
 					pTablerogl->getVentajaTerrenoCombate());
 
 				ETSIDI::stopMusica();
-				ETSIDI::play("sonidos/sonido_combate_fight.wav");
+				ETSIDI::play("sonidos/ARENA.mp3");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				DibujaArena::resetFlash();
 				pTablerogl->limpiarCombate();
@@ -213,7 +213,7 @@ void Coordinador::dibuja()
 		// Recarga texturas después de cargar piezas
 		_necesitaRecargarGraficos = true;
 
-		ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
+		ETSIDI::playMusica("sonidos/TABLERO.mp3", true);
 		_framesCargando = 5;
 		estado = EstadoJuego::TABLERO;
 		break;
