@@ -81,8 +81,17 @@ void Coordinador::dibuja()
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					// NOMBRES DE LOS JUGADORES PARA EL HUD
-					pTablerogl->nombre_j1 = configuracion.nombre_j1;
-					pTablerogl->nombre_j2 = configuracion.nombre_j2;
+					// nombre_j1 del tablerogl = siempre el bando cristiano (izquierda)
+					// nombre_j2 del tablerogl = siempre el bando andalusi (derecha)
+					// Si J1 eligio musulman, los nombres se cruzan
+					if (configuracion.bando == BandoJugador::CRISTIANO) {
+						pTablerogl->nombre_j1 = configuracion.nombre_j1;
+						pTablerogl->nombre_j2 = configuracion.nombre_j2;
+					}
+					else {
+						pTablerogl->nombre_j1 = configuracion.nombre_j2; // J2 juega de cristiano
+						pTablerogl->nombre_j2 = configuracion.nombre_j1; // J1 juega de andalusi
+					}
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
@@ -186,8 +195,15 @@ void Coordinador::dibuja()
 
 				// Inicializa el registro del nuevo combate
 				_combateEnCurso = CombateRegistro{};
-				_combateEnCurso.nombreP1 = configuracion.nombre_j1;
-				_combateEnCurso.nombreP2 = configuracion.nombre_j2;
+				// P1 en la arena = siempre el bando cristiano, P2 = andalusi
+				// Asignamos los nombres segun que bando controla cada jugador
+				if (configuracion.bando == BandoJugador::CRISTIANO) {
+					_combateEnCurso.nombreP1 = configuracion.nombre_j1; // J1 controla el cristiano
+					_combateEnCurso.nombreP2 = configuracion.nombre_j2;
+				} else {
+					_combateEnCurso.nombreP1 = configuracion.nombre_j2; // J2 controla el cristiano
+					_combateEnCurso.nombreP2 = configuracion.nombre_j1; // J1 controla el andalusi
+				}
 				_combateEnCurso.vidaMaxP1 = _arena.p1().vidaMax();
 				_combateEnCurso.vidaMaxP2 = _arena.p2().vidaMax();
 				_arena.p1().color(_combateEnCurso.r1, _combateEnCurso.g1, _combateEnCurso.b1);
@@ -225,8 +241,15 @@ void Coordinador::dibuja()
 
 		// Cargamos la partida y volvemos al tablero
 		if (!pTablero) {
-			pTablero = new Tablero();
-			pTablerogl = new Tablerogl(pTablero);
+			// RESTAURA NOMBRES AL CARGAR, respetando el bando de cada jugador
+			if (configuracion.bando == BandoJugador::CRISTIANO) {
+				pTablerogl->nombre_j1 = configuracion.nombre_j1;
+				pTablerogl->nombre_j2 = configuracion.nombre_j2;
+			}
+			else {
+				pTablerogl->nombre_j1 = configuracion.nombre_j2;
+				pTablerogl->nombre_j2 = configuracion.nombre_j1;
+			}
 			DibujaTablero::tablero_init();
 			gestorInput.setTablerogl(pTablerogl);
 			pGestorHechizos = new GestorHechizos(*pTablero,
@@ -571,10 +594,14 @@ void Coordinador::mueve(double dt)
 			if (rv != ResultadoVictoria::SIN_GANADOR) {
 				ETSIDI::stopMusica();
 
-				// Ranking
-				_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? configuracion.nombre_j1 :
-					(rv == ResultadoVictoria::GANA_RIVAL) ? configuracion.nombre_j2 : "Empate";
-				_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL);
+				// Ranking — bando_local es siempre cristiano, pero J1 puede haber elegido andalusi
+				bool j1EsCristiano = (configuracion.bando == BandoJugador::CRISTIANO);
+				_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL)
+					? (j1EsCristiano ? configuracion.nombre_j1 : configuracion.nombre_j2)
+					: (rv == ResultadoVictoria::GANA_RIVAL)
+					? (j1EsCristiano ? configuracion.nombre_j2 : configuracion.nombre_j1)
+					: "Empate";
+				_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL); // true = gano el bando cristiano (controla los efectos visuales de victoria)
 				_rankingBatalla = nombreBatalla(configuracion.batalla);
 				_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
 				_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
