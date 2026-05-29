@@ -10,7 +10,6 @@
 #include "Miliciano.h"
 #include <iostream>
 using std::cout, std::endl;
-//Ahora también asigna una fase inicial distinta a cada casilla dinámica según su posición en el tablero
 
 Tablero::Tablero()
 {
