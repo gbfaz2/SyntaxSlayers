@@ -622,7 +622,6 @@ void Coordinador::mueve(double dt)
 
 	if (estado == EstadoJuego::GUARDANDO) {
 		if (_tiempoGuardado <= 0.0f) {
-			//ETSIDI::stopMusica();
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
 		}

@@ -1,5 +1,4 @@
 
-// Autor: Ines Alcérreca Sánchez
 // Pantalla de destino historico: fondo animado por batalla
 
 #define NOMINMAX 
@@ -9,11 +8,7 @@
 #include <cstdlib>
 #include <algorithm>
 
-// Necesita winmm.lib (se enlaza automaticamente con #pragma comment)
-
-
 static float fr() { return (float)rand() / RAND_MAX; }
-
 
 void PantallaDestino::reiniciar(const ConfigPartida& cfg) {
     m_cfg = cfg;

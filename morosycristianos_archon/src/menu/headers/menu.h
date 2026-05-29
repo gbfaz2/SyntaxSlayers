@@ -1,4 +1,4 @@
-// Autor: Ines Alcérreca Sánchez
+
 // Pantallas INTRO y MENU
 
 #pragma once
@@ -7,7 +7,7 @@
 #include "dibuja.h"
 #include "GestorPartida.h"
 
-class DibujaMenu; // DECLARACION ANTICIPADA
+class DibujaMenu; 
 
 // ============================================================
 // PANTALLA INTRO

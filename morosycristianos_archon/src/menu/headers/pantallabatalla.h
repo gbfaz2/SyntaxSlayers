@@ -1,4 +1,4 @@
-// Autor: Ines Alcérreca Sánchez
+
 // Pantalla DESTINO (SOLO LÓGICA, CERO GRÁFICOS, CERO TEXTURAS)
 
 #pragma once

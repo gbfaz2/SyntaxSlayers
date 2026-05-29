@@ -1,5 +1,4 @@
 
-// Autor: Ines Alcérreca Sánchez
 // Define los estados globales del juego, los modos, bandos y batallas historicas
 
 #pragma once
@@ -26,10 +25,8 @@ enum class EstadoJuego {
     AYUDA,          // Pantalla de ayuda
 };
 
-// Modo de juego
 enum class ModoJuego { NINGUNO, JVJ, JVIA };
 
-// Bando del jugador
 enum class BandoJugador { NINGUNO, CRISTIANO, MUSULMAN };
 
 // Las 4 batallas historicas del juego

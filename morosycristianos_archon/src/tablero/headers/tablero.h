@@ -1,7 +1,5 @@
 
-//Autor: María Heredero
 
-//tablero.h - lógica del tablero 9x9.
 //Lo separamos de tablerogl.h porque tablero sabe qué hay en cada casilla y tablerogl sabe cómo pintarlo
 //cada casilla dinamica tiene un estado que oscila local-neutral-rival-neutral-local-...
 //el cambio se produce gradualmente usando una fase 0.1 que tablerogl interpola para colorear la casilla. Segun la fase 0 maxima ventaja local, 0.5 neutral y 1.0 máxima ventaja rival
