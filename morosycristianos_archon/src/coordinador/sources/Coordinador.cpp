@@ -52,10 +52,21 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::MENU:
+	{
 		// LA PROPIA CLASE DIBUJAMENU ENTRA Y SALE DE 2D INTERNAMENTE
+
+		static bool musicaMenuSonando = false;
+		if (!musicaMenuSonando) {
+			ETSIDI::stopMusica();
+			ETSIDI::playMusica("sonidos/MENU_FONDO.wav", true);
+			musicaMenuSonando = true;
+		}
+
 		DibujaMenu::menu_dibujar(menuPrincipal, _anchoVentana, _altoVentana); // PINTA LAS FASES DEL MENU PRINCIPAL
 
 		if (menuPrincipal.terminado()) {
+			musicaMenuSonando = false;
+
 			EstadoJuego siguiente = menuPrincipal.siguienteEstado();
 			configuracion = menuPrincipal.getConfiguracion();
 			_minimax.setDificultad(configuracion.dificultad);
@@ -69,7 +80,7 @@ void Coordinador::dibuja()
 					pTablerogl = new Tablerogl(pTablero);
 					DibujaTablero::tablero_init();
 					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
-					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN)? bando_rival : bando_local;//FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
+					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN) ? bando_rival : bando_local;//FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
 					pTablerogl->setBandoInicial(bandoInicial);
 
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
@@ -95,7 +106,7 @@ void Coordinador::dibuja()
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
 				}
 			}
-			if (siguiente == EstadoJuego::RANKING) 
+			if (siguiente == EstadoJuego::RANKING)
 			{
 				_rankingTop10 = GestorRanking::cargar();
 				_rankingGanador = ""; // Limpiar para que no muestre resultado anterior
@@ -103,7 +114,7 @@ void Coordinador::dibuja()
 			estado = siguiente;
 		}
 		break;
-
+	}
 	case EstadoJuego::DESTINO:
 		// NUEVO MOTOR GRAFICO CENTRALIZADO GESTIONA ESTA TRANSICION AL COMPLETO
 		DibujaMenu::destino_dibujar(pantallaDestino, _anchoVentana, _altoVentana); // PINTA EFECTOS, FONDOS Y PARTICULAS
@@ -559,7 +570,6 @@ void Coordinador::mueve(double dt)
 		DibujaArena::arena_update((float)dt);
 	}
 }
-
 
 void Coordinador::raton(int boton, int state, int x, int y)
 {
