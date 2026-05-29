@@ -17,7 +17,7 @@ Coordinador::~Coordinador()
 {
 	// ESPERA A QUE EL HILO DE IA TERMINE ANTES DE DESTRUIR TODO
 	if (_hiloIA.joinable()) _hiloIA.join();
-	
+
 	delete pTablerogl; // LIBERA TABLEROGL
 	delete pTablero;   // LIBERA TABLERO
 	delete pGestorHechizos;
@@ -175,7 +175,7 @@ void Coordinador::dibuja()
 			}
 			DibujaTablero::tablero_dibujar(*pTablerogl);
 
-			
+
 			if (pTablerogl->huboColision())
 			{
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
@@ -279,15 +279,19 @@ void Coordinador::dibuja()
 void Coordinador::tecla(unsigned char key)
 {
 	switch (estado) {
+
 	case EstadoJuego::INTRO:
 		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino);
 		break;
+
 	case EstadoJuego::MENU:
 		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino);
 		break;
+
 	case EstadoJuego::DESTINO:
 		gestorInput.teclaMenu(key, estado, pantallaIntro, menuPrincipal, pantallaDestino);
 		break;
+
 	case EstadoJuego::TABLERO:
 		if (key == 27) {
 			if (pTablerogl->_conjuroElegido) {                // NIVEL 1: CANCELA CONJURO ELEGIDO
@@ -324,14 +328,6 @@ void Coordinador::tecla(unsigned char key)
 		gestorInput.teclaArena(key);
 		break;
 
-	default:
-		if (key == 27) {
-			ETSIDI::stopMusica();
-			menuPrincipal.reiniciar();
-			reiniciarTablero();
-		}
-		estado = EstadoJuego::MENU; break;
-
 	case EstadoJuego::VICTORIA:
 		_rankingTop10 = GestorRanking::cargar();
 		estado = EstadoJuego::RANKING;
@@ -345,6 +341,10 @@ void Coordinador::tecla(unsigned char key)
 		}
 		break;
 
+	case EstadoJuego::FINAL:
+		// FINAL no tiene interacción de tecla, cae al default
+		break;
+
 	case EstadoJuego::AYUDA:
 		if (key == 27) {
 			if (_ayudaSeccion == -1)
@@ -353,8 +353,17 @@ void Coordinador::tecla(unsigned char key)
 				_ayudaSeccion = -1; // Vuelve al menu de ayuda
 		}
 		if (key == 13 && _ayudaSeccion == -1) {
-				_ayudaSeccion = _ayudaSeleccion; // Entra en controles o normas
+			_ayudaSeccion = _ayudaSeleccion; // Entra en controles o normas
 		}
+		break;
+
+	default:
+		if (key == 27) {
+			ETSIDI::stopMusica();
+			menuPrincipal.reiniciar();
+			reiniciarTablero();
+		}
+		estado = EstadoJuego::MENU;
 		break;
 	}
 
@@ -383,7 +392,7 @@ void Coordinador::tecla_especial(int key)
 		gestorInput.teclaEspecialGuardando(key, estado);
 		break;
 	case EstadoJuego::AYUDA:
-		if (_ayudaSeccion == -1) 
+		if (_ayudaSeccion == -1)
 		{
 			if (key == GLUT_KEY_UP)   _ayudaSeleccion = (_ayudaSeleccion - 1 + 2) % 2;
 			if (key == GLUT_KEY_DOWN) _ayudaSeleccion = (_ayudaSeleccion + 1) % 2;
@@ -406,7 +415,6 @@ void Coordinador::mueve(double dt)
 
 		if (_framesCargando > 0) _framesCargando--;
 
-		// IA: MUEVE SOLO UNA VEZ POR TURNO
 		// IA: MUEVE SOLO UNA VEZ POR TURNO
 		if (configuracion.modo == ModoJuego::JVIA &&
 			pTablerogl->gestorTurnos.getBandoActual() == bando_rival &&
@@ -494,7 +502,6 @@ void Coordinador::mueve(double dt)
 				pTablerogl->piezaSeleccionada = false; // CANCELA CUALQUIER SELECCIÓN DEL JUGADOR
 			}
 
-			// ACTUALIZA TURNOS Y ANIMACIONES
 			// SI NO HAY COLISIÓN Y LA PIEZA NO ESTÁ VIAJANDO GRÁFICAMENTE, AVANZAMOS EL TURNO DE VERDAD
 			if (!pTablerogl->huboColision() && !pTablerogl->piezaSeleccionada) {
 				pTablerogl->gestorTurnos.update(dt);
@@ -601,22 +608,21 @@ void Coordinador::raton(int boton, int state, int x, int y)
 		gestorInput.ratonGuardando(x, y, true, estado);
 		break;
 	case EstadoJuego::AYUDA:
-		if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1) 
+		if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1)
 		{
 			// Detecta clic en botones Controles/Normas
 			int gy = _altoVentana - y;
 			float btnW = 260, btnH = 48;
 			float btnX = _anchoVentana / 2.0f - btnW / 2.0f;
 			float btnY[2] = { _altoVentana / 2.0f + 20, _altoVentana / 2.0f - 50 };
-			for (int i = 0; i < 2; i++) 
+			for (int i = 0; i < 2; i++)
 			{
-				if (gy >= btnY[i] && gy <= btnY[i] + btnH && x >= btnX && x <= btnX + btnW) 
+				if (gy >= btnY[i] && gy <= btnY[i] + btnH && x >= btnX && x <= btnX + btnW)
 				{
 					_ayudaSeccion = i;
 				}
 			}
 		}
-
 		break;
 
 	default: break;

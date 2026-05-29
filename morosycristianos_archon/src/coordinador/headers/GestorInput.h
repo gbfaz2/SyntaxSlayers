@@ -31,6 +31,7 @@ public:
     void teclaTablero(unsigned char key, EstadoJuego& estado);
     void teclaArena(unsigned char key);
     void teclaGuardando(unsigned char key, EstadoJuego& estado);
+    void teclaAyuda(unsigned char key, EstadoJuego& estado);
 
 
     // TECLA ESPECIAL
@@ -40,6 +41,7 @@ public:
     void teclaEspecialArena(int key);
     void teclaEspecialUpArena(int key);
     void teclaEspecialGuardando(int key, EstadoJuego& estado); // FLECHAS MENÚ PAUSA
+    void teclaEspecialAyuda(int key, EstadoJuego& estado);
 
     // RATON
     void ratonMenu(int boton, int state, int x, int y, EstadoJuego& estado,

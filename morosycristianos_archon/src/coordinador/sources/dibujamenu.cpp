@@ -265,8 +265,12 @@ void DibujaMenu::menu_paso0(MenuPrincipal& m, int ancho, int alto) {
 // ============================================================
 
 void DibujaMenu::menu_paso1(MenuPrincipal& m, int ancho, int alto) {
+    // SOMBRA
     menu_textoCentrado("Selecciona el modo de juego:",
-        ancho / 2.0f, alto - 200, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+        ancho / 2.0f + 2, alto - 198, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+    // TEXTO ENCIMA
+    menu_textoCentrado("Selecciona el modo de juego:",
+        ancho / 2.0f, alto - 200, 1.0f, 0.95f, 0.20f, GLUT_BITMAP_HELVETICA_12);
     float aw = 300, ah = 52, sep = 40;
     float sy = alto / 2.0f + 10;
     menu_opcion("Jugador vs Jugador", ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah, m.m_seleccion == 0);
@@ -446,21 +450,34 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
         ETSIDI::printxy("Andalusi", (int)(bx2 + 6), (int)(bandoY2 - 17));
     }
 
+    // MII
     // BOTÓN CONTINUAR
     float btnW = 200, btnH = 40;
     float btnX = ancho / 2.0f - btnW / 2.0f;
     float btnY = alto * 0.12f;
     menu_opcion("  Continuar ->", btnX, btnY, btnW, btnH, true);
 
-    // INSTRUCCIONES — AHORA VISIBLES
+    // INSTRUCCIONES — CON SOMBRA PARA LEGIBILIDAD
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
-    if (m.m_cfg.modo == ModoJuego::JVJ)
+    if (m.m_cfg.modo == ModoJuego::JVJ) {
+        // SOMBRA
         menu_textoCentrado("TAB: cambiar campo de texto   |   Flechas: cambiar bando",
-            ancho / 2.0f, alto * 0.07f, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
-    else
+            ancho / 2.0f + 2, alto * 0.07f, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+        // TEXTO
+        menu_textoCentrado("TAB: cambiar campo de texto   |   Flechas: cambiar bando",
+            ancho / 2.0f, alto * 0.07f, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_12);
+    }
+    else {
+        // SOMBRA
         menu_textoCentrado("Escribe tu nombre y pulsa ENTER para continuar",
-            ancho / 2.0f, alto * 0.07f, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+            ancho / 2.0f + 2, alto * 0.07f, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+        // TEXTO
+        menu_textoCentrado("Escribe tu nombre y pulsa ENTER para continuar",
+            ancho / 2.0f, alto * 0.07f, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_12);
+    }
+
 }
+
 
 // ============================================================
 // PASO 3 — SELECCIÓN DE BATALLA
@@ -487,8 +504,12 @@ void DibujaMenu::menu_paso3(MenuPrincipal& m, int ancho, int alto) {
         "Los reinos cristianos unidos rompen el poder almohade.",
         "Los Reyes Catolicos completan la Reconquista peninsular."
     };
+	// SOMBRA
     menu_textoCentrado(descripciones[m.m_seleccion],
-        ancho / 2.0f, alto / 2.0f - 150, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+        ancho / 2.0f, alto / 2.0f - 150, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+	// TEXTO
+    menu_textoCentrado(descripciones[m.m_seleccion],
+        ancho / 2.0f, alto / 2.0f - 150, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_12);
 }
 
 // ============================================================
@@ -500,23 +521,34 @@ void DibujaMenu::menu_paso4(MenuPrincipal& m, int ancho, int alto) {
     std::string bando = (m.m_cfg.bando == BandoJugador::CRISTIANO) ? "Cristiano" : "Andalusi";
 
     menu_textoCentrado("Modo:    " + modo,
-        ancho / 2.0f, alto / 2.0f + 80, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+        ancho / 2.0f, alto / 2.0f + 80, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+    menu_textoCentrado("Modo:    " + modo,
+        ancho / 2.0f, alto / 2.0f + 80, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_18);
+
     menu_textoCentrado("J1:      " + m.m_cfg.nombre_j1 + " (" + bando + ")",
-        ancho / 2.0f, alto / 2.0f + 50, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+        ancho / 2.0f, alto / 2.0f + 50, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+    menu_textoCentrado("J1:      " + m.m_cfg.nombre_j1 + " (" + bando + ")",
+        ancho / 2.0f, alto / 2.0f + 50, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_18);
 
     if (m.m_cfg.modo == ModoJuego::JVJ) {
         std::string b2 = (m.m_cfg.bando_j2 == BandoJugador::CRISTIANO) ? "Cristiano" : "Andalusi";
         menu_textoCentrado("J2:      " + m.m_cfg.nombre_j2 + " (" + b2 + ")",
-            ancho / 2.0f, alto / 2.0f + 20, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+            ancho / 2.0f, alto / 2.0f + 20, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+        menu_textoCentrado("J2:      " + m.m_cfg.nombre_j2 + " (" + b2 + ")",
+            ancho / 2.0f, alto / 2.0f + 20, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_18);
     }
     else {
         std::string dif = (m.m_cfg.dificultad == NivelDificultad::FACIL) ? "Facil" :
             (m.m_cfg.dificultad == NivelDificultad::MEDIO) ? "Medio" : "Dificil";
         menu_textoCentrado("IA:      Dificultad " + dif,
-            ancho / 2.0f, alto / 2.0f + 20, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+            ancho / 2.0f, alto / 2.0f + 20, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+        menu_textoCentrado("IA:      Dificultad " + dif,
+            ancho / 2.0f, alto / 2.0f + 20, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_18);
     }
     menu_textoCentrado("Batalla: " + std::string(nombreBatalla(m.m_cfg.batalla)),
-        ancho / 2.0f, alto / 2.0f - 10, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+        ancho / 2.0f, alto / 2.0f - 10, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_18);
+    menu_textoCentrado("Batalla: " + std::string(nombreBatalla(m.m_cfg.batalla)),
+        ancho / 2.0f, alto / 2.0f - 10, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_18);
 
     float aw = 180, ah = 44, sep = 30;
     float cy = alto / 2.0f - 70;
@@ -743,68 +775,162 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto,
 void DibujaMenu::ayuda_dibujar(int seleccion, int seccion, int ancho, int alto)
 {
     util_entrar2D(ancho, alto);
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0, 0, 0, 0.85f);
-    glBegin(GL_QUADS);glVertex2f(0, 0);glVertex2f(ancho, 0);glVertex2f(ancho, alto);glVertex2f(0, alto);glEnd();
-    glDisable(GL_BLEND);
+
+    // FONDO CON TEXTURA BORROSA — igual que pasos 1-4 del menú
+    unsigned int texturaId = ETSIDI::getTexture("imagenes/FONDO_MENU_BORROSO.png").id;
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texturaId);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, (float)alto);
+    glTexCoord2f(1.0f, 0.0f); glVertex2f((float)ancho, (float)alto);
+    glTexCoord2f(1.0f, 1.0f); glVertex2f((float)ancho, 0.0f);
+    glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+
+    // TÍTULO IGUAL QUE menu_titulo
+    ETSIDI::setFont("fuentes\\ALGER.TTF", 45);
+    ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f);
+    ETSIDI::printxy("MOROS Y CRISTIANOS", ancho / 2 - 280, alto - 100);
+    ETSIDI::setFont("fuentes\\BRUSHSCI.TTF", 30);
+    ETSIDI::setTextColor(0.75f, 0.75f, 0.75f, 1.0f);
+    ETSIDI::printxy("- La Reconquista -", ancho / 2 - 130, alto - 140);
+    glColor3f(1.0f, 0.85f, 0.10f); glLineWidth(1.5f);
+    glBegin(GL_LINES);
+    glVertex2f(ancho * 0.05f, alto - 155);
+    glVertex2f(ancho * 0.95f, alto - 155);
+    glEnd();
+    glLineWidth(1.0f);
 
     if (seccion == -1) {
-        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 32);
-        ETSIDI::printxy("AYUDA", ancho / 2 - 50, alto - 100);
-        const char* ops[2] = { "Controles","Normas" };
-        float btnW = 260, btnH = 48, btnX = ancho / 2.0f - btnW / 2.0f;
-        float btnY[2] = { alto / 2.0f + 20,alto / 2.0f - 50 };
-        for (int i = 0;i < 2;i++) {
-            bool sel = (seleccion == i);
-            dibujarRectRedondeado(btnX, btnY[i], btnW, btnH, 8.0f,
-                sel ? 0.55f : 0.30f, sel ? 0.15f : 0.10f, sel ? 0.80f : 0.50f, 0.95f);
-            dibujarBordeRedondeado(btnX, btnY[i], btnW, btnH, 8.0f, 0.85f, 0.70f, 0.25f, sel ? 2.5f : 1.5f);
-            ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18);
-            if (sel) ETSIDI::setTextColor(1.0f, 1.0f, 0.0f, 1.0f);
-            else     ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
-            ETSIDI::printxy(ops[i], (int)(btnX + 80), (int)(btnY[i] + 14));
-        }
-        ETSIDI::setTextColor(0.6f, 0.6f, 0.6f, 1.0f); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-        ETSIDI::printxy("ESC: volver a pausa  |  ENTER: seleccionar", ancho / 2 - 160, 30);
+        // SELECTOR DE SECCIÓN — igual que paso 1
+        menu_textoCentrado("Selecciona una seccion:",
+            ancho / 2.0f, alto - 200, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+
+        float aw = 300, ah = 52, sep = 40;
+        float sy = alto / 2.0f + 10;
+        menu_opcion("  Controles", ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah, seleccion == 0);
+        menu_opcion("  Normas", ancho / 2.0f + sep / 2.0f, sy, aw, ah, seleccion == 1);
+
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("ESC: volver a pausa  |  ENTER o Click: seleccionar", ancho / 2 - 180, 18);
     }
     else if (seccion == 0) {
-        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 24);
-        ETSIDI::printxy("CONTROLES", ancho / 2 - 70, alto - 60);
-        ETSIDI::setTextColor(1, 1, 1, 1); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
-        int x = ancho / 2 - 300, y = alto - 90, sep = 22;
-        ETSIDI::printxy("TABLERO:", x, y);y -= sep;
-        ETSIDI::printxy("  W/A/S/D         Mover cursor J1", x, y);y -= sep;
-        ETSIDI::printxy("  ESPACIO         Seleccionar/Mover pieza J1", x, y);y -= sep;
-        ETSIDI::printxy("  FLECHAS         Mover cursor J2", x, y);y -= sep;
-        ETSIDI::printxy("  PUNTO (.)       Seleccionar/Mover pieza J2", x, y);y -= sep;
-        ETSIDI::printxy("  H / J           Hechizos J1 / J2", x, y);y -= sep;
-        ETSIDI::printxy("  1/2/3/4         Elegir hechizo activo", x, y);y -= sep;
-        ETSIDI::printxy("  I               Habilidad Infiltrado", x, y);y -= sep;
-        ETSIDI::printxy("  ESC             Menu pausa", x, y);y -= sep + 10;
-        ETSIDI::printxy("ARENA:", x, y);y -= sep;
-        ETSIDI::printxy("  W/A/S/D / F     Mover / Atacar J1", x, y);y -= sep;
-        ETSIDI::printxy("  FLECHAS / L     Mover / Atacar J2 (JvJ)", x, y);y -= sep;
-        ETSIDI::printxy("  ENTER           Volver al tablero", x, y);
-        ETSIDI::setTextColor(0.6f, 0.6f, 0.6f, 1.0f); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-        ETSIDI::printxy("ESC: volver", ancho / 2 - 40, 30);
+        // CABECERA CONTROLES
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 20);
+        ETSIDI::setTextColor(1.0f, 0.90f, 0.30f, 1.0f);
+        ETSIDI::printxy("CONTROLES", ancho / 2 - 60, alto - 175);
+        glColor3f(1.0f, 0.85f, 0.20f); glLineWidth(1.0f);
+        glBegin(GL_LINES);
+        glVertex2f(ancho * 0.05f, alto - 188);
+        glVertex2f(ancho * 0.95f, alto - 188);
+        glEnd();
+
+        // DOS COLUMNAS: TABLERO | ARENA
+        float col1X = ancho * 0.07f;
+        float col2X = ancho * 0.52f;
+        int y1 = (int)(alto * 0.72f);
+        int y2 = y1;
+        int sep = 22;
+
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("TABLERO", (int)col1X, y1); y1 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  W/A/S/D       Mover cursor J1", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  ESPACIO       Seleccionar/Mover pieza J1", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  FLECHAS       Mover cursor J2", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  PUNTO (.)     Seleccionar/Mover pieza J2", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  H / J         Hechizos J1 / J2", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  1/2/3/4       Elegir hechizo activo", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  I             Habilidad Infiltrado", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  ESC           Menu de pausa", (int)col1X, y1);
+
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("ARENA", (int)col2X, y2); y2 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  W/A/S/D       Mover J1", (int)col2X, y2); y2 -= sep;
+        ETSIDI::printxy("  F             Atacar J1", (int)col2X, y2); y2 -= sep;
+        ETSIDI::printxy("  FLECHAS       Mover J2 (JvJ)", (int)col2X, y2); y2 -= sep;
+        ETSIDI::printxy("  L             Atacar J2 (JvJ)", (int)col2X, y2); y2 -= sep;
+        ETSIDI::printxy("  ENTER         Volver al tablero", (int)col2X, y2);
+
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("ESC: volver", ancho / 2 - 40, 18);
     }
     else if (seccion == 1) {
-        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 24);
-        ETSIDI::printxy("NORMAS", ancho / 2 - 50, alto - 60);
-        ETSIDI::setTextColor(1, 1, 1, 1); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 15);
-        int x = ancho / 2 - 300, y = alto - 110, sep = 26;
-        ETSIDI::printxy("OBJETIVO: Ganar por una de estas condiciones:", x, y);y -= sep;
-        ETSIDI::printxy("  1. Controlar los 5 Bastiones del tablero.", x, y);y -= sep;
-        ETSIDI::printxy("  2. Eliminar todas las piezas enemigas.", x, y);y -= sep;
-        ETSIDI::printxy("  3. Dejar al rival con una sola pieza bloqueada.", x, y);y -= sep + 10;
-        ETSIDI::printxy("TURNO: Cada jugador mueve una pieza. Si el tiempo acaba, pasa el turno.", x, y);y -= sep + 10;
-        ETSIDI::printxy("COMBATE: Si dos piezas coinciden se abre la arena.", x, y);y -= sep;
-        ETSIDI::printxy("  El ganador ocupa la casilla con la vida restante.", x, y);y -= sep + 10;
-        ETSIDI::printxy("HECHIZOS (uso unico): Avituallamiento / Rutas / Relevo / Asedio", x, y);y -= sep + 10;
-        ETSIDI::printxy("INFILTRADO: Selecciona + I para copiar stats de un enemigo.", x, y);y -= sep;
-        ETSIDI::printxy("CASILLAS DINAMICAS: cambian de bando cada 4 turnos.", x, y);
-        ETSIDI::setTextColor(0.6f, 0.6f, 0.6f, 1.0f); ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-        ETSIDI::printxy("ESC: volver", ancho / 2 - 40, 30);
+        // CABECERA NORMAS
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 20);
+        ETSIDI::setTextColor(1.0f, 0.90f, 0.30f, 1.0f);
+        ETSIDI::printxy("NORMAS", ancho / 2 - 40, alto - 175);
+        glColor3f(1.0f, 0.85f, 0.20f); glLineWidth(1.0f);
+        glBegin(GL_LINES);
+        glVertex2f(ancho * 0.05f, alto - 188);
+        glVertex2f(ancho * 0.95f, alto - 188);
+        glEnd();
+
+        // DOS COLUMNAS: OBJETIVO+TURNO+COMBATE | HECHIZOS+ESPECIAL
+        float col1X = ancho * 0.07f;
+        float col2X = ancho * 0.52f;
+        int y1 = (int)(alto * 0.72f);
+        int y2 = y1;
+        int sep = 24;
+
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("OBJETIVO", (int)col1X, y1); y1 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  1. Controlar los 5 Bastiones del tablero.", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  2. Eliminar todas las piezas enemigas.", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  3. Dejar al rival con una pieza bloqueada.", (int)col1X, y1); y1 -= sep + 8;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("TURNO", (int)col1X, y1); y1 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  Cada jugador mueve una pieza por turno.", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  Si el tiempo se acaba, el turno pasa.", (int)col1X, y1); y1 -= sep + 8;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("COMBATE", (int)col1X, y1); y1 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  Dos piezas coinciden -> se abre la arena.", (int)col1X, y1); y1 -= sep;
+        ETSIDI::printxy("  El ganador ocupa la casilla con vida restante.", (int)col1X, y1);
+
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("HECHIZOS (uso unico)", (int)col2X, y2); y2 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  1. Avituallamiento: cura pieza a vida maxima.", (int)col2X, y2); y2 -= sep;
+        ETSIDI::printxy("  2. Rutas Secretas: teleporta pieza aliada.", (int)col2X, y2); y2 -= sep;
+        ETSIDI::printxy("  3. Relevo: intercambia dos piezas aliadas.", (int)col2X, y2); y2 -= sep;
+        ETSIDI::printxy("  4. Asedio: bloquea una pieza enemiga.", (int)col2X, y2); y2 -= sep + 8;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("INFILTRADO", (int)col2X, y2); y2 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  Selecciona + I para copiar stats de enemigo.", (int)col2X, y2); y2 -= sep + 8;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("CASILLAS DINAMICAS", (int)col2X, y2); y2 -= sep;
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy("  Cambian de bando cada 4 turnos.", (int)col2X, y2);
+
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+        ETSIDI::setTextColor(0.90f, 0.85f, 0.60f, 1.0f);
+        ETSIDI::printxy("ESC: volver", ancho / 2 - 40, 18);
     }
+
     util_salir2D();
 }

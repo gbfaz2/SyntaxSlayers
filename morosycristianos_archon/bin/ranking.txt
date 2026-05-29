@@ -1,4 +1,4 @@
-Jugador 1 591 9 -4 Reconquista de Granada (1492)
+Jugador 1 690 10 -3 Batalla de Guadalete (711)
 ines 587 13 -4 Las Navas de Tolosa (1212)
 Jugador 2 587 13 -4 Batalla de Guadalete (711)
 Jugador 1 586 14 -4 Batalla de Guadalete (711)

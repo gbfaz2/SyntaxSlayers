@@ -14,41 +14,33 @@ void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
     PantallaIntro& intro, MenuPrincipal& menu, PantallaDestino& destino)
 {
     switch (estado) {
+
     case EstadoJuego::INTRO:
-        intro.saltar();
+        intro.saltar(); // CUALQUIER TECLA SALTA LA INTRO
         break;
 
     case EstadoJuego::MENU:
+
         if (key == 27) { // ESC: RETROCEDE UN PASO
-
-            //if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; menu.m_nombreActual = ""; }
-
-            if (menu.m_paso > 0) { menu.m_paso--; menu.m_seleccion = 0; }
-
-            else { menu.m_siguiente = EstadoJuego::INTRO; menu.m_terminado = true; }
+            if (menu.m_paso == 4) { menu.m_paso = 3; menu.m_seleccion = 0; }       // CONFIRMAR → BATALLA
+            else if (menu.m_paso == 3) { menu.m_paso = 2; menu.m_seleccion = 0; }  // BATALLA → CONFIG
+            else if (menu.m_paso == 2) { menu.m_paso = 1; menu.m_seleccion = 0; }  // CONFIG → MODO
+            else if (menu.m_paso == 1) { menu.m_paso = 0; menu.m_seleccion = 0; }  // MODO → PRINCIPAL
+            else { menu.m_siguiente = EstadoJuego::INTRO; menu.m_terminado = true; } // PRINCIPAL → INTRO
             return;
         }
-        if (menu.m_paso == 2) {
-            if (key == '\t') {
-                // TAB CAMBIA FOCO ENTRE J1 Y J2 (SOLO EN JVJ)
-                if (menu.m_cfg.modo == ModoJuego::JVJ)
-                    menu.m_focoNombre = (menu.m_focoNombre == 0) ? 1 : 0;
-            }
-            else if (menu.m_focoNombre == 0)
-                menu.teclaTextoJ1(key);
-            else
-                menu.teclaTextoJ2(key);
-        }
-        else {
-            if (key == 13) menu.confirmar(); // ENTER CONFIRMA EN RESTO DE PASOS
-        }
+        if (menu.m_paso == 2) // PASO 2: CAPTURA NOMBRES Y TAB PARA CAMBIAR FOCO
+            menu.teclaTexto(key);
+        else
+            if (key == 13) menu.confirmar(); // RESTO DE PASOS: SOLO ENTER CONFIRMA
         break;
 
     case EstadoJuego::DESTINO:
-        destino.avanzar();
+        destino.avanzar(); // CUALQUIER TECLA AVANZA LA PANTALLA
         break;
 
-    default: break;
+    default:
+        break;
     }
 }
 
@@ -56,47 +48,61 @@ void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal&
 {
     if (estado != EstadoJuego::MENU) return;
 
-    // ¡CUIDADO AQUÍ GABRI! Antes tenías un 'return' directo si maxOpciones() era 0.
-    // Eso mataba la función entera y por eso el Paso 2 nunca recibía las flechas.
-    // Solución: Metemos la lógica global dentro de un 'if' normal para que solo 
-    // se salte la navegación del menú principal, pero siga leyendo lo de abajo.
+    if (menu.m_paso == 2) {
+        // FLECHAS IZQUIERDA/DERECHA: CAMBIAN BANDO DE QUIEN TIENE EL FOCO
+        if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
+            if (menu.m_focoNombre == 0) {
+                // CAMBIA BANDO J1
+                menu.m_cfg.bando = (menu.m_cfg.bando == BandoJugador::CRISTIANO)
+                    ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+            }
+            else if (menu.m_focoNombre == 1 && menu.m_cfg.modo == ModoJuego::JVJ) {
+                // CAMBIA BANDO J2 (automáticamente opuesto, pero por si acaso)
+                menu.m_cfg.bando_j2 = (menu.m_cfg.bando_j2 == BandoJugador::CRISTIANO)
+                    ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+            }
+        }
+        return; // EN PASO 2 LAS FLECHAS SOLO CAMBIAN BANDO
+    }
+
+    // FLECHAS ARRIBA/ABAJO: NAVEGAN LA SELECCIÓN
     if (menu.maxOpciones() > 0) {
-        if (key == GLUT_KEY_UP)
-            menu.m_seleccion = (menu.m_seleccion - 1 + menu.maxOpciones()) % menu.maxOpciones();
-        if (key == GLUT_KEY_DOWN)
-            menu.m_seleccion = (menu.m_seleccion + 1) % menu.maxOpciones();
-    }
-
-    // PASO 1: FLECHAS IZQUIERDA/DERECHA PARA ELEGIR MODO (se queda igual)
-    if (menu.m_paso == 1) {
-        if (key == GLUT_KEY_LEFT)  menu.m_seleccion = 0;
-        if (key == GLUT_KEY_RIGHT) menu.m_seleccion = 1;
-    }
-
-    // PASO 2 JVJ: ¡AHORA SÍ VA A LLEGAR AQUÍ! 
-    // FLECHAS IZQUIERDA/DERECHA CAMBIAN BANDO DE J1
-    if (menu.m_paso == 2 && menu.m_cfg.modo == ModoJuego::JVJ) {
-        if (key == GLUT_KEY_LEFT)
-            menu.m_cfg.bando = BandoJugador::CRISTIANO;
-        if (key == GLUT_KEY_RIGHT)
-            menu.m_cfg.bando = BandoJugador::MUSULMAN;
-    }
-
-    // PASO 2 JVIA: ¡Y TAMBIÉN LLEGARÁ AQUÍ! 
-    // FLECHAS ARRIBA/ABAJO CAMBIAN DIFICULTAD
-    if (menu.m_paso == 2 && menu.m_cfg.modo == ModoJuego::JVIA) {
-        if (key == GLUT_KEY_UP || key == GLUT_KEY_LEFT) {
-            if (menu.m_cfg.dificultad == NivelDificultad::MEDIO)
-                menu.m_cfg.dificultad = NivelDificultad::FACIL;
-            else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL)
-                menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+        if (key == GLUT_KEY_UP) {
+            if (menu.m_seleccion > 0) menu.m_seleccion--;
+            else menu.m_seleccion = menu.maxOpciones() - 1;
         }
-        if (key == GLUT_KEY_DOWN || key == GLUT_KEY_RIGHT) {
-            if (menu.m_cfg.dificultad == NivelDificultad::FACIL)
-                menu.m_cfg.dificultad = NivelDificultad::MEDIO;
-            else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO)
-                menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+        if (key == GLUT_KEY_DOWN) {
+            if (menu.m_seleccion < menu.maxOpciones() - 1) menu.m_seleccion++;
+            else menu.m_seleccion = 0;
         }
+    }
+
+    // FLECHAS IZQUIERDA/DERECHA EN PASO 1 Y 4 (opciones horizontales)
+    if (menu.m_paso == 1 || menu.m_paso == 4) {
+        if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT)
+            menu.m_seleccion = (menu.m_seleccion == 0) ? 1 : 0;
+    }
+
+}
+
+void GestorInput::teclaEspecialAyuda(int key, EstadoJuego& estado)
+{
+    if (_coordinador->_ayudaSeccion == -1) {
+        if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT ||
+            key == GLUT_KEY_UP || key == GLUT_KEY_DOWN)
+            _coordinador->_ayudaSeleccion = (_coordinador->_ayudaSeleccion == 0) ? 1 : 0;
+    }
+}
+
+void GestorInput::teclaAyuda(unsigned char key, EstadoJuego& estado)
+{
+    if (key == 13 && _coordinador->_ayudaSeccion == -1)
+        _coordinador->_ayudaSeccion = _coordinador->_ayudaSeleccion; // ENTRA EN SECCIÓN
+    if (key == 27) {
+        if (_coordinador->_ayudaSeccion != -1)
+            _coordinador->_ayudaSeccion = -1; // VUELVE AL SELECTOR
+        else
+            estado = EstadoJuego::MENU;        // VUELVE AL MENÚ
     }
 }
 
@@ -104,96 +110,36 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
     EstadoJuego& estado, PantallaIntro& intro,
     MenuPrincipal& menu, PantallaDestino& destino)
 {
-    if (state != GLUT_DOWN) return; // SOLO AL PULSAR
+    if (state != GLUT_DOWN) return;
 
     switch (estado) {
     case EstadoJuego::INTRO:
         intro.saltar();
         break;
-    case EstadoJuego::DESTINO:
-        destino.avanzar();
-        break;
     case EstadoJuego::MENU:
         if (boton == GLUT_LEFT_BUTTON) {
-
-            ratonMovidoMenu(x, y, estado, menu); // ACTUALIZA SELECCIÓN / BANDO
-
-            int gy = _alto - y; // Invertimos la Y para que cuadre con OpenGL
-
-            // Helper para comprobar si el ratón está dentro de un botón
-            auto enCaja = [&](float bx, float by, float baw, float bah) {
-                return x >= bx && x <= bx + baw && gy >= by && gy <= by + bah;
-                };
-
-            // EN EL PASO 2 (CONFIGURACIÓN) SOLO CONFIRMAMOS SI SE CLICA "CONTINUAR"
+            ratonMovidoMenu(x, y, estado, menu);
             if (menu.m_paso == 2) {
-                float mitad = _ancho / 2.0f;
-                float colW = mitad * 0.80f;
-                float col1X = mitad - colW - 20;
-                float col2X = mitad + 20;
-                float topY = _alto * 0.60f;
-                float campoY = topY - 50.0f;
-                float bandoY = campoY - 80.0f;
-                float bw = (colW - 10) / 2.0f;
-
-                // Focos nombre
-                if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0;
-                if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1;
-
-                // BANDOS (Solo si es modo JvJ)
-                if (menu.m_cfg.modo == ModoJuego::JVJ) {
-                    if (enCaja(col1X, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::CRISTIANO;
-                    if (enCaja(col1X + bw + 10, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::MUSULMAN;
-                    if (enCaja(col2X, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::MUSULMAN;
-                    if (enCaja(col2X + bw + 10, bandoY - 30, bw, 36)) menu.m_cfg.bando = BandoJugador::CRISTIANO;
-                }
-
-                if (menu.m_cfg.modo == ModoJuego::JVIA) {
-                    NivelDificultad nivelesEnum[] = { NivelDificultad::FACIL, NivelDificultad::MEDIO, NivelDificultad::DIFICIL };
-                    for (int i = 0; i < 3; i++) {
-                        float dy = campoY - 30 - i * 46;
-                        if (enCaja(col2X, dy, colW, 36)) menu.m_cfg.dificultad = nivelesEnum[i];
-                    }
-                }
-
-                // Continuar
+                int gy = _alto - y;
                 float btnW = 200, btnH = 40;
-                float btnX = _ancho / 2.0f - btnW / 2.0f, btnY = _alto * 0.12f;
-                if (enCaja(btnX, btnY, btnW, btnH)) menu.confirmar();
+                float btnX = _ancho / 2.0f - btnW / 2.0f;
+                float btnY = _alto * 0.12f;
+                if (x >= btnX && x <= btnX + btnW && gy >= btnY && gy <= btnY + btnH)
+                    menu.confirmar();
             }
             else {
-                bool clicValido = false; // 
-
-                if (menu.m_paso == 0) {
-                    float aw = 240, ah = 52, sep = 12;
-                    float sx = _ancho * 0.08f, sy = _alto / 2.0f + 110;
-                    for (int i = 0; i < 5; i++)
-                        if (enCaja(sx, sy - i * (ah + sep), aw, ah)) {
-                            menu.m_seleccion = i;
-                            clicValido = true; // Solo si está dentro de una caja, es válido
-                        }
-                }
-                else if (menu.m_paso == 1) {
-                    float aw = 260, ah = 55, sep = 30, sy = _alto / 2.0f + 10;
-                    if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) { menu.m_seleccion = 0; clicValido = true; }
-                    if (enCaja(_ancho / 2.0f + sep / 2.0f, sy, aw, ah)) { menu.m_seleccion = 1; clicValido = true; }
-                }
-                else if (menu.m_paso == 3) {
-                    float aw = 360, ah = 48, sep = 12, sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 90;
-                    for (int i = 0; i < 4; i++)
-                        if (enCaja(sx, sy - i * (ah + sep), aw, ah)) { menu.m_seleccion = i; clicValido = true; }
-                }
-                else if (menu.m_paso == 4) {
-                    float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 70;
-                    if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) { menu.m_seleccion = 0; clicValido = true; }
-                    if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah)) { menu.m_seleccion = 1; clicValido = true; }
-                }
-
-                // Solo avanza de pantalla si el click fue dentro de un botón real
-                if (clicValido) menu.confirmar();
+                menu.confirmar();
             }
         }
         break;
+    case EstadoJuego::DESTINO:
+        destino.avanzar();
+        break;
+        if (boton == GLUT_LEFT_BUTTON) {
+            ratonMovidoMenu(x, y, estado, menu); // ← actualiza selección Y puede llamar confirmar()
+            if (menu.m_paso != 2)                // ← este guard llega TARDE si ratonMovido ya confirmó
+                menu.confirmar();
+        }
     default:
         break;
     }
@@ -202,44 +148,53 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
 void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrincipal& menu)
 {
     if (estado != EstadoJuego::MENU) return;
+
     int gy = _alto - my;
 
     auto enCaja = [&](float x, float y, float aw, float ah) {
         return mx >= x && mx <= x + aw && gy >= y && gy <= y + ah;
         };
 
+    // PASO 0: Menú Principal (5 opciones verticales)
     if (menu.m_paso == 0) {
-        // Sincronizamos con las cajas más estrechitas y altas
         float aw = 240, ah = 52, sep = 12;
-        float sx = _ancho * 0.08f, sy = _alto / 2.0f + 110;
+        float sx = _ancho * 0.08f;
+        float sy = _alto / 2.0f + 110;
         for (int i = 0; i < 5; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
+    // PASO 1: Elegir Modo (JvJ / JvIA, horizontales)
     else if (menu.m_paso == 1) {
-        float aw = 260, ah = 55, sep = 30;
+        float aw = 300, ah = 52, sep = 40;
         float sy = _alto / 2.0f + 10;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, sy, aw, ah)) menu.m_seleccion = 0;
-        if (enCaja(_ancho / 2.0f + sep / 2.0f, sy, aw, ah)) menu.m_seleccion = 1;
+        if (enCaja(_ancho / 2.0f + sep / 2.0f, sy, aw, ah))      menu.m_seleccion = 1;
     }
+    // PASO 2: Configuración — clic cambia foco de nombre y bando
     else if (menu.m_paso == 2) {
         float mitad = _ancho / 2.0f;
         float colW = mitad * 0.80f;
         float col1X = mitad - colW - 20;
         float col2X = mitad + 20;
-        float topY = _alto * 0.60f; // 🔥 Mismo valor
-        float campoY = topY - 50.0f;
+        float campoY = _alto * 0.60f - 50;
 
-        if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0;
-        if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1;
+        // BOTÓN CONTINUAR — solo actualiza hover, NO llama confirmar()
+        float btnW = 200, btnH = 40;
+        float btnX = _ancho / 2.0f - btnW / 2.0f;
+        float btnY = _alto * 0.12f;
     }
+    // PASO 3: Selección de Batalla (4 opciones verticales)
     else if (menu.m_paso == 3) {
-        float aw = 360, ah = 48, sep = 12;
-        float sx = _ancho / 2.0f - aw / 2.0f, sy = _alto / 2.0f + 90;
+        float aw = 400, ah = 48, sep = 12;
+        float sx = _ancho / 2.0f - aw / 2.0f;
+        float sy = _alto / 2.0f + 90;
         for (int i = 0; i < 4; i++)
             if (enCaja(sx, sy - i * (ah + sep), aw, ah)) menu.m_seleccion = i;
     }
+    // PASO 4: Confirmar (JUGAR / VOLVER, horizontales)
     else if (menu.m_paso == 4) {
-        float aw = 180, ah = 44, sep = 30, cy = _alto / 2.0f - 70;
+        float aw = 180, ah = 44, sep = 30;
+        float cy = _alto / 2.0f - 70;
         if (enCaja(_ancho / 2.0f - aw - sep / 2.0f, cy, aw, ah)) menu.m_seleccion = 0;
         if (enCaja(_ancho / 2.0f + sep / 2.0f, cy, aw, ah))      menu.m_seleccion = 1;
     }
@@ -687,8 +642,9 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ESC SIEMPRE VUELVE AL MENU
     if (key == 27) {
+        ETSIDI::stopMusica();
+        _coordinador->reiniciarTablero();
         _coordinador->estado = EstadoJuego::GUARDANDO;
-        _coordinador->_tiempoGuardado = 10.0f;
         return;
     }
 
@@ -696,42 +652,70 @@ void GestorInput::teclaArena(unsigned char key)
     if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
         bool ganaP1 = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
 
-        if (ganaP1) {
-            Pieza* atacante = _coordinador->_pAtacanteCombate;
-            Pieza* defensora = _coordinador->_pDefensoraCombate;
-            if (atacante && defensora && _coordinador->pTablero) {
-                int filaAtacante = atacante->getFila();
-                int colAtacante = atacante->getColumna();
-                int filaDefensora = defensora->getFila();
-                int colDefensora = defensora->getColumna();
+        // P1 FUE EL JUGADOR LOCAL, P2 FUE EL RIVAL
+        bool atacanteEraLocal = (_coordinador->_pAtacanteCombate &&
+            _coordinador->_pAtacanteCombate->getBando() == Bando::CRISTIANO);
 
-                Casilla& cDef = _coordinador->pTablero->getCasilla(filaDefensora, colDefensora);
-                delete cDef.obj;                         // ELIMINA PIEZA PERDEDORA
-                cDef.obj = nullptr;
-                cDef.pieza = pieza_nada;
-                cDef.bando = bando_nada;
+        Pieza* pJugador = atacanteEraLocal ? _coordinador->_pAtacanteCombate
+            : _coordinador->_pDefensoraCombate;
+        Pieza* pRival = atacanteEraLocal ? _coordinador->_pDefensoraCombate
+            : _coordinador->_pAtacanteCombate;
 
-                _coordinador->pTablero->muevePieza(filaAtacante, colAtacante, filaDefensora, colDefensora);
+        bool ganaJugador = ganaP1; // P1 siempre fue el jugador
+
+        if (ganaJugador) {
+            bool jugadorEraAtacante = (_coordinador->_pAtacanteCombate->getBando() == Bando::CRISTIANO);
+
+            if (jugadorEraAtacante) {
+                // JUGADOR ATACÓ Y GANÓ → elimina defensora, mueve atacante a su casilla
+                Casilla& cDef = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+                delete cDef.obj;
+                cDef.obj = nullptr; cDef.pieza = pieza_nada; cDef.bando = bando_nada;
+
+                _coordinador->pTablero->muevePieza(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante,
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+
+                if (pJugador) pJugador->setVida((int)_coordinador->_arena.p1().vida());
+            }
+            else {
+                // RIVAL ATACÓ, JUGADOR DEFENDIÓ Y GANÓ → elimina atacante, defensora se queda
+                Casilla& cAtac = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante);
+                delete cAtac.obj;
+                cAtac.obj = nullptr; cAtac.pieza = pieza_nada; cAtac.bando = bando_nada;
+
+                // LA DEFENSORA YA ESTÁ EN SU CASILLA, SOLO ACTUALIZAMOS SU VIDA
+                if (pJugador) pJugador->setVida((int)_coordinador->_arena.p1().vida());
             }
         }
         else {
-            Pieza* atacante = _coordinador->_pAtacanteCombate;
-            if (atacante && _coordinador->pTablero) {
-                int fila = atacante->getFila();
-                int col = atacante->getColumna();
-                Casilla& c = _coordinador->pTablero->getCasilla(fila, col);
-                delete c.obj;                            // ELIMINA PIEZA PERDEDORA
-                c.obj = nullptr;
-                c.pieza = pieza_nada;
-                c.bando = bando_nada;
+            bool jugadorEraAtacante = (_coordinador->_pAtacanteCombate->getBando() == Bando::CRISTIANO);
+
+            if (jugadorEraAtacante) {
+                // JUGADOR ATACÓ Y PERDIÓ → elimina atacante (jugador)
+                Casilla& c = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante);
+                delete c.obj;
+                c.obj = nullptr; c.pieza = pieza_nada; c.bando = bando_nada;
+
+                if (pRival) pRival->setVida((int)_coordinador->_arena.p2().vida());
+            }
+            else {
+                // RIVAL ATACÓ Y GANÓ → elimina defensora (jugador), mueve atacante a su casilla
+                Casilla& cDef = _coordinador->pTablero->getCasilla(
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+                delete cDef.obj;
+                cDef.obj = nullptr; cDef.pieza = pieza_nada; cDef.bando = bando_nada;
+
+                _coordinador->pTablero->muevePieza(
+                    _coordinador->_filaAtacante, _coordinador->_colAtacante,
+                    _coordinador->_filaDefensora, _coordinador->_colDefensora);
+
+                if (pRival) pRival->setVida((int)_coordinador->_arena.p2().vida());
             }
         }
-
-        // GUARDA LA VIDA RESTANTE DE LA GANADORA
-        if (ganaP1 && _coordinador->_pAtacanteCombate)
-            _coordinador->_pAtacanteCombate->setVida((int)_coordinador->_arena.p1().vida());
-        else if (!ganaP1 && _coordinador->_pDefensoraCombate)
-            _coordinador->_pDefensoraCombate->setVida((int)_coordinador->_arena.p2().vida());
 
         _coordinador->_pAtacanteCombate = nullptr;
         _coordinador->_pDefensoraCombate = nullptr;
