@@ -214,7 +214,7 @@ void Coordinador::dibuja()
 				_grabandoCombate = true;
 
 				ETSIDI::stopMusica();
-				ETSIDI::playMusica("sonidos/ARENA.mp3");
+				ETSIDI::playMusica("sonidos/ARENA.mp3", true);
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				DibujaArena::resetFlash();
 				pTablerogl->limpiarCombate();
@@ -403,6 +403,7 @@ void Coordinador::tecla(unsigned char key)
 	case EstadoJuego::AYUDA:
 		if (key == 27) {
 			if (_ayudaSeccion == -1) {
+				ETSIDI::playMusica("sonidos/MENU.mp3", true);
 				estado = EstadoJuego::GUARDANDO; // Vuelve a pausa
 			}else
 				_ayudaSeccion = -1; // Vuelve al menu de ayuda
