@@ -718,10 +718,10 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ESC SIEMPRE VUELVE AL MENU
     if (key == 27) {
-        //ETSIDI::stopMusica();
+        ETSIDI::stopMusica();
         
         _coordinador->reiniciarTablero();
-        _coordinador->estado = EstadoJuego::GUARDANDO;
+        _coordinador->estado = EstadoJuego::MENU;
         ETSIDI::playMusica("sonidos/MENU.mp3", true);
         
         return;
@@ -729,6 +729,7 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ENTER VUELVE AL TABLERO SI EL COMBATE HA TERMINADO
     if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
+        ETSIDI::stopMusica();
         bool ganaP1 = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
 
         // P1 FUE EL JUGADOR LOCAL, P2 FUE EL RIVAL

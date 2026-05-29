@@ -214,7 +214,7 @@ void Coordinador::dibuja()
 				_grabandoCombate = true;
 
 				ETSIDI::stopMusica();
-				ETSIDI::play("sonidos/ARENA.mp3");
+				ETSIDI::playMusica("sonidos/ARENA.mp3");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				DibujaArena::resetFlash();
 				pTablerogl->limpiarCombate();
@@ -271,6 +271,8 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::VICTORIA:
+		
+
 		DibujaMenu::victoria_dibujar(_anchoVentana, _altoVentana,
 			_rankingGanador, _rankingBatalla, _rankingGanaJ1, _tiempoVictoria);
 		break;
@@ -410,9 +412,9 @@ void Coordinador::tecla(unsigned char key)
 
 	case EstadoJuego::AYUDA:
 		if (key == 27) {
-			if (_ayudaSeccion == -1)
+			if (_ayudaSeccion == -1) {
 				estado = EstadoJuego::GUARDANDO; // Vuelve a pausa
-			else
+			}else
 				_ayudaSeccion = -1; // Vuelve al menu de ayuda
 		}
 		if (key == 13 && _ayudaSeccion == -1) {
@@ -623,6 +625,8 @@ void Coordinador::mueve(double dt)
 
 				_rankingTop10 = GestorRanking::cargar();
 				_tiempoVictoria = 10.0f;
+
+				ETSIDI::playMusica("sonidos/VICTORIA.mp3");
 				estado = EstadoJuego::VICTORIA;
 			}
 		}
@@ -640,6 +644,7 @@ void Coordinador::mueve(double dt)
 	if (estado == EstadoJuego::VICTORIA) {
 		_tiempoVictoria -= (float)dt;
 		if (_tiempoVictoria <= 0.0f) {
+			ETSIDI::playMusica("sonidos/VICTORIA.mp3");
 			_rankingTop10 = GestorRanking::cargar();
 			estado = EstadoJuego::RANKING;
 		}
