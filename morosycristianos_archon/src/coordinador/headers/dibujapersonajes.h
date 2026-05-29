@@ -2,9 +2,6 @@
 #include "ETSIDI.h"
 #include "tablero.h"
 
-//solo para miliciano de momento para prueba. Si funciona, se meteran en esta clase para todos los personajes
-
-//falta completar para el resto de personajes
 
 enum class TipoPersonaje {
     MILICIANO,

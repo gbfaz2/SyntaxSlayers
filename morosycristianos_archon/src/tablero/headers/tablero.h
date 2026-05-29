@@ -24,11 +24,10 @@ enum TipoCasilla {
 //bando de una pieza
 enum BandoPieza {
 	bando_nada, //sin pieza
-	bando_local, //pieza cristiana(de momento)
-	bando_rival //pieza musulmana (de momento)
+	bando_local, 
+	bando_rival 
 };
 
-//tipo de pieza (forma geometrica de momento)
 enum TipoPieza {
 	pieza_nada,
 	pieza_esfera,//esfera grande-1 por bando rey/emir

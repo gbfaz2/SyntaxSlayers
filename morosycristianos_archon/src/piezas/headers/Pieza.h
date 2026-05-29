@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 
-//FALTAN LAS ARMAS
 
 //clase "madre" de la que van a nacer las clases "utiles"
 // Tipos de movimiento posible
@@ -83,7 +82,6 @@ public:
     int getVidaMax() const { return vidaMax; }
 
     // Para la demo: muestra las stats por consola
-    virtual void mostrarStats() const;  //esto es solo para la demo aunque quedaría bien, mostrar las stats por pantalla
-
+    virtual void mostrarStats() const;  
     void setVida(int v) { vida = (v < vidaMax) ? v : vidaMax; }
 };
