@@ -737,7 +737,7 @@ void GestorInput::teclaArena(unsigned char key)
         _coordinador->_pAtacanteCombate = nullptr;
         _coordinador->_pDefensoraCombate = nullptr;
 
-        ETSIDI::playMusica("sonidos/sonido_fondo_tablero.wav", true);
+        ETSIDI::playMusica("sonidos/TABLERO.mp3", true);
         _coordinador->estado = EstadoJuego::TABLERO;
     }
 }

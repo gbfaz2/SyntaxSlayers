@@ -11,6 +11,11 @@
 
 dibujapersonajes DibujaArena::_personajes;
 
+float DibujaArena::_tiempoFlash = 0.0f;
+bool  DibujaArena::_flashActivo = true;
+float DibujaArena::_duracionFlash = 3.0f;
+float DibujaArena::_duracionFade = 0.6f;
+
 // ORQUESTADORES PRINCIPALES
 
 void DibujaArena::arena_configurar_vista(int anchoVentana, int altoVentana) 
@@ -54,9 +59,6 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     arena_fondo(batalla);
     arena_configurar_luz();
     arena_suelo(arena.ancho(), arena.profundo(), batalla);
-
-   
-    
 
     //investigar que significa bien lo de lambda (aparece aqui y en dibujatablero)
     // Lambda que dibuja cualquier combatiente con sprite
@@ -214,6 +216,36 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
             //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
             voltear = !esAtacante;
         }
+        else if (c.nombre() == "Arquero") {
+            //devuelve el tipo de personaje EMIR
+            tipo = TipoPersonaje::ARQUERO_GHAZI;
+
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
+        else if (c.nombre() == "Almogavar") {
+            //devuelve el tipo de personaje EMIR
+            tipo = TipoPersonaje::ALMOGAVAR;
+
+            //si es atacante (P1 SIMEPRE ATACA) devuelve true
+            bool esAtacante = (&c == &arena.p1());
+
+            //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+            voltear = !esAtacante;
+        }
+        else if (c.nombre() == "Arquero a Caballo") {
+                //devuelve el tipo de personaje EMIR
+                tipo = TipoPersonaje::ARQUERO_CABALLO;
+
+                //si es atacante (P1 SIMEPRE ATACA) devuelve true
+                bool esAtacante = (&c == &arena.p1());
+
+                //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
+                voltear = !esAtacante;
+                }
         float size = _anchoVentana * 0.10f;
 
         //convertir a 2d
@@ -249,6 +281,12 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
   
     // HUD ENCIMA DE TODO
     arena_hud(arena, batalla);
+
+    // FLASH DE INICIO (encima del HUD)
+    util_entrar2D(_anchoVentana, _altoVentana);
+    glDisable(GL_LIGHTING);
+    arena_flash_inicio(batalla);
+    util_salir2D();
 }
 
 // CAPAS BASE DE LA ARENA
@@ -429,23 +467,59 @@ void DibujaArena::arena_texto(float x, float y, const char* texto, float r, floa
         glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
 }
 
-void DibujaArena::arena_barra_vida(float x, float y, float ancho, float alto, float fraccion, float r, float g, float b) {
-    glColor3f(0.2f, 0.2f, 0.2f);
+void DibujaArena::arena_barra_vida(float x, float y, float ancho, float alto, float fraccion, bool invertir) {
+    // COLOR DINÁMICO según fracción de vida
+    float r, g, b;
+    if (fraccion > 0.6f) {
+        // Verde → Amarillo  (de 1.0 a 0.6)
+        float t = (fraccion - 0.6f) / 0.4f;   // 1 en llena, 0 en 60%
+        r = 1.0f - t;   // sube el rojo
+        g = 0.82f;
+        b = 0.1f;
+    }
+    else if (fraccion > 0.3f) {
+        // Amarillo → Naranja  (de 0.6 a 0.3)
+        float t = (fraccion - 0.3f) / 0.3f;
+        r = 1.0f;
+        g = 0.82f * t;
+        b = 0.0f;
+    }
+    else {
+        // Naranja → Rojo  (de 0.3 a 0.0)
+        r = 1.0f;
+        g = 0.0f;
+        b = 0.0f;
+    }
+
+    // FONDO OSCURO
+    glColor3f(0.15f, 0.15f, 0.15f);
     glBegin(GL_QUADS);
-    glVertex2f(x, y); glVertex2f(x + ancho, y);
+    glVertex2f(x, y);        glVertex2f(x + ancho, y);
     glVertex2f(x + ancho, y + alto); glVertex2f(x, y + alto);
     glEnd();
 
+    // RELLENO (orientación según jugador)
+    float xIni, xFin;
+    if (!invertir) {
+        xIni = x;
+        xFin = x + ancho * fraccion;
+    }
+    else {
+        xIni = x + ancho * (1.0f - fraccion);
+        xFin = x + ancho;
+    }
+
     glColor3f(r, g, b);
     glBegin(GL_QUADS);
-    glVertex2f(x, y); glVertex2f(x + ancho * fraccion, y);
-    glVertex2f(x + ancho * fraccion, y + alto); glVertex2f(x, y + alto);
+    glVertex2f(xIni, y);        glVertex2f(xFin, y);
+    glVertex2f(xFin, y + alto); glVertex2f(xIni, y + alto);
     glEnd();
 
+    // BORDE
     glColor3f(0.0f, 0.0f, 0.0f);
     glLineWidth(2.0f);
     glBegin(GL_LINE_LOOP);
-    glVertex2f(x, y); glVertex2f(x + ancho, y);
+    glVertex2f(x, y);        glVertex2f(x + ancho, y);
     glVertex2f(x + ancho, y + alto); glVertex2f(x, y + alto);
     glEnd();
 }
@@ -467,35 +541,116 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
     float altoBarra = 18.0f;
     float margen = 20.0f;
 
-    // P1
+    // P1, hacia la derecha, no se invierte
     float fracP1 = arena.p1().vida() / arena.p1().vidaMax();
-    arena_barra_vida(margen, margen, anchoBarra, altoBarra, fracP1, 0.89f, 0.29f, 0.29f);
+    arena_barra_vida(margen, margen, anchoBarra, altoBarra, fracP1, false);
+    float fracCD1 = std::min(arena.p1().tiempoDesdeUltimoAtaque() / arena.p1().cooldownAtaque(), 1.0f);
+    arena_cooldown(margen, margen + altoBarra + 2.0f, anchoBarra, fracCD1);
     std::string etiquetaP1 = arena.p1().nombre() + " - WASD + F";
-    arena_texto(margen, margen + altoBarra + 16, etiquetaP1.c_str(), 1.0f, 1.0f, 1.0f);
+    arena_texto(margen, margen + altoBarra + 38.0f, etiquetaP1.c_str(), 1.0f, 1.0f, 1.0f);
 
-    // P2
+    // P2, hacia la izquierda, si se invierte
     float fracP2 = arena.p2().vida() / arena.p2().vidaMax();
     float xP2 = _anchoVentana - margen - anchoBarra;
-    arena_barra_vida(xP2, margen, anchoBarra, altoBarra, fracP2, 0.39f, 0.60f, 0.13f);
+    arena_barra_vida(xP2, margen, anchoBarra, altoBarra, fracP2, true);
+    float fracCD2 = std::min(arena.p2().tiempoDesdeUltimoAtaque() / arena.p2().cooldownAtaque(), 1.0f);
+    arena_cooldown(xP2, margen + altoBarra + 2.0f, anchoBarra, fracCD2);
     std::string etiquetaP2 = arena.p2().nombre() + (arena.iaActiva() ? "- IA" : "- Flechas + L ");
-    arena_texto(xP2, margen + altoBarra + 16, etiquetaP2.c_str(), 1.0f, 1.0f, 1.0f);
+    arena_texto(xP2, margen + altoBarra + 38.0f, etiquetaP2.c_str(), 1.0f, 1.0f, 1.0f);
 
     // MENSAJE DE FIN
     if (arena.resultado() != ResultadoCombate::EnCurso) {
-        glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
+        float cx = _anchoVentana * 0.5f;
+        float cy = _altoVentana * 0.5f;
+        float anchoPanel = 420.0f;
+        float altoPanel = 140.0f;
+
+        // FONDO GENERAL MUY SUAVE
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glColor4f(0.0f, 0.0f, 0.0f, 0.35f);
         glBegin(GL_QUADS);
-        glVertex2f(0, 0); glVertex2f((float)_anchoVentana, 0);
-        glVertex2f((float)_anchoVentana, (float)_altoVentana); glVertex2f(0, (float)_altoVentana);
+        glVertex2f(0.0f, 0.0f);
+        glVertex2f((float)_anchoVentana, 0.0f);
+        glVertex2f((float)_anchoVentana, (float)_altoVentana);
+        glVertex2f(0.0f, (float)_altoVentana);
         glEnd();
 
-        //const char* msg = "";
-        std::string msgStr = "";
-        if (arena.resultado() == ResultadoCombate::GanaP1) msgStr = "Gana " + arena.p1().nombre() + "!  -  ENTER para volver al tablero";
-        else if (arena.resultado() == ResultadoCombate::GanaP2) msgStr = "Gana " + arena.p2().nombre() + "!- ENTER para volver al tablero";
-        else msgStr = "Empate!  -  ENTER para volver al tablero";
+        // PANEL CENTRAL
+        glColor4f(0.05f, 0.03f, 0.0f, 0.92f);
+        glBegin(GL_QUADS);
+        glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glEnd();
 
-        float xMsg = _anchoVentana * 0.5f - strlen(msgStr.c_str()) * 4.5f;
-        arena_texto(xMsg, _altoVentana * 0.5f, msgStr.c_str(), 1.0f, 1.0f, 1.0f);
+        // BORDE EXTERIOR DORADO
+        glColor4f(0.85f, 0.70f, 0.25f, 1.0f);
+        glLineWidth(2.5f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+        glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+        glEnd();
+
+        // BORDE INTERIOR DORADO TENUE
+        glColor4f(0.85f, 0.70f, 0.25f, 0.35f);
+        glLineWidth(1.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex2f(cx - anchoPanel * 0.5f + 6.0f, cy - altoPanel * 0.5f + 6.0f);
+        glVertex2f(cx + anchoPanel * 0.5f - 6.0f, cy - altoPanel * 0.5f + 6.0f);
+        glVertex2f(cx + anchoPanel * 0.5f - 6.0f, cy + altoPanel * 0.5f - 6.0f);
+        glVertex2f(cx - anchoPanel * 0.5f + 6.0f, cy + altoPanel * 0.5f - 6.0f);
+        glEnd();
+        glDisable(GL_BLEND);
+
+        // LÍNEA DECORATIVA SUPERIOR  ——— * ———
+        glColor3f(0.85f, 0.70f, 0.25f);
+        glLineWidth(1.5f);
+        glBegin(GL_LINES);
+        glVertex2f(cx - 160.0f, cy - 38.0f);
+        glVertex2f(cx - 20.0f, cy - 38.0f);
+        glVertex2f(cx + 20.0f, cy - 38.0f);
+        glVertex2f(cx + 160.0f, cy - 38.0f);
+        glEnd();
+
+        // TÍTULO
+        std::string linea1 = (arena.resultado() == ResultadoCombate::Empate) ? "* EMPATE *" : "* VICTORIA *";
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 22);
+        ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
+        ETSIDI::printxy(linea1.c_str(), cx - strlen(linea1.c_str()) * 7.0f, cy - 20.0f);
+
+        // LÍNEA DECORATIVA INFERIOR DEL TÍTULO
+        glColor3f(0.85f, 0.70f, 0.25f);
+        glLineWidth(1.0f);
+        glBegin(GL_LINES);
+        glVertex2f(cx - 160.0f, cy - 5.0f);
+        glVertex2f(cx + 160.0f, cy - 5.0f);
+        glEnd();
+
+        // NOMBRE DEL GANADOR
+        std::string linea2 = "";
+        if (arena.resultado() == ResultadoCombate::GanaP1)      linea2 = "Gana " + arena.p1().nombre();
+        else if (arena.resultado() == ResultadoCombate::GanaP2) linea2 = "Gana " + arena.p2().nombre();
+        else                                                     linea2 = "";
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 16);
+        ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+        ETSIDI::printxy(linea2.c_str(), cx - strlen(linea2.c_str()) * 5.0f, cy + 25.0f);
+
+        // SEPARADOR
+        glColor3f(0.5f, 0.5f, 0.5f);
+        glLineWidth(1.0f);
+        glBegin(GL_LINES);
+        glVertex2f(cx - 140.0f, cy + 42.0f);
+        glVertex2f(cx + 140.0f, cy + 42.0f);
+        glEnd();
+
+        // INSTRUCCIÓN
+        ETSIDI::setFont("fuentes/ARIALNBI.ttf", 12);
+        ETSIDI::setTextColor(0.65f, 0.65f, 0.65f, 1.0f);
+        ETSIDI::printxy("Pulsa ENTER para volver al tablero", cx - 120.0f, cy + 58.0f);
     }
 
     // Panel nombre de la batalla
@@ -503,8 +658,8 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
     glBegin(GL_QUADS);
-    glVertex2f(_anchoVentana - 280, _altoVentana - 150);
-    glVertex2f(_anchoVentana, _altoVentana - 150);
+    glVertex2f(_anchoVentana - 280, _altoVentana - 140);
+    glVertex2f(_anchoVentana, _altoVentana - 140);
     glVertex2f(_anchoVentana, _altoVentana);
     glVertex2f(_anchoVentana - 280, _altoVentana);
     glEnd();
@@ -512,8 +667,8 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
 
     ETSIDI::setTextColor(0.85f, 0.70f, 0.25f, 1.0f);
     ETSIDI::setFont("fuentes/ARIALNBI.ttf", 14);
-    ETSIDI::printxy("  QUE COMIENCE LA BATALLA!", _anchoVentana - 250, _altoVentana - 100);
-    ETSIDI::printxy("    mucha suerte combatientes", _anchoVentana - 250, _altoVentana - 60);
+    ETSIDI::printxy("  QUE COMIENCE LA BATALLA!", _anchoVentana - 250, _altoVentana - 95);
+    ETSIDI::printxy("    mucha suerte combatientes", _anchoVentana - 250, _altoVentana - 40);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
@@ -528,7 +683,123 @@ void DibujaArena::arena_init()
     _personajes.init();
 }
 
+void DibujaArena::arena_flash_inicio(Batalla batalla)
+{
+    if (!_flashActivo) return;
+
+    // Calcular alpha según fase del fade
+    float alpha = 1.0f;
+    if (_tiempoFlash < _duracionFade) {
+        // Fade IN
+        alpha = _tiempoFlash / _duracionFade;
+    }
+    else if (_tiempoFlash > _duracionFlash - _duracionFade) {
+        // Fade OUT
+        alpha = (_duracionFlash - _tiempoFlash) / _duracionFade;
+    }
+    alpha = std::max(0.0f, std::min(1.0f, alpha)); // clamp
+
+    // Nombre de la batalla
+    const char* nombreBatalla = "";
+    switch (batalla) {
+    case Batalla::GUADALETE:    nombreBatalla = "BATALLA DE GUADALETE - 711 d.C.";    break;
+    case Batalla::ALARCOS:      nombreBatalla = "BATALLA DE ALARCOS - 1195 d.C.";     break;
+    case Batalla::NAVAS_TOLOSA: nombreBatalla = "BATALLA DE LAS NAVAS - 1212 d.C.";  break;
+    case Batalla::GRANADA:      nombreBatalla = "BATALLA DE GRANADA - 1492 d.C.";     break;
+    }
+
+    float cx = _anchoVentana * 0.5f;
+    float cy = _altoVentana * 0.5f;
+    float anchoPanel = 550.0f;
+    float altoPanel = 100.0f;
+
+    // Fondo semitransparente
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.72f * alpha);
+    glBegin(GL_QUADS);
+    glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glEnd();
+
+    // Borde dorado
+    glColor4f(0.85f, 0.70f, 0.25f, alpha);
+    glLineWidth(2.0f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(cx - anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy - altoPanel * 0.5f);
+    glVertex2f(cx + anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glVertex2f(cx - anchoPanel * 0.5f, cy + altoPanel * 0.5f);
+    glEnd();
+    glDisable(GL_BLEND);
+
+    // Texto: nombre de la batalla (dorado)
+    float xNombre = cx - strlen(nombreBatalla) * 4.5f;
+    arena_texto(xNombre, cy - 12.0f, nombreBatalla, 0.85f, 0.70f, 0.25f);
+
+    // Texto: A COMBATIR (blanco)
+    const char* combatir = " ¡A COMBATIR! ";
+    float xCombatir = cx - strlen(combatir) * 4.5f;
+    arena_texto(xCombatir, cy + 18.0f, combatir, 1.0f, 1.0f, 1.0f);
+}
+
 void DibujaArena::arena_update(float dt) 
 {
     _personajes.update();
+    if (_flashActivo) {
+        _tiempoFlash += dt;
+        if (_tiempoFlash >= _duracionFlash)
+            _flashActivo = false;
+    }
+}
+
+void DibujaArena::arena_cooldown(float x, float y, float ancho, float fraccion)
+{
+    bool listo = fraccion >= 1.0f;
+    float alto = 10.0f;
+
+    // COLOR: rojo recargando → dorado listo
+    float r, g, b;
+    if (listo) {
+        r = 0.85f; g = 0.70f; b = 0.25f; // DORADO
+    }
+    else {
+        r = 0.55f; g = 0.10f; b = 0.10f; // ROJO OSCURO
+    }
+
+    // FONDO
+    glColor3f(0.1f, 0.1f, 0.1f);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + ancho, y);
+    glVertex2f(x + ancho, y + alto);
+    glVertex2f(x, y + alto);
+    glEnd();
+
+    // RELLENO
+    float relleno = std::min(fraccion, 1.0f) * ancho;
+    glColor3f(r, g, b);
+    glBegin(GL_QUADS);
+    glVertex2f(x, y);
+    glVertex2f(x + relleno, y);
+    glVertex2f(x + relleno, y + alto);
+    glVertex2f(x, y + alto);
+    glEnd();
+
+    // BORDE
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f(x, y);
+    glVertex2f(x + ancho, y);
+    glVertex2f(x + ancho, y + alto);
+    glVertex2f(x, y + alto);
+    glEnd();
+
+    // ICONO de espadas y texto
+    const char* label = listo ? " LISTO " : "recargando...";
+    float xLabel = x + ancho * 0.5f - strlen(label) * 4.0f;
+    arena_texto(xLabel, y - 4.0f, label, r, g, b);
 }
