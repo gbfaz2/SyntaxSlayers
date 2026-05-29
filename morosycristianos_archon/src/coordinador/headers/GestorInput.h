@@ -35,7 +35,6 @@ public:
     void teclaGuardando(unsigned char key, EstadoJuego& estado);
     void teclaAyuda(unsigned char key, EstadoJuego& estado);
 
-
     // TECLA ESPECIAL
     void teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal& menu);
     void teclaEspecialTablero(int key);

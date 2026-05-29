@@ -6,10 +6,7 @@
 #include "ETSIDI.h"
 #include "Infiltrado.h"
 
-// =============================================================
 // MENU
-// =============================================================
-
 void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
     PantallaIntro& intro, MenuPrincipal& menu, PantallaDestino& destino)
 {
@@ -66,7 +63,7 @@ void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal&
                     ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
             }
 
-            // ¡NUEVO! FLECHAS ARRIBA/ABAJO: CAMBIAN DIFICULTAD DE LA IA
+            // FLECHAS ARRIBA/ABAJO: CAMBIAN DIFICULTAD DE LA IA
             if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
                 // Si estamos en modo IA, las flechas arriba/abajo siempre cambian la dificultad
                 // (quitamos lo del foco porque la IA no tiene caja de texto para escribir su nombre)
@@ -104,7 +101,6 @@ void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal&
         if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT)
             menu.m_seleccion = (menu.m_seleccion == 0) ? 1 : 0;
     }
-
 }
 
 void GestorInput::teclaEspecialAyuda(int key, EstadoJuego& estado)
@@ -173,7 +169,7 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
                     return x >= bx && x <= bx + anchoCaja && gy >= by && gy <= by + altoCaja;
                     };
 
-                // --- CLICS JUGADOR 1 (Columna Izquierda) ---
+                // CLICS JUGADOR 1 (Columna Izquierda)
                 if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0; // Foco Nombre J1
 
                 if (enCaja(col1X, bandoY - 30, bw, 36)) { // Botón Cristiano J1
@@ -187,7 +183,7 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
                     menu.m_focoNombre = 0;
                 }
 
-                // --- CLICS JUGADOR 2 / IA (Columna Derecha) ---
+                // CLICS JUGADOR 2 / IA (Columna Derecha)
                 if (menu.m_cfg.modo == ModoJuego::JVJ) {
                     if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1; // Foco Nombre J2
 
@@ -281,14 +277,11 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
     }
 }
 
-// =============================================================
 // TABLERO
-// =============================================================
-
 bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
 {
-    bool ejecutado = false;                            // CONTROLA SI SE EJECUTÓ
-    std::string mensajeError = "";//VARIABLE PARA GUARDAR EL MOTIVO DEL ERROR EN EL ASEDIO
+    bool ejecutado = false; // CONTROLA SI SE EJECUTÓ
+    std::string mensajeError = ""; //VARIABLE PARA GUARDAR EL MOTIVO DEL ERROR EN EL ASEDIO
 
     switch (_tablerogl->_conjuroActivo) {
 
@@ -337,7 +330,7 @@ bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
             _tablerogl->mostrarMensajeInvalido(mensajeError, true);
         break;
 
-    default: break;                                    // HECHIZOS NO IMPLEMENTADOS
+    default: break;                                    
     }
 
     if (ejecutado) {
@@ -368,9 +361,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     // Q: CIERRA EL JUEGO
     if (key == 'q' || key == 'Q') { exit(0); return; }
 
-    // ============================================================
     // H: ACTIVA MODO HECHIZO P1 (SOLO SI EL REY ESTÁ SELECCIONADO)
-    // ============================================================
     if (key == 'h' || key == 'H') {
         if (_tablerogl->piezaSeleccionada) {               // HAY PIEZA SELECCIONADA
             const Casilla& cas = _coordinador->pTablero->getCasilla(
@@ -400,9 +391,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // J: ACTIVA MODO HECHIZO P2 (SOLO SI EL EMIR ESTÁ SELECCIONADO)
-    // ============================================================
     if (key == 'j' || key == 'J') {
         if (_tablerogl->piezaSeleccionada) {               // HAY PIEZA SELECCIONADA
             const Casilla& cas = _coordinador->pTablero->getCasilla(
@@ -431,9 +420,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // I: ACTIVA HABILIDAD INFILTRADO/ASESINO
-    // ============================================================
     if (key == 'i' || key == 'I') {
         if (_tablerogl->piezaSeleccionada) {
             const Casilla& cas = _coordinador->pTablero->getCasilla(_tablerogl->fromFila, _tablerogl->fromCol);
@@ -456,9 +443,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // ENTER: CONFIRMAR ROBO DE STATS DEL INFILTRADO
-    // ============================================================
     if (key == 13) {
         if (_tablerogl->_modoInfiltrado && _tablerogl->piezaSeleccionada) {
             const Casilla& casEnemigo = _coordinador->pTablero->getCasilla(_tablerogl->fromFila, _tablerogl->fromCol);
@@ -479,9 +464,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         }
     }
 
-    // ============================================================
     // Z: CANCELAR MODO INFILTRADO
-    // ============================================================
     if (key == 'z' && _tablerogl->_modoInfiltrado) {
         _tablerogl->_modoInfiltrado = false;
         _tablerogl->piezaSeleccionada = false;
@@ -490,9 +473,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // NÚMERO: ELIGE HECHIZO (solo en modo hechizo, conjuro no elegido aún)
-    // ============================================================
     if (_tablerogl->_modoHechizo && !_tablerogl->_conjuroElegido) {
         switch (key) {
         case '1': _tablerogl->_conjuroActivo = Conjuro::AVITUALLAMIENTO;
@@ -510,9 +491,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         }
     }
 
-    // ============================================================
     // MOVIMIENTO CURSOR P1 CON WASD (disponible siempre)
-    // ============================================================
     if (_tablerogl->gestorTurnos.getBandoActual() == bando_local ||
         (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_local)) {
         int& rL = _tablerogl->Filacursor[0];               // FILA CURSOR P1
@@ -528,9 +507,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         if (key != ' ' && key != '.') return;              // BLOQUEA RESTO DE TECLAS
     }
 
-    // ============================================================
     // ESPACIO: CONFIRMA HECHIZO P1 O SELECCIONA/MUEVE PIEZA P1
-    // ============================================================
     if (key == ' ') {
         //PARA LA SELECCION DE PIEZAS CON EL PERSONAJE DE INFILTRADO
         if (_tablerogl->_modoInfiltrado && _tablerogl->gestorTurnos.getBandoActual() == bando_local) {
@@ -559,9 +536,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // PUNTO: CONFIRMA HECHIZO P2 O SELECCIONA/MUEVE PIEZA P2
-    // ============================================================
     if (key == '.') {
         //PARA LA SELECCION DE PIEZAS CON EL PERSONAJE DE ASESINO DE ÉLITE
         if (_tablerogl->_modoInfiltrado && _tablerogl->gestorTurnos.getBandoActual() == bando_rival) {
@@ -702,13 +677,10 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
     }
 }
 
-// =============================================================
 // ARENA
-// =============================================================
-
 void GestorInput::teclaArena(unsigned char key)
 {
-    if (!_coordinador) return;// COORDINADOR NO ASIGNADO
+    if (!_coordinador) return; // COORDINADOR NO ASIGNADO
 
     // CONTROLES P1: WASD + F
     if (key == 'w' || key == 'W') _coordinador->_input.p1.delante = true;
@@ -849,10 +821,7 @@ void GestorInput::teclaEspecialUpArena(int key)
     if (key == GLUT_KEY_RIGHT) _coordinador->_input.p2.derecha = false;
 }
 
-// =============================================================
 // MENÚ PAUSA
-// =============================================================
-
 void GestorInput::teclaEspecialGuardando(int key, EstadoJuego& estado)
 {
     if (key == GLUT_KEY_DOWN)
@@ -872,7 +841,6 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             GestorPartida::guardar(*_coordinador->pTablero,
                 _tablerogl->gestorTurnos, _coordinador->configuracion);
             std::cout << "[Pausa] Partida guardada.\n";
-           // ETSIDI::stopMusica();
             ETSIDI::playMusica("sonidos/MENU.mp3", true);
             _coordinador->reiniciarTablero();
             _coordinador->estado = EstadoJuego::MENU;
@@ -882,7 +850,6 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             _coordinador->estado = EstadoJuego::AYUDA;
             break;
         case 3: // SALIR SIN GUARDAR
-            //ETSIDI::stopMusica();
             ETSIDI::playMusica("sonidos/MENU.mp3", true);
             _coordinador->reiniciarTablero();
             estado = EstadoJuego::MENU;
