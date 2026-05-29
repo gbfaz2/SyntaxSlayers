@@ -5,37 +5,38 @@
 const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
     switch (tipo) {
     case TipoPersonaje::REY:
-        return "imagenes\\REY_PRUEBA.png";
+        return "imagenes\\rey.png";
     case TipoPersonaje::EMIR:           
-        return "imagenes\\EMIR_SISISI.png";
+        return "imagenes\\emir.png";
     case TipoPersonaje::MILICIANO:     
-        return "imagenes\\MILICIANO_SISISISI.png";
+        return "imagenes\\miliciano.png";
     case TipoPersonaje::GHAZI:
-        return "imagenes\\GHAZI.png";
+        return "imagenes\\ghazi.png";
     case TipoPersonaje::INFANTERIA:
-        return "imagenes\\INFANTERIA_SISISI.png";
+        return "imagenes\\infanteria.png";
     case TipoPersonaje::GUARDIA_NEGRA:  
         return "imagenes\\guardia_negra.png";
     case TipoPersonaje::BALLESTERO:
-            return "imagenes\\BALLESTERO_SISISI.png"; 
+            return "imagenes\\ballestero.png"; 
     case TipoPersonaje::ARQUERO_GHAZI:
         return "imagenes\\arquero_ghazi.png";
     case TipoPersonaje::CABALLERIA_PESADA:
-        return "imagenes\\CABALLERIA_PESADA.png";  
+        return "imagenes\\caballeria_pesada.png";  
     case TipoPersonaje::CABALLERIA_ACORAZADA:
         return "imagenes\\caballeria_acorazada.png";
     case TipoPersonaje::CABALLERIA_LIGERA:
         return "imagenes\\caballeria_ligera.png";
     case TipoPersonaje::JINETE_BEREBER: 
-        return "imagenes\\jinete_bereber_yes.png";
+        return "imagenes\\jinete_bereber.png";
     case TipoPersonaje::ALMOGAVAR:
         return "imagenes\\almogavar.png";
     case TipoPersonaje::ARQUERO_CABALLO:
         return "imagenes\\arquero_caballo.png";
+    case TipoPersonaje::INFILTRADO:
+        return "imagenes\\infiltrado.png";
     case TipoPersonaje::ASESINO_DE_ELITE:     
         return "imagenes\\asesino_de_elite.png";
-    case TipoPersonaje::INFILTRADO:
-        return "imagenes\\INFILTRADO_SISISI.png";
+    
     
     default:                            
         return "";
