@@ -96,6 +96,7 @@ void Coordinador::dibuja()
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+					pTablerogl->_gestorHechizos = pGestorHechizos;
 				}
 			}
 			if (siguiente == EstadoJuego::RANKING)

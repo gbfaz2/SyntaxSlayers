@@ -11,6 +11,7 @@
 #include "menu.h"
 #include<ETSIDI.h>
 #include "Pieza.h"
+#include "GestorHechizos.h"
 //#include"coordinador.h"
 
 //creo las enumeraciones con las variables del raton y de las teclas especiales para signarles el mismo valor que tenemos en el freeglut.h
@@ -148,4 +149,5 @@ public:
 
 	static void setVentana(int ancho, int alto) { _anchoVentana = ancho; _altoVentana = alto; }
 
+	GestorHechizos* _gestorHechizos{ nullptr };
 };

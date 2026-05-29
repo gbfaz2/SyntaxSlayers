@@ -72,9 +72,16 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
 
-
 		if (!pieza) {
 			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
+			return;
+		}
+
+		// COMPROBACIÓN DE ASEDIO — añade esto aquí
+		if (_gestorHechizos && _gestorHechizos->estaBloqueada(fromFila, fromCol)) {
+			mostrarMensajeInvalido("Pieza bloqueada por Asedio!");
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
 			return;
 		}
 
@@ -216,7 +223,6 @@ void Tablerogl::update(double dt)
 			}
 		}
 	}
-
 
 	//CURACIÓN DE LOS PUNTOS DE PODER
 	_tiempoCuracionPoder += (float)dt;
