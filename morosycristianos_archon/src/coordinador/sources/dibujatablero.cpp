@@ -599,10 +599,76 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
 
     }
     break;
+
     case pieza_icosaedro:
-        glScalef(escala * 0.65f, escala * 0.65f, escala * 0.65f);
-        glutSolidIcosahedron();
-        break;
+    {
+
+        //dibujo ALMOGAVAR / ARQUERO A CABALLO
+        // Capturamos matrices ANTES de salir del contexto 3D
+        GLdouble winX, winY, winZ;
+
+        // Usamos la posición z donde están las piezas
+        gluProject(cx, cy, 0.01, model, proj, view, &winX, &winY, &winZ);
+
+        glPopMatrix();
+
+        util_entrar2D(Tablerogl::_anchoVentana, Tablerogl::_altoVentana);
+        glDisable(GL_LIGHTING);
+
+        EstadoPersonaje estadoAlm = EstadoPersonaje::IDLE;
+        bool moviendo = false;
+
+
+        // Le pedimos a la pieza su ID único en lugar de usar un contador global
+        TipoPersonaje tipo = dibujapersonajes::tipoDesdePieza(casilla.pieza, casilla.bando);
+        int idAnim = casilla.obj ? casilla.obj->getIdAnimacion() : 0;
+
+        //voltear true si es del bando rival la pieza
+        bool voltear = (casilla.bando == bando_rival);
+
+
+
+        // Para el bando andalusi, dibuja ARQUERO CABALLO:
+        if (casilla.bando != bando_local) {
+            //ajustes coordenadas
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.05f;
+            float px = (float)winX + size * 0.35f;
+            float py = (float)winY; //+ size * 0.10f;
+
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoAlm = EstadoPersonaje::IDLE;
+
+            }
+
+            //dibuja según flags, bando, tipo, coordenadas...
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoAlm, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+        }
+
+        //ahora para bando cristiano
+        else {
+            //ajustes coordenadas para ALMOGAVAR:
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.88f;
+            float px = (float)winX - size * 0.32f;
+            float py = (float)winY - size * 0.1f;
+
+            //si se esta moviendo, anda la pieza y cambia la flag
+            if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
+                moviendo = true;
+                estadoAlm = EstadoPersonaje::IDLE;
+            }
+            //dibuja según flags, bando, tipo, coordenadas...
+            _dibujador.dibujar(tipo, px, py, size,
+                estadoAlm, idAnim, moviendo, voltear);
+            util_salir2D();
+            return;
+        }
+        return;
+    }
+    break;    
 
     case pieza_tetraedro:
     {
@@ -776,8 +842,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         if (casilla.bando != bando_local) {
             //ajustes coordenadas
             float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.2f;
-            float px = (float)winX - size * 0.35f;
-            float py = (float)winY - size * 0.1f;
+            float px = (float)winX + size * 0.22f;
+            float py = (float)winY + size * 0.06f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
