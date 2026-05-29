@@ -1,9 +1,6 @@
-
-//Autor: María Heredero
-
-//aquí se va a dibujar el tablero. 
-//Se recorren las 81 casillas del tablero y por cada una decide si es clara(par) u oscura (impar), según el tipo de casillas elige el par de colores concreto y luego dibuja un rectángulo relleno con el color
-//Por último se dibuja la cuadrícula negra encima
+// Aquí se va a dibujar el tablero. 
+// Se recorren las 81 casillas del tablero y por cada una decide si es clara(par) u oscura (impar), según el tipo de casillas elige el par de colores concreto y luego dibuja un rectángulo relleno con el color
+// Por último se dibuja la cuadrícula negra encima
 
 #include "tablerogl.h"
 #include <string>
@@ -15,31 +12,29 @@
 int Tablerogl::_anchoVentana = 1024;
 int Tablerogl::_altoVentana = 768;
 
-
 using namespace std;
 
 Tablerogl::Tablerogl(Tablero* pb) :m_tablero(pb)
 {
-	N = pb->getSize();//Siempre va a ser nueve, pero para asegurarnos mejor leerlo directamente de nuestra clase tablero
-	ancho = 0.12f;//ancho de una casilla en unidades Opengl
-	dist = 2.0f;//distancia que hay de la cámara al tablero
-	//el centro del tablero es donde va a apuntar la cámara
+	N = pb->getSize(); //Siempre va a ser nueve, pero para asegurarnos mejor leerlo directamente de nuestra clase tablero
+	ancho = 0.12f; //ancho de una casilla en unidades Opengl
+	dist = 2.0f; //distancia que hay de la cámara al tablero, el centro del tablero es donde va a apuntar la cámara
 	//x positivo crece hacia la derecha, y negativo crece hacia abajo
 	centro_x = N * ancho / 2.0;
 	centro_y = -N * ancho / 2.0;
 	centro_z = 0.0;
 
 	Filacursor[0] = 4; Colcursor[0] = 1; //Cursor local
-	Filacursor[1] = 4; Colcursor[1] = 7;//Cursor rival
+	Filacursor[1] = 4; Colcursor[1] = 7; //Cursor rival
 
-	xcasilla_sel = -1;//todavía no hay casilla seleccionada
+	xcasilla_sel = -1; //todavía no hay casilla seleccionada
 	ycasilla_sel = -1;
 
 	fromFila = fromCol = -1;
 	fromBando = bando_nada;
-	piezaSeleccionada = false;//no hay pieza seleccionada
+	piezaSeleccionada = false; //no hay pieza seleccionada
 
-	victoria_ = bando_nada;//la partida sigue en curso, nadie a ganado
+	victoria_ = bando_nada; //la partida sigue en curso, nadie ha ganado
 
 	leftButton = rightButton = midButton = false;
 	controlKey = shiftKey = false;
@@ -72,9 +67,16 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 
 		Pieza* pieza = m_tablero->getCasilla(fromFila, fromCol).obj;
 
-
 		if (!pieza) {
 			piezaSeleccionada = false; // Por seguridad, si la pieza desapareció
+			return;
+		}
+
+		// COMPROBACIÓN DE ASEDIO
+		if (_gestorHechizos && _gestorHechizos->estaBloqueada(fromFila, fromCol)) {
+			mostrarMensajeInvalido("Pieza bloqueada por Asedio!");
+			piezaSeleccionada = false;
+			fromFila = fromCol = -1;
 			return;
 		}
 
@@ -102,10 +104,8 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			_animMov.t = 0.0f;
 			_animMov.activa = true;
 
-
 			piezaSeleccionada = false;
 			fromFila = fromCol = -1;
-			//gestorTurnos.terminarTurno();
 		}
 
 
@@ -159,7 +159,8 @@ void Tablerogl::world2cell(double x, double y, int& casilla_x, int& casilla_y)
 
 int Tablerogl::getVentajaTerrenoCombate() const
 {
-	if (_pDefensora) {//combate ocurre en la casilla de la pieza defensora
+	// combate ocurre en la casilla de la pieza defensora
+	if (_pDefensora) { 
 		TipoCasilla tipo = m_tablero->getCasilla(_pDefensora->getFila(), _pDefensora->getColumna()).tipo;
 		if (tipo == Casilla_local) return 1;
 		if (tipo == Casilla_rival) return 2;
@@ -216,7 +217,6 @@ void Tablerogl::update(double dt)
 			}
 		}
 	}
-
 
 	//CURACIÓN DE LOS PUNTOS DE PODER
 	_tiempoCuracionPoder += (float)dt;

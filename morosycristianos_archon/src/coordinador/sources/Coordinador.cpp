@@ -52,7 +52,6 @@ void Coordinador::dibuja()
 
 	case EstadoJuego::MENU:
 
-		
 		// LA PROPIA CLASE DIBUJAMENU ENTRA Y SALE DE 2D INTERNAMENTE
 		DibujaMenu::menu_dibujar(menuPrincipal, _anchoVentana, _altoVentana); // PINTA LAS FASES DEL MENU PRINCIPAL
 
@@ -65,7 +64,8 @@ void Coordinador::dibuja()
 
 			if (siguiente == EstadoJuego::DESTINO) {
 				pantallaDestino.reiniciar(configuracion);
-				if (!pTablero) { // SOLO CREA EL TABLERO UNA VEZ
+				if (!pTablero) { 
+					// SOLO CREA EL TABLERO UNA VEZ
 					// Cada partida nueva empieza sin replays de partidas anteriores
 					_replayPartida = RegistroPartida{};
 					_combateEnCurso = CombateRegistro{};
@@ -75,7 +75,7 @@ void Coordinador::dibuja()
 					pTablerogl = new Tablerogl(pTablero);
 					DibujaTablero::tablero_init();
 					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
-					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN) ? bando_rival : bando_local;//FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
+					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN) ? bando_rival : bando_local; //FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
 					pTablerogl->setBandoInicial(bandoInicial);
 
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
@@ -96,6 +96,7 @@ void Coordinador::dibuja()
 					pGestorHechizos = new GestorHechizos(*pTablero,
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
 						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+					pTablerogl->_gestorHechizos = pGestorHechizos;
 				}
 			}
 			if (siguiente == EstadoJuego::RANKING)
@@ -172,7 +173,6 @@ void Coordinador::dibuja()
 			}
 			DibujaTablero::tablero_dibujar(*pTablerogl);
 
-
 			if (pTablerogl->huboColision())
 			{
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
@@ -241,14 +241,15 @@ void Coordinador::dibuja()
 
 		// Cargamos la partida y volvemos al tablero
 		if (!pTablero) {
-			pTablero = new Tablero();         // ← FALTABA ESTO
-			pTablerogl = new Tablerogl(pTablero); // ← FALTABA ESTO
+			pTablero = new Tablero();         
+			pTablerogl = new Tablerogl(pTablero);
 			DibujaTablero::tablero_init();
 			gestorInput.setTablerogl(pTablerogl);
 			pGestorHechizos = new GestorHechizos(*pTablero,
 				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
 				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
 		}
+
 		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
 		pTablerogl->setBatalla((int)configuracion.batalla);
 		pTablerogl->nombre_j1 = configuracion.nombre_j1;
@@ -261,8 +262,6 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::VICTORIA:
-		
-
 		DibujaMenu::victoria_dibujar(_anchoVentana, _altoVentana,
 			_rankingGanador, _rankingBatalla, _rankingGanaJ1, _tiempoVictoria);
 		break;
@@ -370,7 +369,6 @@ void Coordinador::tecla(unsigned char key)
 
 	case EstadoJuego::RANKING:
 		if (key == 27) {
-			//ETSIDI::stopMusica();
 			ETSIDI::playMusica("sonidos/MENU.mp3", true);
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
@@ -415,7 +413,6 @@ void Coordinador::tecla(unsigned char key)
 
 	default:
 		if (key == 27) {
-			//ETSIDI::stopMusica();
 			ETSIDI::playMusica("sonidos/MENU.mp3", true);
 			menuPrincipal.reiniciar();
 			reiniciarTablero();
@@ -492,7 +489,7 @@ void Coordinador::mueve(double dt)
 				_tiempoEsperaIA -= (float)dt; // CUENTA ATRÁS VISUAL
 			}
 			else if (!_iaCalculando) {
-				// ── LANZA EL CÁLCULO EN UN HILO PARA NO CONGELAR EL JUEGO ──
+				// LANZA EL CÁLCULO EN UN HILO PARA NO CONGELAR EL JUEGO
 				_iaCalculando = true;
 				_iaTerminada = false;
 
@@ -608,7 +605,7 @@ void Coordinador::mueve(double dt)
 					_rankingPiezasLocal + _rankingPiezasRival // total piezas eliminadas
 				);
 
-				// VICTORIA EN TABLEROGL (DE GABRI)
+				// VICTORIA EN TABLEROGL
 				if (rv == ResultadoVictoria::GANA_LOCAL)
 					pTablerogl->setVictoria(bando_local);
 				else if (rv == ResultadoVictoria::GANA_RIVAL)
@@ -730,21 +727,6 @@ void Coordinador::raton(int boton, int state, int x, int y)
 
 	case EstadoJuego::AYUDA:
 		gestorInput.ratonAyuda(boton, state, x, y, estado);
-		/*if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1)
-		{
-			// Detecta clic en botones Controles/Normas
-			int gy = _altoVentana - y;
-			float btnW = 260, btnH = 48;
-			float btnX = _anchoVentana / 2.0f - btnW / 2.0f;
-			float btnY[2] = { _altoVentana / 2.0f + 20, _altoVentana / 2.0f - 50 };
-			for (int i = 0; i < 2; i++)
-			{
-				if (gy >= btnY[i] && gy <= btnY[i] + btnH && x >= btnX && x <= btnX + btnW)
-				{
-					_ayudaSeccion = i;
-				}
-			}
-		}*/
 		
 		break;
 
