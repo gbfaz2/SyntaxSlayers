@@ -187,6 +187,8 @@ void Arena::iniciarReplay(const CombateRegistro& c)
 	_p2 = Combatiente(4.0f, 0.0f, 0.0f, c.r2, c.g2, c.b2);
 	_p1.setVidaMax(c.vidaMaxP1); // necesario para que la barra de vida se vea correcta
 	_p2.setVidaMax(c.vidaMaxP2);
+	_p1.setNombre(c.nombrePiezaP1); // nombre de la pieza para que dibujaarena elija el sprite correcto
+	_p2.setNombre(c.nombrePiezaP2);
 	_resultado = ResultadoCombate::EnCurso;
 }
 

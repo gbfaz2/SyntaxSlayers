@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "estadojuego.h"
 
 // Estado de los dos combatientes en un frame concreto
 struct FrameArena {
@@ -21,6 +22,9 @@ struct CombateRegistro {
     float r2, g2, b2;
     std::vector<FrameArena> frames; //secuencia de frames grabados
     bool ganoP1;
+    Batalla batalla;              // batalla en la que ocurrio este combate (para el fondo de la arena)
+    std::string nombrePiezaP1;   // nombre de la pieza de P1, p. ej. "Miliciano" (para elegir el sprite correcto)
+    std::string nombrePiezaP2;   // nombre de la pieza de P2
 };
 
 // Todos los combates registrados durante una partida completa

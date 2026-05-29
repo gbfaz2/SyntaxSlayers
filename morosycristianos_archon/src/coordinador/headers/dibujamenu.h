@@ -48,7 +48,7 @@ public:
         bool ganaJ1, float tiempoRestante);
     static void ayuda_dibujar(int seleccion, int seccion, int ancho, int alto);
     static void replay_seleccion_dibujar(int ancho, int alto,
-		int selActual, const std::vector<CombateRegistro>& combates); // DIBUJA EL MENU DE SELECCIÓN DE COMBATE PARA REPLAY
+		int selActual, const std::vector<CombateRegistro>& combates, Batalla batalla); // DIBUJA EL MENU DE SELECCIÓN DE COMBATE PARA REPLAY
     static void replay_dibujar(int ancho, int alto,
 		int idx, int total, const CombateRegistro& c, bool fin); // DIBUJA EL REPLAY DE UN COMBATE, MOSTRANDO INFORMACIÓN DEL COMBATE Y SI YA TERMINÓ O NO
 

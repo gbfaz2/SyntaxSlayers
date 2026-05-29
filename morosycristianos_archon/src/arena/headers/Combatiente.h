@@ -139,6 +139,7 @@ public:
 	void setMirando(float dx, float dz) { _mirandoX = dx; _mirandoZ = dz; }
 
 	// SETTERS PARA EL REPLAY
+	void setNombre(const std::string& n) { _nombre = n; }
 	void setVida(float v) { _vida = v; }
 	void setMirandoXZ(float dx, float dz) { _mirandoX = dx; _mirandoZ = dz; }
 	void setAtacando(bool a) { _tiempoAnimacionAtaque = a ? 0.1f : 0.0f; }

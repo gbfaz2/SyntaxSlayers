@@ -698,7 +698,8 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto,
 
     menu_borde_recto(margen, tablaY - filaAlto * 3, tablaAncho, filaAlto * 3, 0.85f, 0.70f, 0.10f, 2.0f);
     menu_textoCentrado("VICTORIA " + ganador + "!", ancho / 2.0f, tablaY - filaAlto * 4 - 20, 1.0f, 1.0f, 0.4f, GLUT_BITMAP_TIMES_ROMAN_24);
-    menu_textoCentrado("Pulsa ESC para volver al menu", ancho / 2.0f, 30, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+    menu_textoCentrado("Pulsa ESC para volver al menu", ancho / 2.0f, 45, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+    menu_textoCentrado("Pulsa R para ver el replay de los combates", ancho / 2.0f, 20, 0.85f, 0.70f, 0.10f, GLUT_BITMAP_HELVETICA_12);
     menu_textoCentrado("TOP 10", ancho / 2.0f, tablaY - filaAlto * 5 - 20, 0.85f, 0.70f, 0.10f, GLUT_BITMAP_HELVETICA_18);
 
     if (ranking.empty()) {
@@ -1113,12 +1114,29 @@ void DibujaMenu::ayuda_dibujar(int seleccion, int seccion, int ancho, int alto)
 // ============================================================
 
 void DibujaMenu::replay_seleccion_dibujar(int ancho, int alto,
-    int selActual, const std::vector<CombateRegistro>& combates)
+    int selActual, const std::vector<CombateRegistro>& combates, Batalla batalla)
 {
     util_entrar2D(ancho, alto);
 
-    // Fondo negro semitransparente sobre lo que haya detras
-    menu_rect(0, 0, (float)ancho, (float)alto, 0.0f, 0.0f, 0.0f, 0.82f);
+    // Fondo: textura de la batalla jugada
+    const char* rutas[] = {
+        "imagenes\\GUADALETE.png", "imagenes\\ALARCOS.png",
+        "imagenes\\NAVAS_TOLOSA.png", "imagenes\\GRANADA.png"
+    };
+    auto tex = ETSIDI::getTexture(rutas[(int)batalla]);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex.id);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0); glVertex2f(0, (float)alto);
+    glTexCoord2f(1, 0); glVertex2f((float)ancho, (float)alto);
+    glTexCoord2f(1, 1); glVertex2f((float)ancho, 0);
+    glTexCoord2f(0, 1); glVertex2f(0, 0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+
+    // Overlay oscuro para que el texto se lea bien
+    menu_rect(0, 0, (float)ancho, (float)alto, 0.0f, 0.0f, 0.0f, 0.60f);
 
     // Titulo
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 36);
@@ -1171,10 +1189,8 @@ void DibujaMenu::replay_seleccion_dibujar(int ancho, int alto,
 
             const char* ganador = c.ganoP1 ? c.nombreP1.c_str() : c.nombreP2.c_str();
             char buf[128];
-            sprintf_s(buf, "Combate %d: %s vs %s  (gana: %s | frames: %d)",
-                i + 1,
-                c.nombreP1.c_str(), c.nombreP2.c_str(),
-                ganador, (int)c.frames.size());
+            sprintf_s(buf, "Combate %d:  %s  vs  %s    (gana: %s)",
+                i + 1, c.nombreP1.c_str(), c.nombreP2.c_str(), ganador);
             ETSIDI::printxy(buf, (int)(listX + 12), (int)(listY - i * (itemH + sep) + 16));
         }
     }
@@ -1182,7 +1198,7 @@ void DibujaMenu::replay_seleccion_dibujar(int ancho, int alto,
     // Instrucciones en la parte inferior
     ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
     ETSIDI::setTextColor(0.75f, 0.75f, 0.75f, 1.0f);
-    const char* hint = "ARRIBA/ABAJO: navegar  |  ENTER: ver replay  |  ESC: volver";
+    const char* hint = "ARRIBA/ABAJO o Click: navegar  |  ENTER o Click: ver replay  |  ESC: volver";
     int tw3 = (int)(strlen(hint) * 14 * 0.62f);
     ETSIDI::printxy(hint, ancho / 2 - tw3 / 2, 20);
 

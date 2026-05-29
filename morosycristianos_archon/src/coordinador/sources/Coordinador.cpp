@@ -63,6 +63,11 @@ void Coordinador::dibuja()
 			if (siguiente == EstadoJuego::DESTINO) {
 				pantallaDestino.reiniciar(configuracion);
 				if (!pTablero) { // SOLO CREA EL TABLERO UNA VEZ
+					// Cada partida nueva empieza sin replays de partidas anteriores
+					_replayPartida = RegistroPartida{};
+					_combateEnCurso = CombateRegistro{};
+					_grabandoCombate = false;
+
 					pTablero = new Tablero();
 					pTablerogl = new Tablerogl(pTablero);
 					DibujaTablero::tablero_init();
@@ -184,6 +189,9 @@ void Coordinador::dibuja()
 				_combateEnCurso.vidaMaxP2 = _arena.p2().vidaMax();
 				_arena.p1().color(_combateEnCurso.r1, _combateEnCurso.g1, _combateEnCurso.b1);
 				_arena.p2().color(_combateEnCurso.r2, _combateEnCurso.g2, _combateEnCurso.b2);
+				_combateEnCurso.batalla = configuracion.batalla;          // guarda la batalla para el fondo del replay
+				_combateEnCurso.nombrePiezaP1 = pJugador->getNombre();   // guarda el nombre de la pieza para los sprites
+				_combateEnCurso.nombrePiezaP2 = pRival->getNombre();
 				_grabandoCombate = true;
 
 				ETSIDI::stopMusica();
@@ -207,6 +215,11 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::CARGANDO:
+		// Al cargar tambien limpiamos los replays para que no aparezcan combates de otra sesion
+		_replayPartida = RegistroPartida{};
+		_combateEnCurso = CombateRegistro{};
+		_grabandoCombate = false;
+
 		// Cargamos la partida y volvemos al tablero
 		if (!pTablero) {
 			pTablero = new Tablero();
@@ -251,11 +264,12 @@ void Coordinador::dibuja()
 
 	case EstadoJuego::REPLAY_SELECCION: // MUESTRA LA LISTA DE COMBATES GRABADOS DURANTE LA PARTIDA
 		DibujaMenu::replay_seleccion_dibujar(_anchoVentana, _altoVentana,
-			_replaySel, _replayPartida.combates);
+			_replaySel, _replayPartida.combates, configuracion.batalla);
 		break;
 
 	case EstadoJuego::REPLAY_COMBATE: // REPRODUCE EL COMBATE GRABADO FRAME A FRAME
-		DibujaArena::arena_dibujar(_arena, configuracion.batalla);
+		DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana); // necesario para restaurar las matrices 3D
+		DibujaArena::arena_dibujar(_arena, _replayPartida.combates[_replayIdx].batalla);
 		DibujaMenu::replay_dibujar(_anchoVentana, _altoVentana, _replayFrame,
 			(int)_replayPartida.combates[_replayIdx].frames.size(),
 			_replayPartida.combates[_replayIdx],
@@ -658,6 +672,34 @@ void Coordinador::raton(int boton, int state, int x, int y)
 	case EstadoJuego::GUARDANDO:
 		gestorInput.ratonGuardando(x, y, true, estado);
 		break;
+	case EstadoJuego::REPLAY_SELECCION:
+		if (boton == GLUT_LEFT_BUTTON && !_replayPartida.combates.empty()) {
+			// Calcula sobre que item hizo click (misma geometria que replay_seleccion_dibujar)
+			int gy = _altoVentana - y;
+			float itemH = 52.0f, sep = 8.0f;
+			float listY = (float)_altoVentana - 140.0f;
+			float listX = _anchoVentana * 0.15f;
+			float listW = _anchoVentana * 0.70f;
+			for (int i = 0; i < (int)_replayPartida.combates.size(); i++) {
+				float iy = listY - i * (itemH + sep);
+				if (x >= listX && x <= listX + listW && gy >= iy && gy <= iy + itemH) {
+					if (_replaySel == i) {
+						// Segundo click en el mismo item: entra al replay
+						_replayIdx = _replaySel;
+						_replayFrame = 0;
+						_arena.iniciarReplay(_replayPartida.combates[_replayIdx]);
+						DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
+						estado = EstadoJuego::REPLAY_COMBATE;
+					}
+					else {
+						_replaySel = i; // primer click: selecciona
+					}
+					break;
+				}
+			}
+		}
+		break;
+
 	case EstadoJuego::AYUDA:
 		gestorInput.ratonAyuda(boton, state, x, y, estado);
 		/*if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1)
@@ -692,6 +734,19 @@ void Coordinador::ratonMovido(int x, int y)
 		gestorInput.ratonMovidoGuardando(x, y); // HOVER PAUSA
 	else if (estado == EstadoJuego::AYUDA)
 		gestorInput.ratonMovidoAyuda(x, y, estado); // HOVER AYUDA
+	else if (estado == EstadoJuego::REPLAY_SELECCION && !_replayPartida.combates.empty()) {
+		// Hover: el cursor cambia la seleccion al pasar por encima de un item
+		int gy = _altoVentana - y;
+		float itemH = 52.0f, sep = 8.0f;
+		float listY = (float)_altoVentana - 140.0f;
+		float listX = _anchoVentana * 0.15f;
+		float listW = _anchoVentana * 0.70f;
+		for (int i = 0; i < (int)_replayPartida.combates.size(); i++) {
+			float iy = listY - i * (itemH + sep);
+			if (x >= listX && x <= listX + listW && gy >= iy && gy <= iy + itemH)
+				_replaySel = i;
+		}
+	}
 	glutPostRedisplay();
 }
 
@@ -711,4 +766,9 @@ void Coordinador::reiniciarTablero()
 	pTablero = nullptr;
 	pTablerogl = nullptr;
 	menuPrincipal.reiniciar();
+
+	// Limpia los combates grabados para que la nueva partida empiece sin replays de la anterior
+	_replayPartida = RegistroPartida{};
+	_combateEnCurso = CombateRegistro{};
+	_grabandoCombate = false;
 }
