@@ -793,6 +793,12 @@ void GestorInput::teclaArena(unsigned char key)
             }
         }
 
+        // Guarda el combate terminado en el historial de la partida
+        //Con el push_back se guarda una copia del combate actual, por lo q no hace falta grabar la partida, simplemente se reproducen los mismos movimientos
+        _coordinador->_combateEnCurso.ganoP1 = ganaP1;
+        _coordinador->_replayPartida.combates.push_back(_coordinador->_combateEnCurso);
+        _coordinador->_combateEnCurso = CombateRegistro{};
+        _coordinador->_grabandoCombate = false;
         _coordinador->_pAtacanteCombate = nullptr;
         _coordinador->_pDefensoraCombate = nullptr;
 

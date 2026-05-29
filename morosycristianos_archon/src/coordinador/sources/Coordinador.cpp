@@ -176,6 +176,16 @@ void Coordinador::dibuja()
 					configuracion.modo,
 					pTablerogl->getVentajaTerrenoCombate());
 
+				// Inicializa el registro del nuevo combate
+				_combateEnCurso = CombateRegistro{};
+				_combateEnCurso.nombreP1 = configuracion.nombre_j1;
+				_combateEnCurso.nombreP2 = configuracion.nombre_j2;
+				_combateEnCurso.vidaMaxP1 = _arena.p1().vidaMax();
+				_combateEnCurso.vidaMaxP2 = _arena.p2().vidaMax();
+				_arena.p1().color(_combateEnCurso.r1, _combateEnCurso.g1, _combateEnCurso.b1);
+				_arena.p2().color(_combateEnCurso.r2, _combateEnCurso.g2, _combateEnCurso.b2);
+				_grabandoCombate = true;
+
 				ETSIDI::stopMusica();
 				ETSIDI::play("sonidos/ARENA.mp3");
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
@@ -237,6 +247,19 @@ void Coordinador::dibuja()
 			_rankingTop10,
 			_rankingGanaJ1
 		);
+		break;
+
+	case EstadoJuego::REPLAY_SELECCION: // MUESTRA LA LISTA DE COMBATES GRABADOS DURANTE LA PARTIDA
+		DibujaMenu::replay_seleccion_dibujar(_anchoVentana, _altoVentana,
+			_replaySel, _replayPartida.combates);
+		break;
+
+	case EstadoJuego::REPLAY_COMBATE: // REPRODUCE EL COMBATE GRABADO FRAME A FRAME
+		DibujaArena::arena_dibujar(_arena, configuracion.batalla);
+		DibujaMenu::replay_dibujar(_anchoVentana, _altoVentana, _replayFrame,
+			(int)_replayPartida.combates[_replayIdx].frames.size(),
+			_replayPartida.combates[_replayIdx],
+			_replayFrame >= (int)_replayPartida.combates[_replayIdx].frames.size());
 		break;
 
 	case EstadoJuego::FINAL:
@@ -319,6 +342,25 @@ void Coordinador::tecla(unsigned char key)
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
 		}
+		if ((key == 'r' || key == 'R') && !_replayPartida.combates.empty()) {
+			_replaySel = 0;
+			estado = EstadoJuego::REPLAY_SELECCION;
+		}
+		break;
+
+	case EstadoJuego::REPLAY_SELECCION: // MUESTRA LA LISTA DE COMBATES GRABADOS DURANTE LA PARTIDA
+		if (key == 27) estado = EstadoJuego::RANKING;
+		if (key == 13 && !_replayPartida.combates.empty()) {
+			_replayIdx = _replaySel;
+			_replayFrame = 0;
+			_arena.iniciarReplay(_replayPartida.combates[_replayIdx]);
+			DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
+			estado = EstadoJuego::REPLAY_COMBATE;
+		}
+		break;
+
+	case EstadoJuego::REPLAY_COMBATE: // REPRODUCE EL COMBATE GRABADO FRAME A FRAME
+		if (key == 27) estado = EstadoJuego::REPLAY_SELECCION;
 		break;
 
 	case EstadoJuego::FINAL:
@@ -377,6 +419,10 @@ void Coordinador::tecla_especial(int key)
 			if (key == GLUT_KEY_UP)   _ayudaSeleccion = (_ayudaSeleccion - 1 + 2) % 2;
 			if (key == GLUT_KEY_DOWN) _ayudaSeleccion = (_ayudaSeleccion + 1) % 2;
 		}
+		break;
+	case EstadoJuego::REPLAY_SELECCION:
+		if (key == GLUT_KEY_UP && _replaySel > 0) _replaySel--;
+		if (key == GLUT_KEY_DOWN && _replaySel < (int)_replayPartida.combates.size() - 1) _replaySel++;
 		break;
 	default: break;
 	}
@@ -556,6 +602,31 @@ void Coordinador::mueve(double dt)
 	if (estado == EstadoJuego::ARENA) {
 		_arena.actualizar((float)dt, _input);
 		DibujaArena::arena_update((float)dt);
+
+		// Graba el estado de este frame
+		if (_grabandoCombate) {
+			FrameArena f;
+			f.p1x = _arena.p1().x();   f.p1z = _arena.p1().z();   f.p1vida = _arena.p1().vida();
+			f.p1mirX = _arena.p1().mirandoX(); f.p1mirZ = _arena.p1().mirandoZ();
+			f.p1atacando = _arena.p1().atacando();
+			f.p1danio = _arena.p1().recibioDanio();
+			f.p1mov = _arena.p1().enMovimiento();
+			f.p2x = _arena.p2().x();   f.p2z = _arena.p2().z();   f.p2vida = _arena.p2().vida();
+			f.p2mirX = _arena.p2().mirandoX(); f.p2mirZ = _arena.p2().mirandoZ();
+			f.p2atacando = _arena.p2().atacando();
+			f.p2danio = _arena.p2().recibioDanio();
+			f.p2mov = _arena.p2().enMovimiento();
+			_combateEnCurso.frames.push_back(f);
+		}
+	}
+
+	if (estado == EstadoJuego::REPLAY_COMBATE) {
+		DibujaArena::arena_update((float)dt);
+		if (!_replayPartida.combates.empty() && _replayIdx < (int)_replayPartida.combates.size()) {
+			const CombateRegistro& c = _replayPartida.combates[_replayIdx];
+			if (_replayFrame < (int)c.frames.size())
+				_arena.aplicarFrameReplay(c.frames[_replayFrame++]);
+		}
 	}
 }
 

@@ -22,6 +22,8 @@ public:
 
     void setVentana(int ancho, int alto) { _ancho = ancho; _alto = alto; } // ACTUALIZA TAMAÑO VENTANA
     void setTablerogl(Tablerogl* t) { _tablerogl = t; } // ASIGNA TABLEROGL
+
+
     Coordinador* _coordinador{ nullptr }; // PUNTERO AL COORDINADOR
     void setCoordinador(Coordinador* c) { _coordinador = c; } // SETTER
 

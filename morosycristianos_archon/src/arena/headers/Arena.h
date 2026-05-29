@@ -3,6 +3,7 @@
 #include "InputState.h"
 #include "IAArena.h"
 #include "estadojuego.h"
+#include "CombateRegistro.h"
 
 // Escenario de combate que contiene a los dos combatienyes y 
 // la logica de quien le da a quien
@@ -53,4 +54,8 @@ public:
 	void resolverColision(); // EVITA QUE LOS COMBATIENTES SE SOLAPEN
 	
 	bool iaActiva() const { return _modo == ModoJuego::JVIA; }
+
+	// Metodos para el replay de combates grabados
+	void iniciarReplay(const CombateRegistro& c);
+	void aplicarFrameReplay(const FrameArena& f);
 };

@@ -1106,3 +1106,160 @@ void DibujaMenu::ayuda_dibujar(int seleccion, int seccion, int ancho, int alto)
 
     util_salir2D();
 }
+
+// ============================================================
+// REPLAY - PANTALLA DE SELECCION DE COMBATE
+// Muestra la lista de combates grabados durante la partida
+// ============================================================
+
+void DibujaMenu::replay_seleccion_dibujar(int ancho, int alto,
+    int selActual, const std::vector<CombateRegistro>& combates)
+{
+    util_entrar2D(ancho, alto);
+
+    // Fondo negro semitransparente sobre lo que haya detras
+    menu_rect(0, 0, (float)ancho, (float)alto, 0.0f, 0.0f, 0.0f, 0.82f);
+
+    // Titulo
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 36);
+    ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f);
+    const char* titulo = "Replay de combates";
+    int tw = (int)(strlen(titulo) * 36 * 0.62f);
+    ETSIDI::printxy(titulo, ancho / 2 - tw / 2, alto - 80);
+
+    // Linea dorada bajo el titulo
+    glColor3f(0.85f, 0.68f, 0.10f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINES);
+    glVertex2f(ancho * 0.15f, alto - 100.0f);
+    glVertex2f(ancho * 0.85f, alto - 100.0f);
+    glEnd();
+    glLineWidth(1.0f);
+
+    if (combates.empty()) {
+        // Aviso si no hay ningun combate grabado todavia
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 20);
+        ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
+        const char* msg = "No hay combates grabados en esta partida";
+        int tw2 = (int)(strlen(msg) * 20 * 0.62f);
+        ETSIDI::printxy(msg, ancho / 2 - tw2 / 2, alto / 2);
+    }
+    else {
+        float itemH = 52.0f;
+        float sep = 8.0f;
+        float listY = (float)alto - 140.0f;
+        float listX = ancho * 0.15f;
+        float listW = ancho * 0.70f;
+
+        for (int i = 0; i < (int)combates.size(); i++) {
+            const CombateRegistro& c = combates[i];
+            bool esSel = (i == selActual);
+
+            // Fondo del item: mas brillante si esta seleccionado
+            float bAlfa = esSel ? 0.75f : 0.35f;
+            float br = esSel ? 0.65f : 0.20f;
+            float bg = esSel ? 0.50f : 0.20f;
+            float bb = esSel ? 0.10f : 0.20f;
+            menu_rect(listX, listY - i * (itemH + sep), listW, itemH, br, bg, bb, bAlfa);
+
+            // Texto con info del combate
+            ETSIDI::setFont("fuentes\\ARIALNBI.ttf", esSel ? 20 : 17);
+            if (esSel)
+                ETSIDI::setTextColor(1.0f, 0.90f, 0.20f, 1.0f);
+            else
+                ETSIDI::setTextColor(0.85f, 0.85f, 0.85f, 1.0f);
+
+            const char* ganador = c.ganoP1 ? c.nombreP1.c_str() : c.nombreP2.c_str();
+            char buf[128];
+            sprintf_s(buf, "Combate %d: %s vs %s  (gana: %s | frames: %d)",
+                i + 1,
+                c.nombreP1.c_str(), c.nombreP2.c_str(),
+                ganador, (int)c.frames.size());
+            ETSIDI::printxy(buf, (int)(listX + 12), (int)(listY - i * (itemH + sep) + 16));
+        }
+    }
+
+    // Instrucciones en la parte inferior
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+    ETSIDI::setTextColor(0.75f, 0.75f, 0.75f, 1.0f);
+    const char* hint = "ARRIBA/ABAJO: navegar  |  ENTER: ver replay  |  ESC: volver";
+    int tw3 = (int)(strlen(hint) * 14 * 0.62f);
+    ETSIDI::printxy(hint, ancho / 2 - tw3 / 2, 20);
+
+    util_salir2D();
+}
+
+// ============================================================
+// REPLAY - BARRA DE VIDA SUPERPUESTA SOBRE LA ARENA DURANTE LA REPRODUCCION
+// Se dibuja encima de arena_dibujar, nunca en lugar de ella
+// ============================================================
+
+void DibujaMenu::replay_dibujar(int ancho, int alto,
+    int idx, int total, const CombateRegistro& c, bool fin)
+{
+    util_entrar2D(ancho, alto);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Panel superior: nombres de los jugadores
+    menu_rect(0, (float)alto - 40, (float)ancho, 40.0f, 0.0f, 0.0f, 0.0f, 0.60f);
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 16);
+    ETSIDI::setTextColor(0.9f, 0.7f, 0.1f, 1.0f);
+    ETSIDI::printxy("REPLAY:", 10, alto - 28);
+    ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+    std::string vs = c.nombreP1 + " vs " + c.nombreP2;
+    ETSIDI::printxy(vs.c_str(), 90, alto - 28);
+
+    // Esquina superior derecha: quien gano este combate
+    ETSIDI::setTextColor(0.5f, 1.0f, 0.5f, 1.0f);
+    std::string txtGanador = "Gana: " + (c.ganoP1 ? c.nombreP1 : c.nombreP2);
+    int gw = (int)(txtGanador.size() * 16 * 0.62f);
+    ETSIDI::printxy(txtGanador.c_str(), ancho - gw - 10, alto - 28);
+
+    // Barra de progreso en la parte inferior
+    float barX = ancho * 0.10f;
+    float barY = 20.0f;
+    float barW = ancho * 0.80f;
+    float barH = 14.0f;
+
+    // Fondo gris de la barra
+    menu_rect(barX, barY, barW, barH, 0.2f, 0.2f, 0.2f, 0.85f);
+
+    // Relleno dorado proporcional al progreso actual
+    float progreso = (total > 0) ? (float)idx / (float)total : 1.0f;
+    if (progreso > 1.0f) progreso = 1.0f;
+    menu_rect(barX, barY, barW * progreso, barH, 0.85f, 0.65f, 0.10f, 0.90f);
+
+    // Texto frame actual / total centrado bajo la barra
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+    ETSIDI::setTextColor(0.90f, 0.90f, 0.90f, 1.0f);
+    char buf[64];
+    sprintf_s(buf, "Frame %d / %d", idx, total);
+    int tw = (int)(strlen(buf) * 13 * 0.62f);
+    ETSIDI::printxy(buf, ancho / 2 - tw / 2, 6);
+
+    if (fin) {
+        // Cartel central cuando el replay ha terminado
+        menu_rect((float)ancho / 2.0f - 170, (float)alto / 2.0f - 35, 340, 70,
+            0.0f, 0.0f, 0.0f, 0.85f);
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 24);
+        ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f);
+        const char* msgFin = "Fin del combate";
+        int fw = (int)(strlen(msgFin) * 24 * 0.62f);
+        ETSIDI::printxy(msgFin, ancho / 2 - fw / 2, alto / 2 - 5);
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.75f, 0.75f, 0.75f, 1.0f);
+        const char* hintFin = "ESC: volver a la lista";
+        int hw = (int)(strlen(hintFin) * 14 * 0.62f);
+        ETSIDI::printxy(hintFin, ancho / 2 - hw / 2, alto / 2 - 32);
+    }
+    else {
+        // Recordatorio sutil de como salir mientras se reproduce
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 12);
+        ETSIDI::setTextColor(0.50f, 0.50f, 0.50f, 1.0f);
+        ETSIDI::printxy("ESC: salir del replay", 8, 8);
+    }
+
+    glDisable(GL_BLEND);
+    util_salir2D();
+}

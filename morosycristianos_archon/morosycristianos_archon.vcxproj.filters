@@ -201,6 +201,9 @@
     <ClInclude Include="src\tablero\headers\GestorPartida.h">
       <Filter>tablero\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="CombateRegistro.h">
+      <Filter>arena\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\ETSIDI.lib" />

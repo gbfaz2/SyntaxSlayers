@@ -19,6 +19,8 @@ enum class EstadoJuego {
     CARGANDO,       // Para que cargue la partida guardada
 	VICTORIA,        // Pantalla de victoria
     RANKING,        // Pantalla de ranking
+    REPLAY_SELECCION, // menu para elegir que combate reproducir
+    REPLAY_COMBATE,   // reproduccion frame a frame de un combate grabado
     FINAL,          // Pantalla de fin de partida
     PAUSA,          // Pausa
     AYUDA,          // Pantalla de ayuda

@@ -138,6 +138,14 @@ public:
 	// SETTER PARA ACTUALIZAR LA DIRECCION DE MIRADA DESDE FUERA
 	void setMirando(float dx, float dz) { _mirandoX = dx; _mirandoZ = dz; }
 
+	// SETTERS PARA EL REPLAY
+	void setVida(float v) { _vida = v; }
+	void setMirandoXZ(float dx, float dz) { _mirandoX = dx; _mirandoZ = dz; }
+	void setAtacando(bool a) { _tiempoAnimacionAtaque = a ? 0.1f : 0.0f; }
+	void setDanio(bool d) { _recibioDanio = d; }
+	void setEnMovimiento(bool m) { _enMovimiento = m; }
+	void setVidaMax(float v) { _vidaMax = v; } //para q la barra de vida se vea en el replay
+
 	// GETTER PARA SABER DE QUE LADO EMPEZO
 	float inicioX() const { return _inicioX; }
 
