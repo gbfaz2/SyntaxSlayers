@@ -120,11 +120,11 @@ public:
 
 		_mensajeInvalido = mensaje;
 		_tiempoMensajeInvalido = 2.0f;
-		
+		/*
 		//musica MEEEEH error, reproducir solo para los errores de movimiento
 		if (reproducirSonido) {
 			ETSIDI::playMusica("sonidos/error_tablero.mp3");
-		}
+		}*/
 	}
 	//descuenta el temporizador del cartel 
 	void updateMensaje(double dt){
