@@ -253,6 +253,7 @@ void Coordinador::dibuja()
 
 		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
 		pTablerogl->setBatalla((int)configuracion.batalla);
+		pTablerogl->_modoJVIA = (configuracion.modo == ModoJuego::JVIA);
 		pTablerogl->nombre_j1 = configuracion.nombre_j1;
 		pTablerogl->nombre_j2 = configuracion.nombre_j2;
 
