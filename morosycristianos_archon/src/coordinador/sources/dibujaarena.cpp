@@ -69,7 +69,7 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
         glGetDoublev(GL_MODELVIEW_MATRIX, model);
         glGetDoublev(GL_PROJECTION_MATRIX, proj);
         glGetIntegerv(GL_VIEWPORT, view);
-        gluProject(c.x(), c.y(), c.z(), model, proj, view, &winX, &winY, &winZ);
+        gluProject(c.x() + 1.2f, c.y(), c.z(), model, proj, view, &winX, &winY, &winZ);
 
         //definición de estados según reciba daño o este atacando
         EstadoPersonaje estado;

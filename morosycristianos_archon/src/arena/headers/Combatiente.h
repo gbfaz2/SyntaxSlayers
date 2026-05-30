@@ -39,7 +39,7 @@ class Combatiente
 	float _b{ 1.0f };
 
 	// Tamaño del cubo
-	float _lado{ 1.0f };
+	float _lado{ 2.0f };
 
 	// Velocidad de movimiento (unidades por segundo)
 	float _velocidad{ 4.0f };
