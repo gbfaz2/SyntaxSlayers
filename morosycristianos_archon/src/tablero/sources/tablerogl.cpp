@@ -3,6 +3,7 @@
 // Por último se dibuja la cuadrícula negra encima
 
 #include "tablerogl.h"
+#include "MinimaxTablero.h"
 #include <cmath>
 
 int Tablerogl::_anchoVentana = 1024;
@@ -53,6 +54,34 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			fromCol = currentCol;
 			fromBando = bando;
 			piezaSeleccionada = true;
+
+			// SUGERENCIA: calcular el mejor movimiento para la pieza seleccionada
+			// Usamos una IA ligera (profundidad 1) para que sea instantáneo
+			_sugerenciaFila = -1;
+			_sugerenciaCol = -1;
+			if (true) {
+				MinimaxTablero iaLigera(1);
+				Tablero copia = *m_tablero;
+
+				auto movimientos = iaLigera.generarMovimientos(copia, bando);
+
+				int mejorValor = (bando == bando_rival) ? INT_MIN : INT_MAX;
+				for (const auto& mov : movimientos) {
+					// SOLO los movimientos de la pieza que el jugador ha seleccionado
+					if (mov.filaOrigen != currentFila || mov.colOrigen != currentCol) continue;
+
+					EstadoCasilla estado = iaLigera.aplicarMovimiento(copia, mov);
+					int valor = iaLigera.evaluar(copia);
+					iaLigera.deshacerMovimiento(copia, mov, estado);
+
+					bool esMejor = (bando == bando_rival) ? (valor > mejorValor) : (valor < mejorValor);
+					if (esMejor) {
+						mejorValor = valor;
+						_sugerenciaFila = mov.filaDestino;
+						_sugerenciaCol = mov.colDestino;
+					}
+				}
+			}
 		}
 		// Si no es su turno o la casilla está vacía, no hace nada y sale
 		return;

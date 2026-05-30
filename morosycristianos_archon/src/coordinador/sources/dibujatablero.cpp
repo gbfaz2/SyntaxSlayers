@@ -417,6 +417,33 @@ void DibujaTablero::tablero_movimientos_validos(const Tablerogl& t) {
         glEnd();
         glLineWidth(1.0f);
     }
+
+    // RESALTAR LA CASILLA SUGERIDA POR LA IA EN VERDE BRILLANTE
+    if (t._sugerenciaFila >= 0 && t._sugerenciaCol >= 0) {
+        float sx0 = t._sugerenciaCol * t.ancho;
+        float sx1 = sx0 + t.ancho;
+        float sy0 = -t._sugerenciaFila * t.ancho;
+        float sy1 = sy0 - t.ancho;
+
+        // FONDO VERDE SEMITRANSPARENTE
+        glColor4f(0.0f, 1.0f, 0.3f, 0.40f);
+        glBegin(GL_QUADS);
+        glVertex3f(sx0, sy0, 0.0045f); glVertex3f(sx1, sy0, 0.0045f);
+        glVertex3f(sx1, sy1, 0.0045f); glVertex3f(sx0, sy1, 0.0045f);
+        glEnd();
+
+        // BORDE VERDE BRILLANTE MÁS GRUESO
+        glColor4f(0.0f, 1.0f, 0.2f, 1.0f);
+        glLineWidth(3.5f);
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(sx0 + 0.003f, sy0 - 0.003f, 0.0055f);
+        glVertex3f(sx1 - 0.003f, sy0 - 0.003f, 0.0055f);
+        glVertex3f(sx1 - 0.003f, sy1 + 0.003f, 0.0055f);
+        glVertex3f(sx0 + 0.003f, sy1 + 0.003f, 0.0055f);
+        glEnd();
+        glLineWidth(1.0f);
+    }
+
     glDisable(GL_BLEND);
 }
 

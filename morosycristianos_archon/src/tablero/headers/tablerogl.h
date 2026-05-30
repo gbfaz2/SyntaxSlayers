@@ -80,6 +80,10 @@ protected:
 	int _infiltradoFila{ -1 }; //guarda donde está el infiltrado original
 	int _infiltradoCol{ -1 };
 
+	// SUGERENCIA DE LA IA PARA EL JUGADOR
+	int _sugerenciaFila{ -1 };
+	int _sugerenciaCol{ -1 };
+
 public:
 	Tablerogl(Tablero* pb); //constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() {} //destructor virtual + destruir rey

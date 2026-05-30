@@ -40,17 +40,6 @@ class MinimaxTablero {
     int minimax(Tablero& tablero, int profundidad, bool maximizar,
         int alpha, int beta);
 
-    int evaluar(const Tablero& tablero) const;
-
-    std::vector<MovimientoIA> generarMovimientos(
-        const Tablero& tablero, BandoPieza bando) const;
-
-    EstadoCasilla aplicarMovimiento(
-        Tablero& tablero, const MovimientoIA& mov);
-
-    void deshacerMovimiento(Tablero& tablero, const MovimientoIA& mov,
-        const EstadoCasilla& estadoAnterior);
-
     bool hayVictoria(const Tablero& tablero) const;
 
 public:
@@ -69,4 +58,10 @@ public:
 
     // MÉTODO PRINCIPAL DE LA IA
     MovimientoIA calcularMejorMovimiento(Tablero& tablero);
+
+    // MÉTODOS PÚBLICOS PARA SUGERENCIAS AL JUGADOR
+    std::vector<MovimientoIA> generarMovimientos(const Tablero& tablero, BandoPieza bando) const;
+    EstadoCasilla aplicarMovimiento(Tablero& tablero, const MovimientoIA& mov);
+    void deshacerMovimiento(Tablero& tablero, const MovimientoIA& mov, const EstadoCasilla& estado);
+    int evaluar(const Tablero& tablero) const;
 };
