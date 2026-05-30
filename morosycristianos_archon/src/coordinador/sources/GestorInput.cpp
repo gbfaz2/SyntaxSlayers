@@ -342,7 +342,7 @@ bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
         _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
         _tablerogl->_mensajeInvalido = "";             // LIMPIA MENSAJE INVALIDO
         _tablerogl->_tiempoMensajeInvalido = 0.0f;    // RESETEA TEMPORIZADOR
-        Pieza* lider = _coordinador->pTablero->buscarPieza(pieza_esfera, bando);
+        Pieza* lider = _coordinador->pTablero->buscarPieza(pieza_lider, bando);
         if (lider) {
             _tablerogl->Filacursor[idx] = lider->getFila();    // CURSOR VUELVE AL LIDER
             _tablerogl->Colcursor[idx] = lider->getColumna(); // CURSOR VUELVE AL LIDER
@@ -366,7 +366,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         if (_tablerogl->piezaSeleccionada) {               // HAY PIEZA SELECCIONADA
             const Casilla& cas = _coordinador->pTablero->getCasilla(
                 _tablerogl->fromFila, _tablerogl->fromCol);
-            if (cas.pieza == pieza_esfera && cas.bando == bando_local) { // ES EL REY LOCAL
+            if (cas.pieza == pieza_lider && cas.bando == bando_local) { // ES EL REY LOCAL
                 std::cout << "[Hechizos] Modo hechizo P1 activo. Elige 1-4.\n 1. Avituallamiento: Cura una pieza tuya a vida maxima";
                 std::cout << "\n 2. Rutas Secretas: Teleporta una pieza tuya a cualquier casilla vacia del tablero.";
                 std::cout << "\n 3. Relevo de Guardia: Intercambia la posicion de dos piezas tuyas.";
@@ -396,7 +396,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         if (_tablerogl->piezaSeleccionada) {               // HAY PIEZA SELECCIONADA
             const Casilla& cas = _coordinador->pTablero->getCasilla(
                 _tablerogl->fromFila, _tablerogl->fromCol);
-            if (cas.pieza == pieza_esfera && cas.bando == bando_rival) { // ES EL EMIR RIVAL
+            if (cas.pieza == pieza_lider && cas.bando == bando_rival) { // ES EL EMIR RIVAL
                 std::cout << "[Hechizos] Modo hechizo P2 activo. Elige 1-4.\n 1. Avituallamiento: Cura una pieza tuya a vida maxima";
                 std::cout << "\n 2. Rutas Secretas: Teleporta una pieza tuya a cualquier casilla vacia del tablero.";
                 std::cout << "\n 3. Relevo de Guardia: Intercambia la posicion de dos piezas tuyas.";

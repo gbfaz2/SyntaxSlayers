@@ -28,13 +28,13 @@ class Tablerogl
 	static int _anchoVentana;
 	static int _altoVentana;
 
-	//para movimiento interpolado
+	//Movimiento interpolado:
 	struct AnimMovimiento {
 		Pieza* pieza; // qué pieza se está moviendo
 		float  origenX, origenY; // posición GL de origen
 		float  destinoX, destinoY; // posición GL de destino
 		float  t; // progreso 0.0 → 1.0
-		bool   activa{ false };
+		bool   activa{ false };  //flag para saber si la pieza esta moviendose
 	};
 	AnimMovimiento _animMov;
 

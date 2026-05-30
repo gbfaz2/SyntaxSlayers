@@ -89,40 +89,40 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 
 	Pieza* Alm = new Almogavar(Bando::CRISTIANO);
 	Alm->setIdAnimacion(idAlm++);
-	poner(5, 0, pieza_icosaedro, bando_local, Alm);
+	poner(5, 0, pieza_volador2, bando_local, Alm);
 
 
 	int idCabLig = 0; // Contador de IDs para caballería ligera
 
 	Pieza* CabLig = new CaballeriaLigera(Bando::CRISTIANO);
 	CabLig->setIdAnimacion(idCabLig++);
-	poner(0, 0, pieza_tetraedro, bando_local, CabLig);
+	poner(0, 0, pieza_volador1, bando_local, CabLig);
 
 	Pieza* CabLig2 = new CaballeriaLigera(Bando::CRISTIANO);
 	CabLig2->setIdAnimacion(idCabLig++);
-	poner(8, 0, pieza_tetraedro, bando_local, CabLig2);
+	poner(8, 0, pieza_volador1, bando_local, CabLig2);
 
 
 	int idBall = 0; // Contador de IDs para ballesteros
 
 	Pieza* Balle = new Ballestero(Bando::CRISTIANO);
 	Balle->setIdAnimacion(idBall++);
-	poner(0, 1, pieza_cilindro, bando_local, Balle);
+	poner(0, 1, pieza_basica2, bando_local, Balle);
 	
 	Pieza* Ballest = new Ballestero(Bando::CRISTIANO);
 	Ballest->setIdAnimacion(idBall++);
-	poner(8, 1, pieza_cilindro, bando_local, Ballest);
+	poner(8, 1, pieza_basica2, bando_local, Ballest);
 
 
 	int idCab = 0; // Contador de IDs para caballería pesada
 
 	Pieza* Cabb = new CaballeriaPesada(Bando::CRISTIANO); 
 	Cabb->setIdAnimacion(idCab++);
-	poner(2, 0, pieza_cono, bando_local, Cabb);
+	poner(2, 0, pieza_fuerte2, bando_local, Cabb);
 
 	Pieza* Cab = new CaballeriaPesada(Bando::CRISTIANO);
 	Cab->setIdAnimacion(idCab++);
-	poner(6, 0, pieza_cono, bando_local, Cab);
+	poner(6, 0, pieza_fuerte2, bando_local, Cab);
 
 	
 
@@ -133,49 +133,49 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 		Pieza* mLocal = new Miliciano(Bando::CRISTIANO);
 		mLocal->setIdAnimacion(idMiliciano); // Le damos ID 0, 1, 2...
 		idMiliciano++;
-		poner(fila, 1, pieza_cubo_p, bando_local, mLocal);
+		poner(fila, 1, pieza_basica1, bando_local, mLocal);
 	}
 
 	int idInfiltrado = 0; // Contador de IDs para infiltrado
 
 	Pieza* Infil = new Infiltrado(Bando::CRISTIANO);
 	Infil->setIdAnimacion(idInfiltrado++);
-	poner(3, 0, pieza_dodecaedro, bando_local, Infil);
+	poner(3, 0, pieza_teleporte, bando_local, Infil);
 
 
 	int idReyy = 0; // Contador de IDs para rey
 
 	Pieza* Re = new Rey(Bando::CRISTIANO);
 	Re->setIdAnimacion(idInfiltrado++);
-	poner(4, 0, pieza_esfera, bando_local, Re);
+	poner(4, 0, pieza_lider, bando_local, Re);
 
 
 	int idInfanT = 0; // Contador de IDs para infantería
 
 	Pieza* Infanterr = new Infanteria(Bando::CRISTIANO);
 	Infanterr->setIdAnimacion(idInfanT++);
-	poner(1, 0, pieza_cubog, bando_local, Infanterr);
+	poner(1, 0, pieza_fuerte1, bando_local, Infanterr);
 
 	Pieza* Infanterii = new Infanteria(Bando::CRISTIANO);
 	Infanterii->setIdAnimacion(idInfanT++);
-	poner(7, 0, pieza_cubog, bando_local, Infanterii);
+	poner(7, 0, pieza_fuerte1, bando_local, Infanterii);
 	
 	int idAlmo = 0; // Contador de IDs para almogávares
 
 	Pieza* Arqc = new Almogavar(Bando::ANDALUSI);
 	Arqc ->setIdAnimacion(idAlmo++);
-	poner(5, 8, pieza_icosaedro, bando_rival, Arqc);
+	poner(5, 8, pieza_volador2, bando_rival, Arqc);
 
 
 	int idBalle = 0; // Contador de IDs para ballesteros
 
 	Pieza* Arq = new Ballestero(Bando::ANDALUSI);
 	Arq->setIdAnimacion(idBalle++);
-	poner(0, 7, pieza_cilindro, bando_rival, Arq);
+	poner(0, 7, pieza_basica2, bando_rival, Arq);
 
 	Pieza* Arq2 = new Ballestero(Bando::ANDALUSI);
 	Arq2->setIdAnimacion(idBalle++);
-	poner(8, 7, pieza_cilindro, bando_rival, Arq2);
+	poner(8, 7, pieza_basica2, bando_rival, Arq2);
 
 
 	int idCabLige = 0; // Contador de IDs para caballería ligera	
@@ -183,11 +183,11 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	//asignar ID para caballero pesado de la fila 0
 	Pieza* CabPes = new CaballeriaPesada(Bando::ANDALUSI);
 	CabPes->setIdAnimacion(idCabLige++);
-	poner(2, 8, pieza_cono, bando_rival, CabPes);
+	poner(2, 8, pieza_fuerte2, bando_rival, CabPes);
 
 	Pieza* CabPes2 = new CaballeriaPesada(Bando::ANDALUSI);
 	CabPes2->setIdAnimacion(idCabLige++);
-	poner(6, 8, pieza_cono, bando_rival, CabPes2);
+	poner(6, 8, pieza_fuerte2, bando_rival, CabPes2);
 
 
 	int idMilici = 0; //contador ID para milicianos
@@ -198,7 +198,7 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 		Pieza* mRival = new Miliciano(Bando::ANDALUSI);
 		mRival->setIdAnimacion(idMiliciano); // Le damos ID 0, 1, 2...
 		idMiliciano++;
-		poner(fila, 7, pieza_cubo_p, bando_rival, mRival);
+		poner(fila, 7, pieza_basica1, bando_rival, mRival);
 	}
 
 
@@ -207,33 +207,33 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	//asignar ID para emir de la fila 0
 	Pieza* Em = new Rey(Bando::ANDALUSI);
 	Em->setIdAnimacion(idRey++);
-	poner(4, 8, pieza_esfera, bando_rival, Em);
+	poner(4, 8, pieza_lider, bando_rival, Em);
 
 	int idInfanteria = 0; // Contador de IDs para infantería
 
 	Pieza* guar = new Infanteria(Bando::ANDALUSI);
 	guar->setIdAnimacion(idInfanteria++);
-	poner(1, 8, pieza_cubog, bando_rival, guar);
+	poner(1, 8, pieza_fuerte1, bando_rival, guar);
 
 	Pieza* guard = new Infanteria(Bando::ANDALUSI);
 	guard->setIdAnimacion(idInfanteria++);
-	poner(7, 8, pieza_cubog, bando_rival, guard);
+	poner(7, 8, pieza_fuerte1, bando_rival, guard);
 
 	int idJinete = 0; // Contador de IDs para jinetes
 
 	//asignar ID para caballero ligero de la fila 0
 	Pieza* jine = new CaballeriaLigera(Bando::ANDALUSI);
 	jine->setIdAnimacion(idJinete++);
-	poner(0, 8, pieza_tetraedro, bando_rival, jine);
+	poner(0, 8, pieza_volador1, bando_rival, jine);
 
 	Pieza* jin = new CaballeriaLigera(Bando::ANDALUSI);
 	jin->setIdAnimacion(idJinete++);
-	poner(8, 8, pieza_tetraedro, bando_rival, jin);
+	poner(8, 8, pieza_volador1, bando_rival, jin);
 
 	//asignar ID para caballero ligero de la fila 0
 	Pieza* Inf = new Infiltrado(Bando::ANDALUSI);
 	Inf->setIdAnimacion(idInfiltrado++);
-	poner(3, 8, pieza_dodecaedro, bando_rival, Inf);
+	poner(3, 8, pieza_teleporte, bando_rival, Inf);
 
 	int idGhazi = 0; // CONTADOR DE ID PARA LA ANIMACIÓN RIVAL
 
@@ -248,7 +248,7 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 		idGhazi++;
 
 		// COLOCAMOS LA PIEZA: FILA DEL BUCLE, COL 7, TIPO CUBO_P, RIVAL, PUNTERO
-		poner(fila, 7, pieza_cubo_p, bando_rival, mRival);
+		poner(fila, 7, pieza_basica1, bando_rival, mRival);
 	}
 
 }
@@ -314,14 +314,14 @@ int Tablero::getRadioMovimiento(int fila, int col) const
 
 	// Fallback por tipo (por si obj no estuviera inicializado)
 	switch (c.pieza) {
-	case pieza_esfera:      return 3; // Rey/Emir: radio grande
-	case pieza_dodecaedro:  return 9; // Infiltrado: puede ir a cualquier lado
-	case pieza_icosaedro:   return 4; // Almogávar
-	case pieza_tetraedro:   return 3; // Caballería ligera
-	case pieza_cubog:       return 2; // Infantería pesada
-	case pieza_cono:        return 3; // Caballería pesada
-	case pieza_cilindro:    return 3; // Ballestero/Arquero
-	case pieza_cubo_p:      return 3; // Miliciano/Soldado
+	case pieza_lider:      return 3; // Rey/Emir: radio grande
+	case pieza_teleporte:  return 9; // Infiltrado: puede ir a cualquier lado
+	case pieza_volador2:   return 4; // Almogávar
+	case pieza_volador1:   return 3; // Caballería ligera
+	case pieza_fuerte1:       return 2; // Infantería pesada
+	case pieza_fuerte2:        return 3; // Caballería pesada
+	case pieza_basica2:    return 3; // Ballestero/Arquero
+	case pieza_basica1:      return 3; // Miliciano/Soldado
 	default:                return 1;
 	}
 }
@@ -452,14 +452,14 @@ Pieza* Tablero::crearPieza(TipoPieza tipo, BandoPieza bando)
 {
 	Bando b = (bando == bando_local) ? Bando::CRISTIANO : Bando::ANDALUSI;
 	switch (tipo) {
-	case pieza_esfera:      return new Rey(b);
-	case pieza_dodecaedro:  return new Infiltrado(b);
-	case pieza_icosaedro:   return new Almogavar(b);
-	case pieza_tetraedro:   return new CaballeriaLigera(b);
-	case pieza_cubog:       return new Infanteria(b);
-	case pieza_cono:        return new CaballeriaPesada(b);
-	case pieza_cilindro:    return new Ballestero(b);
-	case pieza_cubo_p:      return new Miliciano(b);
+	case pieza_lider:      return new Rey(b);
+	case pieza_teleporte:  return new Infiltrado(b);
+	case pieza_volador2:   return new Almogavar(b);
+	case pieza_volador1:   return new CaballeriaLigera(b);
+	case pieza_fuerte1:       return new Infanteria(b);
+	case pieza_fuerte2:        return new CaballeriaPesada(b);
+	case pieza_basica2:    return new Ballestero(b);
+	case pieza_basica1:      return new Miliciano(b);
 	default:                return nullptr;
 	}
 }

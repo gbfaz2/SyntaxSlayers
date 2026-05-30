@@ -1,3 +1,6 @@
+
+// DIBUJAPERSONAJES — MOTOR GRÁFICO EXCLUSIVO PARA LOS PERSONAJES
+
 #pragma once
 #include "ETSIDI.h"
 #include "tablero.h"

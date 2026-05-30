@@ -48,21 +48,21 @@ const char* dibujapersonajes::rutaImagen(TipoPersonaje tipo) {
 //Cada caso engloba la pieza cristiana con su correspondiente andalusi
 TipoPersonaje dibujapersonajes::tipoDesdePieza(TipoPieza pieza, BandoPieza bando) {
     switch (pieza) {
-    case pieza_esfera:
+    case pieza_lider:
         return (bando == bando_rival) ? TipoPersonaje::EMIR : TipoPersonaje::REY;
-    case pieza_cubo_p:     
+    case pieza_basica1:     
         return (bando == bando_rival) ? TipoPersonaje::GHAZI : TipoPersonaje::MILICIANO;
-    case pieza_cubog:       
+    case pieza_fuerte1:       
         return (bando == bando_rival) ? TipoPersonaje::GUARDIA_NEGRA : TipoPersonaje::INFANTERIA;
-    case pieza_cilindro:
+    case pieza_basica2:
         return (bando == bando_rival) ? TipoPersonaje::ARQUERO_GHAZI : TipoPersonaje::BALLESTERO;
-    case pieza_cono:
+    case pieza_fuerte2:
         return (bando == bando_rival) ? TipoPersonaje::CABALLERIA_ACORAZADA : TipoPersonaje::CABALLERIA_PESADA;
-    case pieza_tetraedro:   
+    case pieza_volador1:   
         return (bando == bando_rival) ? TipoPersonaje::JINETE_BEREBER : TipoPersonaje::CABALLERIA_LIGERA;
-    case pieza_icosaedro:
+    case pieza_volador2:
         return (bando == bando_rival) ? TipoPersonaje::ARQUERO_CABALLO : TipoPersonaje::ALMOGAVAR;
-    case pieza_dodecaedro:  
+    case pieza_teleporte:  
         return (bando == bando_rival) ? TipoPersonaje::ASESINO_DE_ELITE : TipoPersonaje::INFILTRADO;
 
     //Por seguridad:

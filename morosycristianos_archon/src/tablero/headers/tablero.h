@@ -30,14 +30,14 @@ enum BandoPieza {
 
 enum TipoPieza {
 	pieza_nada,
-	pieza_esfera,//esfera grande-1 por bando rey/emir
-	pieza_dodecaedro,//1 por bando- infiltrado/asesino
-	pieza_icosaedro,//1 por bando- almogavar/arqueo a caballo
-	pieza_tetraedro,//2 por bando-caballería ligera/jinete bereber
-	pieza_cubog,//cubo grande - 2 por bando infantería pesada/guardia negra
-	pieza_cono,//2 por bando- caballería pesada/cab.acorazada
-	pieza_cilindro,//2 por bando-ballestero/arquero ghazí
-	pieza_cubo_p//7 por bando- miliciano/soldado ghazí
+	pieza_lider,//esfera grande-1 por bando rey/emir
+	pieza_teleporte,//1 por bando- infiltrado/asesino
+	pieza_volador2,//1 por bando- almogavar/arqueo a caballo
+	pieza_volador1,//2 por bando-caballería ligera/jinete bereber
+	pieza_fuerte1,//cubo grande - 2 por bando infantería pesada/guardia negra
+	pieza_fuerte2,//2 por bando- caballería pesada/cab.acorazada
+	pieza_basica2,//2 por bando-ballestero/arquero ghazí
+	pieza_basica1,//7 por bando- miliciano/soldado ghazí
 };
 
 //estrucura de casilla
