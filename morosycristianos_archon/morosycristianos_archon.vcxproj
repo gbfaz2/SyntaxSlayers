@@ -78,6 +78,14 @@
     <OutDir>$(SolutionDir)\bin\</OutDir>
     <IntDir>$(SolutionDir).vs\temp\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir).vs\temp\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)\bin\</OutDir>
+    <IntDir>$(SolutionDir).vs\temp\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -85,10 +93,13 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)piezas\source;$(ProjectDir)src\piezas\headers;$(ProjectDir)src\tablero\source;$(ProjectDir)src\tablero\headers;$(ProjectDir)src\arena\source;$(ProjectDir)src\arena\headers;$(ProjectDir)src\coordinador\source;$(ProjectDir)src\coordinador\headers;$(ProjectDir)src\ia\source;$(ProjectDir)src\ia\headers;$(ProjectDir)src\menu\source;$(ProjectDir)src\menu\headers</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>lib,bin</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ETSIDI.lib; freeglut.lib; glut32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -100,10 +111,13 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>lib;src;bin;$(ProjectDir)src;$(ProjectDir)include;$(ProjectDir)piezas\source;$(ProjectDir)src\piezas\headers;$(ProjectDir)src\tablero\source;$(ProjectDir)src\tablero\headers;$(ProjectDir)src\arena\source;$(ProjectDir)src\arena\headers;$(ProjectDir)src\coordinador\source;$(ProjectDir)src\coordinador\headers;$(ProjectDir)src\ia\source;$(ProjectDir)src\ia\headers;$(ProjectDir)src\menu\source;$(ProjectDir)src\menu\headers</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>lib,bin</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ETSIDI.lib; freeglut.lib; glut32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
