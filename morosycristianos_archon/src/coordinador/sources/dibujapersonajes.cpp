@@ -80,16 +80,20 @@ dibujapersonajes::dibujapersonajes() {
 //Destructor correspondiente
 dibujapersonajes::~dibujapersonajes() {
     for (int i = 0; i < (int)TipoPersonaje::TOTAL; i++)
-        for (int j = 0; j < MAX_SPRITES; j++)
-            delete _sprites[i][j];
+        for (int j = 0; j < MAX_SPRITES; j++) {
+            if (_sprites[i][j]) {
+                delete _sprites[i][j];
+                _sprites[i][j] = nullptr;
+            }
+        }
 }
 
 //Método para inicializaar los frames
 void dibujapersonajes::init() {
-
+    if (_inicializado) return;   
+    _inicializado = true;
     //bucle para recorrer cada personaje
     //usa la función SpriteSequence de la librería ETSIDI
-    //
     for (int t = 0; t < (int)TipoPersonaje::TOTAL; t++) {
         const char* ruta = rutaImagen((TipoPersonaje)t);
         for (int i = 0; i < MAX_SPRITES; i++) {

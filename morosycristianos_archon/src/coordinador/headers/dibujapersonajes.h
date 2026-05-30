@@ -42,6 +42,7 @@ class dibujapersonajes
 
     //RUTA IMAGEN PARA CADA PERSONAJE
     static const char* rutaImagen(TipoPersonaje tipo);
+    bool _inicializado{ false };
 
 public:
     //Constructor y destructor
