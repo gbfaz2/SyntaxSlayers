@@ -138,9 +138,6 @@
     <ClInclude Include="src\ia\headers\MinimaxTablero.h">
       <Filter>ia\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\ia\headers\SugerenciasTablero.h">
-      <Filter>ia\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\menu\headers\estadojuego.h">
       <Filter>menu\Headers</Filter>
     </ClInclude>
@@ -266,9 +263,6 @@
       <Filter>ia\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\ia\sources\MinimaxTablero.cpp">
-      <Filter>ia\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\ia\sources\SugerenciasTablero.cpp">
       <Filter>ia\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\menu\sources\menu.cpp">

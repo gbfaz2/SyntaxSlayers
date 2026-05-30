@@ -47,6 +47,9 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 	// Si NO hay pieza seleccionada, estamos en FASE DE SELECCIÓN
 	if (!piezaSeleccionada) {
 
+		// EN MODO JvsIA EL JUGADOR SOLO PUEDE MOVER EL BANDO LOCAL
+		if (_modoJVIA && bando == bando_rival) return;
+
 		// Comprobamos si la pieza en esa casilla pertenece al bando que tiene el turno
 		if (gestorTurnos.esDelBandoActual(*m_tablero, currentFila, currentCol)) {
 			// Es válida. Guardamos el origen y marcamos como seleccionada

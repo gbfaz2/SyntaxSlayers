@@ -161,7 +161,6 @@
     <ClInclude Include="src\coordinador\headers\GestorInput.h" />
     <ClInclude Include="src\ia\headers\IAArena.h" />
     <ClInclude Include="src\ia\headers\MinimaxTablero.h" />
-    <ClInclude Include="src\ia\headers\SugerenciasTablero.h" />
     <ClInclude Include="src\menu\headers\estadojuego.h" />
     <ClInclude Include="src\menu\headers\menu.h" />
     <ClInclude Include="src\menu\headers\pantallabatalla.h" />
@@ -211,7 +210,6 @@
     <ClCompile Include="src\coordinador\sources\GestorInput.cpp" />
     <ClCompile Include="src\ia\sources\IAArena.cpp" />
     <ClCompile Include="src\ia\sources\MinimaxTablero.cpp" />
-    <ClCompile Include="src\ia\sources\SugerenciasTablero.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\menu\sources\menu.cpp" />
     <ClCompile Include="src\menu\sources\pantallabatalla.cpp" />

@@ -84,6 +84,8 @@ protected:
 	int _sugerenciaFila{ -1 };
 	int _sugerenciaCol{ -1 };
 
+	bool _modoJVIA{ false }; // TRUE SI SE JUEGA CONTRA LA IA
+
 public:
 	Tablerogl(Tablero* pb); //constructor que inicializaremos en el .cpp con inicializadores
 	virtual ~Tablerogl() {} //destructor virtual + destruir rey

@@ -77,6 +77,7 @@ void Coordinador::dibuja()
 					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
 					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN) ? bando_rival : bando_local; //FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
 					pTablerogl->setBandoInicial(bandoInicial);
+					pTablerogl->_modoJVIA = (configuracion.modo == ModoJuego::JVIA);
 
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 

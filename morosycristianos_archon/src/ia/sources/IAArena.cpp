@@ -1,146 +1,170 @@
-#include "IAArena.h" // INCLUYE CABECERA
-#include <cmath> // PARA sqrt
+// ============================================================
+// IAArena.cpp
+// IMPLEMENTACIÓN DE LA IA DE COMBATE EN LA ARENA
+// Máquina de estados con cuatro comportamientos: PATRULLAR,
+// PERSEGUIR, ATACAR y HUIR. Se actualiza cada frame desde la
+// arena y rellena un EstadoJugador con los flags de movimiento
+// y ataque que el motor de combate interpreta igual que el input
+// del jugador humano.
+// ============================================================
 
-void IAArena::actualizar(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA, float dt)
+#include "IAArena.h" // CABECERA DE LA CLASE
+#include <cmath>     // std::sqrt Y std::abs PARA CÁLCULO DE DISTANCIAS
+
+// ============================================================
+// PUNTO DE ENTRADA PRINCIPAL — LLAMADO CADA FRAME DESDE LA ARENA
+// DECIDE EL ESTADO ACTUAL Y EJECUTA LA ACCIÓN CORRESPONDIENTE
+// ============================================================
+void IAArena::actualizar(const Combatiente& enemigo, const Combatiente& jugador,
+    EstadoJugador& inputIA, float dt)
 {
-    float distancia = calcularDistancia(enemigo, jugador); // DISTANCIA ACTUAL ENTRE LOS DOS (TEOREMA DE PITÁGORAS)
+    float distancia = calcularDistancia(enemigo, jugador); // DISTANCIA ACTUAL ENTRE LOS DOS COMBATIENTES
 
-    actualizarEstado(enemigo, jugador, distancia); // DECIDE EN QUE ESTADO ESTAR
+    actualizarEstado(enemigo, jugador, distancia); // EVALÚA Y CAMBIA _estado SI ES NECESARIO
 
     switch (_estado)
     {
-    case Estado::PATRULLAR: accionPatrullar(inputIA, dt);break; // EJECUTA PATRULLA
-    case Estado::PERSEGUIR: accionPerseguir(enemigo, jugador, inputIA);break; // EJECUTA PERSECUCION
-    case Estado::ATACAR: accionAtacar(enemigo, jugador, inputIA, dt); break; // EJECUTA ATAQUE
-    case Estado::HUIR:      accionHuir(enemigo, jugador, inputIA);break; // EJECUTA HUIDA
+    case Estado::PATRULLAR: accionPatrullar(inputIA, dt);                    break; // MOVIMIENTO LATERAL DE ESPERA
+    case Estado::PERSEGUIR: accionPerseguir(enemigo, jugador, inputIA);      break; // AVANZA HACIA EL JUGADOR
+    case Estado::ATACAR:    accionAtacar(enemigo, jugador, inputIA, dt);     break; // GOLPEA CON COOLDOWN
+    case Estado::HUIR:      accionHuir(enemigo, jugador, inputIA);           break; // SE ALEJA DEL JUGADOR
     }
 }
 
+// ============================================================
+// CALCULA LA DISTANCIA EUCLIDEA ENTRE DOS COMBATIENTES
+// ============================================================
 float IAArena::calcularDistancia(const Combatiente& a, const Combatiente& b) const
 {
-    float dx = a.x() - b.x(); // DIFERENCIA EN X
-    float dz = a.z() - b.z(); // DIFERENCIA EN Z
-    return std::sqrt(dx * dx + dz * dz); // DISTANCIA EUCLIDEA (TEOREMA DE PITÁGORAS)
+    float dx = a.x() - b.x(); // DIFERENCIA DE POSICIÓN EN EL EJE X
+    float dz = a.z() - b.z(); // DIFERENCIA DE POSICIÓN EN EL EJE Z
+    return std::sqrt(dx * dx + dz * dz); // DISTANCIA EUCLIDEA — TEOREMA DE PITÁGORAS
 }
 
-void IAArena::configurar(float alcanceAtaque) { // INICIA CONFIGURACION DISTANCIAS
-    _distanciaAtaque = alcanceAtaque + 0.4f; // ASIGNA RANGO ATAQUE
-    _distanciaPerseguir = alcanceAtaque + 3.0f; // PERSIGUE DESDE MAS LEJOS SI TIENE MAS ALCANCE
+// ============================================================
+// AJUSTA LOS RANGOS DE ATAQUE Y PERSECUCIÓN SEGÚN EL ALCANCE
+// DE LA PIEZA — LLAMADO AL INICIAR CADA COMBATE
+// ============================================================
+void IAArena::configurar(float alcanceAtaque)
+{
+    _distanciaAtaque = alcanceAtaque + 0.4f; // RANGO DE GOLPE CON MARGEN DE SEGURIDAD
+    _distanciaPerseguir = alcanceAtaque + 3.0f; // RANGO DE AVISTAMIENTO PROPORCIONAL AL ALCANCE
 }
 
+// ============================================================
+// EVALÚA VIDA Y DISTANCIA Y ACTUALIZA _estado
+// PRIORIDAD: HUIR > ATACAR > PERSEGUIR > PATRULLAR
+// ============================================================
 void IAArena::actualizarEstado(const Combatiente& enemigo, const Combatiente& jugador, float distancia)
 {
-    float vidaFraccion = enemigo.vida() / enemigo.vidaMax(); // PORCENTAJE DE VIDA RESTANTE
+    float vidaFraccion = enemigo.vida() / enemigo.vidaMax(); // PORCENTAJE DE VIDA RESTANTE (0.0 - 1.0)
 
-    if (vidaFraccion < _umbralHuida) // VIDA MUY BAJA
-    {
-        _estado = Estado::HUIR; // CAMBIA A HUIR
-    }
-    else if (distancia <= _distanciaAtaque) // EN RANGO DE ATAQUE
-    {
-        _estado = Estado::ATACAR; // CAMBIA A ATACAR
-    }
-    else if (distancia <= _distanciaPerseguir) // EN RANGO DE PERSECUCION
-    {
-        _estado = Estado::PERSEGUIR; // CAMBIA A PERSEGUIR
-    }
-    else // DEMASIADO LEJOS
-    {
-        _estado = Estado::PATRULLAR; // CAMBIA A PATRULLAR
-    }
+    if (vidaFraccion < _umbralHuida)          // VIDA CRÍTICA — PRIORIDAD MÁXIMA
+        _estado = Estado::HUIR;
+    else if (distancia <= _distanciaAtaque)   // EN RANGO DE GOLPE
+        _estado = Estado::ATACAR;
+    else if (distancia <= _distanciaPerseguir) // ENEMIGO A LA VISTA
+        _estado = Estado::PERSEGUIR;
+    else                                       // ENEMIGO DEMASIADO LEJOS
+        _estado = Estado::PATRULLAR;
 }
 
+// ============================================================
+// ACCIÓN PATRULLAR — MOVIMIENTO LATERAL ALTERNANDO DIRECCIÓN
+// CADA _duracionPatrulla SEGUNDOS MIENTRAS NO HAY ENEMIGO A LA VISTA
+// ============================================================
 void IAArena::accionPatrullar(EstadoJugador& inputIA, float dt)
 {
-    _tiempoPatrulla += dt; // ACUMULA TIEMPO
+    _tiempoPatrulla += dt; // ACUMULA EL TIEMPO TRANSCURRIDO
 
-    if (_tiempoPatrulla >= _duracionPatrulla) // TIEMPO CUMPLIDO
-    {
-        _patrullaArriba = !_patrullaArriba; // CAMBIA DIRECCION
-        _tiempoPatrulla = 0.0f;             // RESETEA TIMER
+    if (_tiempoPatrulla >= _duracionPatrulla) { // HA PASADO EL INTERVALO DE CAMBIO
+        _patrullaArriba = !_patrullaArriba;     // INVIERTE LA DIRECCIÓN
+        _tiempoPatrulla = 0.0f;                 // REINICIA EL CONTADOR
     }
 
-    inputIA.delante = _patrullaArriba;  // SUBE O BAJA SEGUN DIRECCION
-    inputIA.atras = !_patrullaArriba;   // INVIERTE DIRECCION
-    inputIA.izquierda = false;          // ANULA IZQUIERDA
-    inputIA.derecha = false;            // ANULA DERECHA
-    inputIA.atacar = false;             // ANULA ATAQUE
+    inputIA.delante = _patrullaArriba;   // MUEVE EN LA DIRECCIÓN ACTUAL
+    inputIA.atras = !_patrullaArriba;  // OPUESTO A LA DIRECCIÓN ACTUAL
+    inputIA.izquierda = false;             // SIN MOVIMIENTO LATERAL
+    inputIA.derecha = false;             // SIN MOVIMIENTO LATERAL
+    inputIA.atacar = false;             // SIN ATAQUE EN PATRULLA
 }
 
-void IAArena::accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
+// ============================================================
+// ACCIÓN PERSEGUIR — MUEVE LA IA HACIA EL JUGADOR EN AMBOS EJES
+// ============================================================
+void IAArena::accionPerseguir(const Combatiente& enemigo, const Combatiente& jugador,
+    EstadoJugador& inputIA)
 {
-    inputIA.delante = false;   // INICIALIZA DELANTE
-    inputIA.atras = false;     // INICIALIZA ATRAS
-    inputIA.izquierda = false; // INICIALIZA IZQUIERDA
-    inputIA.derecha = false;   // INICIALIZA DERECHA
-    inputIA.atacar = false;    // INICIALIZA ATAQUE
+    // RESETEA TODOS LOS FLAGS ANTES DE DECIDIR
+    inputIA.delante = inputIA.atras = inputIA.izquierda = inputIA.derecha = inputIA.atacar = false;
 
-    float dx = jugador.x() - enemigo.x(); // DIFERENCIA EN X HACIA EL JUGADOR
-    float dz = jugador.z() - enemigo.z(); // DIFERENCIA EN Z HACIA EL JUGADOR
+    float dx = jugador.x() - enemigo.x(); // VECTOR HACIA EL JUGADOR EN X
+    float dz = jugador.z() - enemigo.z(); // VECTOR HACIA EL JUGADOR EN Z
 
-    // MUEVE EN AMBOS EJES SIMULTANEAMENTE
-    if (dx > 0.1f)       inputIA.derecha = true;   // JUGADOR A LA DERECHA
-    else if (dx < -0.1f) inputIA.izquierda = true;  // JUGADOR A LA IZQUIERDA
+    // MUEVE EN EL EJE X HACIA EL JUGADOR
+    if (dx > 0.1f) inputIA.derecha = true; // JUGADOR A LA DERECHA
+    else if (dx < -0.1f) inputIA.izquierda = true; // JUGADOR A LA IZQUIERDA
 
-    if (dz > 0.1f)       inputIA.atras = true;    // INVERTIDO: Z POSITIVO ES ATRAS
-    else if (dz < -0.1f) inputIA.delante = true;  // INVERTIDO: Z NEGATIVO ES DELANTE
+    // MUEVE EN EL EJE Z HACIA EL JUGADOR (Z POSITIVO = ATRÁS EN LA ARENA)
+    if (dz > 0.1f) inputIA.atras = true; // JUGADOR DETRÁS
+    else if (dz < -0.1f) inputIA.delante = true; // JUGADOR DELANTE
 }
 
+// ============================================================
+// ACCIÓN ATACAR — GOLPEA RESPETANDO EL COOLDOWN Y SE RECOLOCA
+// SI ESTÁ DEMASIADO PEGADO AL JUGADOR
+// ============================================================
 void IAArena::accionAtacar(const Combatiente& enemigo, const Combatiente& jugador,
-    EstadoJugador& inputIA, float dt)  // ← AÑADIR dt
+    EstadoJugador& inputIA, float dt)
 {
-    float dx = jugador.x() - enemigo.x(); // DIFERENCIA EN X
-    float dz = jugador.z() - enemigo.z(); // DIFERENCIA EN Z
-    float distancia = calcularDistancia(enemigo, jugador); // CALCULA SEPARACION
+    float dx = jugador.x() - enemigo.x();     // DIFERENCIA EN X
+    float dz = jugador.z() - enemigo.z();     // DIFERENCIA EN Z
+    float distancia = calcularDistancia(enemigo, jugador); // DISTANCIA ACTUAL
 
-    // ACUMULA TIEMPO DESDE EL ULTIMO ATAQUE
-    _tiempoEntreAtaques += dt;
+    _tiempoEntreAtaques += dt; // ACUMULA TIEMPO DESDE EL ÚLTIMO GOLPE
 
-    // SOLO ATACA SI HA PASADO EL COOLDOWN
-    if (_tiempoEntreAtaques >= _cooldownIA)
-    {
-        inputIA.atacar = true;      // ACTIVA ATAQUE
-        _tiempoEntreAtaques = 0.0f; // RESETEA EL TIMER
-    }
-    else
-    {
-        inputIA.atacar = false;     // DESACTIVA ATAQUE
-    }
-
-    // RECOLOCA LIGERAMENTE SI ESTA MUY PEGADO
-    if (distancia < _distanciaAtaque * 0.5f) {
-        inputIA.delante = (dz > 0); // REAJUSTE ADELANTE
-        inputIA.atras = (dz < 0);   // REAJUSTE ATRAS
-        inputIA.izquierda = false;  // BLOQUEA IZQUIERDA
-        inputIA.derecha = false;    // BLOQUEA DERECHA
+    if (_tiempoEntreAtaques >= _cooldownIA) { // COOLDOWN COMPLETADO — PUEDE ATACAR
+        inputIA.atacar = true;           // ACTIVA EL FLAG DE ATAQUE
+        _tiempoEntreAtaques = 0.0f;           // REINICIA EL COOLDOWN
     }
     else {
-        inputIA.delante = inputIA.atras = false; // BLOQUEA EJE Z
-        inputIA.izquierda = inputIA.derecha = false; // BLOQUEA EJE X
+        inputIA.atacar = false; // AÚN EN COOLDOWN — NO ATACA
+    }
+
+    if (distancia < _distanciaAtaque * 0.5f) {
+        // DEMASIADO CERCA — SE RECOLOCA LIGERAMENTE PARA NO SOLAPARSE
+        inputIA.delante = (dz > 0); // SE ALEJA UN POCO EN Z
+        inputIA.atras = (dz < 0);
+        inputIA.izquierda = false;
+        inputIA.derecha = false;
+    }
+    else {
+        // DISTANCIA CORRECTA — SE QUEDA QUIETO Y SOLO ATACA
+        inputIA.delante = inputIA.atras = inputIA.izquierda = inputIA.derecha = false;
     }
 }
 
-void IAArena::accionHuir(const Combatiente& enemigo, const Combatiente& jugador, EstadoJugador& inputIA)
+// ============================================================
+// ACCIÓN HUIR — SE ALEJA DEL JUGADOR POR EL EJE DOMINANTE
+// ACTIVA CUANDO LA VIDA CAE POR DEBAJO DE _umbralHuida
+// ============================================================
+void IAArena::accionHuir(const Combatiente& enemigo, const Combatiente& jugador,
+    EstadoJugador& inputIA)
 {
-    // RESETEA INPUT ANTES DE DECIDIR
-    inputIA.delante = false;
-    inputIA.atras = false;
-    inputIA.izquierda = false;
-    inputIA.derecha = false;
-    inputIA.atacar = false;
+    // RESETEA TODOS LOS FLAGS ANTES DE DECIDIR
+    inputIA.delante = inputIA.atras = inputIA.izquierda = inputIA.derecha = inputIA.atacar = false;
 
-    float dx = enemigo.x() - jugador.x(); // DIRECCION OPUESTA AL JUGADOR EN X
-    float dz = enemigo.z() - jugador.z(); // DIRECCION OPUESTA AL JUGADOR EN Z
+    float dx = enemigo.x() - jugador.x(); // VECTOR DE ALEJAMIENTO EN X (OPUESTO AL JUGADOR)
+    float dz = enemigo.z() - jugador.z(); // VECTOR DE ALEJAMIENTO EN Z (OPUESTO AL JUGADOR)
 
-    // HUYE EN LA DIRECCION CONTRARIA AL JUGADOR
-    if (std::abs(dx) > std::abs(dz)) // EJE X DOMINANTE
-    {
-        if (dx > 0) inputIA.derecha = true;   // SE ALEJA HACIA LA DERECHA
-        else        inputIA.izquierda = true;  // SE ALEJA HACIA LA IZQUIERDA
+    if (std::abs(dx) > std::abs(dz)) {
+        // EJE X DOMINANTE — HUYE EN HORIZONTAL
+        if (dx > 0) inputIA.derecha = true; // SE ALEJA HACIA LA DERECHA
+        else        inputIA.izquierda = true; // SE ALEJA HACIA LA IZQUIERDA
     }
-    else // EJE Z DOMINANTE
-    {
-        if (dz > 0.1f)       inputIA.delante = true;  // HUYE EN Z POSITIVO
-        else if (dz < -0.1f) inputIA.atras = true;    // HUYE EN Z NEGATIVO
+    else {
+        // EJE Z DOMINANTE — HUYE EN PROFUNDIDAD
+        if (dz > 0.1f) inputIA.delante = true; // HUYE HACIA DELANTE
+        else if (dz < -0.1f) inputIA.atras = true; // HUYE HACIA ATRÁS
     }
 }
