@@ -78,6 +78,8 @@ public:
 
     int getVida()    const { return vida; }
     int getVidaMax() const { return vidaMax; }
+    void setEnPuntoDePoder(bool v) { enPuntoDePoder = v; }
+    bool getEnPuntoDePoder()  const { return enPuntoDePoder; }
 
     // Para la demo: muestra las stats por consola
     virtual void mostrarStats() const;  

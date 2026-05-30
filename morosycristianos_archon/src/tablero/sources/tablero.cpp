@@ -81,8 +81,12 @@ void Tablero::iniPiezas()//coloca las piezas en sus posiciones iniciales
 	auto poner = [&](int f, int c, TipoPieza tipo, BandoPieza b, Pieza* obj) {
 		lugar(f, c, tipo, b);
 		tablero[f][c].obj = obj;
-		if (obj) obj->setPosicion(f, c);
-		};
+		if (obj) {
+			obj->setPosicion(f, c);
+			// Sincronizamos el flag de punto de poder desde el tablero
+			obj->setEnPuntoDePoder(tablero[f][c].tipo == Casilla_poder);
+		}
+	};
 
 
 	int idAlm = 0; // Contador de IDs para almogávares
@@ -289,7 +293,11 @@ Pieza* Tablero::muevePieza(int fr, int fc, int tr, int tc)
 	tablero[tr][tc].pieza = tablero[fr][fc].pieza;
 	tablero[tr][tc].bando = tablero[fr][fc].bando;
 	tablero[tr][tc].obj = tablero[fr][fc].obj;
-	if (tablero[tr][tc].obj) tablero[tr][tc].obj->setPosicion(tr, tc);
+	if (tablero[tr][tc].obj) {
+		tablero[tr][tc].obj->setPosicion(tr, tc);
+		// La pieza sabe si ahora está en un punto de poder
+		tablero[tr][tc].obj->setEnPuntoDePoder(tablero[tr][tc].tipo == Casilla_poder);
+	}
 
 	//Vaciamos el origen
 	tablero[fr][fc].pieza = pieza_nada;
@@ -450,7 +458,7 @@ void Tablero::limpiarPiezas()
 
 Pieza* Tablero::crearPieza(TipoPieza tipo, BandoPieza bando)
 {
-	Bando b = (bando == bando_local) ? Bando::CRISTIANO : Bando::ANDALUSI;
+	Bando b = toBando(bando);
 	switch (tipo) {
 	case pieza_lider:      return new Rey(b);
 	case pieza_teleporte:  return new Infiltrado(b);

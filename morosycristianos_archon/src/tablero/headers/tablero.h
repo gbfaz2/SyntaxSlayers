@@ -92,3 +92,11 @@ public:
 	void limpiarPiezas();
 	Pieza* crearPieza(TipoPieza tipo, BandoPieza bando);
 };
+// ── Utilidades de conversión entre los dos enums de bando ──────────────────
+// Cristiano = bando_local, Andalusí = bando_rival (convención del juego)
+inline BandoPieza toBandoPieza(Bando b) {
+	return (b == Bando::CRISTIANO) ? bando_local : bando_rival;
+}
+inline Bando toBando(BandoPieza bp) {
+	return (bp == bando_local) ? Bando::CRISTIANO : Bando::ANDALUSI;
+}

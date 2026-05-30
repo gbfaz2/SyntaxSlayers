@@ -14,8 +14,8 @@ enum class Conjuro {
 class Hechicero {
 protected:
 
-    //lista para los conjuros de tamaño fijo, siempre son 7
-    std::array<bool, 7> conjurosUsados;  // false = disponible
+    //lista para los conjuros de tamaño fijo, siempre son 4
+    std::array<bool, 4> conjurosUsados;  // false = disponible
     //TRUE usado una vez, no esta disponible
 
 public:
