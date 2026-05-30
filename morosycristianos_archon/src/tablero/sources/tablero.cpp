@@ -41,8 +41,8 @@ Tablero::~Tablero()
 			tablero[f][c].obj = nullptr;
 		}
 }
-//hacemos la cuarta parte superior izq lugi espejo vertical de las filas inferiores. Una vez está esa mitad completa espejo invertido horizontal de la otra mitad
-void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona local, dinámica, rival) y los 5 puntos de poder sobreescriben su casilla
+//hacemos la cuarta parte superior izq luego espejo vertical de las filas inferiores. Una vez está esa mitad completa espejo invertido horizontal de la otra mitad
+void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona local, neutra, rival) y los 5 puntos de poder sobreescriben su casilla
 {
 	const TipoCasilla L = Casilla_local;
 	const TipoCasilla R = Casilla_rival;
@@ -54,7 +54,7 @@ void Tablero::iniCasillas()//Asigna el tipo de terreno a cada casilla (zona loca
 		{ R,  L,  D,  R,  D,  L,  D,  R,  L },  // fila 1
 		{ L,  D,  R,  L,  D,  R,  L,  D,  R },  // fila 2
 		{ D,  R,  L,  R,  D,  L,  R,  L,  D },  // fila 3
-		{ R,  D,  D,  D,  D,  D,  D,  D,  L },  // fila 4 (col0=DARK, col8=LIGHT, resto gris)
+		{ R,  D,  D,  D,  D,  D,  D,  D,  L },  // fila 4 (col0=cristiano, col8=moro, resto gris)
 		{ D,  R,  L,  R,  D,  L,  R,  L,  D },  // fila 5 (=fila 3)
 		{ L,  D,  R,  L,  D,  R,  L,  D,  R },  // fila 6 (=fila 2)
 		{ R,  L,  D,  R,  D,  L,  D,  R,  L },  // fila 7 (=fila 1)
