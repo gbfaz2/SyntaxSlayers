@@ -2,13 +2,10 @@
 #include <cmath>
 #include <iostream>
 
-//
 
-// MÉTODO PRINCIPAL
-// Es el único que llama María desde tablerogl
-// 1. Primero deja que la pieza valide geometría (radio, diagonal, límites)
-// 2. Luego según el tipo de movimiento, escanea el tablero de forma distinta
 
+// Se valida la pieza geometría según la pieza(radio, diagonal, límites)
+// Luego según el tipo de movimiento, escanea el tablero de forma distinta
 ResultadoMovimiento GestorMovimiento::resolverMovimiento(
     Pieza* pieza,//usamos puntero * por el polimorfismo
     Tablero& tablero,//copia directa con &
@@ -16,29 +13,25 @@ ResultadoMovimiento GestorMovimiento::resolverMovimiento(
 {
     //valida la gemoetria: diagonal , limites tablero, radio...
     // funcion puede moverse() valida todo eso para cada tipo de pieza
-    // puedeMoverse() ya está implementado en PiezaTerrestre, PiezaVoladora y PiezaTeleporte
+    //puede moverse valida desde pieza terrestre, voladora y teleport (jerarquia de clases)
     if (!pieza->puedeMoverse(toFila, toCol))
         return ResultadoMovimiento::MOVIMIENTO_INVALIDO;
 
     //función getTipoMovimiento() definida en Pieza.h como virtual pura (=0)
-    // Escanea el tipo de pieza, para cada tipo de pieza aplicará un método u otro
+    //Escanea el tipo de pieza, para cada tipo de pieza aplicará un método u otro
     switch (pieza->getTipoMovimiento()) {
-
-        //terrestre de la clase de tipoMovimiento(resultado de gettipomovimiento())
-        //si es pieza terrestre:
     case TipoMovimiento::TERRESTRE:
         // escanea casilla a casilla buscando aliados y enemigos en el camino
         return escanearCaminoTerrestre(pieza, tablero, toFila, toCol);
-
-        //para volador / teleport, solo comprueban destino 
+    
+    // saltan todo el camino, solo miran el destino
     case TipoMovimiento::VOLADOR:
     case TipoMovimiento::TELEPORTE:
-        // saltan todo el camino, solo miran el destino
-       
+        
     _ultimoResultado = comprobarDestino(pieza, tablero, toFila, toCol); 
     return _ultimoResultado;
 
-     }
+    }
 
     _ultimoResultado = ResultadoMovimiento::MOVIMIENTO_INVALIDO;
     return _ultimoResultado; // por seguridad
@@ -48,16 +41,12 @@ ResultadoMovimiento GestorMovimiento::resolverMovimiento(
 
 // ESCANEAR CAMINO TERRESTRE
 // Recorre casilla a casilla desde la posición actual de la pieza hasta el destino
-// Si encuentra aliado en cualquier punto (camino o destino) → BLOQUEADO
-// Si encuentra enemigo en el camino → COMBATE, se para ahí
-// Si encuentra enemigo en el destino → COMBATE
-// Si todo libre → MOVIMIENTO_OK
+// Si encuentra aliado en cualquier punto (camino o destino) -> BLOQUEADO
+// Si encuentra enemigo en el camino -> COMBATE, se para ahí
+// Si encuentra enemigo en el destino -> COMBATE
+// Si todo libre -> MOVIMIENTO_OK
 
-ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
-    Pieza* pieza,  
-    Tablero& tablero,  
-    int toFila, int toCol)
-{
+ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(Pieza* pieza, Tablero& tablero, int toFila, int toCol) {
     // Calculamos el paso a dar en cada dirección (1, -1 o 0)
     //Calcula la posicion actual de la pieza
     int fromFila = pieza->getFila();
@@ -80,15 +69,14 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
     int col = fromCol + dirCol;
 
     // Recorremos casilla a casilla hasta llegar al destino
-    //siempre el movimiento va a ser en 1 sola direccion por lo que podemos plantear
-    //el bucle con una condicion AND:
+    //siempre el movimiento va a ser en 1 sola direccion (NO DIAGONAL)
     //sigue hasta que las dos lleguen a su destino
     while (fila != toFila || col != toCol) {
 
         // ¿Hay algo en esta casilla intermedia?
         if (tablero.getCasilla(fila, col).pieza != pieza_nada) {
 
-            //si hay algo (distinto de nada) entonces:
+            //si hay algo:
             //bando de la pieza en la casilla de escaneo
             BandoPieza bandoCasilla = tablero.getCasilla(fila, col).bando;
 
@@ -106,12 +94,11 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
 
             //si es enemigo: se abre arena 
             else {
-                // Enemigo en el camino → la terrestre se para aquí y combate
+                // Enemigo en el camino -> la terrestre se para aquí y combate
                 //informa por pantalla
                 std::cout << "[GestorMovimiento] Enemigo en el camino en ("
                     << fila << "," << col << ") — COMBATE!" << std::endl;
               
-                // NO MOVEMOS TODAVIA, igual que en comprobarDestino
                 _ultimoAtacante = pieza;
                 _ultimaDefensora = tablero.getCasilla(fila, col).obj;
                 _filaAtacante = fromFila;
@@ -119,8 +106,6 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
                 _filaDefensora = fila;
                 _colDefensora = col;
 
-
-                //retorna combate, como resultado del movimiento
                 _ultimoAtacante = pieza;
                 _ultimaDefensora = tablero.getCasilla(fila, col).obj; // ya está en destino
                
@@ -133,31 +118,29 @@ ResultadoMovimiento GestorMovimiento::escanearCaminoTerrestre(
         fila += dirFila;
         col += dirCol;
     }
-    //salimos del bucle->hemos llegado al destino
+
+    //Hemos llegado al destino
     //comprobamos qué hay ahí con el otro método
 
     return comprobarDestino(pieza, tablero, toFila, toCol);
 }
 
+
+
 // COMPROBAR DESTINO
 // Solo mira la casilla destino, sin recorrer el camino
 // La usan voladoras y teleporte directamente
-
-ResultadoMovimiento GestorMovimiento::comprobarDestino(
-    Pieza* pieza,
-    Tablero& tablero,
-    int toFila, int toCol)
-{
+ResultadoMovimiento GestorMovimiento::comprobarDestino( Pieza* pieza, Tablero& tablero, int toFila, int toCol) {
     //escanea la casilla actual de la pieza
     int fromFila = pieza->getFila();
     int fromCol = pieza->getColumna();
 
     //escanea el bando de la pieza
-    BandoPieza bandoOrigen = tablero.getCasilla(fromFila, fromCol).bando; //escanea bando de la pieza origen
+    BandoPieza bandoOrigen = tablero.getCasilla(fromFila, fromCol).bando; 
    
     //escanea el tipo de pieza en el destino y su bando
     TipoPieza piezaDst = tablero.getCasilla(toFila, toCol).pieza;
-    BandoPieza     bandoDst = tablero.getCasilla(toFila, toCol).bando; //escanea bando de la pieza de destino
+    BandoPieza bandoDst = tablero.getCasilla(toFila, toCol).bando;
 
     
    //no hay pieza en el destino, puede moverse
@@ -169,16 +152,16 @@ ResultadoMovimiento GestorMovimiento::comprobarDestino(
         return ResultadoMovimiento::MOVIMIENTO_OK;
     }
 
-    //pieza aliado, movimiento bloqueado
+    //pieza aliado -> movimiento bloqueado
     if (bandoDst == bandoOrigen) {
-        // Aliado en el destino → bloqueado
+        //informa por pantalla
         std::cout << "[GestorMovimiento] Destino bloqueado por aliado en ("
             << toFila << "," << toCol << ")" << std::endl;
         return ResultadoMovimiento::BLOQUEADO_ALIADO;
     }
 
-    // Enemigo en el destino, combate
-    // Enemigo en el destino, combate
+    // Enemigo en el destino -> combate
+    //informa por pantalla
     std::cout << "[GestorMovimiento] Enemigo en destino ("
         << toFila << "," << toCol << ") — COMBATE!" << std::endl;
 

@@ -61,6 +61,14 @@ class Coordinador
 	std::mutex           _mutexMovIA; // PROTEGE EL ACCESO AL RESULTADO
 	MovimientoIA         _movimientoIA{}; // RESULTADO DEL HILO
 
+	// --- REPLAY ---
+	RegistroPartida  _replayPartida;    // todos los combates grabados de la partida
+	CombateRegistro  _combateEnCurso;   // combate que se esta grabando ahora mismo
+	bool             _grabandoCombate{ false }; // true mientras hay un combate activo grabandose
+	int              _replayIdx{ 0 };   // indice del combate seleccionado para ver
+	int              _replayFrame{ 0 }; // frame actual que se esta reproduciendo
+	int              _replaySel{ 0 };   // seleccion en el menu de replay (cursor)
+
 public:
 	Coordinador() = default;
 	~Coordinador();

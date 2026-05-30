@@ -1,16 +1,15 @@
-// AUTOR: INES ALCÉRRECA SÁNCHEZ Y MARÍA HEREDERO
+
 // DIBUJATABLERO — MOTOR GRÁFICO EXCLUSIVO PARA RENDERIZAR EL TABLERO Y SUS PIEZAS
 
 #pragma once
 #include "dibuja.h"
-#include "tablerogl.h"
 #include "dibujapersonajes.h"
 
 
 class DibujaTablero : public Dibuja {
    
-    friend class Tablerogl;
-    static dibujapersonajes _dibujador;
+    friend class Tablerogl;  //TOTAL ACCESO A TABLEROGL 
+    static dibujapersonajes _dibujador; 
 
 
     // CAPAS BASE DEL TABLERO
@@ -43,8 +42,6 @@ class DibujaTablero : public Dibuja {
     //PANEL DE HECHIZOS (SOLO PARA REYES)
     static void tablero_panel_hechizos(const Tablerogl& t);
     static void tablero_panel_infiltrado(const Tablerogl& t);
-    int  _contadorMiliciano{ 0 };
-
 
 public:
     // INICIALIZACIÓN DE OPENGL PARA EL TABLERO

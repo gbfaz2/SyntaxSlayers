@@ -85,7 +85,7 @@ bool GestorPartida::cargar(Tablero& tablero, GestorTurnos& turnos, ConfigPartida
     }
 
     // Asignar ID de animación después de cargar
-    int contadores[(int)TipoPieza::pieza_cubo_p + 1] = { 0 };
+    int contadores[(int)TipoPieza::pieza_basica1 + 1] = { 0 };
     for (int fila = 0; fila < Tablero::N; fila++) 
     {
         for (int col = 0; col < Tablero::N; col++) 

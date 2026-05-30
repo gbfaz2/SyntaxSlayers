@@ -11,8 +11,6 @@
 #include "tablerogl.h"
 #include "GestorRanking.h"
 
-
-
 Coordinador::~Coordinador()
 {
 	// ESPERA A QUE EL HILO DE IA TERMINE ANTES DE DESTRUIR TODO
@@ -25,6 +23,7 @@ Coordinador::~Coordinador()
 
 void Coordinador::inicializa()
 {
+	ETSIDI::playMusica("sonidos/MENU.mp3", true);
 	srand((unsigned)time(nullptr));
 	pantallaIntro.reiniciar();
 	menuPrincipal.reiniciar();
@@ -52,21 +51,11 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::MENU:
-	{
+
 		// LA PROPIA CLASE DIBUJAMENU ENTRA Y SALE DE 2D INTERNAMENTE
-
-		static bool musicaMenuSonando = false;
-		if (!musicaMenuSonando) {
-			ETSIDI::stopMusica();
-			ETSIDI::playMusica("sonidos/MENU_FONDO.wav", true);
-			musicaMenuSonando = true;
-		}
-
 		DibujaMenu::menu_dibujar(menuPrincipal, _anchoVentana, _altoVentana); // PINTA LAS FASES DEL MENU PRINCIPAL
 
 		if (menuPrincipal.terminado()) {
-			musicaMenuSonando = false;
-
 			EstadoJuego siguiente = menuPrincipal.siguienteEstado();
 			configuracion = menuPrincipal.getConfiguracion();
 			_minimax.setDificultad(configuracion.dificultad);
@@ -75,35 +64,39 @@ void Coordinador::dibuja()
 
 			if (siguiente == EstadoJuego::DESTINO) {
 				pantallaDestino.reiniciar(configuracion);
-				if (!pTablero) { // SOLO CREA EL TABLERO UNA VEZ
+				if (!pTablero) { 
+					// SOLO CREA EL TABLERO UNA VEZ
+					// Cada partida nueva empieza sin replays de partidas anteriores
+					_replayPartida = RegistroPartida{};
+					_combateEnCurso = CombateRegistro{};
+					_grabandoCombate = false;
+
 					pTablero = new Tablero();
 					pTablerogl = new Tablerogl(pTablero);
 					DibujaTablero::tablero_init();
 					pTablerogl->setBatalla((int)configuracion.batalla); // ASIGNA BATALLA AL TABLERO
-					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN) ? bando_rival : bando_local;//FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
+					BandoPieza bandoInicial = (configuracion.turno1 == BandoJugador::MUSULMAN) ? bando_rival : bando_local; //FIJAMOS QUIEN EMPIEZA SEGÚN LA BATALLA SELECCIONADA
 					pTablerogl->setBandoInicial(bandoInicial);
 
 					gestorInput.setTablerogl(pTablerogl); // ASIGNA TABLEROGL AL GESTOR
 
 					// NOMBRES DE LOS JUGADORES PARA EL HUD
-					pTablerogl->nombre_j1 = configuracion.nombre_j1;
-
-					// EN JVIA EL J2 ES LA IA — MOSTRAMOS NOMBRE CON DIFICULTAD
-					if (configuracion.modo == ModoJuego::JVIA) {
-						switch (configuracion.dificultad) {
-						case NivelDificultad::FACIL:   pTablerogl->nombre_j2 = "IA - Facil";   break;
-						case NivelDificultad::MEDIO:   pTablerogl->nombre_j2 = "IA - Medio";   break;
-						case NivelDificultad::DIFICIL: pTablerogl->nombre_j2 = "IA - Dificil"; break;
-						default:                       pTablerogl->nombre_j2 = "IA";           break;
-						}
+					// nombre_j1 del tablerogl = siempre el bando cristiano (izquierda)
+					// nombre_j2 del tablerogl = siempre el bando andalusi (derecha)
+					// Si J1 eligio musulman, los nombres se cruzan
+					if (configuracion.bando == BandoJugador::CRISTIANO) {
+						pTablerogl->nombre_j1 = configuracion.nombre_j1;
+						pTablerogl->nombre_j2 = configuracion.nombre_j2;
 					}
 					else {
-						pTablerogl->nombre_j2 = configuracion.nombre_j2;
+						pTablerogl->nombre_j1 = configuracion.nombre_j2; // J2 juega de cristiano
+						pTablerogl->nombre_j2 = configuracion.nombre_j1; // J1 juega de andalusi
 					}
 
 					pGestorHechizos = new GestorHechizos(*pTablero,
-						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
-						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_lider, bando_local)),
+						dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_lider, bando_rival)));
+					pTablerogl->_gestorHechizos = pGestorHechizos;
 				}
 			}
 			if (siguiente == EstadoJuego::RANKING)
@@ -114,7 +107,7 @@ void Coordinador::dibuja()
 			estado = siguiente;
 		}
 		break;
-	}
+
 	case EstadoJuego::DESTINO:
 		// NUEVO MOTOR GRAFICO CENTRALIZADO GESTIONA ESTA TRANSICION AL COMPLETO
 		DibujaMenu::destino_dibujar(pantallaDestino, _anchoVentana, _altoVentana); // PINTA EFECTOS, FONDOS Y PARTICULAS
@@ -149,11 +142,16 @@ void Coordinador::dibuja()
 				break;
 			}
 
+			if (_necesitaRecargarGraficos && _framesCargando <= 0)
+			{
+				DibujaTablero::tablero_init(); // Recarga texturas
+				_necesitaRecargarGraficos = false;
+			}
+			
 			if (!_necesitaRecargarGraficos && _framesCargando <= 0)
 			{
 				ResultadoVictoria rv = gestorVictoria.comprobarVictoria(*pTablero);
-				DibujaTablero::tablero_init(); // Recarga texturas
-				_necesitaRecargarGraficos = false;
+
 			}
 
 			glEnable(GL_DEPTH_TEST);
@@ -175,7 +173,6 @@ void Coordinador::dibuja()
 			}
 			DibujaTablero::tablero_dibujar(*pTablerogl);
 
-
 			if (pTablerogl->huboColision())
 			{
 				_pAtacanteCombate = pTablerogl->getPiezaAtacante();
@@ -196,8 +193,28 @@ void Coordinador::dibuja()
 					configuracion.modo,
 					pTablerogl->getVentajaTerrenoCombate());
 
+				// Inicializa el registro del nuevo combate
+				_combateEnCurso = CombateRegistro{};
+				// P1 en la arena = siempre el bando cristiano, P2 = andalusi
+				// Asignamos los nombres segun que bando controla cada jugador
+				if (configuracion.bando == BandoJugador::CRISTIANO) {
+					_combateEnCurso.nombreP1 = configuracion.nombre_j1; // J1 controla el cristiano
+					_combateEnCurso.nombreP2 = configuracion.nombre_j2;
+				} else {
+					_combateEnCurso.nombreP1 = configuracion.nombre_j2; // J2 controla el cristiano
+					_combateEnCurso.nombreP2 = configuracion.nombre_j1; // J1 controla el andalusi
+				}
+				_combateEnCurso.vidaMaxP1 = _arena.p1().vidaMax();
+				_combateEnCurso.vidaMaxP2 = _arena.p2().vidaMax();
+				_arena.p1().color(_combateEnCurso.r1, _combateEnCurso.g1, _combateEnCurso.b1);
+				_arena.p2().color(_combateEnCurso.r2, _combateEnCurso.g2, _combateEnCurso.b2);
+				_combateEnCurso.batalla = configuracion.batalla;          // guarda la batalla para el fondo del replay
+				_combateEnCurso.nombrePiezaP1 = pJugador->getNombre();   // guarda el nombre de la pieza para los sprites
+				_combateEnCurso.nombrePiezaP2 = pRival->getNombre();
+				_grabandoCombate = true;
+
 				ETSIDI::stopMusica();
-				ETSIDI::play("sonidos/ARENA.mp3");
+				ETSIDI::playMusica("sonidos/ARENA.mp3", true);
 				DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
 				DibujaArena::resetFlash();
 				pTablerogl->limpiarCombate();
@@ -217,25 +234,28 @@ void Coordinador::dibuja()
 		break;
 
 	case EstadoJuego::CARGANDO:
+		// Al cargar tambien limpiamos los replays para que no aparezcan combates de otra sesion
+		_replayPartida = RegistroPartida{};
+		_combateEnCurso = CombateRegistro{};
+		_grabandoCombate = false;
+
 		// Cargamos la partida y volvemos al tablero
 		if (!pTablero) {
-			pTablero = new Tablero();
+			pTablero = new Tablero();         
 			pTablerogl = new Tablerogl(pTablero);
 			DibujaTablero::tablero_init();
 			gestorInput.setTablerogl(pTablerogl);
 			pGestorHechizos = new GestorHechizos(*pTablero,
-				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_local)),
-				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_esfera, bando_rival)));
+				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_lider, bando_local)),
+				dynamic_cast<Hechicero*>(pTablero->buscarPieza(pieza_lider, bando_rival)));
 		}
 
 		GestorPartida::cargar(*pTablero, pTablerogl->gestorTurnos, configuracion);
 		pTablerogl->setBatalla((int)configuracion.batalla);
-		pTablerogl->nombre_j1 = configuracion.nombre_j1; // RESTAURA NOMBRES AL CARGAR
+		pTablerogl->nombre_j1 = configuracion.nombre_j1;
 		pTablerogl->nombre_j2 = configuracion.nombre_j2;
 
-		// Recarga texturas después de cargar piezas
 		_necesitaRecargarGraficos = true;
-
 		ETSIDI::playMusica("sonidos/TABLERO.mp3", true);
 		_framesCargando = 5;
 		estado = EstadoJuego::TABLERO;
@@ -257,6 +277,20 @@ void Coordinador::dibuja()
 			_rankingTop10,
 			_rankingGanaJ1
 		);
+		break;
+
+	case EstadoJuego::REPLAY_SELECCION: // MUESTRA LA LISTA DE COMBATES GRABADOS DURANTE LA PARTIDA
+		DibujaMenu::replay_seleccion_dibujar(_anchoVentana, _altoVentana,
+			_replaySel, _replayPartida.combates, configuracion.batalla);
+		break;
+
+	case EstadoJuego::REPLAY_COMBATE: // REPRODUCE EL COMBATE GRABADO FRAME A FRAME
+		DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana); // necesario para restaurar las matrices 3D
+		DibujaArena::arena_dibujar(_arena, _replayPartida.combates[_replayIdx].batalla);
+		DibujaMenu::replay_dibujar(_anchoVentana, _altoVentana, _replayFrame,
+			(int)_replayPartida.combates[_replayIdx].frames.size(),
+			_replayPartida.combates[_replayIdx],
+			_replayFrame >= (int)_replayPartida.combates[_replayIdx].frames.size());
 		break;
 
 	case EstadoJuego::FINAL:
@@ -335,10 +369,29 @@ void Coordinador::tecla(unsigned char key)
 
 	case EstadoJuego::RANKING:
 		if (key == 27) {
-			ETSIDI::stopMusica();
+			ETSIDI::playMusica("sonidos/MENU.mp3", true);
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
 		}
+		if ((key == 'r' || key == 'R') && !_replayPartida.combates.empty()) {
+			_replaySel = 0;
+			estado = EstadoJuego::REPLAY_SELECCION;
+		}
+		break;
+
+	case EstadoJuego::REPLAY_SELECCION: // MUESTRA LA LISTA DE COMBATES GRABADOS DURANTE LA PARTIDA
+		if (key == 27) estado = EstadoJuego::RANKING;
+		if (key == 13 && !_replayPartida.combates.empty()) {
+			_replayIdx = _replaySel;
+			_replayFrame = 0;
+			_arena.iniciarReplay(_replayPartida.combates[_replayIdx]);
+			DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
+			estado = EstadoJuego::REPLAY_COMBATE;
+		}
+		break;
+
+	case EstadoJuego::REPLAY_COMBATE: // REPRODUCE EL COMBATE GRABADO FRAME A FRAME
+		if (key == 27) estado = EstadoJuego::REPLAY_SELECCION;
 		break;
 
 	case EstadoJuego::FINAL:
@@ -347,9 +400,10 @@ void Coordinador::tecla(unsigned char key)
 
 	case EstadoJuego::AYUDA:
 		if (key == 27) {
-			if (_ayudaSeccion == -1)
+			if (_ayudaSeccion == -1) {
+				ETSIDI::playMusica("sonidos/MENU.mp3", true);
 				estado = EstadoJuego::GUARDANDO; // Vuelve a pausa
-			else
+			}else
 				_ayudaSeccion = -1; // Vuelve al menu de ayuda
 		}
 		if (key == 13 && _ayudaSeccion == -1) {
@@ -359,7 +413,7 @@ void Coordinador::tecla(unsigned char key)
 
 	default:
 		if (key == 27) {
-			ETSIDI::stopMusica();
+			ETSIDI::playMusica("sonidos/MENU.mp3", true);
 			menuPrincipal.reiniciar();
 			reiniciarTablero();
 		}
@@ -398,6 +452,10 @@ void Coordinador::tecla_especial(int key)
 			if (key == GLUT_KEY_DOWN) _ayudaSeleccion = (_ayudaSeleccion + 1) % 2;
 		}
 		break;
+	case EstadoJuego::REPLAY_SELECCION:
+		if (key == GLUT_KEY_UP && _replaySel > 0) _replaySel--;
+		if (key == GLUT_KEY_DOWN && _replaySel < (int)_replayPartida.combates.size() - 1) _replaySel++;
+		break;
 	default: break;
 	}
 	glutPostRedisplay();
@@ -431,7 +489,7 @@ void Coordinador::mueve(double dt)
 				_tiempoEsperaIA -= (float)dt; // CUENTA ATRÁS VISUAL
 			}
 			else if (!_iaCalculando) {
-				// ── LANZA EL CÁLCULO EN UN HILO PARA NO CONGELAR EL JUEGO ──
+				// LANZA EL CÁLCULO EN UN HILO PARA NO CONGELAR EL JUEGO
 				_iaCalculando = true;
 				_iaTerminada = false;
 
@@ -526,14 +584,18 @@ void Coordinador::mueve(double dt)
 			if (rv != ResultadoVictoria::SIN_GANADOR) {
 				ETSIDI::stopMusica();
 
-				// Ranking
-				_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL) ? configuracion.nombre_j1 :
-					(rv == ResultadoVictoria::GANA_RIVAL) ? configuracion.nombre_j2 : "Empate";
-				_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL);
+				// Ranking — bando_local es siempre cristiano, pero J1 puede haber elegido andalusi
+				bool j1EsCristiano = (configuracion.bando == BandoJugador::CRISTIANO);
+				_rankingGanador = (rv == ResultadoVictoria::GANA_LOCAL)
+					? (j1EsCristiano ? configuracion.nombre_j1 : configuracion.nombre_j2)
+					: (rv == ResultadoVictoria::GANA_RIVAL)
+					? (j1EsCristiano ? configuracion.nombre_j2 : configuracion.nombre_j1)
+					: "Empate";
+				_rankingGanaJ1 = (rv == ResultadoVictoria::GANA_LOCAL); // true = gano el bando cristiano (controla los efectos visuales de victoria)
 				_rankingBatalla = nombreBatalla(configuracion.batalla);
 				_rankingTurnos = pTablerogl->gestorTurnos.getNumeroTurno();
-				_rankingPiezasLocal = 16 - gestorVictoria.piezasVivas(*pTablero, bando_local);
-				_rankingPiezasRival = 16 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
+				_rankingPiezasLocal = 18 - gestorVictoria.piezasVivas(*pTablero, bando_local); // cada bando empieza con 18 piezas
+				_rankingPiezasRival = 18 - gestorVictoria.piezasVivas(*pTablero, bando_rival);
 
 				// Guardar en el Ranking
 				GestorRanking::guardar(
@@ -543,7 +605,7 @@ void Coordinador::mueve(double dt)
 					_rankingPiezasLocal + _rankingPiezasRival // total piezas eliminadas
 				);
 
-				// VICTORIA EN TABLEROGL (DE GABRI)
+				// VICTORIA EN TABLEROGL
 				if (rv == ResultadoVictoria::GANA_LOCAL)
 					pTablerogl->setVictoria(bando_local);
 				else if (rv == ResultadoVictoria::GANA_RIVAL)
@@ -551,15 +613,15 @@ void Coordinador::mueve(double dt)
 
 				_rankingTop10 = GestorRanking::cargar();
 				_tiempoVictoria = 10.0f;
+
+				ETSIDI::playMusica("sonidos/VICTORIA.mp3");
 				estado = EstadoJuego::VICTORIA;
 			}
 		}
 	}
 
 	if (estado == EstadoJuego::GUARDANDO) {
-		//_tiempoGuardado -= (float)dt;
 		if (_tiempoGuardado <= 0.0f) {
-			ETSIDI::stopMusica();
 			reiniciarTablero();
 			estado = EstadoJuego::MENU;
 		}
@@ -568,6 +630,7 @@ void Coordinador::mueve(double dt)
 	if (estado == EstadoJuego::VICTORIA) {
 		_tiempoVictoria -= (float)dt;
 		if (_tiempoVictoria <= 0.0f) {
+			ETSIDI::playMusica("sonidos/VICTORIA.mp3");
 			_rankingTop10 = GestorRanking::cargar();
 			estado = EstadoJuego::RANKING;
 		}
@@ -576,6 +639,31 @@ void Coordinador::mueve(double dt)
 	if (estado == EstadoJuego::ARENA) {
 		_arena.actualizar((float)dt, _input);
 		DibujaArena::arena_update((float)dt);
+
+		// Graba el estado de este frame
+		if (_grabandoCombate) {
+			FrameArena f;
+			f.p1x = _arena.p1().x();   f.p1z = _arena.p1().z();   f.p1vida = _arena.p1().vida();
+			f.p1mirX = _arena.p1().mirandoX(); f.p1mirZ = _arena.p1().mirandoZ();
+			f.p1atacando = _arena.p1().atacando();
+			f.p1danio = _arena.p1().recibioDanio();
+			f.p1mov = _arena.p1().enMovimiento();
+			f.p2x = _arena.p2().x();   f.p2z = _arena.p2().z();   f.p2vida = _arena.p2().vida();
+			f.p2mirX = _arena.p2().mirandoX(); f.p2mirZ = _arena.p2().mirandoZ();
+			f.p2atacando = _arena.p2().atacando();
+			f.p2danio = _arena.p2().recibioDanio();
+			f.p2mov = _arena.p2().enMovimiento();
+			_combateEnCurso.frames.push_back(f);
+		}
+	}
+
+	if (estado == EstadoJuego::REPLAY_COMBATE) {
+		DibujaArena::arena_update((float)dt);
+		if (!_replayPartida.combates.empty() && _replayIdx < (int)_replayPartida.combates.size()) {
+			const CombateRegistro& c = _replayPartida.combates[_replayIdx];
+			if (_replayFrame < (int)c.frames.size())
+				_arena.aplicarFrameReplay(c.frames[_replayFrame++]);
+		}
 	}
 }
 
@@ -607,22 +695,37 @@ void Coordinador::raton(int boton, int state, int x, int y)
 	case EstadoJuego::GUARDANDO:
 		gestorInput.ratonGuardando(x, y, true, estado);
 		break;
-	case EstadoJuego::AYUDA:
-		if (boton == GLUT_LEFT_BUTTON && _ayudaSeccion == -1)
-		{
-			// Detecta clic en botones Controles/Normas
+	case EstadoJuego::REPLAY_SELECCION:
+		if (boton == GLUT_LEFT_BUTTON && !_replayPartida.combates.empty()) {
+			// Calcula sobre que item hizo click (misma geometria que replay_seleccion_dibujar)
 			int gy = _altoVentana - y;
-			float btnW = 260, btnH = 48;
-			float btnX = _anchoVentana / 2.0f - btnW / 2.0f;
-			float btnY[2] = { _altoVentana / 2.0f + 20, _altoVentana / 2.0f - 50 };
-			for (int i = 0; i < 2; i++)
-			{
-				if (gy >= btnY[i] && gy <= btnY[i] + btnH && x >= btnX && x <= btnX + btnW)
-				{
-					_ayudaSeccion = i;
+			float itemH = 52.0f, sep = 8.0f;
+			float listY = (float)_altoVentana - 140.0f;
+			float listX = _anchoVentana * 0.15f;
+			float listW = _anchoVentana * 0.70f;
+			for (int i = 0; i < (int)_replayPartida.combates.size(); i++) {
+				float iy = listY - i * (itemH + sep);
+				if (x >= listX && x <= listX + listW && gy >= iy && gy <= iy + itemH) {
+					if (_replaySel == i) {
+						// Segundo click en el mismo item: entra al replay
+						_replayIdx = _replaySel;
+						_replayFrame = 0;
+						_arena.iniciarReplay(_replayPartida.combates[_replayIdx]);
+						DibujaArena::arena_configurar_vista(_anchoVentana, _altoVentana);
+						estado = EstadoJuego::REPLAY_COMBATE;
+					}
+					else {
+						_replaySel = i; // primer click: selecciona
+					}
+					break;
 				}
 			}
 		}
+		break;
+
+	case EstadoJuego::AYUDA:
+		gestorInput.ratonAyuda(boton, state, x, y, estado);
+		
 		break;
 
 	default: break;
@@ -637,6 +740,21 @@ void Coordinador::ratonMovido(int x, int y)
 	gestorInput.ratonMovidoMenu(x, y, estado, menuPrincipal);
 	if (estado == EstadoJuego::GUARDANDO)
 		gestorInput.ratonMovidoGuardando(x, y); // HOVER PAUSA
+	else if (estado == EstadoJuego::AYUDA)
+		gestorInput.ratonMovidoAyuda(x, y, estado); // HOVER AYUDA
+	else if (estado == EstadoJuego::REPLAY_SELECCION && !_replayPartida.combates.empty()) {
+		// Hover: el cursor cambia la seleccion al pasar por encima de un item
+		int gy = _altoVentana - y;
+		float itemH = 52.0f, sep = 8.0f;
+		float listY = (float)_altoVentana - 140.0f;
+		float listX = _anchoVentana * 0.15f;
+		float listW = _anchoVentana * 0.70f;
+		for (int i = 0; i < (int)_replayPartida.combates.size(); i++) {
+			float iy = listY - i * (itemH + sep);
+			if (x >= listX && x <= listX + listW && gy >= iy && gy <= iy + itemH)
+				_replaySel = i;
+		}
+	}
 	glutPostRedisplay();
 }
 
@@ -656,4 +774,9 @@ void Coordinador::reiniciarTablero()
 	pTablero = nullptr;
 	pTablerogl = nullptr;
 	menuPrincipal.reiniciar();
+
+	// Limpia los combates grabados para que la nueva partida empiece sin replays de la anterior
+	_replayPartida = RegistroPartida{};
+	_combateEnCurso = CombateRegistro{};
+	_grabandoCombate = false;
 }

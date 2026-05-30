@@ -8,7 +8,6 @@
 #include <cstring> 
 #include <string>
 
-
 dibujapersonajes DibujaArena::_personajes;
 
 float DibujaArena::_tiempoFlash = 0.0f;
@@ -60,13 +59,8 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
     arena_configurar_luz();
     arena_suelo(arena.ancho(), arena.profundo(), batalla);
 
-    //investigar que significa bien lo de lambda (aparece aqui y en dibujatablero)
     // Lambda que dibuja cualquier combatiente con sprite
     auto dibujarCombatiente = [&](const Combatiente& c, int indice) {
-
-        //std::cout << "nombre='" << c.nombre() << "'" << std::endl;
-
-
         // Proyectamos posicion 3D a coordenadas de pantalla
         GLdouble winX, winY, winZ;
         GLdouble model[16], proj[16];
@@ -75,19 +69,15 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
         glGetDoublev(GL_MODELVIEW_MATRIX, model);
         glGetDoublev(GL_PROJECTION_MATRIX, proj);
         glGetIntegerv(GL_VIEWPORT, view);
-        gluProject(c.x(), c.y(), c.z(), model, proj, view,
-            &winX, &winY, &winZ);
-
+        gluProject(c.x(), c.y(), c.z(), model, proj, view, &winX, &winY, &winZ);
 
         //definición de estados según reciba daño o este atacando
         EstadoPersonaje estado;
         if (c.recibioDanio()) estado = EstadoPersonaje::HURT;
         else if (c.atacando())     estado = EstadoPersonaje::ATTACK;
-        else                       estado = EstadoPersonaje::IDLE;
+        else      estado = EstadoPersonaje::IDLE;
 
         // Tipo de personaje según nombre
-        //FALTAN PERSONAJES
-        //añadir el resto cuando los tengamos
 
         bool voltear = false; 
         TipoPersonaje tipo = TipoPersonaje::MILICIANO;
@@ -114,7 +104,6 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
             //si es atacante (P1 SIMEPRE ATACA) devuelve true
             bool esAtacante = (&c == &arena.p1());
 
-
             //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
             voltear = !esAtacante;
         }
@@ -133,7 +122,6 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
 
             //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
             voltear = !esAtacante;
-
         }
         else if (c.nombre() == "Emir") {
             //devuelve el tipo de personaje EMIR
@@ -184,7 +172,6 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
 
             //si no es atacante, voltea (va a estar en el lado derecho de la arena, necesita girarse)
             voltear = !esAtacante;
-
         }
         else if (c.nombre() == "Ghazi") {
             //devuelve el tipo de personaje EMIR
@@ -252,25 +239,20 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
         util_entrar2D(_anchoVentana, _altoVentana);
         glDisable(GL_LIGHTING);
 
-
         //dibjar con funcion de dibujappersonajes teniendo en cuenta el nombre del personaje y el estado
         _personajes.dibujar(tipo, (float)winX, (float)winY, size,
             estado, indice, c.enMovimiento(), voltear);
         util_salir2D();
     };
 
-
     float r, g, b;
 
     // P1 (ATACANTE)
-    
     arena.p1().color(r, g, b);
     if (arena.p1().atacando())
         arena_hitbox(arena.p1().x() + arena.p1().lado() * 0.5f, arena.p1().z(), 1.0f, arena.p1().alcanceAtaque());
     //funcion dibujar combatiente
     dibujarCombatiente(arena.p1(), 0);
-
-    
 
     // P2 (ATACADO)
     arena.p2().color(r, g, b);
@@ -278,7 +260,6 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
         arena_hitbox(arena.p2().x() - arena.p2().lado() * 0.5f, arena.p2().z(), -1.0f, arena.p2().alcanceAtaque());
     dibujarCombatiente(arena.p2(), 1);
 
-  
     // HUD ENCIMA DE TODO
     arena_hud(arena, batalla);
 
@@ -290,7 +271,6 @@ void DibujaArena::arena_dibujar(const Arena& arena, Batalla batalla) {
 }
 
 // CAPAS BASE DE LA ARENA
-
 void DibujaArena::arena_configurar_luz() {
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
@@ -398,50 +378,6 @@ void DibujaArena::arena_fondo(Batalla batalla) {
 }
 
 // PRIMITIVAS 3D Y DE COMBATE
-
-void DibujaArena::arena_cubo3d(float x, float y, float z, float lado, float r, float g, float b) {
-    float h = lado * 0.5f;
-    glPushMatrix();
-    glTranslatef(x, y + h, z);
-    glColor3f(r, g, b);
-
-    glBegin(GL_QUADS);
-    // SUPERIOR
-    glNormal3f(0, 1, 0);
-    glVertex3f(-h, h, -h); glVertex3f(-h, h, h);
-    glVertex3f(h, h, h); glVertex3f(h, h, -h);
-    // INFERIOR
-    glNormal3f(0, -1, 0);
-    glVertex3f(-h, -h, -h); glVertex3f(h, -h, -h);
-    glVertex3f(h, -h, h); glVertex3f(-h, -h, h);
-    // FRONTAL
-    glNormal3f(0, 0, 1);
-    glVertex3f(-h, -h, h); glVertex3f(h, -h, h);
-    glVertex3f(h, h, h); glVertex3f(-h, h, h);
-    // TRASERA
-    glNormal3f(0, 0, -1);
-    glVertex3f(-h, -h, -h); glVertex3f(-h, h, -h);
-    glVertex3f(h, h, -h); glVertex3f(h, -h, -h);
-    // DERECHA
-    glNormal3f(1, 0, 0);
-    glVertex3f(h, -h, -h); glVertex3f(h, h, -h);
-    glVertex3f(h, h, h); glVertex3f(h, -h, h);
-    // IZQUIERDA
-    glNormal3f(-1, 0, 0);
-    glVertex3f(-h, -h, -h); glVertex3f(-h, -h, h);
-    glVertex3f(-h, h, h); glVertex3f(-h, h, -h);
-    glEnd();
-
-    // ARISTAS
-    glDisable(GL_LIGHTING);
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glLineWidth(2.0f);
-    glutWireCube(lado);
-    glEnable(GL_LIGHTING);
-
-    glPopMatrix();
-}
-
 void DibujaArena::arena_hitbox(float x, float z, float orientacion, float alcance) {
     float anchoHit = alcance;
     float profHit = 0.8f;
@@ -459,7 +395,6 @@ void DibujaArena::arena_hitbox(float x, float z, float orientacion, float alcanc
 }
 
 // HUD Y TEXTOS EN 2D
-
 void DibujaArena::arena_texto(float x, float y, const char* texto, float r, float g, float b) {
     glColor3f(r, g, b);
     glRasterPos2f(x, y);
@@ -610,10 +545,10 @@ void DibujaArena::arena_hud(const Arena& arena, Batalla batalla) {
         glColor3f(0.85f, 0.70f, 0.25f);
         glLineWidth(1.5f);
         glBegin(GL_LINES);
-        glVertex2f(cx - 160.0f, cy - 38.0f);
-        glVertex2f(cx - 20.0f, cy - 38.0f);
-        glVertex2f(cx + 20.0f, cy - 38.0f);
-        glVertex2f(cx + 160.0f, cy - 38.0f);
+        glVertex2f(cx - 160.0f, cy - 47.0f);
+        glVertex2f(cx - 20.0f, cy - 47.0f);
+        glVertex2f(cx + 20.0f, cy - 47.0f);
+        glVertex2f(cx + 160.0f, cy - 47.0f);
         glEnd();
 
         // TÍTULO

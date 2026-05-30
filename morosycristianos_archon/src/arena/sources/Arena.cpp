@@ -115,7 +115,6 @@ void Arena::limitarPosicion(Combatiente& c)
 void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJuego modo, int ventajaTerreno)
 {
 	_modo = modo;
-	std::cout << "[Arena] iniciarCombate llamado!" << std::endl;
 
 	// Creamos los combatientes con las stats reales de las piezas del tablero P1 (atacante) siempre empieza a la izquierda, color segun bando
 	float r1 = atacante.getBando() == Bando::CRISTIANO ? 0.89f : 0.39f;
@@ -146,8 +145,6 @@ void Arena::iniciarCombate(const Pieza& atacante, const Pieza& defensora, ModoJu
 	// Reseteamos el resultado
 	_resultado = ResultadoCombate::EnCurso;
 
-	std::cout << "[Arena] vida p1: " << _p1.vida() << " vida p2: " << _p2.vida() << std::endl;
-	std::cout << "[Arena] resultado = EnCurso" << std::endl;
 }
 
 void Arena::resolverColision()
@@ -178,4 +175,35 @@ void Arena::resolverColision()
 		// P2 SE ALEJA EN DIRECCION CONTRARIA A P1
 		_p2.posicion(_p2.x() + nx * overlap, _p2.y(), _p2.z() + nz * overlap);
 	}
+}
+
+// Prepara la arena para reproducir un combate grabado (no hay IA ni input, solo frames)
+void Arena::iniciarReplay(const CombateRegistro& c)
+{
+	_p1 = Combatiente(-4.0f, 0.0f, 0.0f, c.r1, c.g1, c.b1);
+	_p2 = Combatiente(4.0f, 0.0f, 0.0f, c.r2, c.g2, c.b2);
+	_p1.setVidaMax(c.vidaMaxP1); // necesario para que la barra de vida se vea correcta
+	_p2.setVidaMax(c.vidaMaxP2);
+	_p1.setNombre(c.nombrePiezaP1); // nombre de la pieza para que dibujaarena elija el sprite correcto
+	_p2.setNombre(c.nombrePiezaP2);
+	_resultado = ResultadoCombate::EnCurso;
+}
+
+
+// Aplica el estado de un frame grabado a los dos combatientes (posicion, vida, animaciones)
+void Arena::aplicarFrameReplay(const FrameArena& f)
+{
+	_p1.posicion(f.p1x, 0.0f, f.p1z);
+	_p1.setVida(f.p1vida);
+	_p1.setMirandoXZ(f.p1mirX, f.p1mirZ);
+	_p1.setAtacando(f.p1atacando);
+	_p1.setDanio(f.p1danio);
+	_p1.setEnMovimiento(f.p1mov);
+
+	_p2.posicion(f.p2x, 0.0f, f.p2z);
+	_p2.setVida(f.p2vida);
+	_p2.setMirandoXZ(f.p2mirX, f.p2mirZ);
+	_p2.setAtacando(f.p2atacando);
+	_p2.setDanio(f.p2danio);
+	_p2.setEnMovimiento(f.p2mov);
 }

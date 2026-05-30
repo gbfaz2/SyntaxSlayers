@@ -17,7 +17,6 @@ class GestorHechizos
     Hechicero* hechiceroActual(BandoPieza bando) const;
 
 public:
-public:
     // Constructor
     GestorHechizos(Tablero& tablero, Hechicero* hechiceroLocal, Hechicero* hechiceroRival);
 

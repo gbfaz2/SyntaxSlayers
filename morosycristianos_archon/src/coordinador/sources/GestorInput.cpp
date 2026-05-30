@@ -6,10 +6,7 @@
 #include "ETSIDI.h"
 #include "Infiltrado.h"
 
-// =============================================================
 // MENU
-// =============================================================
-
 void GestorInput::teclaMenu(unsigned char key, EstadoJuego& estado,
     PantallaIntro& intro, MenuPrincipal& menu, PantallaDestino& destino)
 {
@@ -52,14 +49,36 @@ void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal&
         // FLECHAS IZQUIERDA/DERECHA: CAMBIAN BANDO DE QUIEN TIENE EL FOCO
         if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
             if (menu.m_focoNombre == 0) {
-                // CAMBIA BANDO J1
+                // CAMBIA BANDO J1 Y ACTUALIZA J2 AUTOMÁTICAMENTE
                 menu.m_cfg.bando = (menu.m_cfg.bando == BandoJugador::CRISTIANO)
+                    ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+                menu.m_cfg.bando_j2 = (menu.m_cfg.bando == BandoJugador::CRISTIANO)
                     ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
             }
             else if (menu.m_focoNombre == 1 && menu.m_cfg.modo == ModoJuego::JVJ) {
-                // CAMBIA BANDO J2 (automáticamente opuesto, pero por si acaso)
+                // CAMBIA BANDO J2 Y ACTUALIZA J1 AUTOMÁTICAMENTE
                 menu.m_cfg.bando_j2 = (menu.m_cfg.bando_j2 == BandoJugador::CRISTIANO)
                     ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+                menu.m_cfg.bando = (menu.m_cfg.bando_j2 == BandoJugador::CRISTIANO)
+                    ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
+            }
+
+            // FLECHAS ARRIBA/ABAJO: CAMBIAN DIFICULTAD DE LA IA
+            if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
+                // Si estamos en modo IA, las flechas arriba/abajo siempre cambian la dificultad
+                // (quitamos lo del foco porque la IA no tiene caja de texto para escribir su nombre)
+                if (menu.m_cfg.modo == ModoJuego::JVIA) {
+                    if (key == GLUT_KEY_UP) {
+                        if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::FACIL;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+                    }
+                    else if (key == GLUT_KEY_DOWN) {
+                        if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+                        else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::FACIL;
+                    }
+                }
             }
         }
         return; // EN PASO 2 LAS FLECHAS SOLO CAMBIAN BANDO
@@ -82,7 +101,6 @@ void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal&
         if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT)
             menu.m_seleccion = (menu.m_seleccion == 0) ? 1 : 0;
     }
-
 }
 
 void GestorInput::teclaEspecialAyuda(int key, EstadoJuego& estado)
@@ -99,10 +117,15 @@ void GestorInput::teclaAyuda(unsigned char key, EstadoJuego& estado)
     if (key == 13 && _coordinador->_ayudaSeccion == -1)
         _coordinador->_ayudaSeccion = _coordinador->_ayudaSeleccion; // ENTRA EN SECCIÓN
     if (key == 27) {
+        //ETSIDI::playMusica("sonidos/MENU.mp3", true);
+
         if (_coordinador->_ayudaSeccion != -1)
             _coordinador->_ayudaSeccion = -1; // VUELVE AL SELECTOR
-        else
-            estado = EstadoJuego::MENU;        // VUELVE AL MENÚ
+        else {
+         //ETSIDI::playMusica("sonidos/MENU.mp3", true);
+            estado = EstadoJuego::MENU;  
+        }
+                 // VUELVE AL MENÚ
     }
 }
 
@@ -118,14 +141,73 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
         break;
     case EstadoJuego::MENU:
         if (boton == GLUT_LEFT_BUTTON) {
-            ratonMovidoMenu(x, y, estado, menu);
+            ratonMovidoMenu(x, y, estado, menu); // actualiza hover general
             if (menu.m_paso == 2) {
-                int gy = _alto - y;
+                int gy = _alto - y; // invertir coordenada y
+
+                // detecta click en boton continuar
                 float btnW = 200, btnH = 40;
                 float btnX = _ancho / 2.0f - btnW / 2.0f;
                 float btnY = _alto * 0.12f;
-                if (x >= btnX && x <= btnX + btnW && gy >= btnY && gy <= btnY + btnH)
+                if (x >= btnX && x <= btnX + btnW && gy >= btnY && gy <= btnY + btnH) {
                     menu.confirmar();
+                    return;
+                }
+
+                // 2. Detectar clics en paneles de configuración (Matemática extraída de DibujaMenu)
+                float mitad = _ancho / 2.0f;
+                float colW = mitad * 0.80f;
+                float col1X = mitad - colW - 20;
+                float col2X = mitad + 20;
+                float topY = _alto * 0.60f;
+                float campoY = topY - 50;
+                float bandoY = campoY - 80;
+                float bw = (colW - 10) / 2.0f;
+
+                // Función lambda para comprobar si el clic cae dentro de una caja
+                auto enCaja = [&](float bx, float by, float anchoCaja, float altoCaja) {
+                    return x >= bx && x <= bx + anchoCaja && gy >= by && gy <= by + altoCaja;
+                    };
+
+                // CLICS JUGADOR 1 (Columna Izquierda)
+                if (enCaja(col1X, campoY - 30, colW, 36)) menu.m_focoNombre = 0; // Foco Nombre J1
+
+                if (enCaja(col1X, bandoY - 30, bw, 36)) { // Botón Cristiano J1
+                    menu.m_cfg.bando = BandoJugador::CRISTIANO;
+                    menu.m_cfg.bando_j2 = BandoJugador::MUSULMAN;
+                    menu.m_focoNombre = 0;
+                }
+                if (enCaja(col1X + bw + 10, bandoY - 30, bw, 36)) { // Botón Andalusí J1
+                    menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                    menu.m_cfg.bando_j2 = BandoJugador::CRISTIANO;
+                    menu.m_focoNombre = 0;
+                }
+
+                // CLICS JUGADOR 2 / IA (Columna Derecha)
+                if (menu.m_cfg.modo == ModoJuego::JVJ) {
+                    if (enCaja(col2X, campoY - 30, colW, 36)) menu.m_focoNombre = 1; // Foco Nombre J2
+
+                    if (enCaja(col2X, bandoY - 30, bw, 36)) { // Botón Cristiano J2
+                        menu.m_cfg.bando_j2 = BandoJugador::CRISTIANO;
+                        menu.m_cfg.bando = BandoJugador::MUSULMAN;
+                        menu.m_focoNombre = 1;
+                    }
+                    if (enCaja(col2X + bw + 10, bandoY - 30, bw, 36)) { // Botón Andalusí J2
+                        menu.m_cfg.bando_j2 = BandoJugador::MUSULMAN;
+                        menu.m_cfg.bando = BandoJugador::CRISTIANO;
+                        menu.m_focoNombre = 1;
+                    }
+                }
+                else if (menu.m_cfg.modo == ModoJuego::JVIA) {
+                    for (int i = 0; i < 3; i++) {
+                        float dy = campoY - 30 - i * 46;
+                        if (enCaja(col2X, dy, colW, 36)) { // Clic en Dificultad IA
+                            menu.m_cfg.dificultad = (i == 0) ? NivelDificultad::FACIL :
+                                (i == 1) ? NivelDificultad::MEDIO :
+                                NivelDificultad::DIFICIL;
+                        }
+                    }
+                }
             }
             else {
                 menu.confirmar();
@@ -135,11 +217,6 @@ void GestorInput::ratonMenu(int boton, int state, int x, int y,
     case EstadoJuego::DESTINO:
         destino.avanzar();
         break;
-        if (boton == GLUT_LEFT_BUTTON) {
-            ratonMovidoMenu(x, y, estado, menu); // ← actualiza selección Y puede llamar confirmar()
-            if (menu.m_paso != 2)                // ← este guard llega TARDE si ratonMovido ya confirmó
-                menu.confirmar();
-        }
     default:
         break;
     }
@@ -200,14 +277,11 @@ void GestorInput::ratonMovidoMenu(int mx, int my, EstadoJuego& estado, MenuPrinc
     }
 }
 
-// =============================================================
 // TABLERO
-// =============================================================
-
 bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
 {
-    bool ejecutado = false;                            // CONTROLA SI SE EJECUTÓ
-    std::string mensajeError = "";//VARIABLE PARA GUARDAR EL MOTIVO DEL ERROR EN EL ASEDIO
+    bool ejecutado = false; // CONTROLA SI SE EJECUTÓ
+    std::string mensajeError = ""; //VARIABLE PARA GUARDAR EL MOTIVO DEL ERROR EN EL ASEDIO
 
     switch (_tablerogl->_conjuroActivo) {
 
@@ -256,7 +330,7 @@ bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
             _tablerogl->mostrarMensajeInvalido(mensajeError, true);
         break;
 
-    default: break;                                    // HECHIZOS NO IMPLEMENTADOS
+    default: break;                                    
     }
 
     if (ejecutado) {
@@ -268,7 +342,7 @@ bool GestorInput::ejecutarHechizo(BandoPieza bando, int fila, int col)
         _tablerogl->fromFila = _tablerogl->fromCol = -1; // RESETEA ORIGEN
         _tablerogl->_mensajeInvalido = "";             // LIMPIA MENSAJE INVALIDO
         _tablerogl->_tiempoMensajeInvalido = 0.0f;    // RESETEA TEMPORIZADOR
-        Pieza* lider = _coordinador->pTablero->buscarPieza(pieza_esfera, bando);
+        Pieza* lider = _coordinador->pTablero->buscarPieza(pieza_lider, bando);
         if (lider) {
             _tablerogl->Filacursor[idx] = lider->getFila();    // CURSOR VUELVE AL LIDER
             _tablerogl->Colcursor[idx] = lider->getColumna(); // CURSOR VUELVE AL LIDER
@@ -287,14 +361,12 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
     // Q: CIERRA EL JUEGO
     if (key == 'q' || key == 'Q') { exit(0); return; }
 
-    // ============================================================
     // H: ACTIVA MODO HECHIZO P1 (SOLO SI EL REY ESTÁ SELECCIONADO)
-    // ============================================================
     if (key == 'h' || key == 'H') {
         if (_tablerogl->piezaSeleccionada) {               // HAY PIEZA SELECCIONADA
             const Casilla& cas = _coordinador->pTablero->getCasilla(
                 _tablerogl->fromFila, _tablerogl->fromCol);
-            if (cas.pieza == pieza_esfera && cas.bando == bando_local) { // ES EL REY LOCAL
+            if (cas.pieza == pieza_lider && cas.bando == bando_local) { // ES EL REY LOCAL
                 std::cout << "[Hechizos] Modo hechizo P1 activo. Elige 1-4.\n 1. Avituallamiento: Cura una pieza tuya a vida maxima";
                 std::cout << "\n 2. Rutas Secretas: Teleporta una pieza tuya a cualquier casilla vacia del tablero.";
                 std::cout << "\n 3. Relevo de Guardia: Intercambia la posicion de dos piezas tuyas.";
@@ -319,14 +391,12 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // J: ACTIVA MODO HECHIZO P2 (SOLO SI EL EMIR ESTÁ SELECCIONADO)
-    // ============================================================
     if (key == 'j' || key == 'J') {
         if (_tablerogl->piezaSeleccionada) {               // HAY PIEZA SELECCIONADA
             const Casilla& cas = _coordinador->pTablero->getCasilla(
                 _tablerogl->fromFila, _tablerogl->fromCol);
-            if (cas.pieza == pieza_esfera && cas.bando == bando_rival) { // ES EL EMIR RIVAL
+            if (cas.pieza == pieza_lider && cas.bando == bando_rival) { // ES EL EMIR RIVAL
                 std::cout << "[Hechizos] Modo hechizo P2 activo. Elige 1-4.\n 1. Avituallamiento: Cura una pieza tuya a vida maxima";
                 std::cout << "\n 2. Rutas Secretas: Teleporta una pieza tuya a cualquier casilla vacia del tablero.";
                 std::cout << "\n 3. Relevo de Guardia: Intercambia la posicion de dos piezas tuyas.";
@@ -350,9 +420,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // I: ACTIVA HABILIDAD INFILTRADO/ASESINO
-    // ============================================================
     if (key == 'i' || key == 'I') {
         if (_tablerogl->piezaSeleccionada) {
             const Casilla& cas = _coordinador->pTablero->getCasilla(_tablerogl->fromFila, _tablerogl->fromCol);
@@ -375,9 +443,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // ENTER: CONFIRMAR ROBO DE STATS DEL INFILTRADO
-    // ============================================================
     if (key == 13) {
         if (_tablerogl->_modoInfiltrado && _tablerogl->piezaSeleccionada) {
             const Casilla& casEnemigo = _coordinador->pTablero->getCasilla(_tablerogl->fromFila, _tablerogl->fromCol);
@@ -398,9 +464,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         }
     }
 
-    // ============================================================
     // Z: CANCELAR MODO INFILTRADO
-    // ============================================================
     if (key == 'z' && _tablerogl->_modoInfiltrado) {
         _tablerogl->_modoInfiltrado = false;
         _tablerogl->piezaSeleccionada = false;
@@ -409,9 +473,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // NÚMERO: ELIGE HECHIZO (solo en modo hechizo, conjuro no elegido aún)
-    // ============================================================
     if (_tablerogl->_modoHechizo && !_tablerogl->_conjuroElegido) {
         switch (key) {
         case '1': _tablerogl->_conjuroActivo = Conjuro::AVITUALLAMIENTO;
@@ -429,9 +491,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         }
     }
 
-    // ============================================================
     // MOVIMIENTO CURSOR P1 CON WASD (disponible siempre)
-    // ============================================================
     if (_tablerogl->gestorTurnos.getBandoActual() == bando_local ||
         (_tablerogl->_modoHechizo && _tablerogl->_bandoHechizo == bando_local)) {
         int& rL = _tablerogl->Filacursor[0];               // FILA CURSOR P1
@@ -447,9 +507,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         if (key != ' ' && key != '.') return;              // BLOQUEA RESTO DE TECLAS
     }
 
-    // ============================================================
     // ESPACIO: CONFIRMA HECHIZO P1 O SELECCIONA/MUEVE PIEZA P1
-    // ============================================================
     if (key == ' ') {
         //PARA LA SELECCION DE PIEZAS CON EL PERSONAJE DE INFILTRADO
         if (_tablerogl->_modoInfiltrado && _tablerogl->gestorTurnos.getBandoActual() == bando_local) {
@@ -478,9 +536,7 @@ void GestorInput::teclaTablero(unsigned char key, EstadoJuego& estado)
         return;
     }
 
-    // ============================================================
     // PUNTO: CONFIRMA HECHIZO P2 O SELECCIONA/MUEVE PIEZA P2
-    // ============================================================
     if (key == '.') {
         //PARA LA SELECCION DE PIEZAS CON EL PERSONAJE DE ASESINO DE ÉLITE
         if (_tablerogl->_modoInfiltrado && _tablerogl->gestorTurnos.getBandoActual() == bando_rival) {
@@ -621,13 +677,10 @@ void GestorInput::ratonTablero(int x, int y, int button, bool down, bool shiftKe
     }
 }
 
-// =============================================================
 // ARENA
-// =============================================================
-
 void GestorInput::teclaArena(unsigned char key)
 {
-    if (!_coordinador) return;// COORDINADOR NO ASIGNADO
+    if (!_coordinador) return; // COORDINADOR NO ASIGNADO
 
     // CONTROLES P1: WASD + F
     if (key == 'w' || key == 'W') _coordinador->_input.p1.delante = true;
@@ -642,14 +695,16 @@ void GestorInput::teclaArena(unsigned char key)
 
     // ESC SIEMPRE VUELVE AL MENU
     if (key == 27) {
-        ETSIDI::stopMusica();
+        //ETSIDI::stopMusica();
         _coordinador->reiniciarTablero();
-        _coordinador->estado = EstadoJuego::GUARDANDO;
+        ETSIDI::playMusica("sonidos/MENU.mp3", true);
+        _coordinador->estado = EstadoJuego::MENU;
         return;
     }
 
     // ENTER VUELVE AL TABLERO SI EL COMBATE HA TERMINADO
     if (key == 13 && _coordinador->_arena.resultado() != ResultadoCombate::EnCurso) {
+        ETSIDI::stopMusica();
         bool ganaP1 = (_coordinador->_arena.resultado() == ResultadoCombate::GanaP1);
 
         // P1 FUE EL JUGADOR LOCAL, P2 FUE EL RIVAL
@@ -717,6 +772,12 @@ void GestorInput::teclaArena(unsigned char key)
             }
         }
 
+        // Guarda el combate terminado en el historial de la partida
+        //Con el push_back se guarda una copia del combate actual, por lo q no hace falta grabar la partida, simplemente se reproducen los mismos movimientos
+        _coordinador->_combateEnCurso.ganoP1 = ganaP1;
+        _coordinador->_replayPartida.combates.push_back(_coordinador->_combateEnCurso);
+        _coordinador->_combateEnCurso = CombateRegistro{};
+        _coordinador->_grabandoCombate = false;
         _coordinador->_pAtacanteCombate = nullptr;
         _coordinador->_pDefensoraCombate = nullptr;
 
@@ -760,10 +821,7 @@ void GestorInput::teclaEspecialUpArena(int key)
     if (key == GLUT_KEY_RIGHT) _coordinador->_input.p2.derecha = false;
 }
 
-// =============================================================
 // MENÚ PAUSA
-// =============================================================
-
 void GestorInput::teclaEspecialGuardando(int key, EstadoJuego& estado)
 {
     if (key == GLUT_KEY_DOWN)
@@ -783,21 +841,25 @@ void GestorInput::teclaGuardando(unsigned char key, EstadoJuego& estado)
             GestorPartida::guardar(*_coordinador->pTablero,
                 _tablerogl->gestorTurnos, _coordinador->configuracion);
             std::cout << "[Pausa] Partida guardada.\n";
-            ETSIDI::stopMusica();
+            ETSIDI::playMusica("sonidos/MENU.mp3", true);
             _coordinador->reiniciarTablero();
             _coordinador->estado = EstadoJuego::MENU;
             break;
         case 2:  // AYUDA
+            ETSIDI::playMusica("sonidos/AYUDA.mp3", false);
             _coordinador->estado = EstadoJuego::AYUDA;
             break;
         case 3: // SALIR SIN GUARDAR
-            ETSIDI::stopMusica();
+            ETSIDI::playMusica("sonidos/MENU.mp3", true);
             _coordinador->reiniciarTablero();
             estado = EstadoJuego::MENU;
             break;
         }
     }
-    if (key == 27) estado = EstadoJuego::TABLERO;  // ESC SIEMPRE CONTINÚA
+    if (key == 27) {
+
+        estado = EstadoJuego::TABLERO;
+    }// ESC SIEMPRE CONTINÚA
 }
 
 void GestorInput::ratonGuardando(int x, int y, bool click, EstadoJuego& estado)
@@ -843,5 +905,57 @@ void GestorInput::ratonMovidoGuardando(int x, int y)
             x >= btnX && x <= btnX + btnW) {
             _tablerogl->_pausaSeleccion = i;               // ACTUALIZA SELECCIÓN
         }
+    }
+}
+
+void GestorInput::ratonMovidoAyuda(int mx, int my, EstadoJuego& estado)
+{
+    // Solo actuamos si estamos en la pantalla de ayuda seleccionando sección
+    if (estado != EstadoJuego::AYUDA || _coordinador->_ayudaSeccion != -1) return;
+
+    int gy = _alto - my; // Invertimos la Y para que coincida con OpenGL
+    float aw = 300, ah = 52, sep = 40;
+    float sy = _alto / 2.0f + 10;
+
+    // Coordenadas exactas de los botones según dibujamenu.cpp
+    float btnControlesX = _ancho / 2.0f - aw - sep / 2.0f;
+    float btnNormasX = _ancho / 2.0f + sep / 2.0f;
+
+    // ¿El ratón está sobre "Controles"?
+    if (mx >= btnControlesX && mx <= btnControlesX + aw && gy >= sy && gy <= sy + ah) {
+        _coordinador->_ayudaSeleccion = 0;
+    }
+    // ¿El ratón está sobre "Normas"?
+    else if (mx >= btnNormasX && mx <= btnNormasX + aw && gy >= sy && gy <= sy + ah) {
+        _coordinador->_ayudaSeleccion = 1;
+    }
+}
+
+void GestorInput::ratonAyuda(int boton, int state, int x, int y, EstadoJuego& estado)
+{
+    if (estado != EstadoJuego::AYUDA || state != GLUT_DOWN || boton != GLUT_LEFT_BUTTON) return;
+
+    if (_coordinador->_ayudaSeccion == -1) {
+        // Actualizamos la selección por si el "hover" no se registró a tiempo
+        ratonMovidoAyuda(x, y, estado);
+
+        int gy = _alto - y;
+        float aw = 300, ah = 52, sep = 40;
+        float sy = _alto / 2.0f + 10;
+        float btnControlesX = _ancho / 2.0f - aw - sep / 2.0f;
+        float btnNormasX = _ancho / 2.0f + sep / 2.0f;
+
+        // Solo confirmamos (simulando un ENTER) si hemos hecho clic REALMENTE dentro del botón
+        if ((x >= btnControlesX && x <= btnControlesX + aw && gy >= sy && gy <= sy + ah) ||
+            (x >= btnNormasX && x <= btnNormasX + aw && gy >= sy && gy <= sy + ah)) {
+
+            unsigned char fakeKey = 13; // 13 es el código de ENTER
+            teclaAyuda(fakeKey, estado);
+        }
+    }
+    else {
+        // Si ya estás dentro leyendo las normas o controles, hacer clic en la pantalla te devuelve atrás
+        unsigned char fakeKey = 27; // 27 es el código de ESC
+        teclaAyuda(fakeKey, estado);
     }
 }

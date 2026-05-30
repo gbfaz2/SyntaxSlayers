@@ -24,14 +24,14 @@ std::vector<MovimientoIA> MinimaxTablero::generarMovimientos(
 
             int radio = 1;
             switch (cas.pieza) {
-            case pieza_esfera:     radio = 3; break;
-            case pieza_dodecaedro: radio = 8; break;
-            case pieza_icosaedro:  radio = 4; break;
-            case pieza_tetraedro:  radio = 3; break;
-            case pieza_cubog:      radio = 2; break;
-            case pieza_cono:       radio = 3; break;
-            case pieza_cilindro:   radio = 3; break;
-            case pieza_cubo_p:     radio = 3; break;
+            case pieza_lider:     radio = 3; break;
+            case pieza_teleporte: radio = 8; break;
+            case pieza_volador2:  radio = 4; break;
+            case pieza_volador1:  radio = 3; break;
+            case pieza_fuerte1:      radio = 2; break;
+            case pieza_fuerte2:       radio = 3; break;
+            case pieza_basica2:   radio = 3; break;
+            case pieza_basica1:     radio = 3; break;
             default:               radio = 1; break;
             }
 
@@ -151,14 +151,14 @@ int MinimaxTablero::evaluar(const Tablero& tablero) const
 
     auto valorPieza = [](TipoPieza tipo) -> int {
         switch (tipo) {
-        case pieza_esfera:     return 1000; // REY/EMIR
-        case pieza_dodecaedro: return   90; // INFILTRADO
-        case pieza_icosaedro:  return   85; // ALMOGAVAR
-        case pieza_tetraedro:  return   60; // CABALLERIA LIGERA
-        case pieza_cubog:      return   70; // INFANTERIA PESADA
-        case pieza_cono:       return   75; // CABALLERIA PESADA
-        case pieza_cilindro:   return   60; // BALLESTERO
-        case pieza_cubo_p:     return   30; // MILICIANO
+        case pieza_lider:     return 1000; // REY/EMIR
+        case pieza_teleporte: return   90; // INFILTRADO
+        case pieza_volador2:  return   85; // ALMOGAVAR
+        case pieza_volador1:  return   60; // CABALLERIA LIGERA
+        case pieza_fuerte1:      return   70; // INFANTERIA PESADA
+        case pieza_fuerte2:       return   75; // CABALLERIA PESADA
+        case pieza_basica2:   return   60; // BALLESTERO
+        case pieza_basica1:     return   30; // MILICIANO
         default:               return    0;
         }
         };
@@ -219,15 +219,15 @@ int MinimaxTablero::minimax(Tablero& tablero, int profundidad,
     // LAMBDA LOCAL PARA SABER EL VALOR DE LAS PIEZAS (IGUAL QUE EN EVALUAR)
     auto valorPieza = [](TipoPieza tipo) -> int {
         switch (tipo) {
-        case pieza_esfera:     return 1000;
-        case pieza_dodecaedro: return   90;
-        case pieza_icosaedro:  return   85;
-        case pieza_tetraedro:  return   60;
-        case pieza_cubog:      return   70;
-        case pieza_cono:       return   75;
-        case pieza_cilindro:   return   60;
-        case pieza_cubo_p:     return   30;
-        default:               return    0;
+        case pieza_lider:     return 1000;
+        case pieza_teleporte: return   90;
+        case pieza_volador2:  return   85;
+        case pieza_volador1:  return   60;
+        case pieza_fuerte1:   return   70;
+        case pieza_fuerte2:   return   75;
+        case pieza_basica2:   return   60;
+        case pieza_basica1:   return   30;
+        default:              return    0;
         }
         };
 

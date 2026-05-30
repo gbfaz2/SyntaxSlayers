@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 
-//FALTAN LAS ARMAS
 
 //clase "madre" de la que van a nacer las clases "utiles"
 // Tipos de movimiento posible
@@ -20,26 +19,26 @@ enum class Bando {
 class Pieza {
 protected: //solo pueden acceder clase Y (sus hijas)
     // Identidad de cada pieza (nombre y equipo)
-    std::string    nombre;
-    Bando          bando;
+    std::string    nombre = "Desconocida";
+    Bando          bando=Bando::CRISTIANO;
 
     // Stats de combate (valores 0-100 según la tabla del documento)
-    int            vida;
-    int            vidaMax;
-    int            fuerza;
-    int            velAtaque;
-    int            recarga;
-    int            radioMov;
+    int            vida=0;
+    int            vidaMax=0;
+    int            fuerza=0;
+    int            velAtaque=0;
+    int            recarga=0;
+    int            radioMov=0;
 
     // Posición en el tablero
-    int            fila;
-    int            columna;
+    int            fila=0;
+    int            columna=0;
 
     // Estado
-    bool           viva;  
-    bool           enPuntoDePoder;  //para casillas especiales con curaciones etc especiales
+    bool           viva=true;  
+    bool           enPuntoDePoder=false;  //para casillas especiales con curaciones etc especiales
 
-    int id_animacion; // Este será su "DNI" para el array de _milicianos
+    int id_animacion=-1; // Este será su "DNI" para el array de _milicianos
 
 public:
     // Constructor con las carcaterítsicas necesarias para las piezas para inicializar
@@ -52,9 +51,7 @@ public:
 
     //MÉTODOS:
     
-    inline Pieza() {
-        id_animacion = -1; // -1 significa que no tiene ID asignado por defecto
-    }
+    Pieza() {}
 
     // Funciones para guardar y leer el ID
     void setIdAnimacion(int id) { id_animacion = id; }
@@ -83,7 +80,6 @@ public:
     int getVidaMax() const { return vidaMax; }
 
     // Para la demo: muestra las stats por consola
-    virtual void mostrarStats() const;  //esto es solo para la demo aunque quedaría bien, mostrar las stats por pantalla
-
+    virtual void mostrarStats() const;  
     void setVida(int v) { vida = (v < vidaMax) ? v : vidaMax; }
 };

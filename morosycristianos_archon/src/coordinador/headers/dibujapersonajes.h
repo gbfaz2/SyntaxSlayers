@@ -1,42 +1,41 @@
+
+// DIBUJAPERSONAJES — MOTOR GRÁFICO EXCLUSIVO PARA LOS PERSONAJES
+
 #pragma once
 #include "ETSIDI.h"
 #include "tablero.h"
 
-//solo para miliciano de momento para prueba. Si funciona, se meteran en esta clase para todos los personajes
-
-//falta completar para el resto de personajes
-
+//Definición nombres tipos de personajes
 enum class TipoPersonaje {
-    MILICIANO,
     REY,
     EMIR,
-    ASESINO_DE_ELITE,
-    GUARDIA_NEGRA,
-    JINETE_BEREBER,
-    INFANTERIA,
-    INFILTRADO,
-    CABALLERIA_PESADA,
-    BALLESTERO,
+    MILICIANO,
     GHAZI,
-    CABALLERIA_LIGERA,
-    CABALLERIA_ACORAZADA,
+    INFANTERIA,
+    GUARDIA_NEGRA,
+    BALLESTERO,
     ARQUERO_GHAZI,
+    CABALLERIA_PESADA,
+    CABALLERIA_ACORAZADA,
+    CABALLERIA_LIGERA,
+    JINETE_BEREBER, 
     ALMOGAVAR,
     ARQUERO_CABALLO,
-    TOTAL// siempre al final, cuenta cuántos hay
+    INFILTRADO,
+    ASESINO_DE_ELITE,
+    TOTAL, //Siempre al final, cuenta cuántos hay
 };
 
-
+//Definición estados de personaje 
 enum class EstadoPersonaje {
-    IDLE = 0,  // fila 1 del spritesheet
+    IDLE = 0,  // fila 1
     ATTACK = 4,  // fila 2
     HURT = 8, // fila 3
 };
 
+
 class dibujapersonajes 
 {
-
-    //PENDIENTE: SWITCH CASE?? O BUCLE
     //funcion de libreria etsidi para animación
     static const int MAX_SPRITES = 14; //MAX POR TIPO (MILICIANOS)
     ETSIDI::SpriteSequence* _sprites[(int)TipoPersonaje::TOTAL][MAX_SPRITES];
@@ -45,17 +44,21 @@ class dibujapersonajes
     static const char* rutaImagen(TipoPersonaje tipo);
 
 public:
+    //Constructor y destructor
     dibujapersonajes();
     ~dibujapersonajes();
 
+    //Métodos públicos:
     void init();
     void update();
 
-    //método para dibujar miliciano
+    //Para dibujar personajes
     void dibujar(TipoPersonaje tipo, float x, float y, float size,
         EstadoPersonaje estado, int indice, bool enMovimiento = false, bool voltear = false);
     
-    // Helper: convierte TipoPieza + BandoPieza a TipoPersonaje
+    //Cada tipo de pieza engloba la cristiana y su correspondiente andalusí
+    //Creamos método para facilitar su uso:
+    //Recibe el tipo de pieza y su bando y devuelve el tipo de personaje
     static TipoPersonaje tipoDesdePieza(TipoPieza pieza, BandoPieza bando);
 
 };

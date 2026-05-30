@@ -11,9 +11,6 @@
 // -Y: eje vertical (suelo = 0, cielo = positivo)
 // -Z: eje horizontal (cerca<--->lejos de la camara)
 
-// Esta clase es la versión "demo" inicial. Cuando este lista la
-// jerarquia de clases de Alba, adaptaremos esta para
-// integrarse con ella
 
 // Direcciones de movimiento del combtiente en la arena
 
@@ -137,6 +134,15 @@ public:
 
 	// SETTER PARA ACTUALIZAR LA DIRECCION DE MIRADA DESDE FUERA
 	void setMirando(float dx, float dz) { _mirandoX = dx; _mirandoZ = dz; }
+
+	// SETTERS PARA EL REPLAY
+	void setNombre(const std::string& n) { _nombre = n; }
+	void setVida(float v) { _vida = v; }
+	void setMirandoXZ(float dx, float dz) { _mirandoX = dx; _mirandoZ = dz; }
+	void setAtacando(bool a) { _tiempoAnimacionAtaque = a ? 0.1f : 0.0f; }
+	void setDanio(bool d) { _recibioDanio = d; }
+	void setEnMovimiento(bool m) { _enMovimiento = m; }
+	void setVidaMax(float v) { _vidaMax = v; } //para q la barra de vida se vea en el replay
 
 	// GETTER PARA SABER DE QUE LADO EMPEZO
 	float inicioX() const { return _inicioX; }

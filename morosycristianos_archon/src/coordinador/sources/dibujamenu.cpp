@@ -485,7 +485,7 @@ void DibujaMenu::menu_paso2(MenuPrincipal& m, int ancho, int alto) {
 
 void DibujaMenu::menu_paso3(MenuPrincipal& m, int ancho, int alto) {
     menu_textoCentrado("Elige la batalla historica:",
-        ancho / 2.0f, alto - 130, 0.8f, 0.5f, 0.0f, GLUT_BITMAP_HELVETICA_12);
+        ancho / 2.0f, alto - 175, 100.0f, 100.0f, 100.0f, GLUT_BITMAP_HELVETICA_12);
     float aw = 400, ah = 48, sep = 12;
     float sx = ancho / 2.0f - aw / 2.0f;
     float sy = alto / 2.0f + 90;
@@ -498,18 +498,6 @@ void DibujaMenu::menu_paso3(MenuPrincipal& m, int ancho, int alto) {
     };
     for (int i = 0; i < 4; i++)
         menu_opcion(batallas[i], sx, sy - i * (ah + sep), aw, ah, m.m_seleccion == i);
-    const char* descripciones[] = {
-        "Los musulmanes cruzan el estrecho y vencen al rey Rodrigo.",
-        "Al-Mansur derrota a Alfonso VIII de Castilla.",
-        "Los reinos cristianos unidos rompen el poder almohade.",
-        "Los Reyes Catolicos completan la Reconquista peninsular."
-    };
-	// SOMBRA
-    menu_textoCentrado(descripciones[m.m_seleccion],
-        ancho / 2.0f, alto / 2.0f - 150, 0.0f, 0.0f, 0.0f, GLUT_BITMAP_HELVETICA_12);
-	// TEXTO
-    menu_textoCentrado(descripciones[m.m_seleccion],
-        ancho / 2.0f, alto / 2.0f - 150, 1.0f, 1.0f, 0.40f, GLUT_BITMAP_HELVETICA_12);
 }
 
 // ============================================================
@@ -632,7 +620,7 @@ void DibujaMenu::destino_textos(const PantallaDestino& p, int ancho, int alto) {
     {
         const char* tituloBat = nombreBatalla(p.m_cfg.batalla);
         int tw = glutBitmapLength(GLUT_BITMAP_HELVETICA_18, (const unsigned char*)tituloBat);
-        ETSIDI::printxy(tituloBat, ancho / 2 - (int)(tw * 0.80f), alto - 85);
+        ETSIDI::printxy(tituloBat, ancho / 2 - (int)(tw * 0.65f), alto - 85);
     }
     glColor4f(0.85f * alfa, 0.68f * alfa, 0.10f * alfa, 0.65f * alfa); glLineWidth(1.5f);
     glBegin(GL_LINES);
@@ -700,8 +688,8 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto,
 
     menu_rect(margen, tablaY - filaAlto * 2, tablaAncho, filaAlto, 0.08f, 0.08f, 0.08f, 0.5f);
     menu_texto("Resultado", margen + 10, tablaY - filaAlto * 2 + 12, 0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
-    menu_texto(ganaJ1 ? "GANADOR" : "perdedor", margen + colAncho + 10, tablaY - filaAlto * 2 + 12, ganaJ1 ? 1.0f : 0.5f, ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
-    menu_texto(!ganaJ1 ? "GANADOR" : "perdedor", margen + colAncho * 2 + 10, tablaY - filaAlto * 2 + 12, !ganaJ1 ? 1.0f : 0.5f, !ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(ganaJ1 ? "GANADOR" : "PERDEDOR", margen + colAncho + 10, tablaY - filaAlto * 2 + 12, ganaJ1 ? 1.0f : 0.5f, ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
+    menu_texto(!ganaJ1 ? "GANADOR" : "PERDEDOR", margen + colAncho * 2 + 10, tablaY - filaAlto * 2 + 12, !ganaJ1 ? 1.0f : 0.5f, !ganaJ1 ? 1.0f : 0.5f, 0, GLUT_BITMAP_HELVETICA_18);
 
     menu_rect(margen, tablaY - filaAlto * 3, tablaAncho, filaAlto, 0.12f, 0.12f, 0.12f, 0.5f);
     menu_texto("Piezas eliminadas", margen + 10, tablaY - filaAlto * 3 + 12, 0.80f, 0.80f, 0.80f, GLUT_BITMAP_HELVETICA_18);
@@ -710,7 +698,8 @@ void DibujaMenu::ranking_dibujar(int ancho, int alto,
 
     menu_borde_recto(margen, tablaY - filaAlto * 3, tablaAncho, filaAlto * 3, 0.85f, 0.70f, 0.10f, 2.0f);
     menu_textoCentrado("VICTORIA " + ganador + "!", ancho / 2.0f, tablaY - filaAlto * 4 - 20, 1.0f, 1.0f, 0.4f, GLUT_BITMAP_TIMES_ROMAN_24);
-    menu_textoCentrado("Pulsa ESC para volver al menu", ancho / 2.0f, 30, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+    menu_textoCentrado("Pulsa ESC para volver al menu", ancho / 2.0f, 45, 0.50f, 0.50f, 0.50f, GLUT_BITMAP_HELVETICA_12);
+    menu_textoCentrado("Pulsa R para ver el replay de los combates", ancho / 2.0f, 20, 0.85f, 0.70f, 0.10f, GLUT_BITMAP_HELVETICA_12);
     menu_textoCentrado("TOP 10", ancho / 2.0f, tablaY - filaAlto * 5 - 20, 0.85f, 0.70f, 0.10f, GLUT_BITMAP_HELVETICA_18);
 
     if (ranking.empty()) {
@@ -739,32 +728,216 @@ void DibujaMenu::victoria_dibujar(int ancho, int alto,
     const std::string& ganador, const std::string& batalla,
     bool ganaJ1, float tiempoRestante)
 {
+    static int s_fotoV = 0;
+    s_fotoV++;
+    // RESET: si tiempoRestante es alto (partida nueva) reiniciamos
+    static float s_prevTime = -1.0f;
+    if (tiempoRestante > s_prevTime + 1.0f) s_fotoV = 0;
+    s_prevTime = tiempoRestante;
+
+    float alfa = (s_fotoV < 60) ? s_fotoV / 60.0f : 1.0f; // FADE-IN EN 1 SEGUNDO
+
     util_entrar2D(ancho, alto);
-    const char* ruta = "imagenes/fondo_guadalete.png";
-    if (batalla == "Guadalete")    ruta = "imagenes/fondo_guadalete.png";
-    else if (batalla == "Alarcos") ruta = "imagenes/fondo_alarcos.png";
-    else if (batalla == "Navas")   ruta = "imagenes/fondo_navas.png";
-    else if (batalla == "Granada") ruta = "imagenes/fondo_granada.png";
+
+    // FONDO DE BATALLA (mismas rutas que la pantalla destino)
+    const char* ruta = "imagenes\\GUADALETE.png";
+    if      (batalla.find("Guadalete") != std::string::npos) ruta = "imagenes\\GUADALETE.png";
+    else if (batalla.find("Alarcos")   != std::string::npos) ruta = "imagenes\\ALARCOS.png";
+    else if (batalla.find("Navas")     != std::string::npos) ruta = "imagenes\\NAVAS_TOLOSA.png";
+    else if (batalla.find("Granada")   != std::string::npos) ruta = "imagenes\\GRANADA.png";
+
     auto tex = ETSIDI::getTexture(ruta);
     if (tex.id != 0) {
-        glEnable(GL_TEXTURE_2D); glBindTexture(GL_TEXTURE_2D, tex.id); glColor3f(1, 1, 1);
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, tex.id);
+        glColor3f(1, 1, 1);
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0);glVertex2f(0, 0); glTexCoord2f(1, 0);glVertex2f(ancho, 0);
-        glTexCoord2f(1, 1);glVertex2f(ancho, alto); glTexCoord2f(0, 1);glVertex2f(0, alto);
-        glEnd(); glDisable(GL_TEXTURE_2D);
+        glTexCoord2f(0, 0); glVertex2f(0.0f, (float)alto);
+        glTexCoord2f(1, 0); glVertex2f((float)ancho, (float)alto);
+        glTexCoord2f(1, 1); glVertex2f((float)ancho, 0.0f);
+        glTexCoord2f(0, 1); glVertex2f(0.0f, 0.0f);
+        glEnd();
+        glDisable(GL_TEXTURE_2D);
     }
-    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glColor4f(0, 0, 0, 0.55f);
-    glBegin(GL_QUADS); glVertex2f(0, 0);glVertex2f(ancho, 0);glVertex2f(ancho, alto);glVertex2f(0, alto); glEnd();
+
+    // OVERLAY OSCURO
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.0f, 0.0f, 0.55f);
+    glBegin(GL_QUADS);
+    glVertex2f(0, 0); glVertex2f(ancho, 0);
+    glVertex2f(ancho, alto); glVertex2f(0, alto);
+    glEnd();
     glDisable(GL_BLEND);
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 52);
-    if (ganaJ1) { ETSIDI::setTextColor(0.86f, 0.08f, 0.24f, 1.0f);ETSIDI::printxy("VICTORIA CRISTIANA", ancho / 2 - 240, alto / 2 + 60); }
-    else { ETSIDI::setTextColor(0.55f, 0.10f, 0.75f, 1.0f);ETSIDI::printxy("VICTORIA AL-ANDALUS", ancho / 2 - 255, alto / 2 + 60); }
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 30); ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, 1.0f);
-    ETSIDI::printxy(("Ganador: " + ganador).c_str(), ancho / 2 - 120, alto / 2);
-    ETSIDI::setFont("fuentes/ARIALNBI.ttf", 18); ETSIDI::setTextColor(0.70f, 0.70f, 0.70f, 1.0f);
-    char buf[32]; sprintf_s(buf, "Ranking en %d segundos...", (int)tiempoRestante + 1);
-    ETSIDI::printxy(buf, ancho / 2 - 110, alto / 2 - 60);
+
+    // FIGURAS PIXEL ART CON ENTRADA DESLIZANTE
+    {
+        float sTam  = std::min((float)ancho * 0.28f, (float)alto * 0.50f);
+        float sY    = (float)alto  * 0.42f;
+        float sXizq = (float)ancho * 0.18f;
+        float sXder = (float)ancho * 0.82f;
+
+        const float FRAMES_ENTRADA = 80.0f;
+        float tRaw  = std::min((float)s_fotoV / FRAMES_ENTRADA, 1.0f);
+        float tEase = 1.0f - (1.0f - tRaw) * (1.0f - tRaw) * (1.0f - tRaw);
+
+        // Cristiano entra DESDE LA DERECHA hacia su posicion final
+        float cristIniX = (float)ancho + sTam * 0.5f;
+        float cristFinX = ganaJ1 ? sXizq : sXder;
+        float cristX    = cristIniX + (cristFinX - cristIniX) * tEase;
+
+        // Moro entra DESDE LA IZQUIERDA hacia su posicion final
+        float moroIniX = -sTam * 0.5f;
+        float moroFinX = ganaJ1 ? sXder : sXizq;
+        float moroX    = moroIniX + (moroFinX - moroIniX) * tEase;
+
+        auto dibujarFrame = [&](const char* rutaF,
+                                float u0, float v0, float u1, float v1,
+                                float cx, float cy, float tam) {
+            auto texF = ETSIDI::getTexture(rutaF);
+            if (texF.id == 0) return;
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, texF.id);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glColor4f(1.0f, 1.0f, 1.0f, alfa);
+            float x0s = cx - tam * 0.5f, x1s = cx + tam * 0.5f;
+            float y0s = cy - tam * 0.5f, y1s = cy + tam * 0.5f;
+            glBegin(GL_QUADS);
+            glTexCoord2f(u0, v0); glVertex2f(x0s, y1s);
+            glTexCoord2f(u1, v0); glVertex2f(x1s, y1s);
+            glTexCoord2f(u1, v1); glVertex2f(x1s, y0s);
+            glTexCoord2f(u0, v1); glVertex2f(x0s, y0s);
+            glEnd();
+            glDisable(GL_BLEND);
+            glDisable(GL_TEXTURE_2D);
+        };
+
+        // Animacion del ganador: 2 frames alternando cada ~0.5 s (spritesheet horizontal)
+        int   frameVic = (s_fotoV / 20) % 2;
+        float vicU0    = (frameVic == 0) ? 0.0f : 0.5f;
+        float vicU1    = (frameVic == 0) ? 0.5f : 1.0f;
+
+        //FIGURAS DE LOS PERSONAJES VICTORIOSO Y DERROTADO (para ambos casos)
+        if (ganaJ1) {
+            dibujarFrame("imagenes\\VIC_REY.png",  vicU0, 0.0f, vicU1, 1.0f, cristX, sY, sTam);
+            dibujarFrame("imagenes\\DEF_EMIR.png", 0.0f,  0.0f, 1.0f,  1.0f, moroX,  sY, sTam);
+        } else {
+            dibujarFrame("imagenes\\VIC_EMIR.png", vicU0, 0.0f, vicU1, 1.0f, moroX,  sY, sTam);
+            dibujarFrame("imagenes\\DEF_REY.png",  0.0f,  0.0f, 1.0f,  1.0f, cristX, sY, sTam);
+        }
+
+        // Etiquetas VICTORIOSO / DERROTADO: aparecen con fade al terminar la entrada
+        if (tRaw > 0.90f) {
+            float lAlfa = std::min((tRaw - 0.90f) / 0.10f, 1.0f) * alfa;
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 16);
+            float labelY = sY - sTam * 0.5f - 26.0f;
+            if (ganaJ1)
+                ETSIDI::setTextColor(0.95f, 0.80f, 0.10f, lAlfa); // dorado cristiano
+            else
+                ETSIDI::setTextColor(0.55f, 0.10f, 0.90f, lAlfa); // purpura andalusi
+            ETSIDI::printxy("VICTORIOSO", (int)(sXizq - 50), (int)labelY);
+            ETSIDI::setTextColor(0.55f, 0.55f, 0.55f, lAlfa);
+            ETSIDI::printxy("DERROTADO",  (int)(sXder - 44), (int)labelY);
+            glDisable(GL_BLEND);
+        }
+    }
+
+    // TITULO VICTORIA CON FADE Y CENTRADO DINAMICO
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    const char* tituloVic = ganaJ1 ? "VICTORIA CRISTIANA" : "VICTORIA AL-ANDALUS";
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 52);
+    if (ganaJ1)
+        ETSIDI::setTextColor(0.95f, 0.75f, 0.10f, alfa);
+    else
+        ETSIDI::setTextColor(0.55f, 0.10f, 0.85f, alfa);
+
+    int twV = (int)(strlen(tituloVic) * 52 * 0.62f);
+    ETSIDI::printxy(tituloVic, ancho / 2 - twV / 2, alto - 90);
+
+    // NOMBRE DEL GANADOR
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 30);
+    ETSIDI::setTextColor(1.0f, 0.95f, 0.80f, alfa);
+    {
+        std::string txt = "Ganador: " + ganador;
+        int tw2 = (int)(txt.size() * 30 * 0.62f);
+        ETSIDI::printxy(txt.c_str(), ancho / 2 - tw2 / 2, alto - 145);
+    }
+
+    // LINEA SEPARADORA DORADA
+    if (alfa > 0.3f) {
+        glColor4f(0.85f * alfa, 0.68f * alfa, 0.10f * alfa, 0.8f * alfa);
+        glLineWidth(2.0f);
+        glBegin(GL_LINES);
+        glVertex2f((float)ancho / 2.0f - 200.0f, (float)alto - 170.0f);
+        glVertex2f((float)ancho / 2.0f + 200.0f, (float)alto - 170.0f);
+        glEnd();
+        glLineWidth(1.0f);
+    }
+
+    // CONTADOR PARPADEANTE
+    float parpadeo = (sinf((float)s_fotoV * 0.08f) + 1.0f) * 0.5f * alfa;
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 18);
+    ETSIDI::setTextColor(0.70f, 0.70f, 0.70f, parpadeo);
+    {
+        char buf[64];
+        sprintf_s(buf, "Ranking en %d segundos...", (int)tiempoRestante);
+        int tw3 = (int)(strlen(buf) * 18 * 0.62f);
+        ETSIDI::printxy(buf, ancho / 2 - tw3 / 2, 45);
+    }
+
+    glDisable(GL_BLEND);
+
+    // PARTICULAS DE CELEBRACION
+    static std::vector<Particula> s_partV;
+    static int s_partFotoV = 0;
+    static float s_prevPartTime = -1.0f;
+    if (tiempoRestante > s_prevPartTime + 1.0f) { s_partV.clear(); s_partFotoV = 0; }
+    s_prevPartTime = tiempoRestante;
+    s_partFotoV++;
+
+    if ((int)s_partV.size() < 200) {
+        for (int i = 0; i < 3; i++) {
+            Particula p;
+            float v = (float)rand() / RAND_MAX;
+            if (ganaJ1) { p.r = 0.90f + v * 0.10f; p.g = 0.70f + v * 0.20f; p.b = 0.05f; }
+            else        { p.r = 0.40f + v * 0.30f; p.g = 0.05f; p.b = 0.70f + v * 0.30f; }
+            p.vidaMax = 80.0f + v * 100.0f;
+            p.vida    = p.vidaMax;
+            p.alfa    = 0.9f;
+            p.x  = (float)(rand() % ancho);
+            p.y  = -5.0f;
+            p.vx = ((float)rand() / RAND_MAX - 0.5f) * 2.0f;
+            p.vy = 1.5f + (float)rand() / RAND_MAX * 2.5f;
+            p.tam = 2.0f + (float)rand() / RAND_MAX * 3.0f;
+            s_partV.push_back(p);
+        }
+    }
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_POINT_SMOOTH);
+    for (auto& p : s_partV) {
+        p.x += p.vx; p.y += p.vy; p.vida -= 1.0f;
+        p.alfa = (p.vida / p.vidaMax) * 0.85f;
+        glPointSize(p.tam);
+        glColor4f(p.r, p.g, p.b, p.alfa * alfa);
+        glBegin(GL_POINTS); glVertex2f(p.x, p.y); glEnd();
+    }
+    s_partV.erase(
+        std::remove_if(s_partV.begin(), s_partV.end(),
+            [&](const Particula& p) { return p.vida <= 0 || p.y > alto + 10; }),
+        s_partV.end());
+    glDisable(GL_POINT_SMOOTH);
+    glPointSize(1.0f);
+    glDisable(GL_BLEND);
+
     util_salir2D();
 }
 
@@ -932,5 +1105,177 @@ void DibujaMenu::ayuda_dibujar(int seleccion, int seccion, int ancho, int alto)
         ETSIDI::printxy("ESC: volver", ancho / 2 - 40, 18);
     }
 
+    util_salir2D();
+}
+
+// ============================================================
+// REPLAY - PANTALLA DE SELECCION DE COMBATE
+// Muestra la lista de combates grabados durante la partida
+// ============================================================
+
+void DibujaMenu::replay_seleccion_dibujar(int ancho, int alto,
+    int selActual, const std::vector<CombateRegistro>& combates, Batalla batalla)
+{
+    util_entrar2D(ancho, alto);
+
+    // Fondo: textura de la batalla jugada
+    const char* rutas[] = {
+        "imagenes\\GUADALETE.png", "imagenes\\ALARCOS.png",
+        "imagenes\\NAVAS_TOLOSA.png", "imagenes\\GRANADA.png"
+    };
+    auto tex = ETSIDI::getTexture(rutas[(int)batalla]);
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, tex.id);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0, 0); glVertex2f(0, (float)alto);
+    glTexCoord2f(1, 0); glVertex2f((float)ancho, (float)alto);
+    glTexCoord2f(1, 1); glVertex2f((float)ancho, 0);
+    glTexCoord2f(0, 1); glVertex2f(0, 0);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+
+    // Overlay oscuro para que el texto se lea bien
+    menu_rect(0, 0, (float)ancho, (float)alto, 0.0f, 0.0f, 0.0f, 0.60f);
+
+    // Titulo
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 36);
+    ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f);
+    const char* titulo = "Replay de combates";
+    int tw = (int)(strlen(titulo) * 36 * 0.62f);
+    ETSIDI::printxy(titulo, ancho / 2 - tw / 2, alto - 80);
+
+    // Linea dorada bajo el titulo
+    glColor3f(0.85f, 0.68f, 0.10f);
+    glLineWidth(1.5f);
+    glBegin(GL_LINES);
+    glVertex2f(ancho * 0.15f, alto - 100.0f);
+    glVertex2f(ancho * 0.85f, alto - 100.0f);
+    glEnd();
+    glLineWidth(1.0f);
+
+    if (combates.empty()) {
+        // Aviso si no hay ningun combate grabado todavia
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 20);
+        ETSIDI::setTextColor(0.8f, 0.8f, 0.8f, 1.0f);
+        const char* msg = "No hay combates grabados en esta partida";
+        int tw2 = (int)(strlen(msg) * 20 * 0.62f);
+        ETSIDI::printxy(msg, ancho / 2 - tw2 / 2, alto / 2);
+    }
+    else {
+        float itemH = 52.0f;
+        float sep = 8.0f;
+        float listY = (float)alto - 140.0f;
+        float listX = ancho * 0.15f;
+        float listW = ancho * 0.70f;
+
+        for (int i = 0; i < (int)combates.size(); i++) {
+            const CombateRegistro& c = combates[i];
+            bool esSel = (i == selActual);
+
+            // Fondo del item: mas brillante si esta seleccionado
+            float bAlfa = esSel ? 0.75f : 0.35f;
+            float br = esSel ? 0.65f : 0.20f;
+            float bg = esSel ? 0.50f : 0.20f;
+            float bb = esSel ? 0.10f : 0.20f;
+            menu_rect(listX, listY - i * (itemH + sep), listW, itemH, br, bg, bb, bAlfa);
+
+            // Texto con info del combate
+            ETSIDI::setFont("fuentes\\ARIALNBI.ttf", esSel ? 20 : 17);
+            if (esSel)
+                ETSIDI::setTextColor(1.0f, 0.90f, 0.20f, 1.0f);
+            else
+                ETSIDI::setTextColor(0.85f, 0.85f, 0.85f, 1.0f);
+
+            const char* ganador = c.ganoP1 ? c.nombreP1.c_str() : c.nombreP2.c_str();
+            char buf[128];
+            sprintf_s(buf, "Combate %d:  %s  vs  %s    (gana: %s)",
+                i + 1, c.nombreP1.c_str(), c.nombreP2.c_str(), ganador);
+            ETSIDI::printxy(buf, (int)(listX + 12), (int)(listY - i * (itemH + sep) + 16));
+        }
+    }
+
+    // Instrucciones en la parte inferior
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+    ETSIDI::setTextColor(0.75f, 0.75f, 0.75f, 1.0f);
+    const char* hint = "ARRIBA/ABAJO o Click: navegar  |  ENTER o Click: ver replay  |  ESC: volver";
+    int tw3 = (int)(strlen(hint) * 14 * 0.62f);
+    ETSIDI::printxy(hint, ancho / 2 - tw3 / 2, 20);
+
+    util_salir2D();
+}
+
+// ============================================================
+// REPLAY - BARRA DE VIDA SUPERPUESTA SOBRE LA ARENA DURANTE LA REPRODUCCION
+// Se dibuja encima de arena_dibujar, nunca en lugar de ella
+// ============================================================
+
+void DibujaMenu::replay_dibujar(int ancho, int alto,
+    int idx, int total, const CombateRegistro& c, bool fin)
+{
+    util_entrar2D(ancho, alto);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Panel superior: nombres de los jugadores
+    menu_rect(0, (float)alto - 40, (float)ancho, 40.0f, 0.0f, 0.0f, 0.0f, 0.60f);
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 16);
+    ETSIDI::setTextColor(0.9f, 0.7f, 0.1f, 1.0f);
+    ETSIDI::printxy("REPLAY:", 10, alto - 28);
+    ETSIDI::setTextColor(1.0f, 1.0f, 1.0f, 1.0f);
+    std::string vs = c.nombreP1 + " vs " + c.nombreP2;
+    ETSIDI::printxy(vs.c_str(), 90, alto - 28);
+
+    // Esquina superior derecha: quien gano este combate
+    ETSIDI::setTextColor(0.5f, 1.0f, 0.5f, 1.0f);
+    std::string txtGanador = "Gana: " + (c.ganoP1 ? c.nombreP1 : c.nombreP2);
+    int gw = (int)(txtGanador.size() * 16 * 0.62f);
+    ETSIDI::printxy(txtGanador.c_str(), ancho - gw - 10, alto - 28);
+
+    // Barra de progreso en la parte inferior
+    float barX = ancho * 0.10f;
+    float barY = 20.0f;
+    float barW = ancho * 0.80f;
+    float barH = 14.0f;
+
+    // Fondo gris de la barra
+    menu_rect(barX, barY, barW, barH, 0.2f, 0.2f, 0.2f, 0.85f);
+
+    // Relleno dorado proporcional al progreso actual
+    float progreso = (total > 0) ? (float)idx / (float)total : 1.0f;
+    if (progreso > 1.0f) progreso = 1.0f;
+    menu_rect(barX, barY, barW * progreso, barH, 0.85f, 0.65f, 0.10f, 0.90f);
+
+    // Texto frame actual / total centrado bajo la barra
+    ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 13);
+    ETSIDI::setTextColor(0.90f, 0.90f, 0.90f, 1.0f);
+    char buf[64];
+    sprintf_s(buf, "Frame %d / %d", idx, total);
+    int tw = (int)(strlen(buf) * 13 * 0.62f);
+    ETSIDI::printxy(buf, ancho / 2 - tw / 2, 6);
+
+    if (fin) {
+        // Cartel central cuando el replay ha terminado
+        menu_rect((float)ancho / 2.0f - 170, (float)alto / 2.0f - 35, 340, 70,
+            0.0f, 0.0f, 0.0f, 0.85f);
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 24);
+        ETSIDI::setTextColor(1.0f, 0.85f, 0.10f, 1.0f);
+        const char* msgFin = "Fin del combate";
+        int fw = (int)(strlen(msgFin) * 24 * 0.62f);
+        ETSIDI::printxy(msgFin, ancho / 2 - fw / 2, alto / 2 - 5);
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 14);
+        ETSIDI::setTextColor(0.75f, 0.75f, 0.75f, 1.0f);
+        const char* hintFin = "ESC: volver a la lista";
+        int hw = (int)(strlen(hintFin) * 14 * 0.62f);
+        ETSIDI::printxy(hintFin, ancho / 2 - hw / 2, alto / 2 - 32);
+    }
+    else {
+        // Recordatorio sutil de como salir mientras se reproduce
+        ETSIDI::setFont("fuentes\\ARIALNBI.ttf", 12);
+        ETSIDI::setTextColor(0.50f, 0.50f, 0.50f, 1.0f);
+        ETSIDI::printxy("ESC: salir del replay", 8, 8);
+    }
+
+    glDisable(GL_BLEND);
     util_salir2D();
 }

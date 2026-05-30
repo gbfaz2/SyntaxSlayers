@@ -22,6 +22,8 @@ public:
 
     void setVentana(int ancho, int alto) { _ancho = ancho; _alto = alto; } // ACTUALIZA TAMAÑO VENTANA
     void setTablerogl(Tablerogl* t) { _tablerogl = t; } // ASIGNA TABLEROGL
+
+
     Coordinador* _coordinador{ nullptr }; // PUNTERO AL COORDINADOR
     void setCoordinador(Coordinador* c) { _coordinador = c; } // SETTER
 
@@ -32,7 +34,6 @@ public:
     void teclaArena(unsigned char key);
     void teclaGuardando(unsigned char key, EstadoJuego& estado);
     void teclaAyuda(unsigned char key, EstadoJuego& estado);
-
 
     // TECLA ESPECIAL
     void teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal& menu);
@@ -50,4 +51,6 @@ public:
     void ratonTablero(int x, int y, int button, bool down, bool shiftKey, bool ctrlKey);
     void ratonGuardando(int x, int y, bool click, EstadoJuego& estado); // RATÓN MENÚ PAUSA
     void ratonMovidoGuardando(int x, int y); // HOVER MENÚ PAUSA
+    void ratonAyuda(int boton, int state, int x, int y, EstadoJuego& estado);
+    void ratonMovidoAyuda(int x, int y, EstadoJuego& estado);
 };
