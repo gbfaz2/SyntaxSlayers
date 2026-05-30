@@ -11,7 +11,7 @@ CaballeriaLigera::CaballeriaLigera(Bando bando)
         90,   // velAtaque — muy rápida atacando, su principal ventaja
         30,   // recarga   — cooldown bajo, puede atacar seguido
         5     // radioMov  — el mayor radio de movimiento volador
-    ), ArmaCarga("Lanza") //usan lanza siempre, sean cristianos o andalusí
+    ), Arma("Lanza", TipoAtaque::CARGA) //usan lanza siempre, sean cristianos o andalusí
 {
     // vacío, PiezaVoladora (y Pieza) ya inicializan todo
 }

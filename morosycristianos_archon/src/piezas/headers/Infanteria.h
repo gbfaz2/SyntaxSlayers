@@ -1,6 +1,6 @@
 #pragma once
 #include "PiezaTerrestre.h"
-#include"ArmaCuerpoaCuerpo.h"
+#include"Arma.h"
 
 // INFANTERÍA(cristiana) / GUARDIA NEGRA(Musulmana)
 // Herencia múltiple: pieza terrestre con arma cuerpo a cuerpo
@@ -8,7 +8,7 @@
 //NADA ESPECIAL
 
 class Infanteria :
-    public PiezaTerrestre, public ArmaCuerpoaCuerpo
+    public PiezaTerrestre, public Arma
 {
 public:
     Infanteria(Bando bando);

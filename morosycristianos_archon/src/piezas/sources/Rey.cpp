@@ -13,7 +13,7 @@ Rey::Rey(Bando bando)
         3     // radioMov
     ), 
     Hechicero(),// inicializa los conjuros a false
-    ArmaCuerpoaCuerpo(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta") //inicializa a una arma u a otra segun bando
+    Arma(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta", TipoAtaque::CUERPO_A_CUERPO) //inicializa a una arma u a otra segun bando
 {
 }
 
@@ -38,17 +38,8 @@ void Rey::aplicarConjuro(Conjuro c) {
     case Conjuro::AVITUALLAMIENTO:
         std::cout << "[" << nombre << "] Avituallamiento: cura una tropa aliada" << std::endl;
         break;
-    case Conjuro::CONTROL_FRONTERAS:
-        std::cout << "[" << nombre << "] Control de Fronteras: cambia casillas oscilantes" << std::endl;
-        break;
     case Conjuro::RELEVO_GUARDIA:
         std::cout << "[" << nombre << "] Relevo de Guardia: intercambia dos tropas aliadas" << std::endl;
-        break;
-    case Conjuro::MERCENARIOS:
-        std::cout << "[" << nombre << "] Mercenarios: invoca tropa temporal" << std::endl;
-        break;
-    case Conjuro::REFUERZOS:
-        std::cout << "[" << nombre << "] Refuerzos: resucita una tropa caída" << std::endl;
         break;
     case Conjuro::ASEDIO:
         std::cout << "[" << nombre << "] Asedio: bloquea una tropa enemiga" << std::endl;
@@ -68,9 +59,6 @@ void Rey::mostrarStats() const {
     std::cout << "--- Conjuros ---" << std::endl;
     std::cout << "Rutas Secretas    : " << (puedeUsarConjuro(Conjuro::RUTAS_SECRETAS) ? "Disponible" : "Gastado") << std::endl;
     std::cout << "Avituallamiento   : " << (puedeUsarConjuro(Conjuro::AVITUALLAMIENTO) ? "Disponible" : "Gastado") << std::endl;
-    std::cout << "Control Fronteras : " << (puedeUsarConjuro(Conjuro::CONTROL_FRONTERAS) ? "Disponible" : "Gastado") << std::endl;
     std::cout << "Relevo Guardia    : " << (puedeUsarConjuro(Conjuro::RELEVO_GUARDIA) ? "Disponible" : "Gastado") << std::endl;
-    std::cout << "Mercenarios       : " << (puedeUsarConjuro(Conjuro::MERCENARIOS) ? "Disponible" : "Gastado") << std::endl;
-    std::cout << "Refuerzos         : " << (puedeUsarConjuro(Conjuro::REFUERZOS) ? "Disponible" : "Gastado") << std::endl;
     std::cout << "Asedio            : " << (puedeUsarConjuro(Conjuro::ASEDIO) ? "Disponible" : "Gastado") << std::endl;
 }

@@ -1,6 +1,6 @@
 #pragma once
 #include "PiezaVoladora.h"
-#include "ArmaDistancia.h"
+#include "Arma.h"
 
 // ALMOGÁVAR (Cristiano) / ARQUERO A CABALLO (Musulman)
 // Pieza voladora de proyectil. Fuerte y resistente, pero más lenta que la CaballeríaLigera.
@@ -8,7 +8,7 @@
 //NADA ESPECIAL
 
 class Almogavar :
-    public PiezaVoladora, public ArmaDistancia
+    public PiezaVoladora, public Arma
 {
 public:
     // Constructor que solo recibe el bando, el resto de stats están fijos en el .cpp, con el bando se decide el nombre de la pieza

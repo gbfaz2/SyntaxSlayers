@@ -1,13 +1,13 @@
 #pragma once
 #include "PiezaVoladora.h"
-#include"ArmaCarga.h"
+#include"Arma.h"
 
 // CABALLERÍA LIGERA (cristiana)/ JINETE BEREBER (musulmana)
 // herencia múltiple: pieza voladora que usa arma carga
 //NADA ESPECIAL
 
 class CaballeriaLigera :
-    public PiezaVoladora, public ArmaCarga
+    public PiezaVoladora, public Arma
 {
 public:
     // Constructor que recibe el bando para decidir que tipo de ficha es, el resto de stats están fijos en el .cpp

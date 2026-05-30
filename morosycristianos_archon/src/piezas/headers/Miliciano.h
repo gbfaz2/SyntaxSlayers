@@ -1,13 +1,13 @@
 #pragma once
 #include "PiezaTerrestre.h"
-#include "ArmaCuerpoaCuerpo.h"
+#include "Arma.h"
 
 // MILICIANO(cristiana) / GHAZÍ(Musulmana)
 // Herencia múltiple: pieza terrestre que tiene armas cuerpo a cuerpo
 //NADA ESPECIAL
 
 class Miliciano :
-    public PiezaTerrestre, public ArmaCuerpoaCuerpo
+    public PiezaTerrestre, public Arma
 {
 public:
     // Constructor que recibe bando para poder decidir en el miliciano.cpp el bando y que se llame de una manera o de otra

@@ -1,6 +1,6 @@
 #pragma once
 #include "PiezaTeleporte.h"
-#include"ArmaCuerpoaCuerpo.h"
+#include"Arma.h"
 
 
 // INFILTRADO(Cristiana) / ASESINO DE ÉLITE(Musulmana)
@@ -8,7 +8,7 @@
 //HABILIDAD ESPECIAL:capacidad de copiar los stats
 
 class Infiltrado :
-    public PiezaTeleporte, public ArmaCuerpoaCuerpo
+    public PiezaTeleporte, public Arma
 {
 public:
     // Constructor que solo recibe el bando para poder decidir el nombre de la pieza

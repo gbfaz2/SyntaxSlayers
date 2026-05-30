@@ -12,7 +12,7 @@ Infiltrado::Infiltrado(Bando bando)
         100,  // velAtaque — el más rápido atacando de todo el juego
         20,   // recarga   — cooldown bajísimo, puede atacar casi sin pausa
         5     // radioMov  — teleporte de largo alcance
-    ), ArmaCuerpoaCuerpo(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta") //inicializa a una arma u a otra segun bando
+    ), Arma(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta", TipoAtaque::CUERPO_A_CUERPO) //inicializa a una arma u a otra segun bando
 {
     // vacío, PiezaTeleporte (y Pieza) ya inicializan todo
 }

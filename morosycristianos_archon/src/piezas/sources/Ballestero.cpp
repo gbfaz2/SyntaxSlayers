@@ -11,7 +11,7 @@ Ballestero::Ballestero(Bando bando)
         80,   // velAtaque — rápido atacando, segunda mayor velocidad terrestre
         50,   // recarga   — cooldown medio
         3     // radioMov  — movimiento estándar terrestre
-    ), ArmaDistancia(bando == Bando::CRISTIANO ? "Ballesta" : "Arco") //inicializas arma según bando
+    ), Arma(bando == Bando::CRISTIANO ? "Ballesta" : "Arco", TipoAtaque::DISTANCIA) //inicializas arma según bando
 {
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }

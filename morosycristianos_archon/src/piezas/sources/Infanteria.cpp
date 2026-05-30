@@ -11,7 +11,7 @@ Infanteria::Infanteria(Bando bando)
         20,   // velAtaque — muy lenta atacando, su gran debilidad
         90,   // recarga   — cooldown altísimo, tarda mucho entre ataques
         2     // radioMov  — movimiento muy corto, avanza despacio
-    ), ArmaCuerpoaCuerpo(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta") //inicializa a una arma u a otra segun bando
+    ), Arma(bando == Bando::CRISTIANO ? "Punal" : "Daga oculta", TipoAtaque::CUERPO_A_CUERPO) //inicializa a una arma u a otra segun bando
 {
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }

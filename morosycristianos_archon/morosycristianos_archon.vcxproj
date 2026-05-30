@@ -167,9 +167,6 @@
     <ClInclude Include="src\menu\headers\pantallabatalla.h" />
     <ClInclude Include="src\piezas\headers\Almogavar.h" />
     <ClInclude Include="src\piezas\headers\Arma.h" />
-    <ClInclude Include="src\piezas\headers\ArmaCarga.h" />
-    <ClInclude Include="src\piezas\headers\ArmaCuerpoaCuerpo.h" />
-    <ClInclude Include="src\piezas\headers\ArmaDistancia.h" />
     <ClInclude Include="src\piezas\headers\Ballestero.h" />
     <ClInclude Include="src\piezas\headers\CaballeriaLigera.h" />
     <ClInclude Include="src\piezas\headers\CaballeriaPesada.h" />
@@ -220,9 +217,6 @@
     <ClCompile Include="src\menu\sources\pantallabatalla.cpp" />
     <ClCompile Include="src\piezas\sources\Almogavar.cpp" />
     <ClCompile Include="src\piezas\sources\Arma.cpp" />
-    <ClCompile Include="src\piezas\sources\ArmaCarga.cpp" />
-    <ClCompile Include="src\piezas\sources\ArmaCuerpoaCuerpo.cpp" />
-    <ClCompile Include="src\piezas\sources\ArmaDistancia.cpp" />
     <ClCompile Include="src\piezas\sources\Ballestero.cpp" />
     <ClCompile Include="src\piezas\sources\CaballeriaLigera.cpp" />
     <ClCompile Include="src\piezas\sources\CaballeriaPesada.cpp" />

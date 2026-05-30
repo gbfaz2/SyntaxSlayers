@@ -12,7 +12,7 @@ Miliciano::Miliciano(Bando bando)
         70,   // velAtaque — rápido atacando, su principal ventaja
         30,   // recarga   — cooldown bajo, puede atacar seguido
         3     // radioMov  — movimiento estándar terrestre
-    ), ArmaCuerpoaCuerpo(bando == Bando::CRISTIANO ? "Espada corta" : "Daga") //inicializa el arma segun de que bando sea
+    ), Arma(bando == Bando::CRISTIANO ? "Espada corta" : "Daga", TipoAtaque::CUERPO_A_CUERPO) //inicializa el arma segun de que bando sea
 {
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }

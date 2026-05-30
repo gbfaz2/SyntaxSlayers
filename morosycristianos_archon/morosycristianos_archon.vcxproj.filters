@@ -87,15 +87,6 @@
     <ClInclude Include="src\piezas\headers\Arma.h">
       <Filter>piezas\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="src\piezas\headers\ArmaCarga.h">
-      <Filter>piezas\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\piezas\headers\ArmaCuerpoaCuerpo.h">
-      <Filter>piezas\Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="src\piezas\headers\ArmaDistancia.h">
-      <Filter>piezas\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="src\piezas\headers\Ballestero.h">
       <Filter>piezas\Headers</Filter>
     </ClInclude>
@@ -227,15 +218,6 @@
       <Filter>piezas\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\piezas\sources\Arma.cpp">
-      <Filter>piezas\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\piezas\sources\ArmaCarga.cpp">
-      <Filter>piezas\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\piezas\sources\ArmaCuerpoaCuerpo.cpp">
-      <Filter>piezas\Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\piezas\sources\ArmaDistancia.cpp">
       <Filter>piezas\Sources</Filter>
     </ClCompile>
     <ClCompile Include="src\piezas\sources\Ballestero.cpp">

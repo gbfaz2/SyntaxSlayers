@@ -1,13 +1,13 @@
 #pragma once
 #include "PiezaTerrestre.h"
-#include "ArmaCarga.h"
+#include "Arma.h"
 
 //  CABALLERÍA PESADA(cristiana) / CABALLERÍA ACORAZADA(Musulmana)
 //Herencia multiple: pieza terrestre con arma carga
 //NADA ESPECIAL
 
 class CaballeriaPesada :
-    public PiezaTerrestre, public ArmaCarga
+    public PiezaTerrestre, public Arma
 {
 public:
     // Constructor que recibe bando para poder decidir en el miliciano.cpp el bando y que se llame de una manera o de otra

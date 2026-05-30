@@ -12,7 +12,7 @@ Almogavar::Almogavar(Bando bando)
         70,   // recarga
         4     // radioMov
     ), //Aquí cerramos el constructor de PiezaVoladora
-    ArmaDistancia(bando == Bando::CRISTIANO ? "Jabalinas incendiarias" : "Flechas")
+    Arma(bando == Bando::CRISTIANO ? "Jabalinas incendiarias" : "Flechas", TipoAtaque::DISTANCIA)
 {
     //El cuerpo del constructor se queda vacío
 }
@@ -22,5 +22,5 @@ void Almogavar::mostrarStats() const {
     PiezaVoladora::mostrarStats();
 
     //Accedemos al nombre del arma desde la rama de ArmaDistancia
-    std::cout << "Arma     : " << ArmaDistancia::getNombreArma() << " (A distancia)" << std::endl;
+    std::cout << "Arma:    " << Arma::getNombreArma() << " (A distancia)" << std::endl;
 }

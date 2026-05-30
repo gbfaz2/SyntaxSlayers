@@ -11,7 +11,7 @@ CaballeriaPesada::CaballeriaPesada(Bando bando)
         40,   // velAtaque — velocidad media-baja atacando
         60,   // recarga   — cooldown medio, no puede spamear ataques
         3     // radioMov  — movimiento estándar terrestre
-    ), ArmaCarga("Lanza") //usan lanza siempre, sean cristianos o andalusí
+    ), Arma("Lanza", TipoAtaque::CARGA) //usan lanza siempre, sean cristianos o andalusí
 {
     // vacío, PiezaTerrestre (y Pieza) ya inicializan todo
 }
