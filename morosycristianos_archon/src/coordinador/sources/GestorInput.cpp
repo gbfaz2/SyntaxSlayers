@@ -118,12 +118,10 @@ void GestorInput::teclaAyuda(unsigned char key, EstadoJuego& estado)
     if (key == 13 && _coordinador->_ayudaSeccion == -1)
         _coordinador->_ayudaSeccion = _coordinador->_ayudaSeleccion; // ENTRA EN SECCIÓN
     if (key == 27) {
-        //ETSIDI::playMusica("sonidos/MENU.mp3", true);
 
         if (_coordinador->_ayudaSeccion != -1)
             _coordinador->_ayudaSeccion = -1; // VUELVE AL SELECTOR
         else {
-         //ETSIDI::playMusica("sonidos/MENU.mp3", true);
             estado = EstadoJuego::MENU;  
         }
                  // VUELVE AL MENÚ
