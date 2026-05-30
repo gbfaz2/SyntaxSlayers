@@ -62,16 +62,16 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 			// Usamos una IA ligera (profundidad 1) para que sea instantáneo
 			_sugerenciaFila = -1;
 			_sugerenciaCol = -1;
-			if (true) {
-				MinimaxTablero iaLigera(1);
-				Tablero copia = *m_tablero;
 
-				auto movimientos = iaLigera.generarMovimientos(copia, bando);
+			auto casillas = m_tablero->casillasValidas(currentFila, currentCol);
+
+			if (!casillas.empty()) {
+				Tablero copia = *m_tablero;
+				MinimaxTablero iaLigera(1);
 
 				int mejorValor = (bando == bando_rival) ? INT_MIN : INT_MAX;
-				for (const auto& mov : movimientos) {
-					// SOLO los movimientos de la pieza que el jugador ha seleccionado
-					if (mov.filaOrigen != currentFila || mov.colOrigen != currentCol) continue;
+				for (const auto& pos : casillas) {
+					MovimientoIA mov{ currentFila, currentCol, pos.fila, pos.col };
 
 					EstadoCasilla estado = iaLigera.aplicarMovimiento(copia, mov);
 					int valor = iaLigera.evaluar(copia);
@@ -80,8 +80,8 @@ void Tablerogl::trySelectorMove(BandoPieza bando)
 					bool esMejor = (bando == bando_rival) ? (valor > mejorValor) : (valor < mejorValor);
 					if (esMejor) {
 						mejorValor = valor;
-						_sugerenciaFila = mov.filaDestino;
-						_sugerenciaCol = mov.colDestino;
+						_sugerenciaFila = pos.fila;
+						_sugerenciaCol = pos.col;
 					}
 				}
 			}
