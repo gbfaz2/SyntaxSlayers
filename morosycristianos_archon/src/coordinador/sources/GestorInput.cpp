@@ -62,25 +62,26 @@ void GestorInput::teclaEspecialMenu(int key, EstadoJuego& estado, MenuPrincipal&
                 menu.m_cfg.bando = (menu.m_cfg.bando_j2 == BandoJugador::CRISTIANO)
                     ? BandoJugador::MUSULMAN : BandoJugador::CRISTIANO;
             }
+        }
 
-            // FLECHAS ARRIBA/ABAJO: CAMBIAN DIFICULTAD DE LA IA
-            if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
-                // Si estamos en modo IA, las flechas arriba/abajo siempre cambian la dificultad
-                // (quitamos lo del foco porque la IA no tiene caja de texto para escribir su nombre)
-                if (menu.m_cfg.modo == ModoJuego::JVIA) {
-                    if (key == GLUT_KEY_UP) {
-                        if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
-                        else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::FACIL;
-                        else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
-                    }
-                    else if (key == GLUT_KEY_DOWN) {
-                        if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
-                        else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
-                        else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::FACIL;
-                    }
+        // FLECHAS ARRIBA/ABAJO: CAMBIAN DIFICULTAD DE LA IA
+        if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
+            // Si estamos en modo IA, las flechas arriba/abajo siempre cambian la dificultad
+            // (quitamos lo del foco porque la IA no tiene caja de texto para escribir su nombre)
+            if (menu.m_cfg.modo == ModoJuego::JVIA) {
+                if (key == GLUT_KEY_UP) {
+                    if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+                    else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::FACIL;
+                    else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+                }
+                else if (key == GLUT_KEY_DOWN) {
+                    if (menu.m_cfg.dificultad == NivelDificultad::FACIL) menu.m_cfg.dificultad = NivelDificultad::MEDIO;
+                    else if (menu.m_cfg.dificultad == NivelDificultad::MEDIO) menu.m_cfg.dificultad = NivelDificultad::DIFICIL;
+                    else if (menu.m_cfg.dificultad == NivelDificultad::DIFICIL) menu.m_cfg.dificultad = NivelDificultad::FACIL;
                 }
             }
         }
+
         return; // EN PASO 2 LAS FLECHAS SOLO CAMBIAN BANDO
     }
 
