@@ -522,8 +522,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         // Para el emir: 
         if (casilla.bando != bando_local) {
             //Coordenadas para ajusat el personaje a la casilla
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
-            float px = (float)winX + size * 0.18f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.99f;
+            float px = (float)winX + size * 0.21f;
             float py = (float)winY + size * 0.1f;
 
             //Si la pieza esta activa, activar flags
@@ -585,8 +585,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         // Para el asesino de elite: 
         if (casilla.bando != bando_local) {
             
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.9f;
-            float px = (float)winX + size * 0.45f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.96f;
+            float px = (float)winX + size * 0.37f;
             float py = (float)winY + size * 0.07f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
@@ -602,9 +602,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         }
         //para el infiltrado
         else {
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.98f;
-            float px = (float)winX - size * 0.23f; //- size * 0.07f;
-            float py = (float)winY + size * 0.05f;//- size * 0.05f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.99f;
+            float px = (float)winX - size * 0.32f; //- size * 0.07f;
+            float py = (float)winY + size * 0.08f;//- size * 0.05f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -645,8 +645,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         if (casilla.bando != bando_local) {
           
             float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.05f;
-            float px = (float)winX + size * 0.35f;
-            float py = (float)winY; //+ size * 0.10f;
+            float px = (float)winX + size * 0.30f;
+            float py = (float)winY + size * 0.03f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -663,9 +663,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         //ahora para almogavar:
         else {
             
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.88f;
-            float px = (float)winX - size * 0.32f;
-            float py = (float)winY - size * 0.1f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.98f;
+            float px = (float)winX - size * 0.33f;
+            float py = (float)winY + size * 0.08f;
 
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
@@ -705,8 +705,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         if (casilla.bando != bando_local) {
             
             float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.05f;
-            float px = (float)winX + size * 0.35f;
-            float py = (float)winY; //+ size * 0.10f;
+            float px = (float)winX + size * 0.24f;
+            float py = (float)winY + size * 0.10f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -722,9 +722,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         //ahora para caballeria ligera:
         else {
             
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.20f;
-            float px = (float)winX - size * 0.32f;
-            float py = (float)winY - size * 0.1f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.15f;
+            float px = (float)winX - size * 0.28f;
+            float py = (float)winY + size * 0.04f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -762,7 +762,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         // Para guardia negra:
         if (casilla.bando != bando_local) {
             //ajustes coordenadas
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.90f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
             float px = (float)winX + size * 0.17f;
             float py = (float)winY+size * 0.1f;
 
@@ -781,8 +781,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         //ahora para infantería:
         else {
             
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
-            float px = (float)winX - size * 0.17f; //- size * 0.07f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 1.02f;
+            float px = (float)winX - size * 0.24f; 
             float py = (float)winY + size * 0.1f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
@@ -881,7 +881,7 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         // Para arquero ghazi: 
         if (casilla.bando != bando_local) {
             
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.92f;
             float px = (float)winX + size * 0.27f;
             float py = (float)winY + size * 0.08f;
 
@@ -899,9 +899,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         //para ballestero:
         else {
 
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
-            float px = (float)winX - size * 0.3f;
-            float py = (float)winY; // size * 0.1f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.98f;
+            float px = (float)winX - size * 0.25f;
+            float py = (float)winY + size * 0.12f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -941,9 +941,9 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         // Para ghazi: 
         if (casilla.bando != bando_local) {
             
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.85f;
-            float px = (float)winX + size * 0.39f;
-            float py = (float)winY + size * 0.17f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.93f;
+            float px = (float)winX + size * 0.29f;
+            float py = (float)winY + size * 0.07f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {
                 moviendo = true;
@@ -959,8 +959,8 @@ void DibujaTablero::tablero_pieza_individual(Tablerogl& t, int fil, int col) {
         //para miliciano:
         else {
 
-            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.95f;
-            float px = (float)winX - size * 0.32f;
+            float size = (Tablerogl::_anchoVentana * 0.595f / t.N) * 0.99f;
+            float px = (float)winX - size * 0.40f;
             float py = (float)winY + size * 0.1f;
 
             if (t._animMov.activa && t._animMov.pieza == casilla.obj) {

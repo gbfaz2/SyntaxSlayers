@@ -24,9 +24,6 @@
     <Filter Include="piezas">
       <UniqueIdentifier>{d619e999-33aa-4f6a-bf52-727c5ab39357}</UniqueIdentifier>
     </Filter>
-    <Filter Include="tablero">
-      <UniqueIdentifier>{94486d74-2822-4323-bf80-d7f4d1207e4f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="arena\Headers">
       <UniqueIdentifier>{4ca95967-9c9d-4444-8796-b24bd891c02c}</UniqueIdentifier>
     </Filter>
@@ -38,9 +35,6 @@
     </Filter>
     <Filter Include="ia\Headers">
       <UniqueIdentifier>{5653d438-a616-4477-886c-62a1fc58b3b8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="tablero\Headers">
-      <UniqueIdentifier>{322994d0-009b-4df2-8a94-c26ba145c369}</UniqueIdentifier>
     </Filter>
     <Filter Include="piezas\Headers">
       <UniqueIdentifier>{48e1d579-171f-48b0-8b92-35ccbb43ea43}</UniqueIdentifier>
@@ -57,15 +51,21 @@
     <Filter Include="ia\Sources">
       <UniqueIdentifier>{f13d6174-3e53-43a7-8ba3-ed9afdd8b1a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="tablero\Sources">
-      <UniqueIdentifier>{9c45e23a-0611-40ac-b15f-8e5b68187873}</UniqueIdentifier>
-    </Filter>
     <Filter Include="piezas\Sources">
       <UniqueIdentifier>{e35e07a1-7417-463e-b431-83f0b94c078f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Archivos de origen\Archivos de recursos">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="tablero">
+      <UniqueIdentifier>{94486d74-2822-4323-bf80-d7f4d1207e4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tablero\Headers">
+      <UniqueIdentifier>{322994d0-009b-4df2-8a94-c26ba145c369}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="tablero\Sources">
+      <UniqueIdentifier>{9c45e23a-0611-40ac-b15f-8e5b68187873}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

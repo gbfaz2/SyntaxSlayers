@@ -17,36 +17,6 @@ Rey::Rey(Bando bando)
 {
 }
 
-void Rey::aplicarConjuro(Conjuro c) {
-    // Primero comprueba que puede usarlo
-    if (!puedeUsarConjuro(c)) {
-        //si es FALSE (no puede usar conjuro), va a hacerse TRUE con ! y por tanto se ejecutara:
-
-        std::cout << "Conjuro ya gastado!" << std::endl;
-        return; //sale del método completamente para no ejecutarlo, hechizo gastado
-    }
-
-
-    // Lo marca como gastado
-    usarConjuro(c);
-
-    // Aplica el efecto: de momento solo imprime por pantalla, cuando tengmos el resto de piezas y tablero cambiaremos la logica a la real
-    switch (c) {
-    case Conjuro::RUTAS_SECRETAS:
-        std::cout << "[" << nombre << "] Rutas Secretas: teleporta una tropa aliada" << std::endl;
-        break;
-    case Conjuro::AVITUALLAMIENTO:
-        std::cout << "[" << nombre << "] Avituallamiento: cura una tropa aliada" << std::endl;
-        break;
-    case Conjuro::RELEVO_GUARDIA:
-        std::cout << "[" << nombre << "] Relevo de Guardia: intercambia dos tropas aliadas" << std::endl;
-        break;
-    case Conjuro::ASEDIO:
-        std::cout << "[" << nombre << "] Asedio: bloquea una tropa enemiga" << std::endl;
-        break;
-    }
-}
-
 void Rey::mostrarStats() const {
     // Llama al mostrarStats de Pieza
     Pieza::mostrarStats();
