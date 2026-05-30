@@ -118,9 +118,9 @@ ResultadoVictoria GestorVictoria::comprobarAsedio(const Tablero& tablero) const
         if (localAcorralado && rivalAcorralado)
             return ResultadoVictoria::EMPATE;       // los dos acorralados a la vez
         if (localAcorralado)
-            return ResultadoVictoria::GANA_RIVAL;   // local acorralado → gana rival
+            return ResultadoVictoria::GANA_RIVAL;   // local acorralado -> gana rival
         if (rivalAcorralado)
-            return ResultadoVictoria::GANA_LOCAL;   // rival acorralado → gana local
+            return ResultadoVictoria::GANA_LOCAL;   // rival acorralado -> gana local
 
         return ResultadoVictoria::SIN_GANADOR;      // ninguno acorralado
     }
@@ -169,7 +169,7 @@ int GestorVictoria::contarPiezas(const Tablero& tablero, BandoPieza bando) const
     return count;
 }
 
-// metodo auxiliar: comprueba si la pieza en (fila,col) está rodeada de enemigos
+// Método auxiliar: comprueba si la pieza en (fila,col) está rodeada de enemigos
 // Mira las 4 casillas adyacentes (arriba, abajo, izquierda, derecha)
 // Si todas tienen enemigo o están fuera del tablero → acorralada
 bool GestorVictoria::estaAcorralada(const Tablero& tablero, int fila, int col) const

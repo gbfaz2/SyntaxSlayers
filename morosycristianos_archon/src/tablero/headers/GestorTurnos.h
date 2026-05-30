@@ -2,7 +2,7 @@
 #include "Tablero.h"
 #include <iostream>
 
-//La idea principal de esta clase es gestionar los turnos: 
+//GESTOR DE TURNOS: 
 // Saber de quien es el turno (local o rival)
 // activar un cronometro en cada turno para limitar el tiempo
 // cambiar de turno al acabar el cronometro o simplemente cuando ya ha movido pieza

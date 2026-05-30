@@ -2,19 +2,18 @@
 
 //inicializo constructor con variables 
 GestorTurnos::GestorTurnos()
-    : _turnoActual(bando_local),        // empieza el bando local (cristiano) CUIDADO DUDA PREGUNTAR 
-    _tiempoRestante(TIEMPO_LIMITE_TURNO),  //ya definico como const (60seg)
-    _numeroTurno(1)  //empieza contando turnos con 1
+    : _turnoActual(bando_local),        // empieza el bando local (cristiano)
+    _tiempoRestante(TIEMPO_LIMITE_TURNO),  //Definido como const
+    _numeroTurno(1)  //empieza contando turnos desde 1
 {
     //imprime el tunro, el bando, y el tiempo
     std::cout << "Turno 1 - CRISTIANO. Tiempo: " << TIEMPO_LIMITE_TURNO << "s\n";
 }
 
-//función para cambiar de turno, 
-//cambia el bando al contrario
-//incrementa el numero de turnos 
-//resetea el cronometro
-
+//función para cambiar de turno: 
+//-cambia el bando al contrario
+//-incrementa el numero de turnos 
+//-resetea el cronometro
 void GestorTurnos::cambiarTurno()
 {
     // Alternamos entre bando_local y bando_rival
@@ -32,9 +31,8 @@ void GestorTurnos::cambiarTurno()
         << ". Tiempo: " << TIEMPO_LIMITE_TURNO << "s\n";
 }
 
-//con cada frame del main.cpp del OnTimer se actualiza:
-//del tiempo inicial (60seg) le vas restando cada dt
-//si el tiemporestante es igual o menor que 0, cambia turnos forzadamente
+//Calcula el tiempo restante
+//si el tiempo restante es igual o menor que 0 -> cambia turno.
 void GestorTurnos::update(double dt)
 {
     // Descontamos el tiempo del turno actual
@@ -47,16 +45,16 @@ void GestorTurnos::update(double dt)
     }
 }
 
-//Si ya ha movido pieza, naturalmente se cambia de turno
+//Si ya ha movido pieza, también se cambia de turno
 void GestorTurnos::terminarTurno()
 {
-    // El jugador termina su turno voluntariamente al mover una pieza
+    //Informa del cambio de turno
     std::cout << "[GestorTurnos] Turno terminado por el jugador." << std::endl;
     cambiarTurno();
 }
 
 
-//comprueba si la ficha que vas a mover es de tu bando o no segun tu turno.
+//Comprueba si la ficha que vas a mover es de tu bando o no segun tu turno.
 bool GestorTurnos::esDelBandoActual(const Tablero& tablero, int fila, int col) const
 {
     // Consultamos el bando de la pieza en esa casilla

@@ -1,7 +1,7 @@
 #include "GestorHechizos.h"
 #include <iostream>
 #include <string>
-#include "Miliciano.h"
+
 
 GestorHechizos::GestorHechizos(Tablero& tablero, Hechicero* hechiceroLocal, Hechicero* hechiceroRival)
     : _tablero(tablero),
@@ -11,11 +11,13 @@ GestorHechizos::GestorHechizos(Tablero& tablero, Hechicero* hechiceroLocal, Hech
 
 }
 
+//método que indica de que bando es el hechicero (getter)
 Hechicero* GestorHechizos::hechiceroActual(BandoPieza bando) const
 {
     return (bando == bando_local) ? _hechiceroLocal : _hechiceroRival;
 }
 
+//Flag puede usar conjuro o no 
 bool GestorHechizos::puedeUsarConjuro(BandoPieza bando, Conjuro c) const
 {
     Hechicero* h = hechiceroActual(bando);
@@ -137,6 +139,7 @@ bool GestorHechizos::asedio(BandoPieza bando, int fila, int col, std::string& me
     std::cout << "[Hechizos] " << cas.obj->getNombre() << " bloqueado.\n";
     return true;
 }
+
 
 bool GestorHechizos::estaBloqueada(int fila, int col) const
 {

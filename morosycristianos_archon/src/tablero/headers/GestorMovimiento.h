@@ -34,8 +34,7 @@ class GestorMovimiento {
     int _colDefensora{ -1 };  // COLUMNA DE LA DEFENSORA
 public:
 
-    //no es necesario constructor para este caso (no hay inicializaciones)
-    // Método público que se usara desde tablero: recibe tablero, origen y destino
+    // no es necesario constructor para este caso (no hay inicializaciones)
     // Devuelve qué resultado tiene el movimiento del tipo de datos ResultadoMovimiento  (combate, bloq...)
     ResultadoMovimiento resolverMovimiento(
         Pieza* pieza,
