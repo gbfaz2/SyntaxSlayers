@@ -4,9 +4,6 @@
 #include "GestorMovimiento.h"
 #include "GestorTurnos.h"
 #include "Hechicero.h"
-#include "dibujatablero.h"
-#include "menu.h"
-#include<ETSIDI.h>
 #include "Pieza.h"
 #include "GestorHechizos.h"
 
@@ -16,9 +13,9 @@ enum { KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT };
 
 class Tablerogl
 {
-	friend class GestorInput; // ACCESO TOTAL AL GESTOR DE INPUT
-	friend class Coordinador; //ACCESO PARA BANDO INICIAL Y CASILLAS DINAMICAS
-	friend class DibujaTablero; //ACCESO PARA DIBUJO
+	friend class GestorInput; // LE DOY PERMISO AL GESTOR DE INPUT
+	friend class Coordinador; //LE DOY PERMISO AL COORDINADOR PARA BANDO INICIAL Y CASILLAS DINAMICAS
+	friend class DibujaTablero; //LE DOY PERMISO A DIBUJATABLERO PARA HACER EL DIBUJO
 
 	GestorMovimiento gestorMovimiento;
 	GestorTurnos     gestorTurnos;
@@ -70,7 +67,7 @@ protected:
 	int getVentajaTerrenoCombate()const;
 
 	bool _modoHechizo{ false }; // HECHIZO PENDIENTE DE SELECCIONAR CASILLA
-	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO
+	Conjuro _conjuroActivo{ Conjuro::AVITUALLAMIENTO }; // CONJURO SELECCIONADO, por defecto será el primero 
 	BandoPieza _bandoHechizo{ bando_nada }; // BANDO QUE ACTIVO EL HECHIZO
 	
 	bool _esperandoDestino{ false }; // ESPERANDO SEGUNDA CASILLA PARA HECHIZO DE 2 PASOS

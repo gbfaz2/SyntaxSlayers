@@ -3,11 +3,7 @@
 // Por último se dibuja la cuadrícula negra encima
 
 #include "tablerogl.h"
-#include <string>
-#include <iostream>
 #include <cmath>
-#include <cstdio>
-#include "menu.h"
 
 int Tablerogl::_anchoVentana = 1024;
 int Tablerogl::_altoVentana = 768;
